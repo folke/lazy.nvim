@@ -134,8 +134,9 @@ end
 function M.head(file)
   local f = io.open(file)
   if f then
+    local ret = f:read()
     f:close()
-    return f:read()
+    return ret
   end
 end
 
