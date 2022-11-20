@@ -29,113 +29,113 @@ local M = {}
 
 ---@param plugin LazyPlugin
 function M.plugin(plugin)
-	local pkg = plugin[1]
-	if type(pkg) ~= "string" then
-		Util.error("Invalid plugin spec " .. vim.inspect(plugin))
-	end
+  local pkg = plugin[1]
+  if type(pkg) ~= "string" then
+    Util.error("Invalid plugin spec " .. vim.inspect(plugin))
+  end
 
-	plugin.uri = plugin.uri or ("https://github.com/" .. pkg .. ".git")
-	plugin.pack = plugin.pack or plugin.name
+  plugin.uri = plugin.uri or ("https://github.com/" .. pkg .. ".git")
+  plugin.pack = plugin.pack or plugin.name
 
-	if not plugin.name then
-		local name = plugin.uri:gsub("%.git$", ""):match("/([^/]+)$")
-		plugin.pack = name
-		if not name then
-			name = pkg:gsub("%W+", "_")
-		end
-		name = name:gsub("[%.%-]n?vim$", "")
-		name = name:gsub("^n?vim[%-%.]", "")
-		name = name:gsub("%.lua$", "")
-		name = name:gsub("%.", "_")
-		plugin.name = name:lower()
-	end
+  if not plugin.name then
+    local name = plugin.uri:gsub("%.git$", ""):match("/([^/]+)$")
+    plugin.pack = name
+    if not name then
+      name = pkg:gsub("%W+", "_")
+    end
+    name = name:gsub("[%.%-]n?vim$", "")
+    name = name:gsub("^n?vim[%-%.]", "")
+    name = name:gsub("%.lua$", "")
+    name = name:gsub("%.", "_")
+    plugin.name = name:lower()
+  end
 
-	if Config.plugins[plugin.name] then
-		for k, v in ipairs(plugin) do
-			Config.plugins[plugin.name][k] = v
-		end
-		return Config.plugins[plugin.name]
-	else
-		Config.plugins[plugin.name] = plugin
-	end
-	return plugin
+  if Config.plugins[plugin.name] then
+    for k, v in ipairs(plugin) do
+      Config.plugins[plugin.name][k] = v
+    end
+    return Config.plugins[plugin.name]
+  else
+    Config.plugins[plugin.name] = plugin
+  end
+  return plugin
 end
 
 ---@param plugin LazyPlugin
 function M.process_local(plugin)
-	for _, pattern in ipairs(Config.options.plugins_local.patterns) do
-		if plugin[1]:find(pattern) then
-			plugin.uri = Config.options.plugins_local.path .. "/" .. plugin.pack
-			return
-		end
-	end
+  for _, pattern in ipairs(Config.options.plugins_local.patterns) do
+    if plugin[1]:find(pattern) then
+      plugin.uri = Config.options.plugins_local.path .. "/" .. plugin.pack
+      return
+    end
+  end
 end
 
 ---@param plugin LazyPlugin
 function M.process_config(plugin)
-	local name = plugin.name
-	local modname = Config.options.plugins_config.module .. "." .. name
+  local name = plugin.name
+  local modname = Config.options.plugins_config.module .. "." .. name
 
-	local file = Config.has_config[modname]
-	if file then
-		-- use dofile and then add to modules. Since we know where to look, this is faster
-		local ok, spec = pcall(Cache.load, file, modname)
-		if ok then
-			-- add to loaded modules
-			if spec.requires then
-				spec.requires = M.normalize(spec.requires)
-			end
+  local file = Config.has_config[modname]
+  if file then
+    -- use dofile and then add to modules. Since we know where to look, this is faster
+    local ok, spec = pcall(Cache.load, file, modname)
+    if ok then
+      -- add to loaded modules
+      if spec.requires then
+        spec.requires = M.normalize(spec.requires)
+      end
 
-			---@diagnostic disable-next-line: no-unknown
-			for k, v in pairs(spec) do
-				---@diagnostic disable-next-line: no-unknown
-				plugin[k] = v
-			end
-			M.plugin(plugin)
-		else
-			Util.error("Failed to load plugin config for " .. name .. "\n" .. spec)
-		end
-	end
+      ---@diagnostic disable-next-line: no-unknown
+      for k, v in pairs(spec) do
+        ---@diagnostic disable-next-line: no-unknown
+        plugin[k] = v
+      end
+      M.plugin(plugin)
+    else
+      Util.error("Failed to load plugin config for " .. name .. "\n" .. spec)
+    end
+  end
 end
 
 ---@param spec table
 ---@param results? LazyPlugin[]
 function M.normalize(spec, results)
-	results = results or {}
-	if type(spec) == "string" then
-		table.insert(results, M.plugin({ spec }).name)
-	elseif #spec > 1 or vim.tbl_islist(spec) then
-		---@cast spec LazyPlugin[]
-		for _, s in ipairs(spec) do
-			M.normalize(s, results)
-		end
-	else
-		---@cast spec LazyPlugin
-		spec = M.plugin(spec)
+  results = results or {}
+  if type(spec) == "string" then
+    table.insert(results, M.plugin({ spec }).name)
+  elseif #spec > 1 or vim.tbl_islist(spec) then
+    ---@cast spec LazyPlugin[]
+    for _, s in ipairs(spec) do
+      M.normalize(s, results)
+    end
+  else
+    ---@cast spec LazyPlugin
+    spec = M.plugin(spec)
 
-		if spec.requires then
-			-- TODO: fix multiple requires in different packages
-			spec.requires = M.normalize(spec.requires)
-		end
-		table.insert(results, spec.name)
-	end
-	return results
+    if spec.requires then
+      -- TODO: fix multiple requires in different packages
+      spec.requires = M.normalize(spec.requires)
+    end
+    table.insert(results, spec.name)
+  end
+  return results
 end
 
 function M.process()
-	for _, plugin in pairs(Config.plugins) do
-		M.process_config(plugin)
-	end
+  for _, plugin in pairs(Config.plugins) do
+    M.process_config(plugin)
+  end
 
-	for _, plugin in pairs(Config.plugins) do
-		if plugin.opt == nil then
-			plugin.opt = Config.options.opt
-		end
-		plugin.dir = Config.options.package_path .. "/" .. (plugin.opt and "opt" or "start") .. "/" .. plugin.pack
-		plugin.installed = Util.file_exists(plugin.dir)
-		M.process_local(plugin)
-		Loader.add(plugin)
-	end
+  for _, plugin in pairs(Config.plugins) do
+    if plugin.opt == nil then
+      plugin.opt = Config.options.opt
+    end
+    plugin.dir = Config.options.package_path .. "/" .. (plugin.opt and "opt" or "start") .. "/" .. plugin.pack
+    plugin.installed = Util.file_exists(plugin.dir)
+    M.process_local(plugin)
+    Loader.add(plugin)
+  end
 end
 
 return M
