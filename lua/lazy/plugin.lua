@@ -24,7 +24,7 @@ local M = {}
 ---@field loaded? boolean
 ---@field installed? boolean
 ---@field run? string|fun()
----@field tasks? Task[]
+---@field tasks? LazyTask[]
 ---@field dirty? boolean
 
 ---@param plugin LazyPlugin

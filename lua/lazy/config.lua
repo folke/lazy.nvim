@@ -58,7 +58,7 @@ function M.setup(opts)
     pattern = "VeryLazy",
     once = true,
     callback = function()
-      -- require("lazy.view").setup()
+      require("lazy.view").setup()
     end,
   })
 

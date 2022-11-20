@@ -141,9 +141,10 @@ end
 
 ---@return {branch: string, hash:string}?
 function M.git_info(dir)
-  if M.head(dir .. "/.git/HEAD") then
+  local line = M.head(dir .. "/.git/HEAD")
+  if line then
     ---@type string, string
-    local ref, branch = slot1:match("ref: (refs/heads/(.*))")
+    local ref, branch = line:match("ref: (refs/heads/(.*))")
 
     if ref then
       return {

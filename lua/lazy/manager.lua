@@ -122,7 +122,7 @@ function M.clear()
   for pack, plugin in pairs(Config.plugins) do
     -- clear finished tasks
     if plugin.tasks then
-      ---@param task Task
+      ---@param task LazyTask
       plugin.tasks = vim.tbl_filter(function(task)
         return task.running
       end, plugin.tasks)
