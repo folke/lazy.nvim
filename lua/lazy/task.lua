@@ -1,5 +1,6 @@
 local Process = require("lazy.process")
 local Loader = require("lazy.loader")
+local Util = require("lazy.util")
 
 ---@class LazyTask
 ---@field plugin LazyPlugin
@@ -39,16 +40,17 @@ function Task:clean()
         vim.loop.fs_unlink(entry.path)
       end
     end
-
     vim.loop.fs_rmdir(path)
   end
 
-  local stat = vim.loop.fs_stat(self.plugin.dir)
+  local dir = self.plugin.dir:gsub("/+$", "")
+
+  local stat = vim.loop.fs_lstat(dir)
 
   if stat.type == "directory" then
-    rm(self.plugin.dir)
+    rm(dir)
   else
-    vim.loop.fs_unlink(self.plugin.dir)
+    vim.loop.fs_unlink(dir)
   end
 
   self.plugin.installed = false
@@ -96,7 +98,6 @@ function Task:run()
   Loader.load(self.plugin)
 
   local run = self.plugin.run
-
   if run then
     if type(run) == "string" and run:sub(1, 1) == ":" then
       vim.cmd(run:sub(2))

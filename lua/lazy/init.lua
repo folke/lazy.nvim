@@ -31,9 +31,9 @@ function M.setup(opts)
   Util.track("lazy_install")
   for _, plugin in pairs(Config.plugins) do
     if not plugin.installed then
-      -- require("lazy.manager").install({
-      -- 	wait = true,
-      -- })
+      require("lazy.manager").install({
+        wait = true,
+      })
       break
     end
   end

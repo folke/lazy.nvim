@@ -50,8 +50,8 @@ function M.plugin(plugin)
     plugin.name = name:lower()
   end
 
-  if Config.plugins[plugin.name] then
-    for k, v in ipairs(plugin) do
+  if Config.plugins[plugin.name] and Config.plugins[plugin.name] ~= plugin then
+    for k, v in pairs(plugin) do
       Config.plugins[plugin.name][k] = v
     end
     return Config.plugins[plugin.name]

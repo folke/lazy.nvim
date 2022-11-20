@@ -19,9 +19,11 @@ function M.render_plugins(buf, win, padding)
   self.buf = buf
   self.win = win
   self.padding = padding
+
   Manager.check_clean()
 
   self.plugins = vim.tbl_values(Config.plugins)
+  vim.list_extend(self.plugins, vim.tbl_values(Manager.to_clean))
   table.sort(self.plugins, function(a, b)
     return a.name < b.name
   end)

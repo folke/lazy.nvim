@@ -56,15 +56,13 @@ function M.show()
     nowait = true,
     buffer = buf,
   })
+
   vim.keymap.set("n", "q", close, {
     nowait = true,
     buffer = buf,
   })
-  vim.api.nvim_create_autocmd({
-    "BufDelete",
-    "BufLeave",
-    "BufHidden",
-  }, {
+
+  vim.api.nvim_create_autocmd({ "BufDelete", "BufLeave", "BufHidden" }, {
     once = true,
     buffer = buf,
     callback = close,

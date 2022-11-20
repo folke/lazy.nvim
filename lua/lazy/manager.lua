@@ -5,6 +5,9 @@ local Util = require("lazy.util")
 
 local M = {}
 
+---@type table<string, LazyPlugin>
+M.to_clean = {}
+
 ---@alias ManagerOpts {wait?: boolean, plugins?: LazyPlugin[], clear?: boolean, show?: boolean}
 
 ---@param operation TaskType
@@ -84,11 +87,10 @@ end
 
 ---@param opts? ManagerOpts
 function M.clean(opts)
+  opts = opts or {}
   M.check_clean()
-  ---@param plugin LazyPlugin
-  M.run("clean", opts, function(plugin)
-    return plugin.uri == nil and plugin.installed
-  end)
+  opts.plugins = vim.tbl_values(M.to_clean)
+  M.run("clean", opts)
 end
 
 function M.check_clean()
@@ -111,7 +113,7 @@ function M.check_clean()
             opt = opt == "opt",
             installed = true,
           }
-          Config.plugins[pack.name] = plugin
+          M.to_clean[plugin.dir] = plugin
         end
       end
     end
@@ -119,7 +121,7 @@ function M.check_clean()
 end
 
 function M.clear()
-  for pack, plugin in pairs(Config.plugins) do
+  for _, plugin in pairs(Config.plugins) do
     -- clear finished tasks
     if plugin.tasks then
       ---@param task LazyTask
@@ -127,11 +129,8 @@ function M.clear()
         return task.running
       end, plugin.tasks)
     end
-    -- clear cleaned plugins
-    if plugin.uri == nil and not plugin.installed then
-      Config.plugins[pack] = nil
-    end
   end
+  M.to_clean = {}
 end
 
 return M
