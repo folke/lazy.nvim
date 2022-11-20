@@ -1,5 +1,5 @@
-Util = require("lazy.util")
-Config = require("lazy.config")
+local Util = require("lazy.util")
+local Config = require("lazy.config")
 
 local M = {}
 

@@ -1,3 +1,4 @@
+local Util = require("lazy.util")
 local Render = require("lazy.view.render")
 
 local M = {}
@@ -71,11 +72,8 @@ function M.show()
 
   local render = Util.throttle(30, function()
     vim.bo[buf].modifiable = true
-
     Render.render_plugins(buf, win, 2)
-
     vim.bo[buf].modifiable = false
-
     vim.cmd.redraw()
   end)
 

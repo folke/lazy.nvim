@@ -1,8 +1,9 @@
----@alias TextString {str: string, hl?:string, extmark?:table}
----@alias TextLine TextString[]
+local Config = require("lazy.config")
+
+---@alias TextSegment {str: string, hl?:string, extmark?:table}
 
 ---@class Text
----@field _lines TextLine[]
+---@field _lines TextSegment[][]
 local Text = {}
 
 function Text.new()
