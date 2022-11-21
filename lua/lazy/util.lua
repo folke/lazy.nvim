@@ -25,7 +25,7 @@ function M.track(name, time)
 end
 
 function M.time()
-  return vim.loop.hrtime() / 1000000
+  return vim.loop.hrtime()
 end
 
 function M.file_exists(file)
@@ -115,7 +115,7 @@ function M.profile()
 
     table.insert(
       lines,
-      ("  "):rep(depth) .. "- " .. entry.name .. ": **" .. math.floor((entry.time or 0) * 100) / 100 .. "ms**"
+      ("  "):rep(depth) .. "- " .. entry.name .. ": **" .. math.floor((entry.time or 0) / 1e6 * 100) / 100 .. "ms**"
     )
 
     for _, child in ipairs(entry) do

@@ -4,9 +4,16 @@ local M = {}
 function M.setup(opts)
   --FIXME:  preload()
 
+  local Cache = require("lazy.cache")
+
+  local start = vim.loop.hrtime()
+  Cache.boot()
+
   local Util = require("lazy.util")
   local Config = require("lazy.config")
   local Plugin = require("lazy.plugin")
+
+  Util.track("lazy_boot", vim.loop.hrtime() - start)
 
   Util.track("lazy_setup")
 
@@ -14,18 +21,25 @@ function M.setup(opts)
   Config.setup(opts)
   Util.track()
 
-  Util.track("plugin_normalize")
-  Plugin.normalize(Config.options.plugins)
-  if not Config.plugins.lazy then
-    Plugin.plugin({
-      "folke/lazy.nvim",
-      opt = false,
-    })
-  end
-  Util.track()
+  Util.track("lazy_plugins")
+  if not Cache.setup() then
+    vim.schedule(function()
+      vim.notify("Reloading")
+    end)
+    Util.track("plugin_normalize")
+    Plugin.normalize(require(Config.options.plugins))
+    if not Config.plugins.lazy then
+      Plugin.plugin({
+        "folke/lazy.nvim",
+        opt = false,
+      })
+    end
+    Util.track()
 
-  Util.track("plugin_process")
-  Plugin.process()
+    Util.track("plugin_process")
+    Plugin.process()
+    Util.track()
+  end
   Util.track()
 
   Util.track("lazy_install")

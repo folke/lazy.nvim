@@ -5,14 +5,15 @@ local Cache = require("lazy.cache")
 
 local M = {}
 
----@class LazyPlugin: {[1]: string}
+---@class LazyPlugin
+---@field [1] string
+---@field name string display name and name used for plugin config files
+---@field pack string package name
 ---@field uri string
----@field as? string
+---@field modname? string
 ---@field branch? string
 ---@field dir string
 ---@field opt? boolean
----@field name string display name and name used for plugin config files
----@field pack string package name
 ---@field init? fun(LazyPlugin) Will always be run
 ---@field config? fun(LazyPlugin) Will be executed when loading the plugin
 ---@field event? string|string[]
@@ -74,27 +75,22 @@ end
 ---@param plugin LazyPlugin
 function M.process_config(plugin)
   local name = plugin.name
-  local modname = Config.options.plugins_config.module .. "." .. name
+  local modname = Config.options.plugins .. "." .. name
 
-  local file = Config.has_config[modname]
-  if file then
-    -- use dofile and then add to modules. Since we know where to look, this is faster
-    local ok, spec = pcall(Cache.load, file, modname)
-    if ok then
-      -- add to loaded modules
-      if spec.requires then
-        spec.requires = M.normalize(spec.requires)
-      end
-
-      ---@diagnostic disable-next-line: no-unknown
-      for k, v in pairs(spec) do
-        ---@diagnostic disable-next-line: no-unknown
-        plugin[k] = v
-      end
-      M.plugin(plugin)
-    else
-      Util.error("Failed to load plugin config for " .. name .. "\n" .. spec)
+  local spec = Cache.load(modname)
+  if spec then
+    -- add to loaded modules
+    if spec.requires then
+      spec.requires = M.normalize(spec.requires)
     end
+
+    ---@diagnostic disable-next-line: no-unknown
+    for k, v in pairs(spec) do
+      ---@diagnostic disable-next-line: no-unknown
+      plugin[k] = v
+    end
+    plugin.modname = modname
+    M.plugin(plugin)
   end
 end
 

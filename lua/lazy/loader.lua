@@ -3,7 +3,7 @@ local Config = require("lazy.config")
 
 local M = {}
 
----@alias LoaderType "event"|"ft"|"module"|"keys"|"cmd"
+---@alias LoaderType "event"|"ft"|"module"|"keys"|"cmd"|"init"
 ---@type LoaderType[]
 M.types = {
   "event",
@@ -13,20 +13,17 @@ M.types = {
   "cmd",
 }
 
----@type table<LoaderType, table<string, string[]>>
-M.loaders = {}
+---@class LazyLoaders: table<LoaderType, table<string, string[]>>|{init: string[]}
+M.loaders = { init = {} }
 
 for _, type in ipairs(M.types) do
   M.loaders[type] = {}
 end
 
----@type LazyPlugin[]
-M.need_setup = {}
-
 ---@param plugin LazyPlugin
 function M.add(plugin)
   if plugin.init or plugin.opt == false and plugin.config then
-    table.insert(M.need_setup, plugin)
+    table.insert(M.loaders.init, plugin.name)
   end
 
   for _, loader_type in ipairs(M.types) do
@@ -130,7 +127,8 @@ end
 
 function M.init_plugins()
   Util.track("loader_plugin_init")
-  for _, plugin in ipairs(M.need_setup) do
+  for _, name in ipairs(M.loaders.init) do
+    local plugin = Config.plugins[name]
     if plugin.init then
       Util.track(plugin.name)
       plugin.init()
@@ -152,7 +150,7 @@ function M.module(modname)
     local plugins = M.loaders.module[name]
     if plugins then
       M.load(plugins)
-      M.loaders.module[name] = nil
+      -- M.loaders.module[name] = nil
     end
     idx = modname:find(".", idx + 1, true)
   end
