@@ -1,7 +1,6 @@
 local Config = require("lazy.config")
 local Util = require("lazy.util")
-local Loader = require("lazy.loader")
-local Cache = require("lazy.cache")
+local Module = require("lazy.core.module")
 
 local M = {}
 
@@ -77,7 +76,7 @@ function M.process_config(plugin)
   local name = plugin.name
   local modname = Config.options.plugins .. "." .. name
 
-  local spec = Cache.load(modname)
+  local spec = Module.load(modname)
   if spec then
     -- add to loaded modules
     if spec.requires then
@@ -130,7 +129,6 @@ function M.process()
     plugin.dir = Config.options.package_path .. "/" .. (plugin.opt and "opt" or "start") .. "/" .. plugin.pack
     plugin.installed = Util.file_exists(plugin.dir)
     M.process_local(plugin)
-    Loader.add(plugin)
   end
 end
 

@@ -185,4 +185,37 @@ function M.error(msg)
   })
 end
 
+function M._dump(value, result)
+  local t = type(value)
+  if t == "number" or t == "boolean" then
+    table.insert(result, tostring(value))
+  elseif t == "string" then
+    table.insert(result, ("%q"):format(value))
+  elseif t == "table" then
+    table.insert(result, "{")
+    local i = 1
+    ---@diagnostic disable-next-line: no-unknown
+    for k, v in pairs(value) do
+      if k == i then
+      elseif type(k) == "string" then
+        table.insert(result, ("[%q]="):format(k))
+      else
+        table.insert(result, k .. "=")
+      end
+      M._dump(v, result)
+      table.insert(result, ",")
+      i = i + 1
+    end
+    table.insert(result, "}")
+  else
+    error("Unsupported type " .. t)
+  end
+end
+
+function M.dump(value)
+  local result = {}
+  M._dump(value, result)
+  return table.concat(result, "")
+end
+
 return M

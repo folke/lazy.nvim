@@ -13,23 +13,18 @@ M.types = {
   "cmd",
 }
 
----@class LazyLoaders: table<LoaderType, table<string, string[]>>|{init: string[]}
-M.loaders = { init = {} }
-
-for _, type in ipairs(M.types) do
-  M.loaders[type] = {}
-end
+---@type table<LoaderType, table<string, string[]>>|{init: string[]}
+M.loaders = nil
 
 ---@param plugin LazyPlugin
 function M.add(plugin)
-  if plugin.init or plugin.opt == false and plugin.config then
+  if plugin.init or (plugin.opt == false and plugin.config) then
     table.insert(M.loaders.init, plugin.name)
   end
 
   for _, loader_type in ipairs(M.types) do
-    ---@type string[]|string
     local loaders = plugin[loader_type]
-    if loaders then
+    if plugin[loader_type] then
       loaders = type(loaders) == "table" and loaders or { loaders }
       ---@cast loaders string[]
       for _, loader in ipairs(loaders) do
@@ -43,6 +38,16 @@ function M.add(plugin)
 end
 
 function M.setup()
+  if not M.loaders then
+    M.loaders = { init = {} }
+    for _, type in ipairs(M.types) do
+      M.loaders[type] = {}
+    end
+    for _, plugin in pairs(Config.plugins) do
+      M.add(plugin)
+    end
+  end
+
   local group = vim.api.nvim_create_augroup("lazy_loader", {
     clear = true,
   })
@@ -126,7 +131,7 @@ function M.setup()
 end
 
 function M.init_plugins()
-  Util.track("loader_plugin_init")
+  Util.track("plugin_init")
   for _, name in ipairs(M.loaders.init) do
     local plugin = Config.plugins[name]
     if plugin.init then
@@ -167,14 +172,15 @@ end
 ---@param plugins string|LazyPlugin|string[]|LazyPlugin[]
 function M.load(plugins)
   if type(plugins) == "string" or plugins.name then
+    ---@diagnostic disable-next-line: assign-type-mismatch
     plugins = { plugins }
   end
 
+  ---@cast plugins (string|LazyPlugin)[]
   for _, plugin in ipairs(plugins) do
     if type(plugin) == "string" then
       plugin = Config.plugins[plugin]
     end
-    ---@cast plugin LazyPlugin
 
     if not plugin.loaded then
       plugin.loaded = true
@@ -191,6 +197,9 @@ function M.load(plugins)
       end
 
       Util.track()
+      vim.schedule(function()
+        vim.cmd("do User LazyRender")
+      end)
     end
   end
 end
