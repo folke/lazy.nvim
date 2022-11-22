@@ -19,9 +19,9 @@ function M.setup(opts)
   local Module = require("lazy.core.module").setup()
 
   local require_start = vim.loop.hrtime()
-  local Util = require("lazy.util")
-  local Config = require("lazy.config")
-  local Loader = require("lazy.loader")
+  local Util = require("lazy.core.util")
+  local Config = require("lazy.core.config")
+  local Loader = require("lazy.core.loader")
   local State = require("lazy.core.state")
 
   Util.track("cache.setup", module_start - cache_start)
@@ -87,7 +87,7 @@ function M.stats()
     loaded = 0,
   }
 
-  for _, plugin in pairs(require("lazy.config").plugins) do
+  for _, plugin in pairs(require("lazy.core.config").plugins) do
     ret.count = ret.count + 1
 
     if plugin.loaded then

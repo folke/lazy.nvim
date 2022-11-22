@@ -1,4 +1,4 @@
-local Util = require("lazy.util")
+local Util = require("lazy.core.util")
 local Render = require("lazy.view.render")
 
 local M = {}

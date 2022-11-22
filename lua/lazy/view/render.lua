@@ -1,5 +1,5 @@
-local Config = require("lazy.config")
-local Util = require("lazy.util")
+local Config = require("lazy.core.config")
+local Util = require("lazy.core.util")
 local Manager = require("lazy.manager")
 local Sections = require("lazy.view.sections")
 

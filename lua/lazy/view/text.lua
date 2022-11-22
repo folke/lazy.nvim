@@ -1,4 +1,4 @@
-local Config = require("lazy.config")
+local Config = require("lazy.core.config")
 
 ---@alias TextSegment {str: string, hl?:string, extmark?:table}
 

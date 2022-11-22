@@ -1,6 +1,6 @@
 local Process = require("lazy.process")
-local Loader = require("lazy.loader")
-local Util = require("lazy.util")
+local Loader = require("lazy.core.loader")
+local Util = require("lazy.core.util")
 
 ---@class LazyTask
 ---@field plugin LazyPlugin

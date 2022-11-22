@@ -1,7 +1,7 @@
-local Config = require("lazy.config")
+local Config = require("lazy.core.config")
 local Task = require("lazy.task")
 local Runner = require("lazy.runner")
-local Util = require("lazy.util")
+local Util = require("lazy.core.util")
 
 local M = {}
 

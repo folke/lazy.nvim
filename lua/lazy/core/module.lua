@@ -102,9 +102,9 @@ function M.setup()
 
   -- preload core modules
   local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
-  for _, name in ipairs({ "util", "config", "plugin", "loader", "core.state" }) do
-    local modname = "lazy." .. name
-    M.add(modname, root .. "/" .. name:gsub("%.", "/") .. ".lua")
+  for _, name in ipairs({ "util", "config", "loader", "state" }) do
+    local modname = "lazy.core." .. name
+    M.add(modname, root .. "/core/" .. name:gsub("%.", "/") .. ".lua")
   end
 
   table.insert(package.loaders, 2, function(modname)

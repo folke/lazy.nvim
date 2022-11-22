@@ -7,13 +7,13 @@ M.functions = { "init", "config", "run" }
 M.changed = true
 
 function M.save()
-  local Config = require("lazy.config")
+  local Config = require("lazy.core.config")
 
   ---@class LazyState
   local state = {
     ---@type LazyPlugin[]
     plugins = {},
-    loaders = require("lazy.loader").loaders,
+    loaders = require("lazy.core.loader").loaders,
     config = Config.options,
   }
 
@@ -61,8 +61,8 @@ function M.load()
     return false
   end
 
-  local Util = require("lazy.util")
-  local Config = require("lazy.config")
+  local Util = require("lazy.core.util")
+  local Config = require("lazy.core.config")
 
   if not vim.deep_equal(Config.options, state.config) then
     Cache.dirty()
@@ -89,9 +89,7 @@ function M.load()
     plugin.installed = installed[plugin.opt and "opt" or "start"][plugin.pack]
     if plugin.modname then
       -- mark module as used
-      if not Cache.get(plugin.modname) then
-        Util.error("Module missing for " .. plugin.name)
-      end
+      assert(Cache.get(plugin.modname))
       for _, fun in ipairs(M.functions) do
         if plugin[fun] == true then
           plugin[fun] = function(...)
@@ -102,10 +100,7 @@ function M.load()
     else
       for _, fun in ipairs(M.functions) do
         if type(plugin[fun]) == "number" then
-          local chunk = Cache.get("cache.state.fun." .. plugin[fun])
-          if not chunk then
-            Util.error("Chunk missing for " .. plugin.name)
-          end
+          local chunk = assert(Cache.get("cache.state.fun." .. plugin[fun]))
           plugin[fun] = function(...)
             plugin[fun] = loadstring(chunk)
             return plugin[fun](...)
@@ -116,7 +111,7 @@ function M.load()
   end
 
   -- loaders
-  local Loader = require("lazy.loader")
+  local Loader = require("lazy.core.loader")
   Loader.loaders = state.loaders
 
   M.changed = false
