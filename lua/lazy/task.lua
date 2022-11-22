@@ -8,7 +8,7 @@ local Util = require("lazy.util")
 ---@field running boolean
 local Task = {}
 
----@alias TaskType "update"|"install"|"run"|"clean"
+---@alias TaskType "update"|"install"|"run"|"clean"|"log"
 
 ---@param plugin LazyPlugin
 ---@param type TaskType
@@ -27,7 +27,6 @@ end
 
 function Task:_done()
   self.running = false
-
   vim.cmd("do User LazyRender")
 end
 
@@ -54,7 +53,7 @@ function Task:clean()
   end
 
   self.plugin.installed = false
-  self.running = false
+  self:_done()
 end
 
 function Task:install()
@@ -161,14 +160,36 @@ function Task:start()
       self:run()
     elseif self.type == "clean" then
       self:clean()
+    elseif self.type == "log" then
+      self:log()
     end
   end)
 
   if not ok then
     self.error = err or "failed"
-
     self:_done()
   end
+end
+
+function Task:log()
+  if not Util.file_exists(self.plugin.dir .. "/.git") then
+    self:_done()
+    return
+  end
+
+  local args = {
+    "log",
+    "--pretty=format:%h %s (%cr)",
+    "--abbrev-commit",
+    "--decorate",
+    "--date=short",
+    "--color=never",
+    "--since='7 days ago'",
+  }
+  self:spawn("git", {
+    args = args,
+    cwd = self.plugin.dir,
+  })
 end
 
 function Task:update()
@@ -180,7 +201,6 @@ function Task:update()
       })
       vim.opt.runtimepath:append(self.plugin.uri)
     end
-
     self:_done()
   else
     local args = {

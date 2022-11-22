@@ -53,6 +53,9 @@ function M.run(operation, opts, filter)
         runner:add(Task.new(plugin, "run"))
       end
       plugin.dirty = false
+      if operation == "update" then
+        runner:add(Task.new(plugin, "log"))
+      end
     end
     -- wait for post-install to finish
     runner:wait(on_done)
@@ -81,6 +84,14 @@ end
 function M.update(opts)
   ---@param plugin LazyPlugin
   M.run("update", opts, function(plugin)
+    return plugin.uri and plugin.installed
+  end)
+end
+
+---@param opts? ManagerOpts
+function M.log(opts)
+  ---@param plugin LazyPlugin
+  M.run("log", opts, function(plugin)
     return plugin.uri and plugin.installed
   end)
 end

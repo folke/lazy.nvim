@@ -119,6 +119,25 @@ function M:plugin(plugin)
             self:nl()
           end
         end
+      elseif task.type == "log" then
+        local log = vim.trim(task.output)
+        if log ~= "" then
+          local lines = vim.split(log, "\n")
+          for l, line in ipairs(lines) do
+            if l == 1 then
+              self:nl()
+            end
+            local ref, msg, time = line:match("^(%w+) (.*) (%(.*%))$")
+            self:append("      " .. ref .. " ", "@variable.builtin")
+            local col = self:col()
+            self:append(msg)
+            -- string.gsub
+            self:append(" " .. time, "Comment")
+            if l ~= #lines then
+              self:nl()
+            end
+          end
+        end
       end
     end
   end

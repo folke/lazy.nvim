@@ -53,6 +53,14 @@ return {
   },
   {
     filter = function(plugin)
+      return has_task(plugin, function(task)
+        return task.type == "log" and vim.trim(task.output) ~= ""
+      end)
+    end,
+    title = "Log",
+  },
+  {
+    filter = function(plugin)
       return plugin.installed and not plugin.uri
     end,
     title = "Clean",

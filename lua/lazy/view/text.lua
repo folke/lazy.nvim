@@ -16,7 +16,7 @@ function Text.new()
 end
 
 ---@param str string
----@param hl string|table
+---@param hl? string|table
 function Text:append(str, hl)
   if #self._lines == 0 then
     self:nl()
@@ -82,6 +82,21 @@ function Text:trim()
   while #self._lines > 0 and #self._lines[#self._lines] == 0 do
     table.remove(self._lines)
   end
+end
+
+function Text:row()
+  return #self._lines == 0 and 1 or #self._lines
+end
+
+function Text:col()
+  if #self._lines == 0 then
+    return 0
+  end
+  local width = 0
+  for _, segment in ipairs(self._lines[#self._lines]) do
+    width = width + vim.fn.strlen(segment.str)
+  end
+  return width
 end
 
 return Text

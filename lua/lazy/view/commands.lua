@@ -21,6 +21,9 @@ M.commands = {
   install = function()
     Manager.install({ clear = true, show = true })
   end,
+  log = function()
+    Manager.log({ clear = true, show = true })
+  end,
   show = function()
     View.show()
   end,
