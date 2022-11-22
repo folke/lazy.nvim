@@ -58,11 +58,11 @@ local function _add_module(dir, modname)
       for _, entry in ipairs(entries) do
         local path = dir .. "/" .. entry.name
         if entry.type == "directory" then
-          _add_module(path, modname .. "." .. entry.name)
+          _add_module(path, modname and (modname .. "." .. entry.name) or entry.name)
         else
           local childname = entry.name:match("^(.*)%.lua$")
           if childname then
-            local child = entry.name == "init.lua" and modname or (modname .. "." .. childname)
+            local child = entry.name == "init.lua" and modname or modname and (modname .. "." .. childname) or childname
             if child then
               M.add(child, path)
             end
@@ -76,6 +76,9 @@ local function _add_module(dir, modname)
 end
 
 function M.add_module(path)
+  if path:find("/lua/?$") then
+    return _add_module(path)
+  end
   ---@type string
   local modname = path:match("/lua/(.*)/?")
   assert(modname)
