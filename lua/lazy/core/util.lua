@@ -185,6 +185,12 @@ function M.error(msg)
   })
 end
 
+function M.info(msg)
+  vim.notify(msg, vim.log.levels.INFO, {
+    title = "lazy.nvim",
+  })
+end
+
 function M._dump(value, result)
   local t = type(value)
   if t == "number" or t == "boolean" then
