@@ -15,6 +15,8 @@ M.types = {
 
 ---@type table<LoaderType, table<string, string[]>>|{init: string[]}
 M.loaders = nil
+---@type LazyPlugin[]
+M.loading = {}
 
 ---@param plugin LazyPlugin
 function M.add(plugin)
@@ -59,7 +61,7 @@ function M.setup()
   Util.track("loader_events")
   for event, plugins in pairs(M.loaders.event) do
     if event == "VimEnter" and vim.v.vim_did_enter == 1 then
-      M.load(plugins)
+      M.load(plugins, { event = event })
     else
       local user_event = event:match("User (.*)")
       vim.api.nvim_create_autocmd(user_event and "User" or event, {
@@ -68,7 +70,7 @@ function M.setup()
         pattern = user_event,
         callback = function()
           Util.track("event: " .. (user_event or event))
-          M.load(plugins)
+          M.load(plugins, { event = event })
           Util.track()
         end,
       })
@@ -85,7 +87,7 @@ function M.setup()
       group = group,
       callback = function()
         Util.track("filetype: " .. ft)
-        M.load(plugins)
+        M.load(plugins, { ft = ft })
         Util.track()
       end,
     })
@@ -98,7 +100,7 @@ function M.setup()
     vim.keymap.set("n", keys, function()
       vim.keymap.del("n", keys)
       Util.track("keys: " .. keys)
-      M.load(plugins)
+      M.load(plugins, { keys = keys })
       vim.api.nvim_input(keys)
       Util.track()
     end)
@@ -140,7 +142,7 @@ function M.init_plugins()
       Util.track()
     end
     if plugin.opt == false then
-      M.load(plugin)
+      M.load(plugin, { package = "start" })
     end
   end
   Util.track()
@@ -154,7 +156,21 @@ function M.module(modname)
     local name = modname:sub(1, idx - 1)
     local plugins = M.loaders.module[name]
     if plugins then
-      M.load(plugins)
+      local reason = { require = modname }
+      if #M.loading == 0 then
+        local f = 3
+        while not reason.source do
+          local info = debug.getinfo(f, "S")
+          f = f + 1
+          if not info then
+            break
+          end
+          if info.what ~= "C" then
+            reason.source = info.source:sub(2)
+          end
+        end
+      end
+      M.load(plugins, reason)
       -- M.loaders.module[name] = nil
     end
     idx = modname:find(".", idx + 1, true)
@@ -170,7 +186,8 @@ function M.module(modname)
 end
 
 ---@param plugins string|LazyPlugin|string[]|LazyPlugin[]
-function M.load(plugins)
+---@param reason {[string]:string}
+function M.load(plugins, reason)
   if type(plugins) == "string" or plugins.name then
     ---@diagnostic disable-next-line: assign-type-mismatch
     plugins = { plugins }
@@ -183,20 +200,26 @@ function M.load(plugins)
     end
 
     if not plugin.loaded then
-      plugin.loaded = true
+      plugin.loaded = vim.deepcopy(reason or {})
+      if #M.loading > 0 then
+        plugin.loaded.plugin = M.loading[#M.loading].name
+      end
+
+      table.insert(M.loading, plugin)
 
       Util.track(plugin.name)
       M.packadd(plugin)
 
       if plugin.requires then
-        M.load(plugin.requires)
+        M.load(plugin.requires, {})
       end
 
       if plugin.config then
         plugin.config()
       end
 
-      Util.track()
+      plugin.loaded.time = Util.track().time
+      table.remove(M.loading)
       vim.schedule(function()
         vim.cmd("do User LazyRender")
       end)

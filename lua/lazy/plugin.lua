@@ -21,11 +21,12 @@ local M = {}
 ---@field module? string|string[]
 ---@field keys? string|string[]
 ---@field requires? string[]
----@field loaded? boolean
+---@field loaded? {[string]:string, time:number}
 ---@field installed? boolean
 ---@field run? string|fun()
 ---@field tasks? LazyTask[]
 ---@field dirty? boolean
+---@field updated? {from:string, to:string}
 
 ---@param plugin LazyPlugin
 function M.plugin(plugin)
