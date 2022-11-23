@@ -49,12 +49,20 @@ function M.run(operation, opts, filter)
   runner:wait(function()
     -- check if we need to do any post-install hooks
     for _, plugin in ipairs(runner:plugins()) do
-      if plugin.dirty and (plugin.opt == false or plugin.run) then
-        runner:add(Task.new(plugin, "run"))
+      if plugin.dirty then
+        runner:add(Task.new(plugin, "docs"))
+        if plugin.opt == false or plugin.run then
+          runner:add(Task.new(plugin, "run"))
+        end
       end
       plugin.dirty = false
-      if operation == "update" then
-        runner:add(Task.new(plugin, "log"))
+      if opts.show and operation == "update" and plugin.updated and plugin.updated.from ~= plugin.updated.to then
+        runner:add(Task.new(plugin, "log", {
+          log = {
+            from = plugin.updated.from,
+            to = plugin.updated.to,
+          },
+        }))
       end
     end
     -- wait for post-install to finish
@@ -97,6 +105,14 @@ function M.log(opts)
 end
 
 ---@param opts? ManagerOpts
+function M.docs(opts)
+  ---@param plugin LazyPlugin
+  M.run("docs", opts, function(plugin)
+    return plugin.installed
+  end)
+end
+
+---@param opts? ManagerOpts
 function M.clean(opts)
   opts = opts or {}
   M.check_clean()
@@ -133,6 +149,8 @@ end
 
 function M.clear()
   for _, plugin in pairs(Config.plugins) do
+    -- clear updated status
+    plugin.updated = nil
     -- clear finished tasks
     if plugin.tasks then
       ---@param task LazyTask
@@ -142,6 +160,7 @@ function M.clear()
     end
   end
   M.to_clean = {}
+  vim.cmd([[do User LazyRender]])
 end
 
 return M

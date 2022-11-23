@@ -6,16 +6,30 @@ local Util = require("lazy.core.util")
 ---@field plugin LazyPlugin
 ---@field type TaskType
 ---@field running boolean
+---@field opts TaskOptions
 local Task = {}
 
----@alias TaskType "update"|"install"|"run"|"clean"|"log"
+---@alias TaskType "update"|"install"|"run"|"clean"|"log"|"docs"
+
+---@class TaskOptions
+local options = {
+  log = {
+    since = "7 days ago",
+    ---@type string
+    from = nil,
+    ---@type string
+    to = nil,
+  },
+}
 
 ---@param plugin LazyPlugin
 ---@param type TaskType
-function Task.new(plugin, type)
+---@param opts? TaskOptions
+function Task.new(plugin, type, opts)
   local self = setmetatable({}, {
     __index = Task,
   })
+  self.opts = vim.tbl_deep_extend("force", {}, options, opts or {})
   self.plugin = plugin
   self.type = type
   self.output = ""
@@ -94,7 +108,7 @@ function Task:install()
 end
 
 function Task:run()
-  Loader.load(self.plugin)
+  Loader.load(self.plugin, { task = "run" })
 
   local run = self.plugin.run
   if run then
@@ -112,6 +126,14 @@ function Task:run()
     end
   end
 
+  self:_done()
+end
+
+function Task:docs()
+  local docs = self.plugin.dir .. "/doc/"
+  if Util.file_exists(docs) then
+    self.output = vim.api.nvim_cmd({ cmd = "helptags", args = { docs } }, { output = true })
+  end
   self:_done()
 end
 
@@ -162,6 +184,8 @@ function Task:start()
       self:clean()
     elseif self.type == "log" then
       self:log()
+    elseif self.type == "docs" then
+      self:docs()
     end
   end)
 
@@ -184,8 +208,14 @@ function Task:log()
     "--decorate",
     "--date=short",
     "--color=never",
-    "--since='7 days ago'",
   }
+
+  if self.opts.log.from then
+    table.insert(args, self.opts.log.from .. ".." .. (self.opts.log.to or "HEAD"))
+  else
+    table.insert(args, "--since=" .. self.opts.log.since)
+  end
+
   self:spawn("git", {
     args = args,
     cwd = self.plugin.dir,
@@ -209,14 +239,18 @@ function Task:update()
       "--update-shallow",
       "--progress",
     }
-    local git = Util.git_info(self.plugin.dir)
+    local git = assert(Util.git_info(self.plugin.dir))
 
     self:spawn("git", {
       args = args,
       cwd = self.plugin.dir,
       on_exit = function(ok)
         if ok then
-          local git_new = Util.git_info(self.plugin.dir)
+          local git_new = assert(Util.git_info(self.plugin.dir))
+          self.plugin.updated = {
+            from = git.hash,
+            to = git_new.hash,
+          }
           self.plugin.dirty = not vim.deep_equal(git, git_new)
         end
       end,
