@@ -10,6 +10,9 @@ local function has_task(plugin, filter)
   end
 end
 
+---@alias LazySection {title:string, filter:fun(plugin:LazyPlugin):boolean?}
+
+---@type LazySection[]
 return {
   {
     filter = function(plugin)
@@ -50,6 +53,13 @@ return {
       end)
     end,
     title = "Running",
+  },
+  {
+    ---@param plugin LazyPlugin
+    filter = function(plugin)
+      return plugin.updated and plugin.updated.from ~= plugin.updated.to
+    end,
+    title = "Updated",
   },
   {
     filter = function(plugin)

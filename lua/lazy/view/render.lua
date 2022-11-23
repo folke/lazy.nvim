@@ -5,20 +5,32 @@ local Sections = require("lazy.view.sections")
 
 local Text = require("lazy.view.text")
 
+---@alias LazyDiagnostic {row: number, severity: number, message:string}
+
 ---@class Render:Text
 ---@field buf buffer
 ---@field win window
----@field padding number
 ---@field plugins LazyPlugin[]
 ---@field progress {total:number, done:number}
-local M = setmetatable({}, { __index = Text })
+---@field _diagnostics LazyDiagnostic[]
+---@field plugin_range table<string, {from: number, to: number}>
+---@field _details? string
+local M = setmetatable({}, {
+  __index = Text,
+})
 
-function M.render_plugins(buf, win, padding)
+function M.new(buf, win, padding)
   local self = setmetatable({}, { __index = M })
-  self._lines = {}
   self.buf = buf
   self.win = win
-  self.padding = padding
+  self.padding = padding or 0
+  return self
+end
+
+function M:update()
+  self._lines = {}
+  self._diagnostics = {}
+  self.plugin_range = {}
 
   Manager.check_clean()
 
@@ -51,8 +63,28 @@ function M.render_plugins(buf, win, padding)
   end
 
   self:trim()
-  self:render(buf, padding)
-  return self
+  self:render(self.buf)
+  vim.diagnostic.set(
+    Config.ns,
+    self.buf,
+    ---@param diag LazyDiagnostic
+    vim.tbl_map(function(diag)
+      diag.col = 0
+      diag.lnum = diag.row - 1
+      return diag
+    end, self._diagnostics),
+    { signs = false }
+  )
+end
+
+---@param row number
+---@return LazyPlugin?
+function M:get_plugin(row)
+  for name, range in pairs(self.plugin_range) do
+    if row >= range.from and row <= range.to then
+      return Config.plugins[name]
+    end
+  end
 end
 
 function M:title()
@@ -102,54 +134,160 @@ function M:section(section)
   end
 end
 
+---@param diag LazyDiagnostic
+function M:diagnostic(diag)
+  diag.row = diag.row or self:row()
+  diag.severity = diag.severity or vim.diagnostic.severity.INFO
+  table.insert(self._diagnostics, diag)
+end
+
 ---@param plugin LazyPlugin
-function M:plugin(plugin)
-  self:append("  - ", "LazySpecial"):append(plugin.name)
-  if plugin.tasks then
-    for _, task in ipairs(plugin.tasks) do
-      if task.running then
-        self:append(" [" .. task.type .. "] ", "Identifier")
-        self:append(task.status, "LazyMuted")
-      elseif task.error then
-        local lines = vim.split(vim.trim(task.error), "\n")
-        self:append(" [" .. task.type .. "] ", "Identifier")
-        for l, line in ipairs(lines) do
-          self:append(line, "LazyError")
-          if l ~= #lines then
-            self:nl()
-          end
-        end
-      elseif task.type == "log" then
-        local log = vim.trim(task.output)
-        if log ~= "" then
-          local lines = vim.split(log, "\n")
-          for l, line in ipairs(lines) do
-            if l == 1 then
-              self:nl()
-            end
-            local ref, msg, time = line:match("^(%w+) (.*) (%(.*%))$")
-            self:append("      " .. ref .. " ", "@variable.builtin")
-            local col = self:col()
-            self:append(msg)
-            -- string.gsub
-            self:append(" " .. time, "Comment")
-            if l ~= #lines then
-              self:nl()
-            end
-          end
-        end
+function M:reason(plugin)
+  local reason = vim.deepcopy(plugin.loaded or {})
+  ---@type string?
+  local source = reason.source
+  if source then
+    ---@type string?
+    local modname = source:match("/lua/(.*)%.lua$")
+    if modname then
+      modname = modname:gsub("/", ".")
+    end
+    local pack = source:match("/([^/]-)/lua")
+    for _, other in pairs(Config.plugins) do
+      if (modname and other.modname == modname) or (pack and other.pack == pack) then
+        reason.plugin = other.name
+        reason.source = nil
+        break
+      end
+    end
+    if reason.source then
+      reason.source = modname or reason.source
+      if reason.source == "lua" then
+        reason.source = Config.options.plugins
       end
     end
   end
+  self:append(" " .. math.floor((reason.time or 0) / 1e6 * 100) / 100 .. "ms ", "Bold")
+  for key, value in pairs(reason) do
+    if key == "require" then
+      self:append("require", "@function.builtin")
+      self:append("(", "@punctuation.bracket")
+      self:append('"' .. value .. '"', "@string")
+      self:append(")", "@punctuation.bracket")
+    elseif key ~= "time" then
+      self:append(key .. " ", "@field")
+      self:append(value .. " ", "@string")
+    end
+  end
+end
+
+---@param plugin LazyPlugin
+function M:diagnostics(plugin)
+  if plugin.updated then
+    if plugin.updated.from == plugin.updated.to then
+      self:diagnostic({
+        message = "already up to date",
+      })
+    else
+      self:diagnostic({
+        message = "updated from " .. plugin.updated.from:sub(1, 7) .. " to " .. plugin.updated.to:sub(1, 7),
+      })
+    end
+  end
+  for _, task in ipairs(plugin.tasks or {}) do
+    if task.running then
+      self:diagnostic({
+        severity = vim.diagnostic.severity.WARN,
+        message = task.type .. (task.status == "" and "" or (": " .. task.status)),
+      })
+    elseif task.error then
+      self:diagnostic({
+        message = task.type .. " failed",
+        severity = vim.diagnostic.severity.ERROR,
+      })
+    end
+  end
+end
+
+---@param plugin LazyPlugin
+function M:plugin(plugin)
+  self:append("  - ", "LazySpecial"):append(plugin.name)
+  local plugin_start = self:row()
+  if plugin.loaded then
+    self:reason(plugin)
+  end
+  self:diagnostics(plugin)
   self:nl()
-  -- self:details(plugin)
+
+  if self._details == plugin.name then
+    self:details(plugin)
+  end
+  self:tasks(plugin)
+  self.plugin_range[plugin.name] = { from = plugin_start, to = self:row() - 1 }
+end
+
+---@param plugin LazyPlugin
+function M:tasks(plugin)
+  for _, task in ipairs(plugin.tasks or {}) do
+    if task.type == "log" and not task.error then
+      self:log(task)
+    elseif task.error or self._details == plugin.name then
+      if task.error then
+        self:append(vim.trim(task.error), "LazyError", { indent = 4, prefix = "│ " })
+        self:nl()
+      end
+      if task.output ~= "" and task.output ~= task.error then
+        self:append(vim.trim(task.output), "MsgArea", { indent = 4, prefix = "│ " })
+        self:nl()
+      end
+    end
+  end
+end
+
+---@param task LazyTask
+function M:log(task)
+  local log = vim.trim(task.output)
+  if log ~= "" then
+    local lines = vim.split(log, "\n")
+    for l, line in ipairs(lines) do
+      local ref, msg, time = line:match("^(%w+) (.*) (%(.*%))$")
+      self:append(ref .. " ", "LazyCommit", { indent = 6 })
+      self:append(vim.trim(msg)):highlight({
+        ["#%d+"] = "Number",
+        ["^%S+:"] = "Title",
+        ["^%S+(%(.*%)):"] = "Italic",
+        ["`.-`"] = "@text.literal.markdown_inline",
+      })
+      -- string.gsub
+      self:append(" " .. time, "Comment")
+      self:nl()
+    end
+    self:nl()
+  end
 end
 
 ---@param plugin LazyPlugin
 function M:details(plugin)
+  ---@type string[][]
+  local props = {}
+  table.insert(props, { "uri", (plugin.uri:gsub("%.git$", "")), "@text.reference" })
   local git = Util.git_info(plugin.dir)
   if git then
-    self:append(git.branch)
+    table.insert(props, { "commit ", git.hash:sub(1, 7), "LazyCommit" })
+    table.insert(props, { "branch ", git.branch })
+  end
+  if Util.file_exists(plugin.dir .. "/README.md") then
+    table.insert(props, { "readme ", "README.md" })
+  end
+
+  local width = 0
+  for _, prop in ipairs(props) do
+    width = math.max(width, #prop[1])
+  end
+  for _, prop in ipairs(props) do
+    self:append(prop[1] .. string.rep(" ", width - #prop[1]), "LazyKey", { indent = 6 })
+    self:append(prop[2], prop[3] or "LazyValue")
+    self:nl()
   end
   self:nl()
 end

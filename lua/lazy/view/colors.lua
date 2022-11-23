@@ -1,11 +1,14 @@
 local M = {}
 
 M.colors = {
-  Error = "Error",
+  Error = "ErrorMsg",
   H1 = "Title",
-  H2 = "Title",
+  H2 = "Bold",
   Muted = "Comment",
   Normal = "NormalFloat",
+  Commit = "@variable.builtin",
+  Key = "@comment",
+  Value = "@string",
   ProgressDone = {
     bold = true,
     default = true,
