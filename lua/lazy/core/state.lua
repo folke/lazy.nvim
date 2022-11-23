@@ -4,9 +4,12 @@ local Module = require("lazy.core.module")
 local M = {}
 
 M.functions = { "init", "config", "run" }
-M.changed = true
+M.dirty = true
 
 function M.save()
+  if not M.dirty then
+    return
+  end
   local Config = require("lazy.core.config")
 
   ---@class LazyState
@@ -114,7 +117,7 @@ function M.load()
   local Loader = require("lazy.core.loader")
   Loader.loaders = state.loaders
 
-  M.changed = false
+  M.dirty = false
 
   return true
 end
