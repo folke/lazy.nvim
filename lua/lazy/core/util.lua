@@ -30,6 +30,30 @@ function M.file_exists(file)
   return vim.loop.fs_stat(file) ~= nil
 end
 
+function M.open(uri)
+  if M.file_exists(uri) then
+    return vim.cmd.view(uri)
+  end
+  local cmd
+  if vim.fn.has("win32") == 1 then
+    cmd = { "cmd.exe", "/c", "start", '""', vim.fn.shellescape(uri) }
+  elseif vim.fn.has("macunix") == 1 then
+    cmd = { "open", uri }
+  else
+    cmd = { "xdg-open", uri }
+  end
+
+  local ret = vim.fn.system(cmd)
+  if vim.v.shell_error ~= 0 then
+    local msg = {
+      "Failed to open uri",
+      ret,
+      vim.inspect(cmd),
+    }
+    vim.notify(table.concat(msg, "\n"), vim.log.levels.ERROR)
+  end
+end
+
 ---@param ms number
 ---@param fn fun()
 function M.throttle(ms, fn)
