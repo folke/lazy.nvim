@@ -154,7 +154,7 @@ function M.init_plugins()
       Util.track()
     end
     if plugin.opt == false then
-      M.load(plugin, { package = "start" })
+      M.load(plugin, { start = "start" })
     end
   end
   Util.track()
@@ -183,7 +183,6 @@ function M.module(modname)
         end
       end
       M.load(plugins, reason)
-      -- M.loaders.module[name] = nil
     end
     idx = modname:find(".", idx + 1, true)
   end
@@ -212,7 +211,10 @@ function M.load(plugins, reason)
     end
 
     if not plugin.loaded then
-      plugin.loaded = vim.deepcopy(reason or {})
+      plugin.loaded = {}
+      for k, v in pairs(reason) do
+        plugin.loaded[k] = v
+      end
       if #M.loading > 0 then
         plugin.loaded.plugin = M.loading[#M.loading].name
       end
