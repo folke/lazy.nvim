@@ -34,7 +34,7 @@ function M.setup(opts)
   Config.setup(opts)
   Util.track()
 
-  Util.track("plugins")
+  Util.track("state")
   if Module.changed or not State.load() then
     -- rebuild state
     local Plugin = require("lazy.plugin")

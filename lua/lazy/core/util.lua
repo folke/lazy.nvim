@@ -11,21 +11,19 @@ function M.track(name, time)
   if name then
     local entry = {
       name = name,
-      time = time or M.time(),
+      time = time or vim.loop.hrtime(),
     }
     table.insert(M._profiles[#M._profiles], entry)
 
     if not time then
       table.insert(M._profiles, entry)
     end
+    return entry
   else
     local entry = table.remove(M._profiles)
-    entry.time = M.time() - entry.time
+    entry.time = vim.loop.hrtime() - entry.time
+    return entry
   end
-end
-
-function M.time()
-  return vim.loop.hrtime()
 end
 
 function M.file_exists(file)
