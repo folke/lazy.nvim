@@ -110,23 +110,35 @@ function M.setup()
   -- commands
   Util.track("loader_commands")
   for cmd, plugins in pairs(M.loaders.cmd or {}) do
-    vim.api.nvim_create_user_command(cmd, function(event)
+    local function _load(complete)
       vim.api.nvim_del_user_command(cmd)
-      Util.track("cmd: " .. cmd)
-      M.load(plugins)
+      if complete then
+        Util.track("cmd-complete: " .. cmd)
+      else
+        Util.track("cmd: " .. cmd)
+      end
+      M.load(plugins, { cmd = cmd })
+      Util.track()
+    end
+    vim.api.nvim_create_user_command(cmd, function(event)
+      _load()
       vim.cmd(
         ("%s %s%s%s %s"):format(
           event.mods or "",
           event.line1 == event.line2 and "" or event.line1 .. "," .. event.line2,
           cmd,
           event.bang and "!" or "",
-          event.args
+          event.args or ""
         )
       )
-      Util.track()
     end, {
       bang = true,
       nargs = "*",
+      complete = function()
+        _load(true)
+        -- HACK: trick Neovim to show the newly loaded command completion
+        vim.api.nvim_input("<space><bs><tab>")
+      end,
     })
   end
   Util.track()
