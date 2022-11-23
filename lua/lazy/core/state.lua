@@ -17,7 +17,7 @@ function M.save()
     config = Config.options,
   }
 
-  local skip = { installed = true, loaded = true, tasks = true, dirty = true, [1] = true, dir = true }
+  local skip = { installed = true, loaded = true, tasks = true, dirty = true, dir = true }
   local funcount = 0
 
   for _, plugin in pairs(Config.plugins) do
@@ -72,10 +72,10 @@ function M.load()
   -- Check for installed plugins
   ---@type table<"opt"|"start", table<string,boolean>>
   local installed = { opt = {}, start = {} }
-  for _, opt in ipairs({ "opt", "start" }) do
+  for opt, packs in pairs(installed) do
     for _, entry in ipairs(Util.scandir(Config.options.package_path .. "/" .. opt)) do
       if entry.type == "directory" or entry.type == "link" then
-        installed[opt][entry.name] = true
+        packs[entry.name] = true
       end
     end
   end
@@ -84,7 +84,7 @@ function M.load()
   for _, plugin in ipairs(state.plugins) do
     ---@cast plugin LazyPlugin|{_chunks:table}
     Config.plugins[plugin.name] = plugin
-    plugin.loaded = false
+    plugin.loaded = nil
     plugin.dir = Config.options.package_path .. "/" .. (plugin.opt and "opt" or "start") .. "/" .. plugin.pack
     plugin.installed = installed[plugin.opt and "opt" or "start"][plugin.pack]
     if plugin.modname then
