@@ -11,6 +11,18 @@ M.defaults = {
     patterns = {},
   },
   package_path = vim.fn.stdpath("data") .. "/site/pack/lazy",
+  view = {
+    icons = {
+      start = "",
+      plugin = "",
+      source = " ",
+      config = "",
+      event = "",
+      keys = " ",
+      cmd = " ",
+      ft = "",
+    },
+  },
 }
 
 M.ns = vim.api.nvim_create_namespace("lazy")
