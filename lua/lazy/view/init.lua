@@ -1,4 +1,4 @@
-local Util = require("lazy.core.util")
+local Util = require("lazy.util")
 local Render = require("lazy.view.render")
 
 local M = {}
@@ -53,11 +53,6 @@ function M.show()
       vim.api.nvim_win_close(win, true)
     end
   end
-
-  vim.keymap.set("n", "<ESC>", close, {
-    nowait = true,
-    buffer = buf,
-  })
 
   vim.keymap.set("n", "q", close, {
     nowait = true,

@@ -20,11 +20,12 @@ M.loading = {}
 
 ---@param plugin LazyPlugin
 function M.add(plugin)
-  if plugin.init or (plugin.opt == false and plugin.config) then
+  if plugin.init or (plugin.opt == false) then
     table.insert(M.loaders.init, plugin.name)
   end
 
   for _, loader_type in ipairs(M.types) do
+    ---@type (string|string[])?
     local loaders = plugin[loader_type]
     if plugin[loader_type] then
       loaders = type(loaders) == "table" and loaders or { loaders }
@@ -198,7 +199,8 @@ end
 
 ---@param plugins string|LazyPlugin|string[]|LazyPlugin[]
 ---@param reason {[string]:string}
-function M.load(plugins, reason)
+---@param opts? {load_start: boolean}
+function M.load(plugins, reason, opts)
   if type(plugins) == "string" or plugins.name then
     ---@diagnostic disable-next-line: assign-type-mismatch
     plugins = { plugins }
@@ -211,6 +213,7 @@ function M.load(plugins, reason)
     end
 
     if not plugin.loaded then
+      ---@diagnostic disable-next-line: assign-type-mismatch
       plugin.loaded = {}
       for k, v in pairs(reason) do
         plugin.loaded[k] = v
@@ -222,7 +225,7 @@ function M.load(plugins, reason)
       table.insert(M.loading, plugin)
 
       Util.track(plugin.name)
-      M.packadd(plugin)
+      M.packadd(plugin, opts and opts.load_start)
 
       if plugin.requires then
         M.load(plugin.requires, {})
@@ -242,11 +245,11 @@ function M.load(plugins, reason)
 end
 
 ---@param plugin LazyPlugin
-function M.packadd(plugin)
+function M.packadd(plugin, load_start)
   if plugin.opt then
     vim.cmd.packadd(plugin.pack)
     M.source_plugin_files(plugin, true)
-  else
+  elseif load_start then
     vim.opt.runtimepath:append(plugin.dir)
     M.source_plugin_files(plugin)
     M.source_plugin_files(plugin, true)
@@ -256,16 +259,12 @@ end
 ---@param plugin LazyPlugin
 ---@param after? boolean
 function M.source_plugin_files(plugin, after)
-  local pattern = (after and "/after" or "") .. ("/plugin/" .. "**/*.\\(vim\\|lua\\)")
-
-  local _, entries = pcall(vim.fn.glob, plugin.dir .. "/" .. pattern, false, true)
-
-  if entries then
-    ---@cast entries string[]
-    for _, file in ipairs(entries) do
-      vim.cmd("silent source " .. file)
+  Util.walk(plugin.dir .. (after and "/after" or "") .. "/plugin", function(path, _, t)
+    local ext = path:sub(-3)
+    if t == "file" and (ext == "lua" or ext == "vim") then
+      vim.cmd("silent source " .. path)
     end
-  end
+  end)
 end
 
 return M

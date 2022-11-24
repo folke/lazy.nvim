@@ -12,6 +12,7 @@ local used = {}
 ---@type table<string,string>
 local cache = {}
 
+---@return string?
 function M.get(key)
   if cache[key] then
     used[key] = true

@@ -1,6 +1,6 @@
 local Process = require("lazy.process")
 local Loader = require("lazy.core.loader")
-local Util = require("lazy.core.util")
+local Util = require("lazy.util")
 
 ---@class LazyTask
 ---@field plugin LazyPlugin
@@ -45,23 +45,18 @@ function Task:_done()
 end
 
 function Task:clean()
-  local function rm(path)
-    for _, entry in ipairs(Util.scandir(path)) do
-      if entry.type == "directory" then
-        rm(entry.path)
-      else
-        vim.loop.fs_unlink(entry.path)
-      end
-    end
-    vim.loop.fs_rmdir(path)
-  end
-
   local dir = self.plugin.dir:gsub("/+$", "")
-
   local stat = vim.loop.fs_lstat(dir)
 
   if stat.type == "directory" then
-    rm(dir)
+    Util.walk(dir, function(path, _, type)
+      if type == "directory" then
+        vim.loop.fs_rmdir(path)
+      else
+        vim.loop.fs_unlink(path)
+      end
+    end)
+    vim.loop.fs_rmdir(dir)
   else
     vim.loop.fs_unlink(dir)
   end
@@ -108,17 +103,17 @@ function Task:install()
 end
 
 function Task:run()
-  Loader.load(self.plugin, { task = "run" })
+  Loader.load(self.plugin, { task = "run" }, { load_start = true })
 
   local run = self.plugin.run
   if run then
     if type(run) == "string" and run:sub(1, 1) == ":" then
-      vim.cmd(run:sub(2))
+      local cmd = vim.api.nvim_parse_cmd(run:sub(2), {})
+      self.output = vim.api.nvim_cmd(cmd, { output = true })
     elseif type(run) == "function" then
       run()
     else
       local args = vim.split(run, "%s+")
-
       return self:spawn(table.remove(args, 1), {
         args = args,
         cwd = self.plugin.dir,

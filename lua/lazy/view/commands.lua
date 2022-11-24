@@ -1,6 +1,6 @@
 local View = require("lazy.view")
 local Manager = require("lazy.manager")
-local Util = require("lazy.core.util")
+local Util = require("lazy.util")
 
 local M = {}
 

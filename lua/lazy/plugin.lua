@@ -1,8 +1,11 @@
 local Config = require("lazy.core.config")
-local Util = require("lazy.core.util")
+local Util = require("lazy.util")
 local Module = require("lazy.core.module")
+local State = require("lazy.core.state")
 
 local M = {}
+
+M.funcs = { run = "run", init = "init", config = "config" }
 
 ---@class LazyPlugin
 ---@field [1] string
@@ -10,6 +13,7 @@ local M = {}
 ---@field pack string package name
 ---@field uri string
 ---@field modname? string
+---@field modpath? string
 ---@field branch? string
 ---@field dir string
 ---@field opt? boolean
@@ -72,26 +76,52 @@ function M.process_local(plugin)
   end
 end
 
----@param plugin LazyPlugin
-function M.process_config(plugin)
-  local name = plugin.name
-  local modname = Config.options.plugins .. "." .. name
-
-  local spec = Module.load(modname)
-  if spec then
-    -- add to loaded modules
-    if spec.requires then
-      spec.requires = M.normalize(spec.requires)
+function M.process_config()
+  Util.lsmod(Config.paths.plugins, function(name, modpath)
+    local plugin = Config.plugins[name]
+    if plugin then
+      local modname = Config.options.plugins .. "." .. name
+      local ok, spec = pcall(Module.load, modname, modpath)
+      if ok and spec then
+        ---@diagnostic disable-next-line: no-unknown
+        for k, v in pairs(spec) do
+          if k == "requires" then
+            plugin.requires = M.normalize(v)
+          elseif type(v) ~= "function" or M.funcs[k] then
+            ---@diagnostic disable-next-line: no-unknown
+            plugin[k] = v
+          end
+        end
+        plugin.modname = modname
+        plugin.modpath = modpath
+        M.plugin(plugin)
+      else
+        Util.error("Failed to load " .. modname .. "\n" .. spec)
+      end
     end
+  end)
+end
 
-    ---@diagnostic disable-next-line: no-unknown
-    for k, v in pairs(spec) do
-      ---@diagnostic disable-next-line: no-unknown
-      plugin[k] = v
-    end
-    plugin.modname = modname
-    M.plugin(plugin)
+function M.reload()
+  Config.plugins = {}
+  M.normalize(assert(Module.load(Config.options.plugins, Config.paths.main)))
+
+  if not Config.plugins.lazy then
+    M.plugin({
+      "folke/lazy.nvim",
+      opt = false,
+    })
   end
+
+  M.process_config()
+  for _, plugin in pairs(Config.plugins) do
+    if plugin.opt == nil then
+      plugin.opt = Config.options.opt
+    end
+    plugin.dir = Config.options.package_path .. "/" .. (plugin.opt and "opt" or "start") .. "/" .. plugin.pack
+    M.process_local(plugin)
+  end
+  State.update_state()
 end
 
 ---@param spec table
@@ -108,9 +138,7 @@ function M.normalize(spec, results)
   else
     ---@cast spec LazyPlugin
     spec = M.plugin(spec)
-
     if spec.requires then
-      -- TODO: fix multiple requires in different packages
       spec.requires = M.normalize(spec.requires)
     end
     table.insert(results, spec.name)
@@ -118,19 +146,6 @@ function M.normalize(spec, results)
   return results
 end
 
-function M.process()
-  for _, plugin in pairs(Config.plugins) do
-    M.process_config(plugin)
-  end
-
-  for _, plugin in pairs(Config.plugins) do
-    if plugin.opt == nil then
-      plugin.opt = Config.options.opt
-    end
-    plugin.dir = Config.options.package_path .. "/" .. (plugin.opt and "opt" or "start") .. "/" .. plugin.pack
-    plugin.installed = Util.file_exists(plugin.dir)
-    M.process_local(plugin)
-  end
-end
+-- profile(M.rebuild, 1000, true)
 
 return M

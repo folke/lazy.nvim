@@ -16,7 +16,8 @@ function M.setup(opts)
   require("lazy.core.cache").setup()
 
   local module_start = vim.loop.hrtime()
-  local Module = require("lazy.core.module").setup()
+
+  require("lazy.core.module").setup()
 
   local require_start = vim.loop.hrtime()
   local Util = require("lazy.core.util")
@@ -35,36 +36,27 @@ function M.setup(opts)
   Util.track()
 
   Util.track("state")
-  if Module.changed or not State.load() then
-    -- rebuild state
+  if not State.load() then
     local Plugin = require("lazy.plugin")
-    Module.add_module(vim.fn.stdpath("config") .. "/lua/" .. Config.options.plugins:gsub("%.", "/"))
-    -- Module.add_module(vim.fn.stdpath("config") .. "/lua")
-    -- Module.add_module(Config.options.package_path .. "/start/tokyonight.nvim/lua")
-    -- Module.add_module(Config.options.package_path .. "/opt/nvim-cmp/lua")
-    -- Module.add_module(Config.options.package_path .. "/opt/cmp-buffer/lua")
     vim.schedule(function()
       Util.info("Reloading...")
     end)
-    Util.track("normalize")
-    Plugin.normalize(require(Config.options.plugins))
-    if not Config.plugins.lazy then
-      Plugin.plugin({
-        "folke/lazy.nvim",
-        opt = false,
-      })
-    end
+    Util.track("reload")
+    Plugin.reload()
     Util.track()
-
-    Util.track("process")
-    Plugin.process()
-    Util.track()
+    -- if not Config.plugins.lazy then
+    --   Plugin.plugin({
+    --     "folke/lazy.nvim",
+    --     opt = false,
+    --   })
+    -- end
   end
   Util.track()
 
   Util.track("install")
   for _, plugin in pairs(Config.plugins) do
     if not plugin.installed then
+      vim.cmd("do User LazyInstallPre")
       require("lazy.manager").install({
         wait = true,
       })
@@ -79,7 +71,11 @@ function M.setup(opts)
 
   Util.track() -- end setup
 
+  local lazy_delta = vim.loop.hrtime() - cache_start
+
   Loader.init_plugins()
+
+  Config.plugins.lazy.loaded.time = lazy_delta
   done = true
 
   vim.cmd("do User LazyDone")
