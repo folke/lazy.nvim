@@ -1,7 +1,8 @@
 local Config = require("lazy.core.config")
-local Util = require("lazy.core.util")
-local Manager = require("lazy.manager")
+local Util = require("lazy.util")
 local Sections = require("lazy.view.sections")
+local Loader = require("lazy.core.loader")
+local State = require("lazy.core.state")
 
 local Text = require("lazy.view.text")
 
@@ -32,10 +33,10 @@ function M:update()
   self._diagnostics = {}
   self.plugin_range = {}
 
-  Manager.check_clean()
+  State.update_state(true)
 
   self.plugins = vim.tbl_values(Config.plugins)
-  vim.list_extend(self.plugins, vim.tbl_values(Manager.to_clean))
+  vim.list_extend(self.plugins, vim.tbl_values(Config.to_clean))
   table.sort(self.plugins, function(a, b)
     return a.name < b.name
   end)
@@ -167,18 +168,37 @@ function M:reason(plugin)
       end
     end
   end
-  self:append(" " .. math.floor((reason.time or 0) / 1e6 * 100) / 100 .. "ms ", "Bold")
+  self:append(" " .. math.floor((reason.time or 0) / 1e6 * 100) / 100 .. "ms", "Bold")
+  self:append(" ")
+  -- self:append(" (", "Conceal")
+  local first = true
   for key, value in pairs(reason) do
     if key == "require" then
-      self:append("require", "@function.builtin")
-      self:append("(", "@punctuation.bracket")
-      self:append('"' .. value .. '"', "@string")
-      self:append(")", "@punctuation.bracket")
+      -- self:append("require", "@function.builtin")
+      -- self:append("(", "@punctuation.bracket")
+      -- self:append('"' .. value .. '"', "@string")
+      -- self:append(")", "@punctuation.bracket")
     elseif key ~= "time" then
-      self:append(key .. " ", "@field")
-      self:append(value .. " ", "@string")
+      if first then
+        first = false
+      else
+        self:append(" ")
+      end
+      if key == "event" then
+        value = value:match("User (.*)") or value
+      end
+      local hl = "LazyLoader" .. key:sub(1, 1):upper() .. key:sub(2)
+      local icon = Config.options.view.icons[key]
+      if icon then
+        self:append(icon .. " ", hl)
+        self:append(value, hl)
+      else
+        self:append(key .. " ", "@field")
+        self:append(value, hl)
+      end
     end
   end
+  -- self:append(")", "Conceal")
 end
 
 ---@param plugin LazyPlugin
@@ -249,8 +269,11 @@ function M:log(task)
   local log = vim.trim(task.output)
   if log ~= "" then
     local lines = vim.split(log, "\n")
-    for l, line in ipairs(lines) do
+    for _, line in ipairs(lines) do
       local ref, msg, time = line:match("^(%w+) (.*) (%(.*%))$")
+      if msg:find("^%S+!:") then
+        self:diagnostic({ message = "Breaking Changes", severity = vim.diagnostic.severity.WARN })
+      end
       self:append(ref .. " ", "LazyCommit", { indent = 6 })
       self:append(vim.trim(msg)):highlight({
         ["#%d+"] = "Number",
@@ -273,11 +296,21 @@ function M:details(plugin)
   table.insert(props, { "uri", (plugin.uri:gsub("%.git$", "")), "@text.reference" })
   local git = Util.git_info(plugin.dir)
   if git then
-    table.insert(props, { "commit ", git.hash:sub(1, 7), "LazyCommit" })
-    table.insert(props, { "branch ", git.branch })
+    table.insert(props, { "commit", git.hash:sub(1, 7), "LazyCommit" })
+    table.insert(props, { "branch", git.branch })
   end
   if Util.file_exists(plugin.dir .. "/README.md") then
-    table.insert(props, { "readme ", "README.md" })
+    table.insert(props, { "readme", "README.md" })
+  end
+
+  for _, loader in ipairs(Loader.types) do
+    if plugin[loader] then
+      table.insert(props, {
+        loader,
+        type(plugin[loader]) == "string" and plugin[loader] or table.concat(plugin[loader], ", "),
+        "@string",
+      })
+    end
   end
 
   local width = 0
@@ -285,7 +318,7 @@ function M:details(plugin)
     width = math.max(width, #prop[1])
   end
   for _, prop in ipairs(props) do
-    self:append(prop[1] .. string.rep(" ", width - #prop[1]), "LazyKey", { indent = 6 })
+    self:append(prop[1] .. string.rep(" ", width - #prop[1] + 1), "LazyKey", { indent = 6 })
     self:append(prop[2], prop[3] or "LazyValue")
     self:nl()
   end

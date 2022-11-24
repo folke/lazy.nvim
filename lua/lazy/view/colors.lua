@@ -7,7 +7,7 @@ M.colors = {
   Muted = "Comment",
   Normal = "NormalFloat",
   Commit = "@variable.builtin",
-  Key = "@comment",
+  Key = "Conceal",
   Value = "@string",
   ProgressDone = {
     bold = true,
@@ -16,6 +16,12 @@ M.colors = {
   },
   ProgressTodo = "LineNr",
   Special = "@punctuation.special",
+  LoaderPlugin = "Special",
+  LoaderEvent = "Constant",
+  LoaderKeys = "Statement",
+  LoaderStart = "@field",
+  LoaderSource = "Character",
+  LoaderCmd = "Operator"
 }
 
 M.did_setup = false
