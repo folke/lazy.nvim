@@ -64,6 +64,22 @@ return {
   {
     filter = function(plugin)
       return has_task(plugin, function(task)
+        if task.type ~= "log" then
+          return
+        end
+        local lines = vim.split(task.output, "\n")
+        for _, line in ipairs(lines) do
+          if line:find("^%w+ %S+!:") then
+            return true
+          end
+        end
+      end)
+    end,
+    title = "Breaking Changes",
+  },
+  {
+    filter = function(plugin)
+      return has_task(plugin, function(task)
         return task.type == "log" and vim.trim(task.output) ~= ""
       end)
     end,
