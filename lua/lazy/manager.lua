@@ -1,7 +1,7 @@
 local Config = require("lazy.core.config")
 local Task = require("lazy.task")
 local Runner = require("lazy.runner")
-local State = require("lazy.core.state")
+local Plugin = require("lazy.core.plugin")
 
 local M = {}
 
@@ -107,7 +107,7 @@ end
 ---@param opts? ManagerOpts
 function M.clean(opts)
   opts = opts or {}
-  State.update_state(true)
+  Plugin.update_state(true)
   opts.plugins = vim.tbl_values(Config.to_clean)
   M.run("clean", opts)
 end

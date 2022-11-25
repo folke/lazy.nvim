@@ -23,7 +23,7 @@ function M.setup(opts)
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
-  local State = require("lazy.core.state")
+  local Plugin = require("lazy.core.plugin")
 
   Util.track("cache.setup", module_start - cache_start)
   Util.track("module.setup", require_start - module_start)
@@ -36,7 +36,7 @@ function M.setup(opts)
   Util.track()
 
   Util.track("state")
-  State.load()
+  Plugin.load()
   Util.track()
 
   Util.track("install")

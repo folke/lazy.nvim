@@ -2,7 +2,7 @@ local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 local Sections = require("lazy.view.sections")
 local Loader = require("lazy.core.loader")
-local State = require("lazy.core.state")
+local Plugin = require("lazy.core.plugin")
 
 local Text = require("lazy.view.text")
 
@@ -33,7 +33,7 @@ function M:update()
   self._diagnostics = {}
   self.plugin_range = {}
 
-  State.update_state(true)
+  Plugin.update_state(true)
 
   self.plugins = vim.tbl_values(Config.plugins)
   vim.list_extend(self.plugins, vim.tbl_values(Config.to_clean))
