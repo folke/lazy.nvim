@@ -17,12 +17,11 @@ function M.load(modname, modpath)
   ---@type (string|fun())?
   local chunk = Cache.get(modname)
 
-  if chunk then
-    local hash = Cache.hash(modpath)
-    if hash ~= M.hashes[modname] then
-      M.hashes[modname] = hash
-      chunk = nil
-    end
+  local hash = Cache.hash(modpath)
+  if hash ~= M.hashes[modname] then
+    M.hashes[modname] = hash
+    Cache.del(modname)
+    chunk = nil
   end
 
   if chunk then
@@ -32,9 +31,8 @@ function M.load(modname, modpath)
       vim.notify("loadfile(" .. modname .. ")")
     end)
     chunk, err = loadfile(modpath)
-    if chunk then
+    if chunk and not err then
       Cache.set(modname, string.dump(chunk))
-      M.hashes[modname] = M.hashes[modname] or Cache.hash(modpath)
     end
   end
 
@@ -56,7 +54,7 @@ function M.setup()
 
   -- preload core modules
   local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
-  for _, name in ipairs({ "util", "config", "loader", "state" }) do
+  for _, name in ipairs({ "util", "config", "loader", "state", "plugin" }) do
     local modname = "lazy.core." .. name
     ---@diagnostic disable-next-line: no-unknown
     package.preload[modname] = function()
