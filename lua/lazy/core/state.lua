@@ -1,13 +1,18 @@
 local Cache = require("lazy.core.cache")
 local Module = require("lazy.core.module")
+local Config = require("lazy.core.config")
 
 local M = {}
 
 M.dirty = true
 
+---@alias CachedPlugin LazyPlugin | {_funs: string[]}
+local skip = { installed = true, loaded = true, tasks = true, dirty = true, dir = true }
+local funs = { config = true, init = true, run = true }
+
 function M.update_state(check_clean)
   local Util = require("lazy.core.util")
-  local Config = require("lazy.core.config")
+
   ---@type table<"opt"|"start", table<string,boolean>>
   local installed = { opt = {}, start = {} }
   for opt, packs in pairs(installed) do
@@ -19,9 +24,11 @@ function M.update_state(check_clean)
   end
 
   for _, plugin in pairs(Config.plugins) do
+    plugin.opt = plugin.opt == nil and Config.options.opt or plugin.opt
     local opt = plugin.opt and "opt" or "start"
-    plugin.installed = installed[opt][plugin.pack] == true
-    installed[opt][plugin.pack] = nil
+    plugin.dir = Config.options.package_path .. "/" .. opt .. "/" .. plugin.name
+    plugin.installed = installed[opt][plugin.name] == true
+    installed[opt][plugin.name] = nil
   end
 
   if check_clean then
@@ -44,37 +51,30 @@ function M.save()
   if not M.dirty then
     return
   end
-  local Config = require("lazy.core.config")
+  local Plugin = require("lazy.plugin")
 
   ---@class LazyState
   local state = {
-    ---@type CachedPlugin[]
-    plugins = {},
+    ---@type table<string, LazySpec>
+    specs = {},
     loaders = require("lazy.core.loader").loaders,
     config = Config.options,
   }
 
-  ---@alias CachedPlugin LazyPlugin | {_funcs: table<string, number|boolean>}
-  local skip = { installed = true, loaded = true, tasks = true, dirty = true, dir = true }
-  local funcount = 0
-
-  for _, plugin in pairs(Config.plugins) do
-    ---@type CachedPlugin
-    local save = {}
-    table.insert(state.plugins, save)
-    ---@diagnostic disable-next-line: no-unknown
-    for k, v in pairs(plugin) do
-      if type(v) == "function" then
-        save._funcs = save._funcs or {}
-        if plugin.modname then
-          save._funcs[k] = true
-        else
-          funcount = funcount + 1
-          Cache.set("cache.state.fun." .. funcount, string.dump(v))
-          save._funcs[k] = funcount
+  for _, spec in ipairs(Plugin.specs()) do
+    state.specs[spec.modname] = spec
+    for _, plugin in pairs(spec.plugins) do
+      ---@cast plugin CachedPlugin
+      for k, v in pairs(plugin) do
+        if type(v) == "function" then
+          if funs[k] then
+            plugin._funs = plugin._funs or {}
+            table.insert(plugin._funs, k)
+          end
+          plugin[k] = nil
+        elseif skip[k] then
+          plugin[k] = nil
         end
-      elseif not skip[k] then
-        save[k] = v
       end
     end
   end
@@ -82,63 +82,50 @@ function M.save()
 end
 
 function M.load()
-  ---@type boolean, LazyState
+  local Plugin = require("lazy.plugin")
+  local dirty = false
+
+  ---@type boolean, LazyState?
   local ok, state = pcall(vim.json.decode, Cache.get("cache.state"))
-  if not ok then
-    Cache.dirty()
-    return false
+  if not (ok and state and vim.deep_equal(Config.options, state.config)) then
+    dirty = true
+    state = nil
   end
 
-  local Config = require("lazy.core.config")
+  local function _loader(modname, modpath)
+    local spec = state and state.specs[modname]
+    if (not spec) or Module.is_dirty(modname, modpath) then
+      dirty = true
+      vim.schedule(function()
+        vim.notify("Reloading " .. modname)
+      end)
+      return Plugin.Spec.load(modname, modpath)
+    end
+    ---@type LazySpec
+    local loaded = nil
 
-  if not vim.deep_equal(Config.options, state.config) then
-    Cache.dirty()
-    return false
-  end
-
-  if Module.is_dirty(Config.options.plugins, Config.paths.main) then
-    return false
-  end
-
-  -- plugins
-  for _, plugin in ipairs(state.plugins) do
-    Config.plugins[plugin.name] = plugin
-    plugin.loaded = nil
-    plugin.dir = Config.options.package_path .. "/" .. (plugin.opt and "opt" or "start") .. "/" .. plugin.pack
-    if plugin.modname then
-      if Module.is_dirty(plugin.modname, plugin.modpath) then
-        return false
-      end
-      for fun in pairs(plugin._funcs or {}) do
-        ---@diagnostic disable-next-line: assign-type-mismatch
+    for name, plugin in pairs(spec.plugins) do
+      ---@cast plugin CachedPlugin
+      for _, fun in ipairs(plugin._funs or {}) do
         plugin[fun] = function(...)
-          local mod = Module.load(plugin.modname, plugin.modpath)
-          for k in pairs(plugin._funcs) do
-            plugin[k] = mod[k]
-          end
-          return plugin[fun](...)
-        end
-      end
-    elseif plugin._funcs then
-      for fun, id in pairs(plugin._funcs) do
-        local chunk = assert(Cache.get("cache.state.fun." .. id))
-        ---@diagnostic disable-next-line: assign-type-mismatch
-        plugin[fun] = function(...)
-          ---@diagnostic disable-next-line: assign-type-mismatch
-          plugin[fun] = loadstring(chunk)
-          return plugin[fun](...)
+          loaded = loaded or Plugin.Spec.load(spec.modname, spec.modpath)
+          return loaded.plugins[name][fun](...)
         end
       end
     end
+    return spec
   end
-  M.update_state()
 
-  -- loaders
-  require("lazy.core.loader").loaders = state.loaders
+  Plugin.load(_loader)
 
-  M.dirty = false
+  if state and not dirty then
+    require("lazy.core.loader").loaders = state.loaders
+  else
+    Cache.dirty()
+  end
 
-  return true
+  M.dirty = dirty
+  return not dirty
 end
 
 return M

@@ -11,6 +11,7 @@ M.defaults = {
     ---@type string[]
     patterns = {},
   },
+  interactive = true,
   package_path = vim.fn.stdpath("data") .. "/site/pack/lazy",
   view = {
     icons = {

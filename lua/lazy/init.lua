@@ -36,21 +36,7 @@ function M.setup(opts)
   Util.track()
 
   Util.track("state")
-  if not State.load() then
-    local Plugin = require("lazy.plugin")
-    vim.schedule(function()
-      Util.info("Reloading...")
-    end)
-    Util.track("reload")
-    Plugin.reload()
-    Util.track()
-    -- if not Config.plugins.lazy then
-    --   Plugin.plugin({
-    --     "folke/lazy.nvim",
-    --     opt = false,
-    --   })
-    -- end
-  end
+  State.load()
   Util.track()
 
   Util.track("install")
@@ -59,6 +45,7 @@ function M.setup(opts)
       vim.cmd("do User LazyInstallPre")
       require("lazy.manager").install({
         wait = true,
+        show = Config.options.interactive,
       })
       break
     end
@@ -75,7 +62,7 @@ function M.setup(opts)
 
   Loader.init_plugins()
 
-  Config.plugins.lazy.loaded.time = lazy_delta
+  Config.plugins["lazy.nvim"].loaded.time = lazy_delta
   done = true
 
   vim.cmd("do User LazyDone")

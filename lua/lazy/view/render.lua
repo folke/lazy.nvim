@@ -153,9 +153,9 @@ function M:reason(plugin)
     if modname then
       modname = modname:gsub("/", ".")
     end
-    local pack = source:match("/([^/]-)/lua")
+    local name = source:match("/([^/]-)/lua")
     for _, other in pairs(Config.plugins) do
-      if (modname and other.modname == modname) or (pack and other.pack == pack) then
+      if (modname and other.modname == modname) or (name and other.name == name) then
         reason.plugin = other.name
         reason.source = nil
         break

@@ -42,6 +42,10 @@ end
 function Task:_done()
   self.running = false
   vim.cmd("do User LazyRender")
+  vim.api.nvim_exec_autocmds("User", {
+    pattern = "LazyPlugin" .. self.type:sub(1, 1):upper() .. self.type:sub(2),
+    data = { plugin = self.plugin.name },
+  })
 end
 
 function Task:clean()

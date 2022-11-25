@@ -66,11 +66,6 @@ function M.run(operation, opts, filter)
     runner:wait(on_done)
   end)
 
-  -- auto show if there are tasks running
-  if opts.show == nil then
-    require("lazy.view").show()
-  end
-
   if opts.wait then
     runner:wait()
   end

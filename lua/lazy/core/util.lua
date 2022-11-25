@@ -27,6 +27,20 @@ function M.track(name, time)
   end
 end
 
+-- Fast implementation to check if a table is a list
+---@param t table
+function M.is_list(t)
+  local i = 0
+  ---@diagnostic disable-next-line: no-unknown
+  for _ in pairs(t) do
+    i = i + 1
+    if t[i] == nil then
+      return false
+    end
+  end
+  return true
+end
+
 function M.very_lazy()
   local function _load()
     vim.defer_fn(function()

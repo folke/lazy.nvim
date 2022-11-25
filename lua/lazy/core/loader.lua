@@ -149,6 +149,9 @@ function M.init_plugins()
   Util.track("plugin_init")
   for _, name in ipairs(M.loaders.init) do
     local plugin = Config.plugins[name]
+    if not plugin then
+      error(name)
+    end
     if plugin.init then
       Util.track(plugin.name)
       plugin.init()
@@ -247,7 +250,7 @@ end
 ---@param plugin LazyPlugin
 function M.packadd(plugin, load_start)
   if plugin.opt then
-    vim.cmd.packadd(plugin.pack)
+    vim.cmd.packadd(plugin.name)
     M.source_plugin_files(plugin, true)
   elseif load_start then
     vim.opt.runtimepath:append(plugin.dir)
