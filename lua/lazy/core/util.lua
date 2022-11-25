@@ -27,6 +27,46 @@ function M.track(name, time)
   end
 end
 
+function M.try(fn, msg)
+  -- error handler
+  local error_handler = function(err)
+    local Config = require("lazy.core.config")
+    local trace = {}
+    local level = 1
+    while true do
+      local info = debug.getinfo(level, "Sln")
+      if not info then
+        break
+      end
+      if info.what == "Lua" and not info.source:find("lazy.nvim") then
+        local source = info.source:sub(2)
+        if source:find(Config.options.package_path, 1, true) == 1 then
+          source = source:sub(#Config.options.package_path + 1):gsub("^/opt/", ""):gsub("^/start/", "")
+        end
+        source = vim.fn.fnamemodify(source, ":p:~:.")
+        local line = "  - " .. source .. ":" .. info.currentline
+        if info.name then
+          line = line .. " _in_ **" .. info.name .. "**"
+        end
+        table.insert(trace, line)
+      end
+      level = level + 1
+    end
+    vim.schedule(function()
+      msg = msg .. "\n\n" .. err
+      if #trace > 0 then
+        msg = msg .. "\n\n# stacktrace:\n" .. table.concat(trace, "\n")
+      end
+      M.error(msg)
+    end)
+    return err
+  end
+
+  ---@type boolean, any
+  local ok, result = xpcall(fn, error_handler)
+  return ok and result or nil
+end
+
 -- Fast implementation to check if a table is a list
 ---@param t table
 function M.is_list(t)
@@ -120,16 +160,25 @@ function M.lsmod(root, fn)
   end)
 end
 
-function M.error(msg)
-  vim.notify(msg, vim.log.levels.ERROR, {
+function M.notify(msg, level)
+  vim.notify(msg, level, {
+    on_open = function(win)
+      vim.wo[win].conceallevel = 3
+      vim.wo[win].concealcursor = ""
+      vim.wo[win].spell = false
+      local buf = vim.api.nvim_win_get_buf(win)
+      vim.bo[buf].filetype = "markdown"
+    end,
     title = "lazy.nvim",
   })
 end
 
+function M.error(msg)
+  M.notify(msg, vim.log.levels.ERROR)
+end
+
 function M.info(msg)
-  vim.notify(msg, vim.log.levels.INFO, {
-    title = "lazy.nvim",
-  })
+  M.notify(msg, vim.log.levels.INFO)
 end
 
 return M

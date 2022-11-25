@@ -154,7 +154,7 @@ function M.init_plugins()
     end
     if plugin.init then
       Util.track(plugin.name)
-      plugin.init()
+      Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
       Util.track()
     end
     if plugin.opt == false then
@@ -235,7 +235,7 @@ function M.load(plugins, reason, opts)
       end
 
       if plugin.config then
-        plugin.config()
+        Util.try(plugin.config, "Failed to run `config` for " .. plugin.name)
       end
 
       plugin.loaded.time = Util.track().time
