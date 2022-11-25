@@ -1,5 +1,6 @@
 local Util = require("lazy.util")
 local Render = require("lazy.view.render")
+local Config = require("lazy.core.config")
 
 local M = {}
 
@@ -42,6 +43,7 @@ function M.show()
 
   local function close()
     M._buf = nil
+    vim.diagnostic.reset(Config.ns, buf)
 
     if vim.api.nvim_buf_is_valid(buf) then
       vim.api.nvim_buf_delete(buf, {
