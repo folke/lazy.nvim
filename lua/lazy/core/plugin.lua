@@ -9,6 +9,8 @@ local M = {}
 local skip = { installed = true, loaded = true, tasks = true, dirty = true, dir = true }
 local funs = { config = true, init = true, run = true }
 
+M.dirty = false
+
 ---@class LazyPlugin
 ---@field [1] string
 ---@field name string display name and name used for plugin config files
@@ -46,7 +48,9 @@ function Spec.load(modname, modpath)
   self.plugins = {}
   self.modname = modname
   self.modpath = modpath
-  self:normalize(assert(Module.load(modname, modpath)))
+  local mod, cached = Module.load(modname, modpath)
+  M.dirty = M.dirty or not cached
+  self:normalize(assert(mod))
   if modname == Config.options.plugins and not self.plugins["lazy.nvim"] then
     self:add({ "folke/lazy.nvim", opt = false })
   end
@@ -176,12 +180,10 @@ function M.specs(cache)
 end
 
 function M.load()
-  local dirty = false
-
   ---@type boolean, LazyState?
   local ok, state = pcall(vim.json.decode, Cache.get("cache.state"))
   if not (ok and state and vim.deep_equal(Config.options, state.config)) then
-    dirty = true
+    M.dirty = true
     state = nil
   end
 
@@ -203,7 +205,7 @@ function M.load()
   M.update_state()
   Util.track()
 
-  if dirty then
+  if M.dirty then
     Cache.dirty = true
   elseif state then
     require("lazy.core.loader").loaders = state.loaders
@@ -215,7 +217,7 @@ function M.save()
   local state = {
     ---@type table<string, LazySpec>
     specs = {},
-    loaders = require("lazy.core.loader").loaders,
+    loaders = require("lazy.core.loader").get_loaders(),
     config = Config.options,
   }
 

@@ -18,38 +18,31 @@ M.loaders = nil
 ---@type LazyPlugin[]
 M.loading = {}
 
----@param plugin LazyPlugin
-function M.add(plugin)
-  if plugin.init or (plugin.opt == false) then
-    table.insert(M.loaders.init, plugin.name)
+function M.get_loaders()
+  ---@type table<LoaderType, table<string, string[]>>|{init: string[]}
+  local loaders = { init = {} }
+  for _, lt in ipairs(M.types) do
+    loaders[lt] = {}
   end
-
-  for _, loader_type in ipairs(M.types) do
-    ---@type (string|string[])?
-    local loaders = plugin[loader_type]
-    if plugin[loader_type] then
-      loaders = type(loaders) == "table" and loaders or { loaders }
-      ---@cast loaders string[]
-      for _, loader in ipairs(loaders) do
-        if not M.loaders[loader_type][loader] then
-          M.loaders[loader_type][loader] = {}
+  for _, plugin in pairs(Config.plugins) do
+    if plugin.init or (plugin.opt == false) then
+      table.insert(loaders.init, plugin.name)
+    end
+    for _, lt in ipairs(M.types) do
+      if plugin[lt] then
+        ---@diagnostic disable-next-line: no-unknown
+        for _, loader in ipairs(type(plugin[lt]) == "table" and plugin[lt] or { plugin[lt] }) do
+          loaders[lt][loader] = loaders[lt][loader] or {}
+          table.insert(loaders[lt][loader], plugin.name)
         end
-        table.insert(M.loaders[loader_type][loader], plugin.name)
       end
     end
   end
+  return loaders
 end
 
 function M.setup()
-  if not M.loaders then
-    M.loaders = { init = {} }
-    for _, type in ipairs(M.types) do
-      M.loaders[type] = {}
-    end
-    for _, plugin in pairs(Config.plugins) do
-      M.add(plugin)
-    end
-  end
+  M.loaders = M.loaders or M.get_loaders()
 
   local group = vim.api.nvim_create_augroup("lazy_loader", {
     clear = true,
@@ -167,36 +160,28 @@ end
 ---@param modname string
 function M.module(modname)
   local idx = modname:find(".", 1, true) or #modname + 1
-
   while idx do
     local name = modname:sub(1, idx - 1)
     local plugins = M.loaders.module[name]
     if plugins then
+      M.loaders.module[name] = nil
       local reason = { require = modname }
       if #M.loading == 0 then
         local f = 3
         while not reason.source do
           local info = debug.getinfo(f, "S")
-          f = f + 1
           if not info then
             break
           end
           if info.what ~= "C" then
             reason.source = info.source:sub(2)
           end
+          f = f + 1
         end
       end
       M.load(plugins, reason)
     end
     idx = modname:find(".", idx + 1, true)
-  end
-
-  ---@diagnostic disable-next-line: no-unknown
-  local mod = package.loaded[modname]
-  if type(mod) == "table" then
-    return function()
-      return mod
-    end
   end
 end
 
@@ -204,16 +189,13 @@ end
 ---@param reason {[string]:string}
 ---@param opts? {load_start: boolean}
 function M.load(plugins, reason, opts)
-  if type(plugins) == "string" or plugins.name then
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    plugins = { plugins }
-  end
-
+  ---@diagnostic disable-next-line: cast-local-type
+  plugins = type(plugins) == "string" or plugins.name and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
+
   for _, plugin in ipairs(plugins) do
-    if type(plugin) == "string" then
-      plugin = Config.plugins[plugin]
-    end
+    plugin = type(plugin) == "string" and Config.plugins[plugin] or plugin
+    ---@cast plugin LazyPlugin
 
     if not plugin.loaded then
       ---@diagnostic disable-next-line: assign-type-mismatch
