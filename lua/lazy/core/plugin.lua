@@ -15,7 +15,7 @@ local funs = { config = true, init = true, run = true }
 ---@field uri string
 ---@field branch? string
 ---@field dir string
----@field enabled? boolean
+---@field enabled? boolean|(fun():boolean)
 ---@field opt? boolean
 ---@field init? fun(LazyPlugin) Will always be run
 ---@field config? fun(LazyPlugin) Will be executed when loading the plugin
@@ -36,6 +36,7 @@ local funs = { config = true, init = true, run = true }
 ---@field modname string
 ---@field modpath string
 ---@field plugins table<string, LazyPlugin>
+---@field funs? table<string, string[]>
 local Spec = {}
 
 ---@param modname string
@@ -58,8 +59,9 @@ function Spec:add(plugin)
     Util.error("Invalid plugin spec " .. vim.inspect(plugin))
   end
   plugin.uri = plugin.uri or ("https://github.com/" .. plugin[1] .. ".git")
+
+  -- PERF: optimized code to get package name without using lua patterns
   if not plugin.name then
-    -- PERF: optimized code to get package name without using lua patterns
     local name = plugin[1]:sub(-4) == ".git" and plugin[1]:sub(1, -5) or plugin[1]
     local slash = name:reverse():find("/", 1, true) --[[@as number?]]
     plugin.name = slash and name:sub(#name - slash + 2) or plugin[1]:gsub("%W+", "_")
@@ -82,7 +84,7 @@ function Spec:normalize(spec, results)
     for _, s in ipairs(spec) do
       self:normalize(s, results)
     end
-  elseif spec.enabled ~= false then
+  elseif spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
     local plugin = self:add(spec)
     plugin.requires = plugin.requires and self:normalize(plugin.requires, {}) or nil
     table.insert(results, plugin.name)
@@ -90,13 +92,14 @@ function Spec:normalize(spec, results)
   return results
 end
 
----@param spec CachedSpec
+---@param spec LazySpec
 function Spec.revive(spec)
   if spec.funs then
     ---@type LazySpec
     local loaded = nil
     for fun, plugins in pairs(spec.funs) do
       for _, name in pairs(plugins) do
+        ---@diagnostic disable-next-line: no-unknown
         spec.plugins[name][fun] = function(...)
           loaded = loaded or Spec.load(spec.modname, spec.modpath)
           return loaded.plugins[name][fun](...)
@@ -111,7 +114,7 @@ function M.update_state(check_clean)
   ---@type table<"opt"|"start", table<string,boolean>>
   local installed = { opt = {}, start = {} }
   for opt, packs in pairs(installed) do
-    Util.scandir(Config.options.package_path .. "/" .. opt, function(_, name, type)
+    Util.ls(Config.options.package_path .. "/" .. opt, function(_, name, type)
       if type == "directory" or type == "link" then
         packs[name] = true
       end
@@ -153,26 +156,22 @@ function M.process_local(plugin)
   end
 end
 
----@alias LazySpecLoader fun(modname:string, modpath:string):LazySpec
----@param loader? LazySpecLoader
-function M.specs(loader)
-  loader = loader or Spec.load
+---@param cache? table<string,LazySpec>
+function M.specs(cache)
   ---@type LazySpec[]
   local specs = {}
 
-  local function _load(modname, modpath)
-    local spec = Util.try(function()
-      return loader(modname, modpath)
-    end, "Failed to load **" .. modname .. "**")
-    if spec then
+  local function _load(name, modpath)
+    local modname = Config.options.plugins .. (name and ("." .. name) or "")
+    Util.try(function()
+      local spec = cache and cache[modname]
+      spec = spec and not Module.is_dirty(modname, modpath) and Spec.revive(spec) or Spec.load(modname, modpath)
       table.insert(specs, spec)
-    end
+    end, "Failed to load **" .. modname .. "**")
   end
 
-  _load(Config.options.plugins, Config.paths.main)
-  Util.lsmod(Config.paths.plugins, function(name, modpath)
-    _load(Config.options.plugins .. "." .. name, modpath)
-  end)
+  _load(nil, Config.paths.main)
+  Util.lsmod(Config.paths.plugins, _load)
   return specs
 end
 
@@ -186,22 +185,9 @@ function M.load()
     state = nil
   end
 
-  local loader = state
-    and function(modname, modpath)
-      local spec = state and state.specs[modname]
-      if (not spec) or Module.is_dirty(modname, modpath) then
-        dirty = true
-        vim.schedule(function()
-          vim.notify("Reloading " .. modname)
-        end)
-        return Spec.load(modname, modpath)
-      end
-      return Spec.revive(spec)
-    end
-
   -- load specs
   Util.track("specs")
-  local specs = M.specs(loader)
+  local specs = M.specs(state and state.specs)
   Util.track()
 
   -- merge
@@ -225,24 +211,25 @@ function M.load()
 end
 
 function M.save()
-  if not M.dirty then
-    return
-  end
-
-  ---@alias CachedSpec LazySpec|{funs:table<string, string[]>}
   ---@class LazyState
   local state = {
-    ---@type table<string, CachedSpec>
+    ---@type table<string, LazySpec>
     specs = {},
     loaders = require("lazy.core.loader").loaders,
     config = Config.options,
   }
 
   for _, spec in ipairs(M.specs()) do
-    ---@cast spec CachedSpec
     spec.funs = {}
     state.specs[spec.modname] = spec
     for _, plugin in pairs(spec.plugins) do
+      if plugin.init or (plugin.opt == false and plugin.config) then
+        -- no use in caching specs that need init,
+        -- or specs that are in start and have a config,
+        -- since we'll load the real spec during startup anyway
+        state.specs[spec.modname] = nil
+        break
+      end
       ---@cast plugin CachedPlugin
       for k, v in pairs(plugin) do
         if type(v) == "function" then
