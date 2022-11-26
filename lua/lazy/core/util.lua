@@ -135,7 +135,7 @@ end
 ---@param fn fun(modname:string, modpath:string)
 function M.lsmod(root, fn)
   M.ls(root, function(path, name, type)
-    if type == "file" and name:sub(-4) == ".lua" then
+    if type == "file" and name:sub(-4) == ".lua" and name ~= "init.lua" then
       fn(name:sub(1, -5), path)
     elseif type == "directory" and vim.loop.fs_stat(path .. "/init.lua") then
       fn(name, path .. "/init.lua")
