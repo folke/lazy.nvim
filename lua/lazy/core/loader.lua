@@ -8,19 +8,13 @@ M.loading = {}
 
 function M.setup()
   local Handler = require("lazy.core.handler")
+  local groups = Handler.group(Config.plugins)
   for t, handler in pairs(Handler.handlers) do
-    Util.track(t)
-    ---@type LazyPlugin[]
-    local plugins = {}
-    for _, plugin in pairs(Config.plugins) do
-      if plugin[t] ~= nil then
-        table.insert(plugins, plugin)
-      end
+    if groups[t] then
+      Util.track(t)
+      handler(groups[t])
+      Util.track()
     end
-    if #plugins > 0 then
-      handler(plugins)
-    end
-    Util.track()
   end
 end
 

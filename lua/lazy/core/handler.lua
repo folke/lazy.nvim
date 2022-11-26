@@ -3,32 +3,39 @@ local Loader = require("lazy.core.loader")
 
 local M = {}
 
----@alias LazyHandler fun(plugins:LazyPlugin[])
+---@alias LazyHandler fun(grouped:table<string, string[]>)
+
+---@type table<string, table<string, string[]>>
+M._groups = nil
 
 ---@param plugins LazyPlugin[]
----@param key string
----@return table<any, LazyPlugin[]>
-function M.group(plugins, key)
-  ---@type table<any, LazyPlugin[]>
-  local ret = {}
-  for _, plugin in pairs(plugins) do
-    ---@diagnostic disable-next-line: no-unknown
-    for _, value in pairs(type(plugin[key]) == "table" and plugin[key] or { plugin[key] }) do
-      ret[value] = ret[value] or {}
-      table.insert(ret[value], plugin)
+---@param rebuild? boolean
+function M.group(plugins, rebuild)
+  if M._groups == nil or rebuild then
+    M._groups = {}
+    local types = vim.tbl_keys(M.handlers) --[[@as string[] ]]
+    for _, key in ipairs(types) do
+      M._groups[key] = {}
+      for _, plugin in pairs(plugins) do
+        if plugin[key] then
+          ---@diagnostic disable-next-line: no-unknown
+          for _, value in pairs(type(plugin[key]) == "table" and plugin[key] or { plugin[key] }) do
+            M._groups[key][value] = M._groups[key][value] or {}
+            table.insert(M._groups[key][value], plugin.name)
+          end
+        end
+      end
     end
   end
-  return ret
+  return M._groups
 end
 
 ---@type table<string, LazyHandler>
 M.handlers = {}
 
----@param plugins LazyPlugin[]
-function M.handlers.event(plugins)
+function M.handlers.event(grouped)
   local group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
-  ---@diagnostic disable-next-line: redefined-local
-  for event, plugins in pairs(M.group(plugins, "event")) do
+  for event, plugins in pairs(grouped) do
     ---@cast event string
     if event == "VimEnter" and vim.v.vim_did_enter == 1 then
       Loader.load(plugins, { event = event })
@@ -48,9 +55,8 @@ function M.handlers.event(plugins)
   end
 end
 
-function M.handlers.keys(plugins)
-  ---@diagnostic disable-next-line: redefined-local
-  for keys, plugins in pairs(M.group(plugins, "keys")) do
+function M.handlers.keys(grouped)
+  for keys, plugins in pairs(grouped) do
     ---@cast keys string
     vim.keymap.set("n", keys, function()
       vim.keymap.del("n", keys)
@@ -62,10 +68,9 @@ function M.handlers.keys(plugins)
   end
 end
 
-function M.handlers.ft(plugins)
+function M.handlers.ft(grouped)
   local group = vim.api.nvim_create_augroup("lazy_handler_ft", { clear = true })
-  ---@diagnostic disable-next-line: redefined-local
-  for ft, plugins in pairs(M.group(plugins, "ft")) do
+  for ft, plugins in pairs(grouped) do
     ---@cast ft string
     vim.api.nvim_create_autocmd("FileType", {
       once = true,
@@ -80,9 +85,8 @@ function M.handlers.ft(plugins)
   end
 end
 
-function M.handlers.cmd(plugins)
-  ---@diagnostic disable-next-line: redefined-local
-  for cmd, plugins in pairs(M.group(plugins, "cmd")) do
+function M.handlers.cmd(grouped)
+  for cmd, plugins in pairs(grouped) do
     ---@cast cmd string
     local function _load(complete)
       vim.api.nvim_del_user_command(cmd)
@@ -117,17 +121,16 @@ function M.handlers.cmd(plugins)
   end
 end
 
-function M.handlers.module(plugins)
-  local modules = M.group(plugins, "module")
+function M.handlers.module(grouped)
   ---@param modname string
   table.insert(package.loaders, 2, function(modname)
     local idx = modname:find(".", 1, true) or #modname + 1
     while idx do
       local name = modname:sub(1, idx - 1)
       ---@diagnostic disable-next-line: redefined-local
-      local plugins = modules[name]
+      local plugins = grouped[name]
       if plugins then
-        modules[name] = nil
+        grouped[name] = nil
         local reason = { require = modname }
         if #Loader.loading == 0 then
           local f = 3
