@@ -207,8 +207,6 @@ function M.load()
 
   if M.dirty then
     Cache.dirty = true
-  elseif state then
-    require("lazy.core.loader").loaders = state.loaders
   end
 end
 
@@ -217,7 +215,6 @@ function M.save()
   local state = {
     ---@type table<string, LazySpec>
     specs = {},
-    loaders = require("lazy.core.loader").get_loaders(),
     config = Config.options,
   }
 

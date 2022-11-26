@@ -2,32 +2,18 @@ local M = {}
 
 ---@param opts? LazyConfig
 function M.setup(opts)
-  local done = false
-  -- table.insert(package.loaders, 1, function(modname)
-  --   if not done and modname:find("lazy") == 1 then
-  --     dd(modname)
-  --   end
-  -- end)
-  -- Loading order
-  -- 1. load module cache
-  -- 2. if changes, then reload
-
   local cache_start = vim.loop.hrtime()
   require("lazy.core.cache").setup()
 
   local module_start = vim.loop.hrtime()
-
   require("lazy.core.module").setup()
-
-  local require_start = vim.loop.hrtime()
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
   local Plugin = require("lazy.core.plugin")
 
-  Util.track("cache.setup", module_start - cache_start)
-  Util.track("module.setup", require_start - module_start)
-  Util.track("require.core", vim.loop.hrtime() - require_start)
+  Util.track("cache", module_start - cache_start)
+  Util.track("module", vim.loop.hrtime() - module_start)
 
   Util.track("setup")
 
@@ -65,7 +51,6 @@ function M.setup(opts)
   if Config.plugins["lazy.nvim"] then
     Config.plugins["lazy.nvim"].loaded.time = lazy_delta
   end
-  done = true
 
   vim.cmd("do User LazyDone")
 end
