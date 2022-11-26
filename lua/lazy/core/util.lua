@@ -107,23 +107,6 @@ function M.very_lazy()
 end
 
 ---@alias FileType "file"|"directory"|"link"
----@alias DirEntry {name: string, path: string, type: FileType}[]
----@param path string
----@param fn fun(path: string, name:string, type:FileType)
-function M.scandir(path, fn)
-  local dir = vim.loop.fs_opendir(path, nil, 100)
-  if dir then
-    local entries = vim.loop.fs_readdir(dir) --[[@as DirEntry[]]
-    while entries do
-      for _, entry in ipairs(entries) do
-        entry.path = path .. "/" .. entry.name
-        fn(path .. "/" .. entry.name, entry.name, entry.type)
-      end
-      entries = vim.loop.fs_readdir(dir)
-    end
-    vim.loop.fs_closedir(dir)
-  end
-end
 ---@param path string
 ---@param fn fun(path: string, name:string, type:FileType)
 function M.ls(path, fn)
