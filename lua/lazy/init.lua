@@ -62,7 +62,9 @@ function M.setup(opts)
 
   Loader.init_plugins()
 
-  Config.plugins["lazy.nvim"].loaded.time = lazy_delta
+  if Config.plugins["lazy.nvim"] then
+    Config.plugins["lazy.nvim"].loaded.time = lazy_delta
+  end
   done = true
 
   vim.cmd("do User LazyDone")
