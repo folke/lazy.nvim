@@ -11,7 +11,7 @@ end
 
 ---@param modname string
 ---@param modpath string
----@return table
+---@return any, boolean
 function M.load(modname, modpath)
   local err
   ---@type (string|fun())?
@@ -24,8 +24,10 @@ function M.load(modname, modpath)
     chunk = nil
   end
 
+  local cached = false
   if chunk then
-    chunk, err = loadstring(chunk --[[@as string]], "@" .. modpath)
+    cached = true
+    chunk, err = load(chunk --[[@as string]], "@" .. modpath, "b")
   else
     vim.schedule(function()
       vim.notify("loadfile(" .. modname .. ")")
@@ -37,9 +39,7 @@ function M.load(modname, modpath)
   end
 
   if chunk then
-    ---@diagnostic disable-next-line: no-unknown
-    package.loaded[modname] = chunk()
-    return package.loaded[modname]
+    return chunk(), cached
   else
     error(err)
   end
@@ -54,7 +54,7 @@ function M.setup()
 
   -- preload core modules
   local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
-  for _, name in ipairs({ "util", "config", "loader", "state", "plugin" }) do
+  for _, name in ipairs({ "util", "config", "loader", "plugin" }) do
     local modname = "lazy.core." .. name
     ---@diagnostic disable-next-line: no-unknown
     package.preload[modname] = function()
