@@ -1,4 +1,4 @@
-local Process = require("lazy.process")
+local Process = require("lazy.manage.process")
 local Loader = require("lazy.core.loader")
 local Util = require("lazy.util")
 
@@ -80,8 +80,11 @@ function Task:install()
     local args = {
       "clone",
       self.plugin.uri,
-      "--depth=1",
+      -- "--depth=1",
+      -- "--filter=blob:none",
+      "--filter=tree:0",
       "--recurse-submodules",
+      "--single-branch",
       "--shallow-submodules",
       "--progress",
     }
@@ -234,6 +237,7 @@ function Task:update()
   else
     local args = {
       "pull",
+      "--tags",
       "--recurse-submodules",
       "--update-shallow",
       "--progress",

@@ -1,5 +1,5 @@
 local View = require("lazy.view")
-local Manager = require("lazy.manager")
+local Manage = require("lazy.manage")
 local Util = require("lazy.util")
 
 local M = {}
@@ -17,31 +17,31 @@ end
 
 M.commands = {
   clean = function()
-    Manager.clean({ clear = true, show = true })
+    Manage.clean({ clear = true, show = true })
   end,
   clear = function()
-    Manager.clear()
+    Manage.clear()
     View.show()
   end,
   install = function()
-    Manager.install({ clear = true, show = true })
+    Manage.install({ clear = true, show = true })
   end,
   log = function()
-    Manager.log({ clear = true, show = true })
+    Manage.log({ clear = true, show = true })
   end,
   show = function()
     View.show()
   end,
   docs = function()
-    Manager.docs({ clear = true, show = true })
+    Manage.docs({ clear = true, show = true })
   end,
   sync = function()
-    Manager.update({ clear = true, show = true })
-    Manager.install({ show = true })
-    Manager.clean({ show = true })
+    Manage.update({ clear = true, show = true })
+    Manage.install({ show = true })
+    Manage.clean({ show = true })
   end,
   update = function()
-    Manager.update({ clear = true, show = true })
+    Manage.update({ clear = true, show = true })
   end,
 }
 

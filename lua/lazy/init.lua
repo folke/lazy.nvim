@@ -29,7 +29,7 @@ function M.setup(opts)
   for _, plugin in pairs(Config.plugins) do
     if not plugin.installed then
       vim.cmd("do User LazyInstallPre")
-      require("lazy.manager").install({
+      require("lazy.manage").install({
         wait = true,
         show = Config.options.interactive,
       })

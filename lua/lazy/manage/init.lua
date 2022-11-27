@@ -1,6 +1,6 @@
 local Config = require("lazy.core.config")
-local Task = require("lazy.task")
-local Runner = require("lazy.runner")
+local Task = require("lazy.manage.task")
+local Runner = require("lazy.manage.runner")
 local Plugin = require("lazy.core.plugin")
 
 local M = {}
@@ -25,19 +25,11 @@ function M.run(operation, opts, filter)
   ---@type Runner
   local runner = Runner.new()
 
-  local on_done = function()
-    vim.cmd([[do User LazyRender]])
-  end
-
   -- install missing plugins
   for _, plugin in pairs(plugins) do
     if filter == nil or filter(plugin) then
       runner:add(Task.new(plugin, operation))
     end
-  end
-
-  if runner:is_empty() then
-    return on_done()
   end
 
   vim.cmd([[do User LazyRender]])
@@ -63,7 +55,9 @@ function M.run(operation, opts, filter)
       end
     end
     -- wait for post-install to finish
-    runner:wait(on_done)
+    runner:wait(function()
+      vim.cmd([[do User LazyRender]])
+    end)
   end)
 
   if opts.wait then
