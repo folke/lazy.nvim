@@ -25,41 +25,10 @@ return {
   {
     filter = function(plugin)
       return has_task(plugin, function(task)
-        return task.running and task.type == "install"
-      end)
-    end,
-    title = "Installing",
-  },
-  {
-    filter = function(plugin)
-      return has_task(plugin, function(task)
-        return task.running and task.type == "update"
-      end)
-    end,
-    title = "Updating",
-  },
-  {
-    filter = function(plugin)
-      return has_task(plugin, function(task)
-        return task.running and task.type == "clean"
-      end)
-    end,
-    title = "Cleaning",
-  },
-  {
-    filter = function(plugin)
-      return has_task(plugin, function(task)
         return task.running
       end)
     end,
-    title = "Running",
-  },
-  {
-    ---@param plugin LazyPlugin
-    filter = function(plugin)
-      return plugin.updated and plugin.updated.from ~= plugin.updated.to
-    end,
-    title = "Updated",
+    title = "Working",
   },
   {
     filter = function(plugin)
@@ -76,6 +45,13 @@ return {
       end)
     end,
     title = "Breaking Changes",
+  },
+  {
+    ---@param plugin LazyPlugin
+    filter = function(plugin)
+      return plugin.updated and plugin.updated.from ~= plugin.updated.to
+    end,
+    title = "Updated",
   },
   {
     filter = function(plugin)

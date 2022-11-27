@@ -1,7 +1,7 @@
 local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 local Sections = require("lazy.view.sections")
-local Loader = require("lazy.core.loader")
+local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")
 
 local Text = require("lazy.view.text")
@@ -303,11 +303,11 @@ function M:details(plugin)
     table.insert(props, { "readme", "README.md" })
   end
 
-  for _, loader in ipairs(Loader.types) do
-    if plugin[loader] then
+  for handler in ipairs(Handler.handlers) do
+    if plugin[handler] then
       table.insert(props, {
-        loader,
-        type(plugin[loader]) == "string" and plugin[loader] or table.concat(plugin[loader], ", "),
+        handler,
+        type(plugin[handler]) == "string" and plugin[handler] or table.concat(plugin[handler], ", "),
         "@string",
       })
     end
