@@ -29,28 +29,6 @@ M.run = {
   end,
 }
 
-M.clean = {
-  run = function(self)
-    local dir = self.plugin.dir:gsub("/+$", "")
-    local stat = vim.loop.fs_lstat(dir)
-
-    if stat.type == "directory" then
-      Util.walk(dir, function(path, _, type)
-        if type == "directory" then
-          vim.loop.fs_rmdir(path)
-        else
-          vim.loop.fs_unlink(path)
-        end
-      end)
-      vim.loop.fs_rmdir(dir)
-    else
-      vim.loop.fs_unlink(dir)
-    end
-
-    self.plugin._.installed = false
-  end,
-}
-
 M.docs = {
   skip = function(plugin)
     return not plugin._.dirty

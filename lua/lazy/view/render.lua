@@ -219,11 +219,11 @@ function M:diagnostics(plugin)
     if task:is_running() then
       self:diagnostic({
         severity = vim.diagnostic.severity.WARN,
-        message = task.type .. (task.status == "" and "" or (": " .. task.status)),
+        message = task.name .. (task.status == "" and "" or (": " .. task.status)),
       })
     elseif task.error then
       self:diagnostic({
-        message = task.type .. " failed",
+        message = task.name .. " failed",
         severity = vim.diagnostic.severity.ERROR,
       })
     end
@@ -250,7 +250,12 @@ end
 ---@param plugin LazyPlugin
 function M:tasks(plugin)
   for _, task in ipairs(plugin._.tasks or {}) do
-    if task.type == "log" and not task.error then
+    if self._details == plugin.name then
+      self:append("✔ [task] ", "Title", { indent = 4 }):append(task.name)
+      self:append(" " .. math.floor((task:time()) * 100) / 100 .. "ms", "Bold")
+      self:nl()
+    end
+    if task.name == "log" and not task.error then
       self:log(task)
     elseif task.error or self._details == plugin.name then
       if task.error then

@@ -20,6 +20,7 @@
 
 ## ✅ TODO
 
+- [ ] show time taken for op in view
 - [ ] package meta index (package.lua cache for all packages)
 - [ ] migrate from Packer
 - [ ] auto lazy-loading of lua modules

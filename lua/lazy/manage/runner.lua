@@ -1,19 +1,18 @@
 local Task = require("lazy.manage.task")
 local Config = require("lazy.core.config")
 
----@alias LazyPipeline TaskType[]
-
 ---@class RunnerOpts
----@field pipeline LazyPipeline
----@field interactive? boolean
+---@field pipeline (string|{[1]:string, [string]:any})[]
 ---@field plugins? LazyPlugin[]|fun(plugin:LazyPlugin):any?
 
+---@alias PipelineStep {task:string, opts?:TaskOptions}
+---@alias LazyRunnerTask {co:thread, status: {task?:LazyTask, waiting?:boolean}}
+
 ---@class Runner
----@field _tasks LazyTask[]
 ---@field _plugins LazyPlugin[]
----@field _running boolean
+---@field _running LazyRunnerTask[]
+---@field _pipeline PipelineStep[]
 ---@field _on_done fun()[]
----@field _waiting fun()[]
 ---@field _opts RunnerOpts
 local Runner = {}
 
@@ -21,7 +20,6 @@ local Runner = {}
 function Runner.new(opts)
   local self = setmetatable({}, { __index = Runner })
   self._opts = opts or {}
-  self._tasks = {}
 
   local plugins = self._opts.plugins
   if type(plugins) == "function" then
@@ -29,71 +27,58 @@ function Runner.new(opts)
   else
     self._plugins = plugins or Config.plugins
   end
-  self._running = false
+  self._running = {}
   self._on_done = {}
-  self._waiting = {}
+
+  ---@param step string|(TaskOptions|{[1]:string})
+  self._pipeline = vim.tbl_map(function(step)
+    return type(step) == "string" and { task = step } or { task = step[1], opts = step }
+  end, self._opts.pipeline)
+
   return self
 end
 
----@param plugin LazyPlugin
----@param pipeline LazyPipeline
-function Runner:_run(plugin, pipeline)
-  ---@type TaskType
-  local op = table.remove(pipeline, 1)
-  if op == "wait" then
-    return table.insert(self._waiting, function()
-      self:_run(plugin, pipeline)
-    end)
+---@param entry LazyRunnerTask
+function Runner:_resume(entry)
+  if entry.status.task and not entry.status.task:is_done() then
+    return true
   end
-  self:queue(plugin, op, function(task)
-    if not (task and task.error) and #pipeline > 0 then
-      self:_run(plugin, pipeline)
-    end
-  end)
+  local ok, status = coroutine.resume(entry.co)
+  entry.status = ok and status
+  return entry.status ~= nil
 end
 
----@param plugin LazyPlugin
----@param task_type TaskType
----@param on_done fun(task?:LazyTask)
----@return LazyTask?
-function Runner:queue(plugin, task_type, on_done)
-  local def = vim.split(task_type, ".", { plain = true })
-  assert(#def == 2)
-  ---@type LazyTaskDef
-  local task_def = require("lazy.manage.task." .. def[1])[def[2]]
-  assert(task_def)
-  if not (task_def.skip and task_def.skip(plugin, self._opts)) then
-    local task = Task.new(plugin, def[2], task_def.run, { on_done = on_done })
-    table.insert(self._tasks, task)
-    task:start()
-  else
-    on_done()
+function Runner:resume(waiting)
+  local running = false
+  for _, entry in ipairs(self._running) do
+    if entry.status then
+      if waiting and entry.status.waiting then
+        entry.status.waiting = false
+      end
+      if not entry.status.waiting and self:_resume(entry) then
+        running = true
+      end
+    end
   end
+  return running or (not waiting and self:resume(true))
 end
 
 function Runner:start()
   for _, plugin in pairs(self._plugins) do
-    self:_run(plugin, vim.deepcopy(self._opts.pipeline))
-  end
-  self._running = true
-  local check = vim.loop.new_check()
-
-  check:start(function()
-    for _, task in ipairs(self._tasks) do
-      if task:is_running() then
-        return
-      end
+    local co = coroutine.create(self.run_pipeline)
+    local ok, status = coroutine.resume(co, self, plugin)
+    if ok then
+      table.insert(self._running, { co = co, status = status })
     end
-    if #self._waiting > 0 then
-      local waiting = self._waiting
-      self._waiting = {}
-      for _, cb in ipairs(waiting) do
-        cb()
-      end
+  end
+
+  local check = vim.loop.new_check()
+  check:start(function()
+    if self:resume() then
       return
     end
     check:stop()
-    self._running = false
+    self._running = {}
     for _, cb in ipairs(self._on_done) do
       vim.schedule(cb)
     end
@@ -101,23 +86,47 @@ function Runner:start()
   end)
 end
 
----@return LazyPlugin[]
-function Runner:plugins()
-  ---@param task LazyTask
-  return vim.tbl_map(function(task)
-    return task.plugin
-  end, self._tasks)
+---@async
+---@param plugin LazyPlugin
+function Runner:run_pipeline(plugin)
+  for _, step in ipairs(self._pipeline) do
+    if step.task == "wait" then
+      coroutine.yield({ waiting = true })
+    else
+      local task = self:queue(plugin, step.task, step.opts)
+      if task then
+        coroutine.yield({ task = task })
+        assert(task:is_done())
+        if task.error then
+          return
+        end
+      end
+    end
+  end
 end
 
-function Runner:tasks()
-  return self._tasks
+---@param plugin LazyPlugin
+---@param task_type string
+---@param task_opts? TaskOptions
+---@return LazyTask?
+function Runner:queue(plugin, task_type, task_opts)
+  assert(self._running)
+  local def = vim.split(task_type, ".", { plain = true })
+  ---@type LazyTaskDef
+  local task_def = require("lazy.manage.task." .. def[1])[def[2]]
+  assert(task_def)
+  if not (task_def.skip and task_def.skip(plugin, task_opts)) then
+    local task = Task.new(plugin, def[2], task_def.run, task_opts)
+    task:start()
+    return task
+  end
 end
 
 -- Execute the callback async when done.
 -- When no callback is specified, this will wait sync
 ---@param cb? fun()
 function Runner:wait(cb)
-  if #self._tasks == 0 or not self._running then
+  if #self._running == 0 then
     return cb and cb()
   end
 
@@ -125,8 +134,8 @@ function Runner:wait(cb)
     table.insert(self._on_done, cb)
   else
     -- sync wait
-    while self._running do
-      vim.wait(100)
+    while #self._running > 0 do
+      vim.wait(10)
     end
   end
 end

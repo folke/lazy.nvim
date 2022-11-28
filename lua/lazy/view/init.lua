@@ -69,10 +69,12 @@ function M.show()
 
   local render = Render.new(buf, win, 2)
   local update = Util.throttle(30, function()
-    vim.bo[buf].modifiable = true
-    render:update()
-    vim.bo[buf].modifiable = false
-    vim.cmd.redraw()
+    if buf and vim.api.nvim_buf_is_valid(buf) then
+      vim.bo[buf].modifiable = true
+      render:update()
+      vim.bo[buf].modifiable = false
+      vim.cmd.redraw()
+    end
   end)
 
   local function get_plugin()

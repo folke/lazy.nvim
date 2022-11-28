@@ -16,9 +16,6 @@ function M.run(ropts, opts)
   if opts.interactive == nil then
     opts.interactive = Config.options.interactive
   end
-  if ropts.interactive == nil then
-    ropts.interactive = opts.interactive
-  end
 
   if opts.clear then
     M.clear()
@@ -47,7 +44,14 @@ end
 ---@param opts? ManagerOpts
 function M.install(opts)
   M.run({
-    pipeline = { "git.install", "plugin.docs", "plugin.run" },
+    pipeline = {
+      "fs.symlink",
+      "git.clone",
+      "git.checkout",
+      "plugin.docs",
+      "wait",
+      "plugin.run",
+    },
     plugins = function(plugin)
       return plugin.uri and not plugin._.installed
     end,
@@ -57,7 +61,16 @@ end
 ---@param opts? ManagerOpts
 function M.update(opts)
   M.run({
-    pipeline = { "git.update", "plugin.docs", "plugin.run", "wait", "git.log" },
+    pipeline = {
+      "fs.symlink",
+      "git.branch",
+      "git.fetch",
+      "git.checkout",
+      "plugin.docs",
+      "plugin.run",
+      "wait",
+      { "git.log", updated = true },
+    },
     plugins = function(plugin)
       return plugin.uri and plugin._.installed
     end,
@@ -78,7 +91,7 @@ end
 function M.clean(opts)
   Plugin.update_state(true)
   M.run({
-    pipeline = { "plugin.clean" },
+    pipeline = { "fs.clean" },
     plugins = Config.to_clean,
   }, opts)
 end

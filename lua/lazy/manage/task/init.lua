@@ -1,42 +1,42 @@
 local Process = require("lazy.manage.process")
 
 ---@class LazyTaskDef
----@field skip? fun(plugin:LazyPlugin, opts:RunnerOpts):any?
----@field run fun(task:LazyTask)
+---@field skip? fun(plugin:LazyPlugin, opts?:TaskOptions):any?
+---@field run fun(task:LazyTask, opts:TaskOptions)
 
 ---@alias LazyTaskState fun():boolean?
 
 ---@class LazyTask
 ---@field plugin LazyPlugin
----@field type TaskType
+---@field name string
+---@field type string
 ---@field output string
 ---@field status string
 ---@field error? string
 ---@field private _task fun(task:LazyTask)
 ---@field private _running LazyPluginState[]
----@field private _started boolean
+---@field private _started? number
+---@field private _ended? number
 ---@field private _opts TaskOptions
 local Task = {}
 
----@alias TaskType "update"|"install"|"run"|"clean"|"log"|"docs"
-
----@class TaskOptions
+---@class TaskOptions: {[string]:any}
 ---@field on_done? fun(task:LazyTask)
 
 ---@param plugin LazyPlugin
----@param type TaskType
+---@param name string
 ---@param opts? TaskOptions
 ---@param task fun(task:LazyTask)
-function Task.new(plugin, type, task, opts)
+function Task.new(plugin, name, task, opts)
   local self = setmetatable({}, {
     __index = Task,
   })
   self._opts = opts or {}
   self._running = {}
   self._task = task
-  self._started = false
+  self._started = nil
   self.plugin = plugin
-  self.type = type
+  self.name = name
   self.output = ""
   self.status = ""
   plugin._.tasks = plugin._.tasks or {}
@@ -45,7 +45,7 @@ function Task.new(plugin, type, task, opts)
 end
 
 function Task:has_started()
-  return self._started
+  return self._started ~= nil
 end
 
 function Task:is_done()
@@ -62,9 +62,14 @@ function Task:is_running()
 end
 
 function Task:start()
-  self._started = true
+  if vim.in_fast_event() then
+    return vim.schedule(function()
+      self:start()
+    end)
+  end
+  self._started = vim.loop.hrtime()
   ---@type boolean, string|any
-  local ok, err = pcall(self._task, self)
+  local ok, err = pcall(self._task, self, self._opts)
   if not ok then
     self.error = err or "failed"
   end
@@ -76,14 +81,25 @@ function Task:_check()
   if self:is_running() then
     return
   end
+  self._ended = vim.loop.hrtime()
   if self._opts.on_done then
     self._opts.on_done(self)
   end
   vim.cmd("do User LazyRender")
   vim.api.nvim_exec_autocmds("User", {
-    pattern = "LazyPlugin" .. self.type:sub(1, 1):upper() .. self.type:sub(2),
+    pattern = "LazyPlugin" .. self.name:sub(1, 1):upper() .. self.name:sub(2),
     data = { plugin = self.plugin.name },
   })
+end
+
+function Task:time()
+  if not self:has_started() then
+    return 0
+  end
+  if not self:is_done() then
+    return (vim.loop.hrtime() - self._started) / 1e6
+  end
+  return (self._ended - self._started) / 1e6
 end
 
 ---@param fn fun()

@@ -3,7 +3,10 @@ local Semver = require("lazy.manage.semver")
 
 local M = {}
 
+---@alias GitInfo {branch?:string, commit?:string, tag?:string, version?:Semver}
+
 ---@param details? boolean
+---@return GitInfo?
 function M.info(repo, details)
   local line = Util.head(repo .. "/.git/HEAD")
   if line then
@@ -23,7 +26,6 @@ function M.info(repo, details)
         end
       end)
     end
-
     return ret
   end
 end
@@ -48,6 +50,7 @@ function M.get_versions(repo, spec)
 end
 
 ---@param plugin LazyPlugin
+---@return {branch:string, commit?:string}?
 function M.get_branch(plugin)
   if plugin.branch then
     return {
@@ -69,22 +72,36 @@ function M.get_branch(plugin)
 end
 
 ---@param plugin LazyPlugin
+---@return GitInfo?
 function M.get_target(plugin)
   local branch = M.get_branch(plugin)
 
   if plugin.commit then
-    return { branch = branch, commit = plugin.commit }
+    return {
+      branch = branch and branch.branch,
+      commit = plugin.commit,
+    }
   end
   if plugin.tag then
-    return { branch = branch, tag = plugin.tag, commit = M.ref(plugin.dir, "tags/" .. plugin.tag) }
+    return {
+      branch = branch and branch.branch,
+      tag = plugin.tag,
+      commit = M.ref(plugin.dir, "tags/" .. plugin.tag),
+    }
   end
   if plugin.version then
     local last = Semver.last(M.get_versions(plugin.dir, plugin.version))
     if last then
-      return { branch = branch, version = last, tag = last.tag, commit = M.ref(plugin.dir, "tags/" .. last.tag) }
+      return {
+        branch = branch and branch.branch,
+        version = last,
+        tag = last.tag,
+        commit = M.ref(plugin.dir, "tags/" .. last.tag),
+      }
     end
   end
-  return { branch = branch, commit = branch.commit }
+  ---@diagnostic disable-next-line: return-type-mismatch
+  return branch
 end
 
 function M.ref(repo, ref)

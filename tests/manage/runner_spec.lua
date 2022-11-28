@@ -19,14 +19,22 @@ describe("runner", function()
     package.loaded["lazy.manage.task.test"]["test" .. i] = {
       ---@param task LazyTask
       run = function(task)
-        table.insert(runs, { plugin = task.plugin.name, task = task.type })
+        table.insert(runs, { plugin = task.plugin.name, task = task.name })
       end,
     }
     package.loaded["lazy.manage.task.test"]["error" .. i] = {
       ---@param task LazyTask
       run = function(task)
-        table.insert(runs, { plugin = task.plugin.name, task = task.type })
+        table.insert(runs, { plugin = task.plugin.name, task = task.name })
         error("error" .. i)
+      end,
+    }
+    package.loaded["lazy.manage.task.test"]["async" .. i] = {
+      ---@param task LazyTask
+      run = function(task)
+        task:schedule(function()
+          table.insert(runs, { plugin = task.plugin.name, task = task.name })
+        end)
       end,
     }
   end
@@ -34,18 +42,42 @@ describe("runner", function()
   it("runs the pipeline", function()
     local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", "test.test2" } })
     runner:start()
+    runner:wait()
+    assert.equal(4, #runs)
+  end)
+
+  it("waits", function()
+    local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", "wait", "test.test2" } })
+    runner:start()
+    runner:wait()
+    assert.equal(4, #runs)
+  end)
+
+  it("handles async", function()
+    local runner = Runner.new({ plugins = plugins, pipeline = { "test.async1", "wait", "test.async2" } })
+    runner:start()
+    runner:wait()
     assert.equal(4, #runs)
   end)
 
   it("handles skips", function()
     local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", "test.skip", "test.test2" } })
     runner:start()
+    runner:wait()
+    assert.equal(4, #runs)
+  end)
+
+  it("handles opts", function()
+    local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", { "test.test2", foo = "bar" } } })
+    runner:start()
+    runner:wait()
     assert.equal(4, #runs)
   end)
 
   it("aborts on error", function()
     local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", "test.error1", "test.test2" } })
     runner:start()
+    runner:wait()
     assert.equal(4, #runs)
   end)
 end)

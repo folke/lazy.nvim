@@ -33,7 +33,7 @@ return {
   {
     filter = function(plugin)
       return has_task(plugin, function(task)
-        if task.type ~= "log" then
+        if task.name ~= "log" then
           return
         end
         local lines = vim.split(task.output, "\n")
@@ -54,9 +54,16 @@ return {
     title = "Updated",
   },
   {
+    ---@param plugin LazyPlugin
+    filter = function(plugin)
+      return plugin._.cloned
+    end,
+    title = "Installed",
+  },
+  {
     filter = function(plugin)
       return has_task(plugin, function(task)
-        return task.type == "log" and vim.trim(task.output) ~= ""
+        return task.name == "log" and vim.trim(task.output) ~= ""
       end)
     end,
     title = "Log",

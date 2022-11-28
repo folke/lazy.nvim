@@ -24,6 +24,7 @@ M.dirty = false
 ---@field updated? {from:string, to:string}
 ---@field is_local? boolean
 ---@field is_symlink? boolean
+---@field cloned? boolean
 
 ---@class LazyPluginRef
 ---@field branch? string
@@ -139,7 +140,9 @@ function M.update_state(check_clean)
   for _, plugin in pairs(Config.plugins) do
     plugin._ = plugin._ or {}
     plugin[1] = plugin["1"] or plugin[1]
-    plugin.opt = plugin.opt == nil and Config.options.opt or plugin.opt
+    if plugin.opt == nil then
+      plugin.opt = Config.options.opt
+    end
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.package_path .. "/" .. opt .. "/" .. plugin.name
     plugin._.is_local = plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git"
