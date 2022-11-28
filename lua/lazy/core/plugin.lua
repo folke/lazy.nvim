@@ -11,30 +11,36 @@ local funs = { config = true, init = true, run = true }
 
 M.dirty = false
 
----@class LazyPlugin
----@field [1] string
----@field name string display name and name used for plugin config files
----@field uri string
----@field branch? string
----@field dir string
----@field enabled? boolean|(fun():boolean)
----@field opt? boolean
+---@class LazyPluginHooks
 ---@field init? fun(LazyPlugin) Will always be run
 ---@field config? fun(LazyPlugin) Will be executed when loading the plugin
----@field event? string|string[]
----@field cmd? string|string[]
----@field ft? string|string[]
----@field module? string|string[]
----@field keys? string|string[]
----@field requires? string[]
+---@field run? string|fun()
+
+---@class LazyPluginState
 ---@field loaded? {[string]:string, time:number}
 ---@field installed? boolean
----@field run? string|fun()
 ---@field tasks? LazyTask[]
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
 
----@class LazySpec
+---@class LazyPluginRef
+---@field branch? string
+---@field tag? string
+---@field commit? string
+---@field version? string
+
+---@class LazyPlugin: LazyPluginHandlers,LazyPluginHooks,LazyPluginState,LazyPluginRef
+---@field [1] string
+---@field name string display name and name used for plugin config files
+---@field uri string
+---@field dir string
+---@field enabled? boolean|(fun():boolean)
+---@field opt? boolean
+---@field requires? string[]
+
+---@alias LazySpec string|LazyPlugin|LazySpec[]|{requires:LazySpec}
+
+---@class LazySpecLoader
 ---@field modname string
 ---@field modpath string
 ---@field plugins table<string, LazyPlugin>
@@ -77,18 +83,19 @@ function Spec:add(plugin)
   return self.plugins[plugin.name]
 end
 
----@param spec table
+---@param spec LazySpec
 ---@param results? string[]
 function Spec:normalize(spec, results)
   results = results or {}
   if type(spec) == "string" then
     table.insert(results, self:add({ spec }).name)
   elseif #spec > 1 or Util.is_list(spec) then
-    ---@cast spec table[]
+    ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
       self:normalize(s, results)
     end
   elseif spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
+    ---@cast spec LazyPlugin
     local plugin = self:add(spec)
     plugin.requires = plugin.requires and self:normalize(plugin.requires, {}) or nil
     table.insert(results, plugin.name)
@@ -96,10 +103,10 @@ function Spec:normalize(spec, results)
   return results
 end
 
----@param spec LazySpec
+---@param spec LazySpecLoader
 function Spec.revive(spec)
   if spec.funs then
-    ---@type LazySpec
+    ---@type LazySpecLoader
     local loaded = nil
     for fun, plugins in pairs(spec.funs) do
       for _, name in pairs(plugins) do
@@ -160,9 +167,9 @@ function M.process_local(plugin)
   end
 end
 
----@param cache? table<string,LazySpec>
+---@param cache? table<string,LazySpecLoader>
 function M.specs(cache)
-  ---@type LazySpec[]
+  ---@type LazySpecLoader[]
   local specs = {}
 
   local function _load(name, modpath)
@@ -215,7 +222,7 @@ end
 function M.save()
   ---@class LazyState
   local state = {
-    ---@type table<string, LazySpec>
+    ---@type table<string, LazySpecLoader>
     specs = {},
     handlers = require("lazy.core.handler").group(Config.plugins, true),
     config = Config.options,

@@ -55,6 +55,7 @@ function M.spawn(cmd, opts)
     return
   end
 
+  ---@param data? string
   local function on_output(err, data)
     assert(not err, err)
 
@@ -74,17 +75,6 @@ function M.spawn(cmd, opts)
   vim.loop.read_start(stderr, on_output)
 
   return handle
-end
-
--- FIXME: can be removed?
-function M.all_done(slot0)
-  for slot4, slot5 in ipairs(slot0) do
-    if slot5 and not slot5:is_closing() then
-      return false
-    end
-  end
-
-  return true
 end
 
 return M

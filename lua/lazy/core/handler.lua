@@ -1,6 +1,13 @@
 local Util = require("lazy.core.util")
 local Loader = require("lazy.core.loader")
 
+---@class LazyPluginHandlers
+---@field event? string|string[]
+---@field cmd? string|string[]
+---@field ft? string|string[]
+---@field module? string|string[]
+---@field keys? string|string[]
+
 local M = {}
 
 ---@alias LazyHandler fun(grouped:table<string, string[]>)

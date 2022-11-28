@@ -52,11 +52,11 @@ function M.try(fn, msg)
       end
       level = level + 1
     end
+    msg = msg .. "\n\n" .. err
+    if #trace > 0 then
+      msg = msg .. "\n\n# stacktrace:\n" .. table.concat(trace, "\n")
+    end
     vim.schedule(function()
-      msg = msg .. "\n\n" .. err
-      if #trace > 0 then
-        msg = msg .. "\n\n# stacktrace:\n" .. table.concat(trace, "\n")
-      end
       M.error(msg)
     end)
     return err
