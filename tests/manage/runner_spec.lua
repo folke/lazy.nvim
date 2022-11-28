@@ -1,7 +1,7 @@
 local Runner = require("lazy.manage.runner")
 
 describe("runner", function()
-  local plugins = { { name = "plugin1" }, { name = "plugin2" } }
+  local plugins = { { name = "plugin1", _ = {} }, { name = "plugin2", _ = {} } }
 
   ---@type {plugin:string, task:string}[]
   local runs = {}
@@ -10,6 +10,11 @@ describe("runner", function()
   end)
 
   package.loaded["lazy.manage.task.test"] = {}
+  package.loaded["lazy.manage.task.test"]["skip"] = {
+    skip = function()
+      return true
+    end,
+  }
   for i = 1, 10 do
     package.loaded["lazy.manage.task.test"]["test" .. i] = {
       ---@param task LazyTask
@@ -28,6 +33,12 @@ describe("runner", function()
 
   it("runs the pipeline", function()
     local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", "test.test2" } })
+    runner:start()
+    assert.equal(4, #runs)
+  end)
+
+  it("handles skips", function()
+    local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", "test.skip", "test.test2" } })
     runner:start()
     assert.equal(4, #runs)
   end)

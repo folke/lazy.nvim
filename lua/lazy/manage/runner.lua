@@ -1,7 +1,7 @@
 local Task = require("lazy.manage.task")
 local Config = require("lazy.core.config")
 
----@alias LazyPipeline (TaskType|TaskType[])[]
+---@alias LazyPipeline TaskType[]
 
 ---@class RunnerOpts
 ---@field pipeline LazyPipeline
@@ -38,57 +38,36 @@ end
 ---@param plugin LazyPlugin
 ---@param pipeline LazyPipeline
 function Runner:_run(plugin, pipeline)
-  if #pipeline == 0 then
-    return
-  end
-  local ops = table.remove(pipeline, 1)
-  if ops == "wait" then
+  ---@type TaskType
+  local op = table.remove(pipeline, 1)
+  if op == "wait" then
     return table.insert(self._waiting, function()
       self:_run(plugin, pipeline)
     end)
   end
-
-  ops = type(ops) == "string" and { ops } or ops
-  ---@cast ops TaskType[]
-
-  ---@type LazyTask[]
-  local tasks = {}
-
-  local function on_done()
-    for _, task in ipairs(tasks) do
-      if task.error or not task:is_done() then
-        return
-      end
+  self:queue(plugin, op, function(task)
+    if not (task and task.error) and #pipeline > 0 then
+      self:_run(plugin, pipeline)
     end
-    self:_run(plugin, pipeline)
-  end
-
-  for _, op in ipairs(ops) do
-    local task = self:queue(plugin, op, { on_done = on_done })
-    if task then
-      table.insert(tasks, task)
-    end
-  end
-
-  for _, task in ipairs(tasks) do
-    task:start()
-  end
+  end)
 end
 
 ---@param plugin LazyPlugin
 ---@param task_type TaskType
----@param opts? TaskOptions
+---@param on_done fun(task?:LazyTask)
 ---@return LazyTask?
-function Runner:queue(plugin, task_type, opts)
+function Runner:queue(plugin, task_type, on_done)
   local def = vim.split(task_type, ".", { plain = true })
   assert(#def == 2)
   ---@type LazyTaskDef
   local task_def = require("lazy.manage.task." .. def[1])[def[2]]
   assert(task_def)
-  if not task_def.needed or task_def.needed(plugin, self._opts) then
-    local task = Task.new(plugin, def[2], task_def.run, opts)
+  if not (task_def.skip and task_def.skip(plugin, self._opts)) then
+    local task = Task.new(plugin, def[2], task_def.run, { on_done = on_done })
     table.insert(self._tasks, task)
-    return task
+    task:start()
+  else
+    on_done()
   end
 end
 
@@ -106,10 +85,11 @@ function Runner:start()
       end
     end
     if #self._waiting > 0 then
-      for _, cb in ipairs(self._waiting) do
+      local waiting = self._waiting
+      self._waiting = {}
+      for _, cb in ipairs(waiting) do
         cb()
       end
-      self._waiting = {}
       return
     end
     check:stop()

@@ -47,7 +47,7 @@ end
 ---@param opts? ManagerOpts
 function M.install(opts)
   M.run({
-    pipeline = { "git.install", { "plugin.docs", "plugin.run" } },
+    pipeline = { "git.install", "plugin.docs", "plugin.run" },
     plugins = function(plugin)
       return plugin.uri and not plugin._.installed
     end,
@@ -57,7 +57,7 @@ end
 ---@param opts? ManagerOpts
 function M.update(opts)
   M.run({
-    pipeline = { "git.update", { "plugin.docs", "plugin.run" }, "git.log" },
+    pipeline = { "git.update", "plugin.docs", "plugin.run", "wait", "git.log" },
     plugins = function(plugin)
       return plugin.uri and plugin._.installed
     end,

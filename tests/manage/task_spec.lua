@@ -1,7 +1,7 @@
 local Task = require("lazy.manage.task")
 
 describe("task", function()
-  local plugin = { name = "test" }
+  local plugin = { name = "test", _ = {} }
 
   local done = false
   local error = nil

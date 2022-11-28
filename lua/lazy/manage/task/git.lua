@@ -5,11 +5,11 @@ local Git = require("lazy.manage.git")
 local M = {}
 
 M.log = {
-  needed = function(plugin, opts)
-    if opts.interactive ~= true or not Util.file_exists(plugin.dir .. "/.git") then
+  skip = function(plugin, opts)
+    if not (opts.interactive and Util.file_exists(plugin.dir .. "/.git")) then
       return false
     end
-    return plugin._.updated == nil or plugin._.updated.from ~= plugin._.updated.to
+    return plugin._.updated and plugin._.updated.from == plugin._.updated.to
   end,
   run = function(self)
     local args = {
@@ -36,7 +36,11 @@ M.log = {
 
 M.update = {
   run = function(self)
-    if Util.file_exists(self.plugin.uri) then
+    if self.plugin._.is_local ~= self.plugin._.is_symlink then
+      -- FIXME: should change here and in install
+      error("incorrect local")
+    end
+    if self.plugin._.is_local then
       if vim.loop.fs_realpath(self.plugin.uri) ~= vim.loop.fs_realpath(self.plugin.dir) then
         vim.loop.fs_unlink(self.plugin.dir)
         vim.loop.fs_symlink(self.plugin.uri, self.plugin.dir, {
@@ -47,7 +51,6 @@ M.update = {
     else
       local args = {
         "pull",
-        "--tags",
         "--recurse-submodules",
         "--update-shallow",
         "--progress",
@@ -74,29 +77,23 @@ M.update = {
 
 M.install = {
   run = function(self)
-    if Util.file_exists(self.plugin.uri) then
-      vim.loop.fs_symlink(self.plugin.uri, self.plugin.dir, {
-        dir = true,
-      })
+    if self.plugin._.is_local then
+      vim.loop.fs_symlink(self.plugin.uri, self.plugin.dir, { dir = true })
       vim.opt.runtimepath:append(self.plugin.uri)
     else
       local args = {
         "clone",
         self.plugin.uri,
-        -- "--depth=1",
         "--filter=blob:none",
-        -- "--filter=tree:0",
         "--recurse-submodules",
         "--single-branch",
         "--shallow-submodules",
+        "--no-checkout",
         "--progress",
       }
 
       if self.plugin.branch then
-        vim.list_extend(args, {
-          "-b",
-          self.plugin.branch,
-        })
+        vim.list_extend(args, { "-b", self.plugin.branch })
       end
 
       table.insert(args, self.plugin.dir)
