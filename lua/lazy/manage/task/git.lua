@@ -1,4 +1,5 @@
 local Util = require("lazy.util")
+local Git = require("lazy.manage.git")
 
 ---@type table<string, LazyTaskDef>
 local M = {}
@@ -51,17 +52,17 @@ M.update = {
         "--update-shallow",
         "--progress",
       }
-      local git = assert(Util.git_info(self.plugin.dir))
+      local git = assert(Git.info(self.plugin.dir))
 
       self:spawn("git", {
         args = args,
         cwd = self.plugin.dir,
         on_exit = function(ok)
           if ok then
-            local git_new = assert(Util.git_info(self.plugin.dir))
+            local git_new = assert(Git.info(self.plugin.dir))
             self.plugin._.updated = {
-              from = git.hash,
-              to = git_new.hash,
+              from = git.commit,
+              to = git_new.commit,
             }
             self.plugin._.dirty = not vim.deep_equal(git, git_new)
           end

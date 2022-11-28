@@ -3,6 +3,7 @@ local Util = require("lazy.util")
 local Sections = require("lazy.view.sections")
 local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")
+local Git = require("lazy.manage.git")
 
 local Text = require("lazy.view.text")
 
@@ -294,10 +295,18 @@ function M:details(plugin)
   ---@type string[][]
   local props = {}
   table.insert(props, { "uri", (plugin.uri:gsub("%.git$", "")), "@text.reference" })
-  local git = Util.git_info(plugin.dir)
+  local git = Git.info(plugin.dir, true)
   if git then
-    table.insert(props, { "commit", git.hash:sub(1, 7), "LazyCommit" })
-    table.insert(props, { "branch", git.branch })
+    if git.version then
+      table.insert(props, { "version", tostring(git.version) })
+    end
+    if git.tag then
+      table.insert(props, { "tag", git.tag })
+    end
+    if git.branch then
+      table.insert(props, { "branch", git.branch })
+    end
+    table.insert(props, { "commit", git.commit:sub(1, 7), "LazyCommit" })
   end
   if Util.file_exists(plugin.dir .. "/README.md") then
     table.insert(props, { "readme", "README.md" })
