@@ -17,31 +17,28 @@ end
 
 M.commands = {
   clean = function()
-    Manage.clean({ clear = true, show = true })
+    Manage.clean({ clear = true, interactive = true })
   end,
   clear = function()
     Manage.clear()
     View.show()
   end,
   install = function()
-    Manage.install({ clear = true, show = true })
+    Manage.install({ clear = true, interactive = true })
   end,
   log = function()
-    Manage.log({ clear = true, show = true })
+    Manage.log({ clear = true, interactive = true })
   end,
   show = function()
     View.show()
   end,
-  docs = function()
-    Manage.docs({ clear = true, show = true })
-  end,
   sync = function()
-    Manage.update({ clear = true, show = true })
-    Manage.install({ show = true })
-    Manage.clean({ show = true })
+    Manage.clean({ interactive = true, clear = true, wait = true })
+    Manage.update({ interactive = true })
+    Manage.install({ interactive = true })
   end,
   update = function()
-    Manage.update({ clear = true, show = true })
+    Manage.update({ clear = true, interactive = true })
   end,
 }
 
