@@ -5,8 +5,8 @@ local Loader = require("lazy.core.loader")
 local M = {}
 
 M.run = {
-  needed = function(plugin)
-    return plugin._.dirty and (plugin.opt == false or plugin.run)
+  skip = function(plugin)
+    return not (plugin._.dirty and (plugin.opt == false or plugin.run))
   end,
   run = function(self)
     Loader.load(self.plugin, { task = "run" }, { load_start = true })
@@ -52,8 +52,8 @@ M.clean = {
 }
 
 M.docs = {
-  needed = function(plugin)
-    return plugin._.dirty
+  skip = function(plugin)
+    return not plugin._.dirty
   end,
   run = function(self)
     local docs = self.plugin.dir .. "/doc/"

@@ -1,7 +1,7 @@
 local Process = require("lazy.manage.process")
 
 ---@class LazyTaskDef
----@field needed? fun(plugin:LazyPlugin, opts:RunnerOpts):any?
+---@field skip? fun(plugin:LazyPlugin, opts:RunnerOpts):any?
 ---@field run fun(task:LazyTask)
 
 ---@alias LazyTaskState fun():boolean?
