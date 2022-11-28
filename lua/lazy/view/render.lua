@@ -317,7 +317,7 @@ function M:details(plugin)
     table.insert(props, { "readme", "README.md" })
   end
 
-  for handler in ipairs(Handler.handlers) do
+  for handler in pairs(Handler.handlers) do
     if plugin[handler] then
       table.insert(props, {
         handler,
