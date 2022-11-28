@@ -40,8 +40,8 @@ function M.try(fn, msg)
       end
       if info.what == "Lua" and not info.source:find("lazy.nvim") then
         local source = info.source:sub(2)
-        if source:find(Config.options.package_path, 1, true) == 1 then
-          source = source:sub(#Config.options.package_path + 1):gsub("^/opt/", ""):gsub("^/start/", "")
+        if source:find(Config.options.packpath, 1, true) == 1 then
+          source = source:sub(#Config.options.packpath + 1):gsub("^/opt/", ""):gsub("^/start/", "")
         end
         source = vim.fn.fnamemodify(source, ":p:~:.")
         local line = "  - " .. source .. ":" .. info.currentline

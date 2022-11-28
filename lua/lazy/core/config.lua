@@ -12,7 +12,7 @@ M.defaults = {
     patterns = {},
   },
   interactive = true,
-  package_path = vim.fn.stdpath("data") .. "/site/pack/lazy",
+  packpath = vim.fn.stdpath("data") .. "/site/pack/lazy",
   view = {
     icons = {
       start = "",

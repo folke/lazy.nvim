@@ -130,7 +130,7 @@ function M.update_state(check_clean)
   ---@type table<"opt"|"start", table<string,FileType>>
   local installed = { opt = {}, start = {} }
   for opt, packs in pairs(installed) do
-    Util.ls(Config.options.package_path .. "/" .. opt, function(_, name, type)
+    Util.ls(Config.options.packpath .. "/" .. opt, function(_, name, type)
       if type == "directory" or type == "link" then
         packs[name] = type
       end
@@ -144,7 +144,7 @@ function M.update_state(check_clean)
       plugin.opt = Config.options.opt
     end
     local opt = plugin.opt and "opt" or "start"
-    plugin.dir = Config.options.package_path .. "/" .. opt .. "/" .. plugin.name
+    plugin.dir = Config.options.packpath .. "/" .. opt .. "/" .. plugin.name
     plugin._.is_local = plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git"
     plugin._.is_symlink = installed[opt][plugin.name] == "link"
     plugin._.installed = installed[opt][plugin.name] ~= nil
@@ -160,7 +160,7 @@ function M.update_state(check_clean)
         table.insert(Config.to_clean, {
           name = pack,
           pack = pack,
-          dir = Config.options.package_path .. "/" .. opt .. "/" .. pack,
+          dir = Config.options.packpath .. "/" .. opt .. "/" .. pack,
           opt = opt == "opt",
           _ = {
             installed = true,
