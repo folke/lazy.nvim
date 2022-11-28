@@ -25,7 +25,7 @@ return {
   {
     filter = function(plugin)
       return has_task(plugin, function(task)
-        return task.running
+        return task:is_running()
       end)
     end,
     title = "Working",

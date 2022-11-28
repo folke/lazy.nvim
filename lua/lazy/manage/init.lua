@@ -1,109 +1,86 @@
 local Config = require("lazy.core.config")
-local Task = require("lazy.manage.task")
 local Runner = require("lazy.manage.runner")
 local Plugin = require("lazy.core.plugin")
 
 local M = {}
 
----@alias ManagerOpts {wait?: boolean, plugins?: LazyPlugin[], clear?: boolean, show?: boolean}
+---@class ManagerOpts
+---@field wait? boolean
+---@field clear? boolean
+---@field interactive? boolean
 
----@param operation TaskType
+---@param ropts RunnerOpts
 ---@param opts? ManagerOpts
----@param filter? fun(plugin:LazyPlugin):boolean?
-function M.run(operation, opts, filter)
+function M.run(ropts, opts)
   opts = opts or {}
-  local plugins = opts.plugins or Config.plugins
+  if opts.interactive == nil then
+    opts.interactive = Config.options.interactive
+  end
+  if ropts.interactive == nil then
+    ropts.interactive = opts.interactive
+  end
 
   if opts.clear then
     M.clear()
   end
 
-  if opts.show then
+  if opts.interactive then
     require("lazy.view").show()
   end
 
   ---@type Runner
-  local runner = Runner.new()
-
-  -- install missing plugins
-  for _, plugin in pairs(plugins) do
-    if filter == nil or filter(plugin) then
-      runner:add(Task.new(plugin, operation))
-    end
-  end
+  local runner = Runner.new(ropts)
+  runner:start()
 
   vim.cmd([[do User LazyRender]])
 
-  -- wait for install to finish
+  -- wait for post-install to finish
   runner:wait(function()
-    -- check if we need to do any post-install hooks
-    for _, plugin in ipairs(runner:plugins()) do
-      if plugin.dirty then
-        runner:add(Task.new(plugin, "docs"))
-        if plugin.opt == false or plugin.run then
-          runner:add(Task.new(plugin, "run"))
-        end
-      end
-      plugin.dirty = false
-      if opts.show and operation == "update" and plugin.updated and plugin.updated.from ~= plugin.updated.to then
-        runner:add(Task.new(plugin, "log", {
-          log = {
-            from = plugin.updated.from,
-            to = plugin.updated.to,
-          },
-        }))
-      end
-    end
-    -- wait for post-install to finish
-    runner:wait(function()
-      vim.cmd([[do User LazyRender]])
-    end)
+    vim.cmd([[do User LazyRender]])
   end)
 
   if opts.wait then
     runner:wait()
   end
-  return runner
 end
 
 ---@param opts? ManagerOpts
 function M.install(opts)
-  ---@param plugin LazyPlugin
-  M.run("install", opts, function(plugin)
-    return plugin.uri and not plugin.installed
-  end)
+  M.run({
+    pipeline = { "git.install", { "plugin.docs", "plugin.run" } },
+    plugins = function(plugin)
+      return plugin.uri and not plugin.installed
+    end,
+  }, opts)
 end
 
 ---@param opts? ManagerOpts
 function M.update(opts)
-  ---@param plugin LazyPlugin
-  M.run("update", opts, function(plugin)
-    return plugin.uri and plugin.installed
-  end)
+  M.run({
+    pipeline = { "git.update", { "plugin.docs", "plugin.run" }, "git.log" },
+    plugins = function(plugin)
+      return plugin.uri and plugin.installed
+    end,
+  }, opts)
 end
 
 ---@param opts? ManagerOpts
 function M.log(opts)
-  ---@param plugin LazyPlugin
-  M.run("log", opts, function(plugin)
-    return plugin.uri and plugin.installed
-  end)
-end
-
----@param opts? ManagerOpts
-function M.docs(opts)
-  ---@param plugin LazyPlugin
-  M.run("docs", opts, function(plugin)
-    return plugin.installed
-  end)
+  M.run({
+    pipeline = { "git.log" },
+    plugins = function(plugin)
+      return plugin.uri and plugin.installed
+    end,
+  }, opts)
 end
 
 ---@param opts? ManagerOpts
 function M.clean(opts)
-  opts = opts or {}
   Plugin.update_state(true)
-  opts.plugins = vim.tbl_values(Config.to_clean)
-  M.run("clean", opts)
+  M.run({
+    pipeline = { "plugin.clean" },
+    plugins = Config.to_clean,
+  }, opts)
 end
 
 function M.clear()
@@ -114,7 +91,7 @@ function M.clear()
     if plugin.tasks then
       ---@param task LazyTask
       plugin.tasks = vim.tbl_filter(function(task)
-        return task.running
+        return task:is_running()
       end, plugin.tasks)
     end
   end
