@@ -13,6 +13,7 @@ M.defaults = {
   },
   interactive = true,
   packpath = vim.fn.stdpath("data") .. "/site/pack/lazy",
+  lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
   view = {
     icons = {
       start = "",
@@ -23,6 +24,7 @@ M.defaults = {
       keys = " ",
       cmd = " ",
       ft = "",
+      task = "✔ ",
     },
   },
 }

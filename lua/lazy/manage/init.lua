@@ -39,6 +39,7 @@ function M.run(ropts, opts)
   if opts.wait then
     runner:wait()
   end
+  return runner
 end
 
 ---@param opts? ManagerOpts
@@ -58,23 +59,26 @@ function M.install(opts)
   }, opts)
 end
 
----@param opts? ManagerOpts
+---@param opts? ManagerOpts|{lockfile?:boolean}
 function M.update(opts)
+  opts = opts or {}
   M.run({
     pipeline = {
       "fs.symlink",
       "git.branch",
       "git.fetch",
-      "git.checkout",
+      { "git.checkout", lockfile = opts.lockfile },
       "plugin.docs",
-      "plugin.run",
       "wait",
+      "plugin.run",
       { "git.log", updated = true },
     },
     plugins = function(plugin)
       return plugin.uri and plugin._.installed
     end,
-  }, opts)
+  }, opts):wait(function()
+    require("lazy.manage.lock").update()
+  end)
 end
 
 ---@param opts? ManagerOpts
@@ -97,9 +101,11 @@ function M.clean(opts)
 end
 
 function M.clear()
+  Plugin.update_state(true)
   for _, plugin in pairs(Config.plugins) do
-    -- clear updated status
     plugin._.updated = nil
+    plugin._.cloned = nil
+    plugin._.dirty = nil
     -- clear finished tasks
     if plugin._.tasks then
       ---@param task LazyTask

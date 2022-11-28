@@ -18,11 +18,11 @@ M.dirty = false
 
 ---@class LazyPluginState
 ---@field loaded? {[string]:string, time:number}
----@field installed? boolean
+---@field installed boolean
 ---@field tasks? LazyTask[]
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
----@field is_local? boolean
+---@field is_local boolean
 ---@field is_symlink? boolean
 ---@field cloned? boolean
 

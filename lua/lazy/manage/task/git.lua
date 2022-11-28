@@ -1,5 +1,6 @@
 local Util = require("lazy.util")
 local Git = require("lazy.manage.git")
+local Lock = require("lazy.manage.lock")
 
 ---@type table<string, LazyTaskDef>
 local M = {}
@@ -118,11 +119,21 @@ M.checkout = {
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
   end,
-  run = function(self)
+  ---@param opts {lockfile?:boolean}
+  run = function(self, opts)
     local info = assert(Git.info(self.plugin.dir))
     local target = assert(Git.get_target(self.plugin))
 
-    if not self.plugin._.cloned and info.commit == target.commit then
+    local lock
+    if opts.lockfile then
+      lock = Lock.get(self.plugin)
+      if lock then
+        ---@diagnostic disable-next-line: cast-local-type
+        target = lock
+      end
+    end
+
+    if not self.plugin._.cloned and info.commit == target.commit and info.branch == target.branch then
       return
     end
 
@@ -131,7 +142,9 @@ M.checkout = {
       "--progress",
     }
 
-    if target.tag then
+    if lock then
+      table.insert(args, lock.commit)
+    elseif target.tag then
       table.insert(args, "tags/" .. target.tag)
     elseif self.plugin.commit then
       table.insert(args, self.plugin.commit)
