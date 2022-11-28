@@ -12,6 +12,7 @@ local Task = {}
 ---@alias TaskType "update"|"install"|"run"|"clean"|"log"|"docs"
 
 ---@class TaskOptions
+---@field on_done? fun(task:LazyTask)
 local options = {
   log = {
     since = "7 days ago",
@@ -41,6 +42,9 @@ end
 
 function Task:_done()
   self.running = false
+  if self.opts.on_done then
+    self.opts.on_done(self)
+  end
   vim.cmd("do User LazyRender")
   vim.api.nvim_exec_autocmds("User", {
     pattern = "LazyPlugin" .. self.type:sub(1, 1):upper() .. self.type:sub(2),
@@ -81,8 +85,8 @@ function Task:install()
       "clone",
       self.plugin.uri,
       -- "--depth=1",
-      -- "--filter=blob:none",
-      "--filter=tree:0",
+      "--filter=blob:none",
+      -- "--filter=tree:0",
       "--recurse-submodules",
       "--single-branch",
       "--shallow-submodules",
@@ -127,7 +131,7 @@ function Task:run()
       })
     end
   end
-
+  -- FIXME: the spawn above wont be finished yet
   self:_done()
 end
 
