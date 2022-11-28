@@ -8,7 +8,7 @@ M.log = {
     if opts.interactive ~= true or not Util.file_exists(plugin.dir .. "/.git") then
       return false
     end
-    return plugin.updated == nil or plugin.updated.from ~= plugin.updated.to
+    return plugin._.updated == nil or plugin._.updated.from ~= plugin._.updated.to
   end,
   run = function(self)
     local args = {
@@ -20,8 +20,8 @@ M.log = {
       "--color=never",
     }
 
-    if self.plugin.updated then
-      table.insert(args, self.plugin.updated.from .. ".." .. (self.plugin.updated.to or "HEAD"))
+    if self.plugin._.updated then
+      table.insert(args, self.plugin._.updated.from .. ".." .. (self.plugin._.updated.to or "HEAD"))
     else
       table.insert(args, "--since=7 days ago")
     end
@@ -59,11 +59,11 @@ M.update = {
         on_exit = function(ok)
           if ok then
             local git_new = assert(Util.git_info(self.plugin.dir))
-            self.plugin.updated = {
+            self.plugin._.updated = {
               from = git.hash,
               to = git_new.hash,
             }
-            self.plugin.dirty = not vim.deep_equal(git, git_new)
+            self.plugin._.dirty = not vim.deep_equal(git, git_new)
           end
         end,
       })
@@ -103,8 +103,8 @@ M.install = {
         args = args,
         on_exit = function(ok)
           if ok then
-            self.plugin.installed = true
-            self.plugin.dirty = true
+            self.plugin._.installed = true
+            self.plugin._.dirty = true
           end
         end,
       })

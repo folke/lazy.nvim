@@ -46,14 +46,14 @@ function M.load(plugins, reason, opts)
     plugin = type(plugin) == "string" and Config.plugins[plugin] or plugin
     ---@cast plugin LazyPlugin
 
-    if not plugin.loaded then
+    if not plugin._.loaded then
       ---@diagnostic disable-next-line: assign-type-mismatch
-      plugin.loaded = {}
+      plugin._.loaded = {}
       for k, v in pairs(reason) do
-        plugin.loaded[k] = v
+        plugin._.loaded[k] = v
       end
       if #M.loading > 0 then
-        plugin.loaded.plugin = M.loading[#M.loading].name
+        plugin._.loaded.plugin = M.loading[#M.loading].name
       end
 
       table.insert(M.loading, plugin)
@@ -69,7 +69,7 @@ function M.load(plugins, reason, opts)
         Util.try(plugin.config, "Failed to run `config` for " .. plugin.name)
       end
 
-      plugin.loaded.time = Util.track().time
+      plugin._.loaded.time = Util.track().time
       table.remove(M.loading)
       vim.schedule(function()
         vim.cmd("do User LazyRender")

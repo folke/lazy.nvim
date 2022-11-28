@@ -39,8 +39,8 @@ function Task.new(plugin, type, task, opts)
   self.type = type
   self.output = ""
   self.status = ""
-  plugin.tasks = plugin.tasks or {}
-  table.insert(plugin.tasks, self)
+  plugin._.tasks = plugin._.tasks or {}
+  table.insert(plugin._.tasks, self)
   return self
 end
 

@@ -6,7 +6,7 @@ local M = {}
 
 M.run = {
   needed = function(plugin)
-    return plugin.dirty and (plugin.opt == false or plugin.run)
+    return plugin._.dirty and (plugin.opt == false or plugin.run)
   end,
   run = function(self)
     Loader.load(self.plugin, { task = "run" }, { load_start = true })
@@ -47,13 +47,13 @@ M.clean = {
       vim.loop.fs_unlink(dir)
     end
 
-    self.plugin.installed = false
+    self.plugin._.installed = false
   end,
 }
 
 M.docs = {
   needed = function(plugin)
-    return plugin.dirty
+    return plugin._.dirty
   end,
   run = function(self)
     local docs = self.plugin.dir .. "/doc/"

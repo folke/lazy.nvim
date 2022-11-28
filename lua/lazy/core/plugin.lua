@@ -6,7 +6,7 @@ local Cache = require("lazy.core.cache")
 local M = {}
 
 ---@alias CachedPlugin LazyPlugin | {_funs: string[]}
-local skip = { installed = true, loaded = true, tasks = true, dirty = true, dir = true }
+local skip = { _ = true, dir = true }
 local funs = { config = true, init = true, run = true }
 
 M.dirty = false
@@ -29,7 +29,7 @@ M.dirty = false
 ---@field commit? string
 ---@field version? string
 
----@class LazyPlugin: LazyPluginHandlers,LazyPluginHooks,LazyPluginState,LazyPluginRef
+---@class LazyPlugin: LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field [1] string
 ---@field name string display name and name used for plugin config files
 ---@field uri string
@@ -37,6 +37,7 @@ M.dirty = false
 ---@field enabled? boolean|(fun():boolean)
 ---@field opt? boolean
 ---@field requires? string[]
+---@field _ LazyPluginState
 
 ---@alias LazySpec string|LazyPlugin|LazySpec[]|{requires:LazySpec}
 
@@ -69,6 +70,7 @@ function Spec:add(plugin)
     Util.error("Invalid plugin spec " .. vim.inspect(plugin))
   end
   plugin.uri = plugin.uri or ("https://github.com/" .. plugin[1] .. ".git")
+  plugin._ = {}
 
   -- PERF: optimized code to get package name without using lua patterns
   if not plugin.name then
@@ -133,11 +135,12 @@ function M.update_state(check_clean)
   end
 
   for _, plugin in pairs(Config.plugins) do
+    plugin._ = plugin._ or {}
     plugin[1] = plugin["1"] or plugin[1]
     plugin.opt = plugin.opt == nil and Config.options.opt or plugin.opt
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.package_path .. "/" .. opt .. "/" .. plugin.name
-    plugin.installed = installed[opt][plugin.name] == true
+    plugin._.installed = installed[opt][plugin.name] == true
     installed[opt][plugin.name] = nil
   end
 

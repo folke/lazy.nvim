@@ -1,8 +1,8 @@
 ---@param plugin LazyPlugin
 ---@param filter fun(task:LazyTask):boolean?
 local function has_task(plugin, filter)
-  if plugin.tasks then
-    for _, task in ipairs(plugin.tasks) do
+  if plugin._.tasks then
+    for _, task in ipairs(plugin._.tasks) do
       if filter(task) then
         return true
       end
@@ -49,7 +49,7 @@ return {
   {
     ---@param plugin LazyPlugin
     filter = function(plugin)
-      return plugin.updated and plugin.updated.from ~= plugin.updated.to
+      return plugin._.updated and plugin._.updated.from ~= plugin._.updated.to
     end,
     title = "Updated",
   },
@@ -63,25 +63,25 @@ return {
   },
   {
     filter = function(plugin)
-      return plugin.installed and not plugin.uri
+      return plugin._.installed and not plugin.uri
     end,
     title = "Clean",
   },
   {
     filter = function(plugin)
-      return not plugin.installed and not plugin.uri
+      return not plugin._.installed and not plugin.uri
     end,
     title = "Cleaned",
   },
   {
     filter = function(plugin)
-      return plugin.loaded
+      return plugin._.loaded
     end,
     title = "Loaded",
   },
   {
     filter = function(plugin)
-      return plugin.installed
+      return plugin._.installed
     end,
     title = "Installed",
   },

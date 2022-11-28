@@ -47,8 +47,8 @@ function M:update()
   }
 
   for _, plugin in ipairs(self.plugins) do
-    if plugin.tasks then
-      for _, task in ipairs(plugin.tasks) do
+    if plugin._.tasks then
+      for _, task in ipairs(plugin._.tasks) do
         self.progress.total = self.progress.total + 1
         if not task:is_running() then
           self.progress.done = self.progress.done + 1
@@ -144,7 +144,7 @@ end
 
 ---@param plugin LazyPlugin
 function M:reason(plugin)
-  local reason = vim.deepcopy(plugin.loaded or {})
+  local reason = vim.deepcopy(plugin._.loaded or {})
   ---@type string?
   local source = reason.source
   if source then
@@ -203,18 +203,18 @@ end
 
 ---@param plugin LazyPlugin
 function M:diagnostics(plugin)
-  if plugin.updated then
-    if plugin.updated.from == plugin.updated.to then
+  if plugin._.updated then
+    if plugin._.updated.from == plugin._.updated.to then
       self:diagnostic({
         message = "already up to date",
       })
     else
       self:diagnostic({
-        message = "updated from " .. plugin.updated.from:sub(1, 7) .. " to " .. plugin.updated.to:sub(1, 7),
+        message = "updated from " .. plugin._.updated.from:sub(1, 7) .. " to " .. plugin._.updated.to:sub(1, 7),
       })
     end
   end
-  for _, task in ipairs(plugin.tasks or {}) do
+  for _, task in ipairs(plugin._.tasks or {}) do
     if task:is_running() then
       self:diagnostic({
         severity = vim.diagnostic.severity.WARN,
@@ -233,7 +233,7 @@ end
 function M:plugin(plugin)
   self:append("  - ", "LazySpecial"):append(plugin.name)
   local plugin_start = self:row()
-  if plugin.loaded then
+  if plugin._.loaded then
     self:reason(plugin)
   end
   self:diagnostics(plugin)
@@ -248,7 +248,7 @@ end
 
 ---@param plugin LazyPlugin
 function M:tasks(plugin)
-  for _, task in ipairs(plugin.tasks or {}) do
+  for _, task in ipairs(plugin._.tasks or {}) do
     if task.type == "log" and not task.error then
       self:log(task)
     elseif task.error or self._details == plugin.name then

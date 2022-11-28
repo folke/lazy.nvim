@@ -27,7 +27,7 @@ function M.setup(opts)
 
   Util.track("install")
   for _, plugin in pairs(Config.plugins) do
-    if not plugin.installed then
+    if not plugin._.installed then
       vim.cmd("do User LazyInstallPre")
       require("lazy.manage").install({
         wait = true,
@@ -49,7 +49,7 @@ function M.setup(opts)
   Loader.init_plugins()
 
   if Config.plugins["lazy.nvim"] then
-    Config.plugins["lazy.nvim"].loaded.time = lazy_delta
+    Config.plugins["lazy.nvim"]._.loaded.time = lazy_delta
   end
 
   vim.cmd("do User LazyDone")
@@ -64,7 +64,7 @@ function M.stats()
   for _, plugin in pairs(require("lazy.core.config").plugins) do
     ret.count = ret.count + 1
 
-    if plugin.loaded then
+    if plugin._.loaded then
       ret.loaded = ret.loaded + 1
     end
   end

@@ -49,7 +49,7 @@ function M.install(opts)
   M.run({
     pipeline = { "git.install", { "plugin.docs", "plugin.run" } },
     plugins = function(plugin)
-      return plugin.uri and not plugin.installed
+      return plugin.uri and not plugin._.installed
     end,
   }, opts)
 end
@@ -59,7 +59,7 @@ function M.update(opts)
   M.run({
     pipeline = { "git.update", { "plugin.docs", "plugin.run" }, "git.log" },
     plugins = function(plugin)
-      return plugin.uri and plugin.installed
+      return plugin.uri and plugin._.installed
     end,
   }, opts)
 end
@@ -69,7 +69,7 @@ function M.log(opts)
   M.run({
     pipeline = { "git.log" },
     plugins = function(plugin)
-      return plugin.uri and plugin.installed
+      return plugin.uri and plugin._.installed
     end,
   }, opts)
 end
@@ -86,13 +86,13 @@ end
 function M.clear()
   for _, plugin in pairs(Config.plugins) do
     -- clear updated status
-    plugin.updated = nil
+    plugin._.updated = nil
     -- clear finished tasks
-    if plugin.tasks then
+    if plugin._.tasks then
       ---@param task LazyTask
-      plugin.tasks = vim.tbl_filter(function(task)
+      plugin._.tasks = vim.tbl_filter(function(task)
         return task:is_running()
-      end, plugin.tasks)
+      end, plugin._.tasks)
     end
   end
   vim.cmd([[do User LazyRender]])
