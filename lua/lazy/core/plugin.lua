@@ -22,6 +22,8 @@ M.dirty = false
 ---@field tasks? LazyTask[]
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
+---@field is_local? boolean
+---@field is_symlink? boolean
 
 ---@class LazyPluginRef
 ---@field branch? string
@@ -124,12 +126,12 @@ function Spec.revive(spec)
 end
 
 function M.update_state(check_clean)
-  ---@type table<"opt"|"start", table<string,boolean>>
+  ---@type table<"opt"|"start", table<string,FileType>>
   local installed = { opt = {}, start = {} }
   for opt, packs in pairs(installed) do
     Util.ls(Config.options.package_path .. "/" .. opt, function(_, name, type)
       if type == "directory" or type == "link" then
-        packs[name] = true
+        packs[name] = type
       end
     end)
   end
@@ -140,8 +142,12 @@ function M.update_state(check_clean)
     plugin.opt = plugin.opt == nil and Config.options.opt or plugin.opt
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.package_path .. "/" .. opt .. "/" .. plugin.name
-    plugin._.installed = installed[opt][plugin.name] == true
-    installed[opt][plugin.name] = nil
+    plugin._.is_local = plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git"
+    plugin._.is_symlink = installed[opt][plugin.name] == "link"
+    plugin._.installed = installed[opt][plugin.name] ~= nil
+    if plugin._.is_local == plugin._.is_symlink then
+      installed[opt][plugin.name] = nil
+    end
   end
 
   if check_clean then
@@ -153,7 +159,9 @@ function M.update_state(check_clean)
           pack = pack,
           dir = Config.options.package_path .. "/" .. opt .. "/" .. pack,
           opt = opt == "opt",
-          installed = true,
+          _ = {
+            installed = true,
+          },
         })
       end
     end
