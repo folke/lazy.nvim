@@ -108,7 +108,7 @@ end
 
 ---@alias FileType "file"|"directory"|"link"
 ---@param path string
----@param fn fun(path: string, name:string, type:FileType)
+---@param fn fun(path: string, name:string, type:FileType):boolean?
 function M.ls(path, fn)
   local handle = vim.loop.fs_scandir(path)
   while handle do
@@ -116,7 +116,9 @@ function M.ls(path, fn)
     if not name then
       break
     end
-    fn(path .. "/" .. name, name, t)
+    if fn(path .. "/" .. name, name, t) == false then
+      break
+    end
   end
 end
 
