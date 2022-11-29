@@ -40,7 +40,7 @@ M.commands = {
   update = function()
     Manage.update({ clear = true, interactive = true })
   end,
-  reset = function()
+  restore = function()
     Manage.update({ clear = true, interactive = true, lockfile = true })
   end,
 }
