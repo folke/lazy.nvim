@@ -1,5 +1,6 @@
 local Util = require("lazy.core.util")
 local Loader = require("lazy.core.loader")
+local Config = require("lazy.core.config")
 
 ---@class LazyPluginHandlers
 ---@field event? string|string[]
@@ -12,34 +13,25 @@ local M = {}
 
 ---@alias LazyHandler fun(grouped:table<string, string[]>)
 
----@type table<string, table<string, string[]>>
-M._groups = nil
-
----@param plugins LazyPlugin[]
----@param rebuild? boolean
-function M.group(plugins, rebuild)
-  if M._groups == nil or rebuild then
-    M._groups = {}
-    local types = vim.tbl_keys(M.handlers) --[[@as string[] ]]
-    for _, key in ipairs(types) do
-      M._groups[key] = {}
-      for _, plugin in pairs(plugins) do
-        if plugin[key] then
-          ---@diagnostic disable-next-line: no-unknown
-          for _, value in pairs(type(plugin[key]) == "table" and plugin[key] or { plugin[key] }) do
-            M._groups[key][value] = M._groups[key][value] or {}
-            table.insert(M._groups[key][value], plugin.name)
-          end
+function M.setup()
+  for key, handler in pairs(M.handlers) do
+    ---@type table<string, string[]>
+    local group = {}
+    for _, plugin in pairs(Config.plugins) do
+      if plugin[key] then
+        ---@diagnostic disable-next-line: no-unknown
+        for _, value in pairs(type(plugin[key]) == "table" and plugin[key] or { plugin[key] }) do
+          group[value] = group[value] or {}
+          table.insert(group[value], plugin.name)
         end
       end
     end
+    handler(group)
   end
-  return M._groups
 end
 
 ---@type table<string, LazyHandler>
 M.handlers = {}
-
 function M.handlers.event(grouped)
   local group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
   for event, plugins in pairs(grouped) do

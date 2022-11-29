@@ -10,6 +10,7 @@ function M.setup(opts)
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
+  local Handler = require("lazy.core.handler")
   local Plugin = require("lazy.core.plugin")
 
   Util.track("cache", module_start - cache_start)
@@ -21,9 +22,7 @@ function M.setup(opts)
   Config.setup(opts)
   Util.track()
 
-  Util.track("state")
   Plugin.load()
-  Util.track()
 
   if Config.options.install_missing then
     Util.track("install")
@@ -40,12 +39,13 @@ function M.setup(opts)
     Util.track()
   end
 
-  Util.track("loader")
-  Loader.setup()
+  Util.track("handlers")
+  Handler.setup()
   Util.track()
 
   local lazy_delta = vim.loop.hrtime() - cache_start
 
+  Util.track() -- end setup
   Loader.init_plugins()
 
   if Config.plugins["lazy.nvim"] then
@@ -53,23 +53,16 @@ function M.setup(opts)
   end
 
   vim.cmd("do User LazyDone")
-  Util.track() -- end setup
 end
 
 function M.stats()
-  local ret = {
-    count = 0,
-    loaded = 0,
-  }
-
+  local ret = { count = 0, loaded = 0 }
   for _, plugin in pairs(require("lazy.core.config").plugins) do
     ret.count = ret.count + 1
-
     if plugin._.loaded then
       ret.loaded = ret.loaded + 1
     end
   end
-
   return ret
 end
 

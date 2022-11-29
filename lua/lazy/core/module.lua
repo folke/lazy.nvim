@@ -5,13 +5,9 @@ local M = {}
 ---@type table<string, string>
 M.hashes = {}
 
-function M.is_dirty(modname, modpath)
-  return not (Cache.get(modname) and M.hashes[modname] and M.hashes[modname] == Cache.hash(modpath))
-end
-
 ---@param modname string
 ---@param modpath string
----@return any, boolean
+---@return any
 function M.load(modname, modpath)
   local err
   ---@type (string|fun())?
@@ -24,9 +20,7 @@ function M.load(modname, modpath)
     chunk = nil
   end
 
-  local cached = false
   if chunk then
-    cached = true
     chunk, err = load(chunk --[[@as string]], "@" .. modpath, "b")
   else
     vim.schedule(function()
@@ -39,7 +33,7 @@ function M.load(modname, modpath)
   end
 
   if chunk then
-    return chunk(), cached
+    return chunk()
   else
     error(err)
   end

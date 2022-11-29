@@ -68,27 +68,20 @@ function M.setup()
 end
 
 function M.autosave()
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "LazyDone",
-    once = true,
+  vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
-      vim.api.nvim_create_autocmd("VimLeavePre", {
-        callback = function()
-          if M.dirty then
-            local hash = M.hash(cache_path)
-            -- abort when the file was changed in the meantime
-            if hash == nil or cache_hash == hash then
-              M.save()
-            end
-          end
-        end,
-      })
+      if M.dirty then
+        local hash = M.hash(cache_path)
+        -- abort when the file was changed in the meantime
+        if hash == nil or cache_hash == hash then
+          M.save()
+        end
+      end
     end,
   })
 end
 
 function M.save()
-  require("lazy.core.plugin").save()
   require("lazy.core.module").save()
 
   local f = assert(io.open(cache_path, "wb"))

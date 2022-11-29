@@ -1,16 +1,9 @@
 local Config = require("lazy.core.config")
 local Util = require("lazy.core.util")
 local Module = require("lazy.core.module")
-local Cache = require("lazy.core.cache")
 local Handler = require("lazy.core.handler")
 
 local M = {}
-
----@alias CachedPlugin LazyPlugin | {_funs: string[]}
-local skip = { _ = true, dir = true }
-local funs = { config = true, init = true, run = true }
-
-M.dirty = false
 
 ---@class LazyPluginHooks
 ---@field init? fun(LazyPlugin) Will always be run
@@ -48,10 +41,7 @@ M.dirty = false
 ---@alias LazySpec string|LazyPlugin|LazySpec[]|{dependencies:LazySpec}
 
 ---@class LazySpecLoader
----@field modname string
----@field modpath string
 ---@field plugins table<string, LazyPlugin>
----@field funs? table<string, string[]>
 local Spec = {}
 M.Spec = Spec
 
@@ -59,26 +49,8 @@ M.Spec = Spec
 function Spec.new(spec)
   local self = setmetatable({}, { __index = Spec })
   self.plugins = {}
-  self.modname = nil
-  self.modpath = nil
   if spec then
     self:normalize(spec)
-  end
-  return self
-end
-
----@param modname string
----@param modpath string
-function Spec.load(modname, modpath)
-  local self = setmetatable({}, { __index = Spec })
-  self.plugins = {}
-  self.modname = modname
-  self.modpath = modpath
-  local mod, cached = Module.load(modname, modpath)
-  M.dirty = M.dirty or not cached
-  self:normalize(assert(mod))
-  if modname == Config.options.plugins and not self.plugins["lazy.nvim"] then
-    self:add({ "folke/lazy.nvim", opt = false })
   end
   return self
 end
@@ -113,9 +85,16 @@ function Spec:add(plugin, is_dep)
 
   plugin.dep = is_dep
 
-  M.process_local(plugin)
+  -- check for plugins that should be local
+  for _, pattern in ipairs(Config.options.plugins_local.patterns) do
+    if plugin[1]:find(pattern, 1, true) then
+      plugin.uri = Config.options.plugins_local.path .. "/" .. plugin.name
+      break
+    end
+  end
+
   local other = self.plugins[plugin.name]
-  self.plugins[plugin.name] = other and M.merge(other, plugin) or plugin
+  self.plugins[plugin.name] = other and self:merge(other, plugin) or plugin
   return self.plugins[plugin.name]
 end
 
@@ -140,28 +119,10 @@ function Spec:normalize(spec, results, is_dep)
   return results
 end
 
----@param spec LazySpecLoader
-function Spec.revive(spec)
-  if spec.funs then
-    ---@type LazySpecLoader
-    local loaded = nil
-    for fun, plugins in pairs(spec.funs) do
-      for _, name in pairs(plugins) do
-        ---@diagnostic disable-next-line: no-unknown
-        spec.plugins[name][fun] = function(...)
-          loaded = loaded or Spec.load(spec.modname, spec.modpath)
-          return loaded.plugins[name][fun](...)
-        end
-      end
-    end
-  end
-  return spec
-end
-
 ---@param old LazyPlugin
 ---@param new LazyPlugin
 ---@return LazyPlugin
-function M.merge(old, new)
+function Spec:merge(old, new)
   local is_dep = old.dep and new.dep
 
   ---@diagnostic disable-next-line: no-unknown
@@ -185,25 +146,19 @@ function M.merge(old, new)
   return old
 end
 
----@param opts? {clean:boolean, installed:boolean, plugins?: LazyPlugin[]}
-function M.update_state(opts)
-  opts = opts or {}
-
+function M.update_state()
   ---@type table<"opt"|"start", table<string,FileType>>
   local installed = { opt = {}, start = {} }
-  if opts.installed ~= false then
-    for opt, packs in pairs(installed) do
-      Util.ls(Config.options.packpath .. "/" .. opt, function(_, name, type)
-        if type == "directory" or type == "link" then
-          packs[name] = type
-        end
-      end)
-    end
+  for opt, packs in pairs(installed) do
+    Util.ls(Config.options.packpath .. "/" .. opt, function(_, name, type)
+      if type == "directory" or type == "link" then
+        packs[name] = type
+      end
+    end)
   end
 
-  for _, plugin in pairs(opts.plugins or Config.plugins) do
+  for _, plugin in pairs(Config.plugins) do
     plugin._ = plugin._ or {}
-    plugin[1] = plugin["1"] or plugin[1]
     if plugin.opt == nil then
       plugin.opt = plugin.dep
         or Config.options.opt
@@ -224,121 +179,52 @@ function M.update_state(opts)
     end
   end
 
-  if opts.clean then
-    Config.to_clean = {}
-    for opt, packs in pairs(installed) do
-      for pack in pairs(packs) do
-        table.insert(Config.to_clean, {
-          name = pack,
-          pack = pack,
-          dir = Config.options.packpath .. "/" .. opt .. "/" .. pack,
-          opt = opt == "opt",
-          _ = {
-            installed = true,
-          },
-        })
-      end
+  Config.to_clean = {}
+  for opt, packs in pairs(installed) do
+    for pack, dir_type in pairs(packs) do
+      table.insert(Config.to_clean, {
+        name = pack,
+        dir = Config.options.packpath .. "/" .. opt .. "/" .. pack,
+        opt = opt == "opt",
+        _ = {
+          installed = true,
+          is_symlink = dir_type == "link",
+          is_local = dir_type == "link",
+        },
+      })
     end
   end
 end
 
----@param plugin LazyPlugin
-function M.process_local(plugin)
-  for _, pattern in ipairs(Config.options.plugins_local.patterns) do
-    if plugin[1]:find(pattern, 1, true) then
-      plugin.uri = Config.options.plugins_local.path .. "/" .. plugin.name
-      return
-    end
-  end
-end
-
----@param cache? table<string,LazySpecLoader>
-function M.specs(cache)
-  ---@type LazySpecLoader[]
-  local specs = {}
+function M.spec()
+  local spec = Spec.new()
 
   local function _load(name, modpath)
     local modname = Config.options.plugins .. (name and ("." .. name) or "")
     Util.try(function()
-      local spec = cache and cache[modname]
-      spec = spec and not Module.is_dirty(modname, modpath) and Spec.revive(spec) or Spec.load(modname, modpath)
-      table.insert(specs, spec)
+      local mod = Module.load(modname, modpath)
+      spec:normalize(assert(mod))
     end, "Failed to load **" .. modname .. "**")
   end
 
   _load(nil, Config.paths.main)
   Util.lsmod(Config.paths.plugins, _load)
-  return specs
+  return spec
 end
 
 function M.load()
-  ---@type boolean, LazyState?
-  local ok, state = pcall(vim.json.decode, Cache.get("cache.state"))
-  if not (ok and state and vim.deep_equal(Config.options, state.config)) then
-    M.dirty = true
-    state = nil
-  end
-
   -- load specs
-  Util.track("specs")
-  local specs = M.specs(state and state.specs)
-  Util.track()
-
-  -- merge
-  Config.plugins = {}
-  for _, spec in ipairs(specs) do
-    for _, plugin in pairs(spec.plugins) do
-      local other = Config.plugins[plugin.name]
-      Config.plugins[plugin.name] = other and M.merge(other, plugin) or plugin
-    end
+  Util.track("spec")
+  local spec = M.spec()
+  if not spec.plugins["lazy.nvim"] then
+    spec:add({ "folke/lazy.nvim", opt = false })
   end
+  Config.plugins = spec.plugins
+  Util.track()
 
   Util.track("state")
   M.update_state()
   Util.track()
-
-  if M.dirty then
-    Cache.dirty = true
-  elseif state then
-    require("lazy.core.handler")._groups = state.handlers
-  end
-end
-
-function M.save()
-  ---@class LazyState
-  local state = {
-    ---@type table<string, LazySpecLoader>
-    specs = {},
-    handlers = require("lazy.core.handler").group(Config.plugins, true),
-    config = Config.options,
-  }
-
-  for _, spec in ipairs(M.specs()) do
-    spec.funs = {}
-    state.specs[spec.modname] = spec
-    for _, plugin in pairs(spec.plugins) do
-      if plugin.init or (plugin.opt == false and plugin.config) then
-        -- no use in caching specs that need init,
-        -- or specs that are in start and have a config,
-        -- since we'll load the real spec during startup anyway
-        state.specs[spec.modname] = nil
-        break
-      end
-      ---@cast plugin CachedPlugin
-      for k, v in pairs(plugin) do
-        if type(v) == "function" then
-          if funs[k] then
-            spec.funs[k] = spec.funs[k] or {}
-            table.insert(spec.funs[k], plugin.name)
-          end
-          plugin[k] = nil
-        elseif skip[k] then
-          plugin[k] = nil
-        end
-      end
-    end
-  end
-  Cache.set("cache.state", vim.json.encode(state))
 end
 
 return M

@@ -38,7 +38,8 @@ describe("plugin spec opt", function()
     }
     for _, test in ipairs(tests) do
       local spec = Plugin.Spec.new(test)
-      Plugin.update_state({ plugins = spec.plugins })
+      Config.plugins = spec.plugins
+      Plugin.update_state()
       assert(vim.tbl_count(spec.plugins) == 3)
       assert(#spec.plugins.bar.dependencies == 2)
       assert(spec.plugins.bar.dep ~= true)
@@ -53,7 +54,8 @@ describe("plugin spec opt", function()
   it("handles opt from dep", function()
     Config.options.opt = false
     local spec = Plugin.Spec.new({ "foo/dep1", { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } } })
-    Plugin.update_state({ plugins = spec.plugins })
+    Config.plugins = spec.plugins
+    Plugin.update_state()
     assert.same(3, vim.tbl_count(spec.plugins))
     assert(spec.plugins.bar.dep ~= true)
     assert(spec.plugins.bar.opt == false)
@@ -66,7 +68,8 @@ describe("plugin spec opt", function()
   it("handles opt from dep", function()
     Config.options.opt = false
     local spec = Plugin.Spec.new({ "foo/bar", module = "foo" })
-    Plugin.update_state({ plugins = spec.plugins })
+    Config.plugins = spec.plugins
+    Plugin.update_state()
     assert.same(1, vim.tbl_count(spec.plugins))
     assert(spec.plugins.bar.dep ~= true)
     assert(spec.plugins.bar.opt == true)

@@ -6,18 +6,6 @@ local M = {}
 ---@type LazyPlugin[]
 M.loading = {}
 
-function M.setup()
-  local Handler = require("lazy.core.handler")
-  local groups = Handler.group(Config.plugins)
-  for t, handler in pairs(Handler.handlers) do
-    if groups[t] then
-      Util.track(t)
-      handler(groups[t])
-      Util.track()
-    end
-  end
-end
-
 function M.init_plugins()
   Util.track("plugin_init")
   for _, plugin in pairs(Config.plugins) do
