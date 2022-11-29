@@ -83,6 +83,20 @@ function M.update(opts)
   end)
 end
 
+function M.check(opts)
+  opts = opts or {}
+  M.run({
+    pipeline = {
+      "git.fetch",
+      "wait",
+      { "git.log", check = true },
+    },
+    plugins = function(plugin)
+      return plugin.uri and plugin._.installed
+    end,
+  }, opts)
+end
+
 ---@param opts? ManagerOpts
 function M.log(opts)
   M.run({

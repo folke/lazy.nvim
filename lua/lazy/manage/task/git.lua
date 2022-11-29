@@ -6,14 +6,14 @@ local Lock = require("lazy.manage.lock")
 local M = {}
 
 M.log = {
-  ---@param opts {since?: string, updated?:boolean}
+  ---@param opts {since?: string, updated?:boolean, check?: boolean}
   skip = function(plugin, opts)
     if opts.updated and not (plugin._.updated and plugin._.updated.from ~= plugin._.updated.to) then
       return true
     end
     return not Util.file_exists(plugin.dir .. "/.git")
   end,
-  ---@param opts {since?: string, updated?:boolean}
+  ---@param opts {since?: string, updated?:boolean, check?:boolean}
   run = function(self, opts)
     local args = {
       "log",
@@ -26,6 +26,10 @@ M.log = {
 
     if opts.updated then
       table.insert(args, self.plugin._.updated.from .. ".." .. (self.plugin._.updated.to or "HEAD"))
+    elseif opts.check then
+      local info = assert(Git.info(self.plugin.dir))
+      local target = assert(Git.get_target(self.plugin))
+      table.insert(args, info.commit .. ".." .. target.commit)
     else
       table.insert(args, "--since=" .. (opts.since or "7 days ago"))
     end

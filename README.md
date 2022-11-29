@@ -12,8 +12,8 @@
 - [x] Config in multiple files
 - [x] Patterns for local packages
 - [x] Profiling
-- [ ] lockfile
-- [ ] check for updates
+- [x] lockfile
+- [x] check for updates
 - [ ] package.lua
 - [ ] package-lock.lua
 - [x] tag/version support `git tag --sort version:refname`
