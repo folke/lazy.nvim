@@ -12,7 +12,8 @@ M.modes = {
   { name = "check", key = "C", desc = "Check for updates and show the log (git fetch)" },
   { name = "log", key = "L", desc = "Show recent updates for all plugins" },
   { name = "restore", key = "R", desc = "Updates all plugins to the state in the lockfile" },
-  { name = "help", key = "g?", hide = true, desc = "Toggle this help page" },
+  { name = "profile", key = "P", desc = "Show detailed profiling", toggle = true },
+  { name = "help", key = "g?", hide = true, desc = "Toggle this help page", toggle = true },
 
   { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
   {
@@ -36,11 +37,7 @@ function M.setup()
 end
 
 function M.show(mode)
-  if mode == "help" and M.mode == "help" then
-    M.mode = nil
-  else
-    M.mode = mode or M.mode
-  end
+  M.mode = mode or M.mode
   require("lazy.view.colors").setup()
 
   if M._buf and vim.api.nvim_buf_is_valid(M._buf) then
@@ -171,6 +168,10 @@ function M.show(mode)
           Commands.cmd(m.name, { plugin })
         end
       else
+        if M.mode == m.name and m.toggle then
+          M.mode = nil
+          return update()
+        end
         Commands.cmd(m.name)
       end
     end, { buffer = buf })

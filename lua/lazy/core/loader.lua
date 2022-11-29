@@ -22,7 +22,7 @@ function M.init_plugins()
   Util.track("plugin_init")
   for _, plugin in pairs(Config.plugins) do
     if plugin.init then
-      Util.track(plugin.name)
+      Util.track({ plugin = plugin.name, start = "init" })
       Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
       Util.track()
     end
@@ -58,7 +58,7 @@ function M.load(plugins, reason, opts)
 
       table.insert(M.loading, plugin)
 
-      Util.track(plugin.name)
+      Util.track({ plugin = plugin.name, start = reason.start })
       M.packadd(plugin, opts and opts.load_start)
 
       if plugin.requires then

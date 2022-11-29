@@ -60,6 +60,8 @@ function M:update()
 
   if mode == "help" then
     self:help()
+  elseif mode == "profile" then
+    self:profile()
   else
     for _, section in ipairs(Sections) do
       self:section(section)
@@ -109,7 +111,7 @@ function M:title()
   end
   self:nl()
 
-  if View.mode ~= "help" then
+  if View.mode ~= "help" and View.mode ~= "profile" then
     if self.progress.done < self.progress.total then
       self:append("Tasks: ", "LazyH2")
       self:append(self.progress.done .. "/" .. self.progress.total, "LazyMuted")
@@ -181,9 +183,14 @@ function M:diagnostic(diag)
   table.insert(self._diagnostics, diag)
 end
 
----@param plugin LazyPlugin
-function M:reason(plugin)
-  local reason = vim.deepcopy(plugin._.loaded or {})
+---@param reason? {[string]:string, time:number}
+---@param opts? {time_right?:boolean}
+function M:reason(reason, opts)
+  opts = opts or {}
+  if not reason then
+    return
+  end
+  reason = vim.deepcopy(reason)
   ---@type string?
   local source = reason.source
   if source then
@@ -207,12 +214,16 @@ function M:reason(plugin)
       end
     end
   end
-  self:append(" " .. math.floor((reason.time or 0) / 1e6 * 100) / 100 .. "ms", "Bold")
+  local time = " " .. math.floor((reason.time or 0) / 1e6 * 100) / 100 .. "ms"
+  if not opts.time_right then
+    self:append(time, "Bold")
+  end
   self:append(" ")
   -- self:append(" (", "Conceal")
   local first = true
   for key, value in pairs(reason) do
-    if key == "require" then
+    if type(key) == "number" then
+    elseif key == "require" then
       -- self:append("require", "@function.builtin")
       -- self:append("(", "@punctuation.bracket")
       -- self:append('"' .. value .. '"', "@string")
@@ -236,6 +247,9 @@ function M:reason(plugin)
         self:append(value, hl)
       end
     end
+  end
+  if opts.time_right then
+    self:append(time, "Bold")
   end
   -- self:append(")", "Conceal")
 end
@@ -270,10 +284,14 @@ end
 
 ---@param plugin LazyPlugin
 function M:plugin(plugin)
-  self:append("  - ", "LazySpecial"):append(plugin.name)
+  if plugin._.loaded then
+    self:append("  ● ", "LazySpecial"):append(plugin.name)
+  else
+    self:append("  ○ ", "LazySpecial"):append(plugin.name)
+  end
   local plugin_start = self:row()
   if plugin._.loaded then
-    self:reason(plugin)
+    self:reason(plugin._.loaded)
   end
   self:diagnostics(plugin)
   self:nl()
@@ -375,6 +393,34 @@ function M:details(plugin)
     self:nl()
   end
   self:nl()
+end
+
+function M:profile()
+  self:append("Profile", "LazyH2"):nl():nl()
+  local symbols = {
+    "●",
+    "➜",
+    "★",
+    "‒",
+  }
+
+  ---@param entry LazyProfile
+  local function _profile(entry, depth)
+    local data = type(entry.data) == "string" and { source = entry.data } or entry.data
+    data.time = entry.time
+    local symbol = symbols[depth] or symbols[#symbols]
+    self:append(("  "):rep(depth)):append(" " .. symbol, "LazySpecial")
+    self:reason(data, { time_right = true })
+    self:nl()
+
+    for _, child in ipairs(entry) do
+      _profile(child, depth + 1)
+    end
+  end
+
+  for _, entry in ipairs(Util._profiles[1]) do
+    _profile(entry, 1)
+  end
 end
 
 return M

@@ -53,7 +53,7 @@ function M.handlers.event(grouped)
         once = true,
         pattern = pattern,
         callback = function()
-          Util.track("event: " .. (_event == "User" and pattern or event))
+          Util.track({ event = event })
           Loader.load(plugins, { event = event })
           Util.track()
         end,
@@ -67,7 +67,7 @@ function M.handlers.keys(grouped)
     ---@cast keys string
     vim.keymap.set("n", keys, function()
       vim.keymap.del("n", keys)
-      Util.track("keys: " .. keys)
+      Util.track({ keys = keys })
       Loader.load(plugins, { keys = keys })
       vim.api.nvim_input(keys)
       Util.track()
@@ -84,7 +84,7 @@ function M.handlers.ft(grouped)
       pattern = ft,
       group = group,
       callback = function()
-        Util.track("filetype: " .. ft)
+        Util.track({ ft = ft })
         Loader.load(plugins, { ft = ft })
         Util.track()
       end,
@@ -95,13 +95,9 @@ end
 function M.handlers.cmd(grouped)
   for cmd, plugins in pairs(grouped) do
     ---@cast cmd string
-    local function _load(complete)
+    local function _load()
       vim.api.nvim_del_user_command(cmd)
-      if complete then
-        Util.track("cmd-complete: " .. cmd)
-      else
-        Util.track("cmd: " .. cmd)
-      end
+      Util.track({ cmd = cmd })
       Loader.load(plugins, { cmd = cmd })
       Util.track()
     end
@@ -120,7 +116,7 @@ function M.handlers.cmd(grouped)
       bang = true,
       nargs = "*",
       complete = function()
-        _load(true)
+        _load()
         -- HACK: trick Neovim to show the newly loaded command completion
         vim.api.nvim_input("<space><bs><tab>")
       end,

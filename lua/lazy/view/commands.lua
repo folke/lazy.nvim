@@ -36,6 +36,9 @@ M.commands = {
   help = function()
     View.show("help")
   end,
+  profile = function()
+    View.show("profile")
+  end,
   sync = function()
     Manage.clean({ interactive = true, clear = true, wait = true, mode = "sync" })
     Manage.update({ interactive = true })

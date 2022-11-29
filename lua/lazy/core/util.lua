@@ -1,16 +1,16 @@
 local M = {}
 
----@alias LazyProfile {name: string, time: number, [number]:LazyProfile}
+---@alias LazyProfile {data: string|{[string]:string}, time: number, [number]:LazyProfile}
 
 ---@type LazyProfile[]
 M._profiles = { { name = "lazy" } }
 
----@param name string?
+---@param data (string|{[string]:string})?
 ---@param time number?
-function M.track(name, time)
-  if name then
+function M.track(data, time)
+  if data then
     local entry = {
-      name = name,
+      data = data,
       time = time or vim.loop.hrtime(),
     }
     table.insert(M._profiles[#M._profiles], entry)

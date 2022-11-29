@@ -52,32 +52,6 @@ function M.throttle(ms, fn)
   end
 end
 
-function M.profile()
-  local lines = { "# Profile" }
-
-  ---@param entry LazyProfile
-  local function _profile(entry, depth)
-    if entry.time < 0.5 then
-      -- Nothing
-    end
-
-    table.insert(
-      lines,
-      ("  "):rep(depth) .. "- " .. entry.name .. ": **" .. math.floor((entry.time or 0) / 1e6 * 100) / 100 .. "ms**"
-    )
-
-    for _, child in ipairs(entry) do
-      _profile(child, depth + 1)
-    end
-  end
-
-  for _, entry in ipairs(M._profiles[1]) do
-    _profile(entry, 1)
-  end
-
-  M.markdown(lines)
-end
-
 ---@return string?
 function M.head(file)
   local f = io.open(file)

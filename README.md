@@ -25,9 +25,9 @@
 
 - [ ] health checks: check merge conflicts async
 - [ ] defaults for git log
-- [ ] view keybindings for update/clean/...
-- [ ] add profiler to view
-- [ ] add buttons for actions
+- [x] view keybindings for update/clean/...
+- [x] add profiler to view
+- [x] add buttons for actions
 - [x] show time taken for op in view
 - [ ] package meta index (package.lua cache for all packages)
 - [ ] migrate from Packer
