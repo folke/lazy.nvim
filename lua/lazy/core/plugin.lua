@@ -2,6 +2,7 @@ local Config = require("lazy.core.config")
 local Util = require("lazy.core.util")
 local Module = require("lazy.core.module")
 local Cache = require("lazy.core.cache")
+local Handler = require("lazy.core.handler")
 
 local M = {}
 
@@ -163,7 +164,6 @@ end
 function M.merge(old, new)
   local is_dep = old.dep and new.dep
 
-  local Handler = require("lazy.core.handler")
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(new) do
     if k == "dep" then
@@ -205,7 +205,14 @@ function M.update_state(opts)
     plugin._ = plugin._ or {}
     plugin[1] = plugin["1"] or plugin[1]
     if plugin.opt == nil then
-      plugin.opt = plugin.dep or Config.options.opt
+      local has_handler = false
+      for handler, _ in pairs(Handler.handlers) do
+        if plugin[handler] then
+          has_handler = true
+          break
+        end
+      end
+      plugin.opt = plugin.dep or has_handler or Config.options.opt
     end
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.packpath .. "/" .. opt .. "/" .. plugin.name

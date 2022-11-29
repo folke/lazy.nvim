@@ -63,6 +63,15 @@ describe("plugin spec opt", function()
     assert(spec.plugins.dep1.opt == false)
   end)
 
+  it("handles opt from dep", function()
+    Config.options.opt = false
+    local spec = Plugin.Spec.new({ "foo/bar", module = "foo" })
+    Plugin.update_state({ plugins = spec.plugins })
+    assert.same(1, vim.tbl_count(spec.plugins))
+    assert(spec.plugins.bar.dep ~= true)
+    assert(spec.plugins.bar.opt == true)
+  end)
+
   it("merges lazy loaders", function()
     local tests = {
       { { "foo/bar", module = "mod1" }, { "foo/bar", module = "mod2" } },
