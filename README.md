@@ -25,26 +25,26 @@
 
 ## ✅ TODO
 
-- [x] support for Plugin.lock
 - [ ] health checks: check merge conflicts async
+- [ ] allow setting up plugins through config
+- [x] support for Plugin.lock
 - [x] defaults for git log
 - [x] view keybindings for update/clean/...
 - [x] add profiler to view
 - [x] add buttons for actions
 - [x] show time taken for op in view
 - [ ] package meta index (package.lua cache for all packages)
-- [ ] migrate from Packer
 - [ ] auto lazy-loading of lua modules
 - [ ] use uv file watcher to check for config changes
 - [x] clear errors
 - [x] add support for versions `git tag --sort v:refname`
 - [x] rename requires to dependencies
 - [x] move tasks etc to Plugin.state
-- [ ] allow setting up plugins through config
 - [x] handlers imply opt
 - [x] dependencies imply opt for deps
 - [x] fix local plugin spec
 - [ ] investigate all opt=true. Simplifies logic (easily switch between opt/start afterwards)
+- [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
 
 ## 📦 Differences with Packer
 

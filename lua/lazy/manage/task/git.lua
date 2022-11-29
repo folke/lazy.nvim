@@ -131,7 +131,7 @@ M.checkout = {
 
     -- if the plugin is locked and we did not just clone it,
     -- then don't update
-    if self.plugin.lock and not self.plugin._.cloned then
+    if self.plugin.pin and not self.plugin._.cloned then
       target = info
     end
 
