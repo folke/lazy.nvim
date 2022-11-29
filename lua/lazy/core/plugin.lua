@@ -51,6 +51,19 @@ M.dirty = false
 ---@field plugins table<string, LazyPlugin>
 ---@field funs? table<string, string[]>
 local Spec = {}
+M.Spec = Spec
+
+---@param spec? LazySpec
+function Spec.new(spec)
+  local self = setmetatable({}, { __index = Spec })
+  self.plugins = {}
+  self.modname = nil
+  self.modpath = nil
+  if spec then
+    self:normalize(spec)
+  end
+  return self
+end
 
 ---@param modname string
 ---@param modpath string
@@ -70,17 +83,29 @@ end
 
 ---@param plugin LazyPlugin
 function Spec:add(plugin)
-  if type(plugin[1]) ~= "string" then
+  local pkg = plugin[1]
+  if type(pkg) ~= "string" then
     Util.error("Invalid plugin spec " .. vim.inspect(plugin))
   end
-  plugin.uri = plugin.uri or ("https://github.com/" .. plugin[1] .. ".git")
-  plugin._ = {}
+
+  if not plugin.uri then
+    local c = pkg:sub(1, 1)
+    if c == "~" then
+      plugin.uri = vim.loop.os_getenv("HOME") .. pkg:sub(2)
+    elseif c == "/" then
+      plugin.uri = pkg
+    elseif pkg:sub(1, 4) == "http" or pkg:sub(1, 3) == "ssh" then
+      plugin.uri = pkg
+    else
+      plugin.uri = ("https://github.com/" .. pkg .. ".git")
+    end
+  end
 
   -- PERF: optimized code to get package name without using lua patterns
   if not plugin.name then
-    local name = plugin[1]:sub(-4) == ".git" and plugin[1]:sub(1, -5) or plugin[1]
+    local name = pkg:sub(-4) == ".git" and pkg:sub(1, -5) or pkg
     local slash = name:reverse():find("/", 1, true) --[[@as number?]]
-    plugin.name = slash and name:sub(#name - slash + 2) or plugin[1]:gsub("%W+", "_")
+    plugin.name = slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
   end
 
   M.process_local(plugin)
