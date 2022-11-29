@@ -30,8 +30,10 @@ M.log = {
       local info = assert(Git.info(self.plugin.dir))
       local target = assert(Git.get_target(self.plugin))
       table.insert(args, info.commit .. ".." .. target.commit)
-    else
+    elseif opts.since then
       table.insert(args, "--since=" .. (opts.since or "3 days ago"))
+    else
+      table.insert(args, "-10")
     end
 
     self:spawn("git", {
