@@ -19,6 +19,14 @@ function M.get(key)
   end
 end
 
+function M.debug()
+  local ret = {}
+  for key, value in pairs(cache) do
+    ret[key] = #value
+  end
+  return ret
+end
+
 function M.set(key, value)
   cache[key] = value
   used[key] = true
