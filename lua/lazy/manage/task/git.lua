@@ -130,7 +130,9 @@ M.checkout = {
     local info = assert(Git.info(self.plugin.dir))
     local target = assert(Git.get_target(self.plugin))
 
-    if self.plugin.lock then
+    -- if the plugin is locked and we did not just clone it,
+    -- then don't update
+    if self.plugin.lock and not self.plugin._.cloned then
       target = info
     end
 
