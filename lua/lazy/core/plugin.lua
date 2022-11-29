@@ -212,6 +212,7 @@ function M.update_state(opts)
         or plugin.keys
         or plugin.ft
         or plugin.cmd
+      plugin.opt = plugin.opt and true or false
     end
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.packpath .. "/" .. opt .. "/" .. plugin.name

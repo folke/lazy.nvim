@@ -30,12 +30,12 @@ end)
 
 describe("plugin spec opt", function()
   it("handles dependencies", function()
+    Config.options.opt = false
     local tests = {
       { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } },
       { "foo/bar", dependencies = { { "foo/dep1" }, "foo/dep2" } },
       { { { "foo/bar", dependencies = { { "foo/dep1" }, "foo/dep2" } } } },
     }
-    Config.options.opt = false
     for _, test in ipairs(tests) do
       local spec = Plugin.Spec.new(test)
       Plugin.update_state({ plugins = spec.plugins })
