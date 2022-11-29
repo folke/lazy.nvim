@@ -53,12 +53,7 @@ function Task:is_done()
 end
 
 function Task:is_running()
-  for _, state in ipairs(self._running) do
-    if state() then
-      return true
-    end
-  end
-  return false
+  return self:has_started() and self._ended == nil
 end
 
 function Task:start()
@@ -78,8 +73,10 @@ end
 
 ---@private
 function Task:_check()
-  if self:is_running() then
-    return
+  for _, state in ipairs(self._running) do
+    if state() then
+      return
+    end
   end
   self._ended = vim.loop.hrtime()
   if self._opts.on_done then
