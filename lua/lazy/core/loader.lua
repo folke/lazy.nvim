@@ -61,8 +61,8 @@ function M.load(plugins, reason, opts)
       Util.track({ plugin = plugin.name, start = reason.start })
       M.packadd(plugin, opts and opts.load_start)
 
-      if plugin.requires then
-        M.load(plugin.requires, {})
+      if plugin.dependencies then
+        M.load(plugin.dependencies, {})
       end
 
       if plugin.config then

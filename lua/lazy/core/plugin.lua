@@ -40,10 +40,10 @@ M.dirty = false
 ---@field dir string
 ---@field enabled? boolean|(fun():boolean)
 ---@field opt? boolean
----@field requires? string[]
+---@field dependencies? string[]
 ---@field _ LazyPluginState
 
----@alias LazySpec string|LazyPlugin|LazySpec[]|{requires:LazySpec}
+---@alias LazySpec string|LazyPlugin|LazySpec[]|{dependencies:LazySpec}
 
 ---@class LazySpecLoader
 ---@field modname string
@@ -103,7 +103,7 @@ function Spec:normalize(spec, results)
   elseif spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
     ---@cast spec LazyPlugin
     local plugin = self:add(spec)
-    plugin.requires = plugin.requires and self:normalize(plugin.requires, {}) or nil
+    plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}) or nil
     table.insert(results, plugin.name)
   end
   return results
