@@ -31,7 +31,7 @@ M.log = {
       local target = assert(Git.get_target(self.plugin))
       table.insert(args, info.commit .. ".." .. target.commit)
     else
-      table.insert(args, "--since=" .. (opts.since or "7 days ago"))
+      table.insert(args, "--since=" .. (opts.since or "3 days ago"))
     end
 
     self:spawn("git", {
@@ -138,6 +138,10 @@ M.checkout = {
     end
 
     if not self.plugin._.cloned and info.commit == target.commit and info.branch == target.branch then
+      self.plugin._.updated = {
+        from = info.commit,
+        to = info.commit,
+      }
       return
     end
 
