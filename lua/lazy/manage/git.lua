@@ -74,7 +74,7 @@ end
 ---@param plugin LazyPlugin
 ---@return GitInfo?
 function M.get_target(plugin)
-  local branch = M.get_branch(plugin)
+  local branch = M.get_branch(plugin) or M.info(plugin.dir)
 
   if plugin.commit then
     return {
