@@ -25,24 +25,24 @@ function M.setup(opts)
   Plugin.load()
   Util.track()
 
-  Util.track("install")
-  for _, plugin in pairs(Config.plugins) do
-    if not plugin._.installed then
-      vim.cmd("do User LazyInstallPre")
-      require("lazy.manage").install({
-        wait = true,
-        show = Config.options.interactive,
-      })
-      break
+  if Config.options.install_missing then
+    Util.track("install")
+    for _, plugin in pairs(Config.plugins) do
+      if not plugin._.installed then
+        vim.cmd("do User LazyInstallPre")
+        require("lazy.manage").install({
+          wait = true,
+          show = Config.options.interactive,
+        })
+        break
+      end
     end
+    Util.track()
   end
-  Util.track()
 
   Util.track("loader")
   Loader.setup()
   Util.track()
-
-  Util.track() -- end setup
 
   local lazy_delta = vim.loop.hrtime() - cache_start
 
@@ -53,6 +53,7 @@ function M.setup(opts)
   end
 
   vim.cmd("do User LazyDone")
+  Util.track() -- end setup
 end
 
 function M.stats()
