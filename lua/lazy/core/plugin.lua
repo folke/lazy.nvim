@@ -38,6 +38,7 @@ M.dirty = false
 ---@field name string display name and name used for plugin config files
 ---@field uri string
 ---@field dir string
+---@field dep? boolean True if this plugin is only in the spec as a dependency
 ---@field enabled? boolean|(fun():boolean)
 ---@field opt? boolean
 ---@field dependencies? string[]
@@ -82,7 +83,8 @@ function Spec.load(modname, modpath)
 end
 
 ---@param plugin LazyPlugin
-function Spec:add(plugin)
+---@param is_dep? boolean
+function Spec:add(plugin, is_dep)
   local pkg = plugin[1]
   if type(pkg) ~= "string" then
     Util.error("Invalid plugin spec " .. vim.inspect(plugin))
@@ -108,27 +110,30 @@ function Spec:add(plugin)
     plugin.name = slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
   end
 
+  plugin.dep = is_dep
+
   M.process_local(plugin)
   local other = self.plugins[plugin.name]
-  self.plugins[plugin.name] = other and vim.tbl_extend("force", self.plugins[plugin.name], plugin) or plugin
+  self.plugins[plugin.name] = other and M.merge(other, plugin) or plugin
   return self.plugins[plugin.name]
 end
 
 ---@param spec LazySpec
 ---@param results? string[]
-function Spec:normalize(spec, results)
+---@param is_dep? boolean
+function Spec:normalize(spec, results, is_dep)
   results = results or {}
   if type(spec) == "string" then
-    table.insert(results, self:add({ spec }).name)
+    table.insert(results, self:add({ spec }, is_dep).name)
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
-      self:normalize(s, results)
+      self:normalize(s, results, is_dep)
     end
   elseif spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
     ---@cast spec LazyPlugin
-    local plugin = self:add(spec)
-    plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}) or nil
+    local plugin = self:add(spec, is_dep)
+    plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
     table.insert(results, plugin.name)
   end
   return results
@@ -152,22 +157,55 @@ function Spec.revive(spec)
   return spec
 end
 
-function M.update_state(check_clean)
+---@param old LazyPlugin
+---@param new LazyPlugin
+---@return LazyPlugin
+function M.merge(old, new)
+  local is_dep = old.dep and new.dep
+
+  local Handler = require("lazy.core.handler")
+  ---@diagnostic disable-next-line: no-unknown
+  for k, v in pairs(new) do
+    if k == "dep" then
+    elseif old[k] ~= nil and old[k] ~= v then
+      if Handler.handlers[k] then
+        local values = type(v) == "string" and { v } or v
+        vim.list_extend(values, type(old[k]) == "string" and { old[k] } or old[k])
+        ---@diagnostic disable-next-line: no-unknown
+        old[k] = values
+      else
+        error("Merging plugins is not supported for key `" .. k .. "`")
+      end
+    else
+      ---@diagnostic disable-next-line: no-unknown
+      old[k] = v
+    end
+  end
+  old.dep = is_dep
+  return old
+end
+
+---@param opts? {clean:boolean, installed:boolean, plugins?: LazyPlugin[]}
+function M.update_state(opts)
+  opts = opts or {}
+
   ---@type table<"opt"|"start", table<string,FileType>>
   local installed = { opt = {}, start = {} }
-  for opt, packs in pairs(installed) do
-    Util.ls(Config.options.packpath .. "/" .. opt, function(_, name, type)
-      if type == "directory" or type == "link" then
-        packs[name] = type
-      end
-    end)
+  if opts.installed ~= false then
+    for opt, packs in pairs(installed) do
+      Util.ls(Config.options.packpath .. "/" .. opt, function(_, name, type)
+        if type == "directory" or type == "link" then
+          packs[name] = type
+        end
+      end)
+    end
   end
 
-  for _, plugin in pairs(Config.plugins) do
+  for _, plugin in pairs(opts.plugins or Config.plugins) do
     plugin._ = plugin._ or {}
     plugin[1] = plugin["1"] or plugin[1]
     if plugin.opt == nil then
-      plugin.opt = Config.options.opt
+      plugin.opt = plugin.dep or Config.options.opt
     end
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.packpath .. "/" .. opt .. "/" .. plugin.name
@@ -179,7 +217,7 @@ function M.update_state(check_clean)
     end
   end
 
-  if check_clean then
+  if opts.clean then
     Config.to_clean = {}
     for opt, packs in pairs(installed) do
       for pack in pairs(packs) do
@@ -244,7 +282,7 @@ function M.load()
   for _, spec in ipairs(specs) do
     for _, plugin in pairs(spec.plugins) do
       local other = Config.plugins[plugin.name]
-      Config.plugins[plugin.name] = other and vim.tbl_extend("force", other, plugin) or plugin
+      Config.plugins[plugin.name] = other and M.merge(other, plugin) or plugin
     end
   end
 

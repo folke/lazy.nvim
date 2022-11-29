@@ -13,7 +13,7 @@ M.modes = {
   { name = "log", key = "L", desc = "Show recent updates for all plugins" },
   { name = "restore", key = "R", desc = "Updates all plugins to the state in the lockfile" },
   { name = "profile", key = "P", desc = "Show detailed profiling", toggle = true },
-  { name = "help", key = "g?", hide = true, desc = "Toggle this help page", toggle = true },
+  { name = "help", key = "?", hide = true, desc = "Toggle this help page", toggle = true },
 
   { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
   {

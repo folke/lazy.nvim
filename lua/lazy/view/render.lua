@@ -2,7 +2,6 @@ local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 local Sections = require("lazy.view.sections")
 local Handler = require("lazy.core.handler")
-local Plugin = require("lazy.core.plugin")
 local Git = require("lazy.manage.git")
 
 local Text = require("lazy.view.text")
@@ -95,7 +94,7 @@ end
 
 function M:title()
   self:append(" lazy.nvim ", "LazyH1"):center():nl()
-  self:append("press "):append("g?", "LazySpecial"):append(" for help"):center():nl()
+  self:append("press "):append("<?>", "LazySpecial"):append(" for help"):center():nl()
   self:append("https://github.com/folke/lazy.nvim", "LazyMuted"):center():nl()
 
   local View = require("lazy.view")

@@ -42,8 +42,9 @@
 - [x] move tasks etc to Plugin.state
 - [ ] allow setting up plugins through config
 - [ ] handlers imply opt
-- [ ] dependencies imply opt for deps
+- [x] dependencies imply opt for deps
 - [x] fix local plugin spec
+- [ ] investigate all opt=true. Simplifies logic (easily switch between opt/start afterwards)
 
 ## 📦 Differences with Packer
 
