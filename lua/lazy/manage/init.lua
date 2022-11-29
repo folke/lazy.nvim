@@ -22,7 +22,9 @@ function M.run(ropts, opts)
   end
 
   if opts.interactive then
-    require("lazy.view").show()
+    vim.schedule(function()
+      require("lazy.view").show()
+    end)
   end
 
   ---@type Runner
