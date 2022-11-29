@@ -58,6 +58,7 @@ TODO                                                          *lazy.nvim-todo*
 - handlers imply opt
 - dependencies imply opt for deps
 - fix local plugin spec
+- investigate all opt=true. Simplifies logic (easily switch between opt/start afterwards)
 
 
 DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
