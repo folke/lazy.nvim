@@ -27,7 +27,7 @@
 
 - [x] support for Plugin.lock
 - [ ] health checks: check merge conflicts async
-- [ ] defaults for git log
+- [x] defaults for git log
 - [x] view keybindings for update/clean/...
 - [x] add profiler to view
 - [x] add buttons for actions
@@ -38,6 +38,17 @@
 - [ ] use uv file watcher to check for config changes
 - [x] clear errors
 - [x] add support for versions `git tag --sort v:refname`
-- [ ] rename requires to deps
+- [x] rename requires to dependencies
 - [x] move tasks etc to Plugin.state
 - [ ] allow setting up plugins through config
+- [ ] handlers imply opt
+- [ ] dependencies imply opt for deps
+- [x] fix local plugin spec
+
+## 📦 Differences with Packer
+
+- **Plugin Spec**:
+
+  - `setup` => `init`
+  - `requires` => `dependencies`
+  - `as` => `name`

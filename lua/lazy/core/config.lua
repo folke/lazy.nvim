@@ -27,6 +27,11 @@ M.defaults = {
       task = "✔ ",
     },
   },
+  git = {
+    -- defaults for `Lazy log`
+    log = { "-10" }, -- last 10 commits
+    -- log = { "--since=3 days ago" }, -- commits from the last 3 days
+  },
 }
 
 M.ns = vim.api.nvim_create_namespace("lazy")

@@ -1,19 +1,20 @@
 local Util = require("lazy.util")
 local Git = require("lazy.manage.git")
 local Lock = require("lazy.manage.lock")
+local Config = require("lazy.core.config")
 
 ---@type table<string, LazyTaskDef>
 local M = {}
 
 M.log = {
-  ---@param opts {since?: string, updated?:boolean, check?: boolean}
+  ---@param opts {updated?:boolean, check?: boolean}
   skip = function(plugin, opts)
     if opts.updated and not (plugin._.updated and plugin._.updated.from ~= plugin._.updated.to) then
       return true
     end
     return not Util.file_exists(plugin.dir .. "/.git")
   end,
-  ---@param opts {since?: string, updated?:boolean, check?:boolean}
+  ---@param opts {args?: string[], updated?:boolean, check?:boolean}
   run = function(self, opts)
     local args = {
       "log",
@@ -30,10 +31,8 @@ M.log = {
       local info = assert(Git.info(self.plugin.dir))
       local target = assert(Git.get_target(self.plugin))
       table.insert(args, info.commit .. ".." .. target.commit)
-    elseif opts.since then
-      table.insert(args, "--since=" .. (opts.since or "3 days ago"))
     else
-      table.insert(args, "-10")
+      vim.list_extend(args, opts.args or Config.options.git.log)
     end
 
     self:spawn("git", {
