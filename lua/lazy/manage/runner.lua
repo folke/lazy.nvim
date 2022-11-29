@@ -1,5 +1,6 @@
 local Task = require("lazy.manage.task")
 local Config = require("lazy.core.config")
+local Util = require("lazy.util")
 
 ---@class RunnerOpts
 ---@field pipeline (string|{[1]:string, [string]:any})[]
@@ -44,6 +45,9 @@ function Runner:_resume(entry)
     return true
   end
   local ok, status = coroutine.resume(entry.co)
+  if not ok then
+    Util.error("Could not resume a task\n" .. status)
+  end
   entry.status = ok and status
   return entry.status ~= nil
 end
@@ -69,6 +73,8 @@ function Runner:start()
     local ok, status = coroutine.resume(co, self, plugin)
     if ok then
       table.insert(self._running, { co = co, status = status })
+    else
+      Util.error("Could not start tasks for " .. plugin.name .. "\n" .. status)
     end
   end
 
@@ -106,17 +112,18 @@ function Runner:run_pipeline(plugin)
 end
 
 ---@param plugin LazyPlugin
----@param task_type string
----@param task_opts? TaskOptions
+---@param task_name string
+---@param opts? TaskOptions
 ---@return LazyTask?
-function Runner:queue(plugin, task_type, task_opts)
+function Runner:queue(plugin, task_name, opts)
   assert(self._running)
-  local def = vim.split(task_type, ".", { plain = true })
+  local def = vim.split(task_name, ".", { plain = true })
   ---@type LazyTaskDef
   local task_def = require("lazy.manage.task." .. def[1])[def[2]]
   assert(task_def)
-  if not (task_def.skip and task_def.skip(plugin, task_opts)) then
-    local task = Task.new(plugin, def[2], task_def.run, task_opts)
+  opts = opts or {}
+  if not (task_def.skip and task_def.skip(plugin, opts)) then
+    local task = Task.new(plugin, def[2], task_def.run, opts)
     task:start()
     return task
   end
