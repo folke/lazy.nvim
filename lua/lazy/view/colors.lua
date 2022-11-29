@@ -2,7 +2,7 @@ local M = {}
 
 M.colors = {
   Error = "ErrorMsg",
-  H1 = "Title",
+  H1 = "IncSearch",
   H2 = "Bold",
   Muted = "Comment",
   Normal = "NormalFloat",
@@ -21,7 +21,9 @@ M.colors = {
   LoaderKeys = "Statement",
   LoaderStart = "@field",
   LoaderSource = "Character",
-  LoaderCmd = "Operator"
+  LoaderCmd = "Operator",
+  Button = "CursorLine",
+  ButtonActive = "Visual",
 }
 
 M.did_setup = false

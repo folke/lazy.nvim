@@ -17,34 +17,37 @@ end
 
 M.commands = {
   clean = function()
-    Manage.clean({ clear = true, interactive = true })
+    Manage.clean({ clear = true, interactive = true, mode = "clean" })
   end,
   clear = function()
     Manage.clear()
     View.show()
   end,
   install = function()
-    Manage.install({ clear = true, interactive = true })
+    Manage.install({ clear = true, interactive = true, mode = "install" })
   end,
   log = function()
-    Manage.log({ clear = true, interactive = true })
+    Manage.log({ clear = true, interactive = true, mode = "log" })
   end,
   show = function()
     View.show()
   end,
+  help = function()
+    View.show("help")
+  end,
   sync = function()
-    Manage.clean({ interactive = true, clear = true, wait = true })
+    Manage.clean({ interactive = true, clear = true, wait = true, mode = "sync" })
     Manage.update({ interactive = true })
     Manage.install({ interactive = true })
   end,
   update = function()
-    Manage.update({ clear = true, interactive = true })
+    Manage.update({ clear = true, interactive = true, mode = "update" })
   end,
   check = function()
-    Manage.check({ clear = true, interactive = true })
+    Manage.check({ clear = true, interactive = true, mode = "check" })
   end,
   restore = function()
-    Manage.update({ clear = true, interactive = true, lockfile = true })
+    Manage.update({ clear = true, interactive = true, lockfile = true, mode = "restore" })
   end,
 }
 

@@ -8,6 +8,7 @@ local M = {}
 ---@field wait? boolean
 ---@field clear? boolean
 ---@field interactive? boolean
+---@field mode? string
 
 ---@param ropts RunnerOpts
 ---@param opts? ManagerOpts
@@ -23,7 +24,7 @@ function M.run(ropts, opts)
 
   if opts.interactive then
     vim.schedule(function()
-      require("lazy.view").show()
+      require("lazy.view").show(opts.mode)
     end)
   end
 

@@ -4,16 +4,36 @@ local Config = require("lazy.core.config")
 
 local M = {}
 
+M.modes = {
+  { name = "install", key = "I", desc = "Install missing plugins" },
+  { name = "update", key = "U", desc = "Update all plugins. This will also update the lockfile" },
+  { name = "sync", key = "S", desc = "Run install, clean and update" },
+  { name = "clean", key = "X", desc = "Clean plugins that are no longer needed" },
+  { name = "check", key = "C", desc = "Check for updates and show the log (git fetch)" },
+  { name = "log", key = "L", desc = "Show recent updates for all plugins" },
+  { name = "restore", key = "R", desc = "Updates all plugins to the state in the lockfile" },
+  { name = "help", key = "g?", hide = true, desc = "Toggle this help page" },
+}
+
+---@type string?
+M.mode = nil
+
 function M.setup()
   require("lazy.view.commands").setup()
   require("lazy.view.colors").setup()
 end
 
-function M.show()
+function M.show(mode)
+  if mode == "help" and M.mode == "help" then
+    M.mode = nil
+  else
+    M.mode = mode or M.mode
+  end
   require("lazy.view.colors").setup()
 
   if M._buf and vim.api.nvim_buf_is_valid(M._buf) then
     vim.api.nvim_win_set_cursor(M._win, { 1, 0 })
+    vim.cmd([[do User LazyRender]])
     return
   end
 
@@ -24,8 +44,8 @@ function M.show()
   local opts = {
     relative = "editor",
     style = "minimal",
-    width = math.min(vim.o.columns - hpad * 2, 150),
-    height = math.min(vim.o.lines - vpad * 2, 50),
+    width = math.min(vim.o.columns - hpad * 2, 200),
+    height = math.min(vim.o.lines - vpad * 2, 70),
   }
   opts.row = (vim.o.lines - opts.height) / 2
   opts.col = (vim.o.columns - opts.width) / 2
@@ -129,6 +149,13 @@ function M.show()
       Util.open(url)
     end,
   })
+
+  for _, m in ipairs(M.modes) do
+    vim.keymap.set("n", m.key, function()
+      local Commands = require("lazy.view.commands")
+      Commands.cmd(m.name)
+    end, { buffer = buf })
+  end
 
   vim.api.nvim_create_autocmd("User", {
     pattern = "LazyRender",

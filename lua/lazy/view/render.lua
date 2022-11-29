@@ -34,8 +34,6 @@ function M:update()
   self._diagnostics = {}
   self.plugin_range = {}
 
-  Plugin.update_state(true)
-
   self.plugins = vim.tbl_values(Config.plugins)
   vim.list_extend(self.plugins, vim.tbl_values(Config.to_clean))
   table.sort(self.plugins, function(a, b)
@@ -58,10 +56,14 @@ function M:update()
     end
   end
 
-  self:title()
+  local mode = self:title()
 
-  for _, section in ipairs(Sections) do
-    self:section(section)
+  if mode == "help" then
+    self:help()
+  else
+    for _, section in ipairs(Sections) do
+      self:section(section)
+    end
   end
 
   self:trim()
@@ -90,19 +92,55 @@ function M:get_plugin(row)
 end
 
 function M:title()
-  self:append("Lazy", "LazyH1")
-  if self.progress.done < self.progress.total then
-    self:append(" (" .. self.progress.done .. "/" .. self.progress.total .. ")", "LazyMuted"):nl()
-    self:progressbar()
-  else
-    self:append(" (" .. #self.plugins .. ")", "LazyMuted"):nl()
+  self:append(" lazy.nvim ", "LazyH1"):center():nl()
+  self:append("press "):append("g?", "LazySpecial"):append(" for help"):center():nl()
+  self:append("https://github.com/folke/lazy.nvim", "LazyMuted"):center():nl()
+
+  local View = require("lazy.view")
+  for _, mode in ipairs(View.modes) do
+    if not mode.hide then
+      local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
+      self:append(title, View.mode == mode.name and "LazyButtonActive" or "LazyButton"):append(" ")
+    end
   end
   self:nl()
+  if self.progress.done < self.progress.total then
+    self:progressbar()
+  end
+  self:nl()
+
+  if View.mode ~= "help" then
+    if self.progress.done < self.progress.total then
+      self:append("Tasks: ", "LazyH2")
+      self:append(self.progress.done .. "/" .. self.progress.total, "LazyMuted")
+    else
+      self:append("Total: ", "LazyH2")
+      self:append(#self.plugins .. " plugins", "LazyMuted")
+    end
+    self:nl():nl()
+  end
+  return View.mode
+end
+
+function M:help()
+  local View = require("lazy.view")
+  self:append("Help", "LazyH2"):nl():nl()
+
+  self:append("Keyboard Shortcuts", "LazyH2"):nl()
+  for _, mode in ipairs(View.modes) do
+    local title = mode.name:sub(1, 1):upper() .. mode.name:sub(2)
+    self:append("- ", "LazySpecial", { indent = 2 })
+    self:append(title, "Title"):append(" <" .. mode.key .. "> ", "LazyKey")
+    self:append(mode.desc or ""):nl()
+  end
 end
 
 function M:progressbar()
   local width = vim.api.nvim_win_get_width(self.win) - 2 * self.padding
   local done = math.floor((self.progress.done / self.progress.total) * width + 0.5)
+  if self.progress.done == self.progress.total then
+    done = 0
+  end
   self:append("", {
     virt_text_win_col = self.padding,
     virt_text = { { string.rep("─", done), "LazyProgressDone" } },
