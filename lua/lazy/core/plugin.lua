@@ -31,6 +31,7 @@ M.dirty = false
 ---@field tag? string
 ---@field commit? string
 ---@field version? string
+---@field lock? boolean
 
 ---@class LazyPlugin: LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field [1] string

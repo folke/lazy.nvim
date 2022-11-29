@@ -130,6 +130,10 @@ M.checkout = {
     local info = assert(Git.info(self.plugin.dir))
     local target = assert(Git.get_target(self.plugin))
 
+    if self.plugin.lock then
+      target = info
+    end
+
     local lock
     if opts.lockfile then
       lock = Lock.get(self.plugin)

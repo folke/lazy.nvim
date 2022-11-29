@@ -24,6 +24,7 @@
 
 ## ✅ TODO
 
+- [x] support for Plugin.lock
 - [ ] health checks: check merge conflicts async
 - [ ] defaults for git log
 - [x] view keybindings for update/clean/...
