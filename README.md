@@ -19,6 +19,7 @@
 - [ ] package-lock.lua
 - [x] tag/version support `git tag --sort version:refname`
 - [x] auto-loading on completion for lazy-loaded commands
+- [x] bootstrap code
 - [x] semver https://devhints.io/semver
       https://semver.npmjs.com/
 

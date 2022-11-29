@@ -72,4 +72,19 @@ function M.stats()
   return ret
 end
 
+function M.bootstrap()
+  local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/start/lazy.nvim"
+  if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "--single-branch",
+      "https://github.com/folke/lazy.nvim.git",
+      lazypath,
+    })
+    vim.opt.runtimepath:append(lazypath)
+  end
+end
+
 return M
