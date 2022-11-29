@@ -13,6 +13,7 @@
 - [x] Patterns for local packages
 - [x] Profiling
 - [x] lockfile
+- [x] upvalues in `config` & `init`
 - [x] check for updates
 - [ ] package.lua
 - [ ] package-lock.lua
