@@ -27,6 +27,7 @@ M.defaults = {
       task = "✔ ",
     },
   },
+  install_missing = true,
   git = {
     -- defaults for `Lazy log`
     log = { "-10" }, -- last 10 commits
@@ -67,6 +68,7 @@ function M.setup(opts)
     pattern = "VeryLazy",
     once = true,
     callback = function()
+      require("lazy.core.cache").autosave()
       require("lazy.view").setup()
     end,
   })

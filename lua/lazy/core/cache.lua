@@ -44,7 +44,30 @@ function M.hash(file)
 end
 
 function M.setup()
-  M.load()
+  cache = {}
+  local f = io.open(cache_path, "rb")
+  if f then
+    cache_hash = M.hash(cache_path)
+    ---@type string
+    local data = f:read("*a")
+    f:close()
+
+    local from = 1
+    local to = data:find("\0", from, true)
+    while to do
+      local key = data:sub(from, to - 1)
+      from = to + 1
+      to = data:find("\0", from, true)
+      local len = tonumber(data:sub(from, to - 1))
+      from = to + 1
+      cache[key] = data:sub(from, from + len - 1)
+      from = from + len
+      to = data:find("\0", from, true)
+    end
+  end
+end
+
+function M.autosave()
   vim.api.nvim_create_autocmd("User", {
     pattern = "LazyDone",
     once = true,
@@ -75,30 +98,6 @@ function M.save()
     end
   end
   f:close()
-end
-
-function M.load()
-  cache = {}
-  local f = io.open(cache_path, "rb")
-  if f then
-    cache_hash = M.hash(cache_path)
-    ---@type string
-    local data = f:read("*a")
-    f:close()
-
-    local from = 1
-    local to = data:find("\0", from, true)
-    while to do
-      local key = data:sub(from, to - 1)
-      from = to + 1
-      to = data:find("\0", from, true)
-      local len = tonumber(data:sub(from, to - 1))
-      from = to + 1
-      cache[key] = data:sub(from, from + len - 1)
-      from = from + len
-      to = data:find("\0", from, true)
-    end
-  end
 end
 
 return M
