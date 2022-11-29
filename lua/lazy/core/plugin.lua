@@ -205,14 +205,13 @@ function M.update_state(opts)
     plugin._ = plugin._ or {}
     plugin[1] = plugin["1"] or plugin[1]
     if plugin.opt == nil then
-      local has_handler = false
-      for handler, _ in pairs(Handler.handlers) do
-        if plugin[handler] then
-          has_handler = true
-          break
-        end
-      end
-      plugin.opt = plugin.dep or has_handler or Config.options.opt
+      plugin.opt = plugin.dep
+        or Config.options.opt
+        or plugin.module
+        or plugin.event
+        or plugin.keys
+        or plugin.ft
+        or plugin.cmd
     end
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.packpath .. "/" .. opt .. "/" .. plugin.name
