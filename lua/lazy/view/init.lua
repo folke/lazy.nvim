@@ -13,6 +13,18 @@ M.modes = {
   { name = "log", key = "L", desc = "Show recent updates for all plugins" },
   { name = "restore", key = "R", desc = "Updates all plugins to the state in the lockfile" },
   { name = "help", key = "g?", hide = true, desc = "Toggle this help page" },
+
+  { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
+  {
+    plugin = true,
+    name = "clean",
+    key = "x",
+    desc = "Delete this plugin. WARNING: this will delete the plugin even if it should be installed!",
+  },
+  { plugin = true, name = "check", key = "c", desc = "Check for updates for this plugin and show the log (git fetch)" },
+  { plugin = true, name = "install", key = "i", desc = "Install this plugin" },
+  { plugin = true, name = "log", key = "gl", desc = "Show recent updates for this plugin" },
+  { plugin = true, name = "restore", key = "r", desc = "Restore this plugin to the state in the lockfile" },
 }
 
 ---@type string?
@@ -153,7 +165,14 @@ function M.show(mode)
   for _, m in ipairs(M.modes) do
     vim.keymap.set("n", m.key, function()
       local Commands = require("lazy.view.commands")
-      Commands.cmd(m.name)
+      if m.plugin then
+        local plugin = get_plugin()
+        if plugin then
+          Commands.cmd(m.name, { plugin })
+        end
+      else
+        Commands.cmd(m.name)
+      end
     end, { buffer = buf })
   end
 

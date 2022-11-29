@@ -23,6 +23,8 @@
 
 ## ✅ TODO
 
+- [ ] health checks: check merge conflicts async
+- [ ] defaults for git log
 - [ ] view keybindings for update/clean/...
 - [ ] add profiler to view
 - [ ] add buttons for actions

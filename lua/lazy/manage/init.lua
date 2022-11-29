@@ -9,6 +9,7 @@ local M = {}
 ---@field clear? boolean
 ---@field interactive? boolean
 ---@field mode? string
+---@field plugins? LazyPlugin[]
 
 ---@param ropts RunnerOpts
 ---@param opts? ManagerOpts
@@ -16,6 +17,10 @@ function M.run(ropts, opts)
   opts = opts or {}
   if opts.interactive == nil then
     opts.interactive = Config.options.interactive
+  end
+
+  if opts.plugins then
+    ropts.plugins = opts.plugins
   end
 
   if opts.clear then

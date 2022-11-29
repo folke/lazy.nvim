@@ -98,7 +98,7 @@ function M:title()
 
   local View = require("lazy.view")
   for _, mode in ipairs(View.modes) do
-    if not mode.hide then
+    if not mode.hide and not mode.plugin then
       local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
       self:append(title, View.mode == mode.name and "LazyButtonActive" or "LazyButton"):append(" ")
     end

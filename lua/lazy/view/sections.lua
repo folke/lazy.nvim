@@ -76,9 +76,9 @@ return {
   },
   {
     filter = function(plugin)
-      return not plugin._.installed and not plugin.uri
+      return not plugin._.installed
     end,
-    title = "Cleaned",
+    title = "Not Installed",
   },
   {
     filter = function(plugin)
@@ -91,11 +91,5 @@ return {
       return plugin._.installed
     end,
     title = "Installed",
-  },
-  {
-    filter = function()
-      return true
-    end,
-    title = "Not Installed",
   },
 }

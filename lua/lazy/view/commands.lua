@@ -5,19 +5,20 @@ local Util = require("lazy.util")
 local M = {}
 
 ---@param cmd string
-function M.cmd(cmd)
+---@param plugins? LazyPlugin[]
+function M.cmd(cmd, plugins)
   cmd = cmd == "" and "show" or cmd
   local command = M.commands[cmd]
   if command == nil then
     Util.error("Invalid lazy command '" .. cmd .. "'")
   else
-    command()
+    command(plugins)
   end
 end
 
 M.commands = {
-  clean = function()
-    Manage.clean({ clear = true, interactive = true, mode = "clean" })
+  clean = function(plugins)
+    Manage.clean({ clear = true, interactive = true, mode = "clean", plugins = plugins })
   end,
   clear = function()
     Manage.clear()
@@ -26,8 +27,8 @@ M.commands = {
   install = function()
     Manage.install({ clear = true, interactive = true, mode = "install" })
   end,
-  log = function()
-    Manage.log({ clear = true, interactive = true, mode = "log" })
+  log = function(plugins)
+    Manage.log({ clear = true, interactive = true, mode = "log", plugins = plugins })
   end,
   show = function()
     View.show()
@@ -40,14 +41,14 @@ M.commands = {
     Manage.update({ interactive = true })
     Manage.install({ interactive = true })
   end,
-  update = function()
-    Manage.update({ clear = true, interactive = true, mode = "update" })
+  update = function(plugins)
+    Manage.update({ clear = true, interactive = true, mode = "update", plugins = plugins })
   end,
-  check = function()
-    Manage.check({ clear = true, interactive = true, mode = "check" })
+  check = function(plugins)
+    Manage.check({ clear = true, interactive = true, mode = "check", plugins = plugins })
   end,
-  restore = function()
-    Manage.update({ clear = true, interactive = true, lockfile = true, mode = "restore" })
+  restore = function(plugins)
+    Manage.update({ clear = true, interactive = true, lockfile = true, mode = "restore", plugins = plugins })
   end,
 }
 
