@@ -18,17 +18,17 @@ end
 
 M.commands = {
   clean = function(plugins)
-    Manage.clean({ clear = true, interactive = true, mode = "clean", plugins = plugins })
+    Manage.clean({ clear = true, mode = "clean", plugins = plugins })
   end,
   clear = function()
     Manage.clear()
     View.show()
   end,
   install = function()
-    Manage.install({ clear = true, interactive = true, mode = "install" })
+    Manage.install({ clear = true, mode = "install" })
   end,
   log = function(plugins)
-    Manage.log({ clear = true, interactive = true, mode = "log", plugins = plugins })
+    Manage.log({ clear = true, mode = "log", plugins = plugins })
   end,
   show = function()
     View.show()
@@ -40,18 +40,18 @@ M.commands = {
     View.show("profile")
   end,
   sync = function()
-    Manage.clean({ interactive = true, clear = true, wait = true, mode = "sync" })
+    Manage.clean({ clear = true, wait = true, mode = "sync" })
     Manage.update({ interactive = true })
     Manage.install({ interactive = true })
   end,
   update = function(plugins)
-    Manage.update({ clear = true, interactive = true, mode = "update", plugins = plugins })
+    Manage.update({ clear = true, mode = "update", plugins = plugins })
   end,
   check = function(plugins)
-    Manage.check({ clear = true, interactive = true, mode = "check", plugins = plugins })
+    Manage.check({ clear = true, mode = "check", plugins = plugins })
   end,
   restore = function(plugins)
-    Manage.update({ clear = true, interactive = true, lockfile = true, mode = "restore", plugins = plugins })
+    Manage.update({ clear = true, lockfile = true, mode = "restore", plugins = plugins })
   end,
 }
 

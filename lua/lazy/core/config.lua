@@ -10,14 +10,22 @@ M.defaults = {
     version = nil,
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
+  packpath = vim.fn.stdpath("data") .. "/site/pack/lazy", -- package path where new plugins will be installed
+  lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
+  install_missing = true, -- install missing plugins on startup. This doesn't increase startup time.
+  git = {
+    -- defaults for `Lazy log`
+    -- log = { "-10" }, -- last 10 commits
+    log = { "--since=1 days ago" }, -- commits from the last 3 days
+  },
+  -- Any plugin spec that contains one of the patterns will use your
+  -- local repo in the projects folder instead of fetchig it from github
+  -- Mostly useful for plugin developers.
   dev = {
     path = vim.fn.expand("~/projects"), -- the path where you store your projects
     ---@type string[]
     patterns = {}, -- For example {"folke"}
   },
-  packpath = vim.fn.stdpath("data") .. "/site/pack/lazy",
-  lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
-  view = {
   ui = {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
@@ -32,11 +40,6 @@ M.defaults = {
       ft = " ",
       task = "✔ ",
     },
-  install_missing = true,
-  git = {
-    -- defaults for `Lazy log`
-    log = { "-10" }, -- last 10 commits
-    -- log = { "--since=3 days ago" }, -- commits from the last 3 days
     throttle = 20, -- how frequently should the ui process render events
   },
 }

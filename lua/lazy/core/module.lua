@@ -111,9 +111,7 @@ function M.autosave()
         local hash = M.hash(cache_path)
         -- abort when the file was changed in the meantime
         if hash == nil or M.eq(cache_hash, hash) then
-          vim.fn.system("echo start >> foo.txt")
           M.save_cache()
-          vim.fn.system("echo stop >> foo.txt")
         end
       end
     end,

@@ -30,7 +30,7 @@ end)
 
 describe("plugin spec opt", function()
   it("handles dependencies", function()
-    Config.options.opt = false
+    Config.options.defaults.opt = false
     local tests = {
       { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } },
       { "foo/bar", dependencies = { { "foo/dep1" }, "foo/dep2" } },
@@ -52,7 +52,7 @@ describe("plugin spec opt", function()
   end)
 
   it("handles opt from dep", function()
-    Config.options.opt = false
+    Config.options.defaults.opt = false
     local spec = Plugin.Spec.new({ "foo/dep1", { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } } })
     Config.plugins = spec.plugins
     Plugin.update_state()
@@ -65,8 +65,25 @@ describe("plugin spec opt", function()
     assert(spec.plugins.dep1.opt == false)
   end)
 
+  it("handles defaults opt", function()
+    do
+      Config.options.defaults.opt = true
+      local spec = Plugin.Spec.new({ "foo/bar" })
+      Config.plugins = spec.plugins
+      Plugin.update_state()
+      assert(spec.plugins.bar.opt == true)
+    end
+    do
+      Config.options.defaults.opt = false
+      local spec = Plugin.Spec.new({ "foo/bar" })
+      Config.plugins = spec.plugins
+      Plugin.update_state()
+      assert(spec.plugins.bar.opt == false)
+    end
+  end)
+
   it("handles opt from dep", function()
-    Config.options.opt = false
+    Config.options.defaults.opt = false
     local spec = Plugin.Spec.new({ "foo/bar", module = "foo" })
     Config.plugins = spec.plugins
     Plugin.update_state()
