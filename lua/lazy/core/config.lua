@@ -7,6 +7,7 @@ M.defaults = {
   plugins = "config.plugins",
   defaults = {
     opt = false, -- should plugins default to "opt" or "start"
+    version = nil,
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
   dev = {

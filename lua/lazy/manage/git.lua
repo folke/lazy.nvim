@@ -1,5 +1,6 @@
 local Util = require("lazy.util")
 local Semver = require("lazy.manage.semver")
+local Config = require("lazy.core.config")
 
 local M = {}
 
@@ -89,8 +90,9 @@ function M.get_target(plugin)
       commit = M.ref(plugin.dir, "tags/" .. plugin.tag),
     }
   end
-  if plugin.version then
-    local last = Semver.last(M.get_versions(plugin.dir, plugin.version))
+  local version = plugin.version or Config.options.defaults.version
+  if version then
+    local last = Semver.last(M.get_versions(plugin.dir, version))
     if last then
       return {
         branch = branch and branch.branch,
