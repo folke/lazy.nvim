@@ -105,6 +105,7 @@ M.fetch = {
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
   end,
+
   run = function(self)
     local args = {
       "fetch",
@@ -124,6 +125,7 @@ M.checkout = {
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
   end,
+
   ---@param opts {lockfile?:boolean}
   run = function(self, opts)
     local info = assert(Git.info(self.plugin.dir))

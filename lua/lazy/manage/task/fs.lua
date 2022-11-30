@@ -37,6 +37,8 @@ M.symlink = {
     if stat then
       assert(stat.type == "link")
       if vim.loop.fs_realpath(self.plugin.uri) == vim.loop.fs_realpath(self.plugin.dir) then
+        self.plugin._.installed = true
+        self.plugin._.cloned = true
         return
       else
         vim.loop.fs_unlink(self.plugin.dir)
@@ -44,6 +46,8 @@ M.symlink = {
     end
     vim.loop.fs_symlink(self.plugin.uri, self.plugin.dir, { dir = true })
     vim.opt.runtimepath:append(self.plugin.uri)
+    self.plugin._.installed = true
+    self.plugin._.cloned = true
   end,
 }
 
