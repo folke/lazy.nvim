@@ -42,6 +42,7 @@ function M.run(ropts, opts)
   -- wait for post-install to finish
   runner:wait(function()
     vim.cmd([[do User LazyRender]])
+    Plugin.update_state()
   end)
 
   if opts.wait then
