@@ -4,8 +4,11 @@ local M = {}
 
 ---@class LazyConfig
 M.defaults = {
-  opt = true,
   plugins = "config.plugins",
+  defaults = {
+    opt = false, -- should plugins default to "opt" or "start"
+    -- version = "*", -- enable this to try installing the latest stable versions of plugins
+  },
   dev = {
     path = vim.fn.expand("~/projects"), -- the path where you store your projects
     ---@type string[]

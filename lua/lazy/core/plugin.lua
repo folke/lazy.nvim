@@ -160,14 +160,14 @@ function M.update_state()
   for _, plugin in pairs(Config.plugins) do
     plugin._ = plugin._ or {}
     if plugin.opt == nil then
-      plugin.opt = plugin.dep
-        or Config.options.opt
+      local opt = plugin.dep
+        or Config.options.defaults.opt
         or plugin.module
         or plugin.event
         or plugin.keys
         or plugin.ft
         or plugin.cmd
-      plugin.opt = plugin.opt and true or false
+      plugin.opt = opt and true or false
     end
     local opt = plugin.opt and "opt" or "start"
     plugin.dir = Config.options.packpath .. "/" .. opt .. "/" .. plugin.name
