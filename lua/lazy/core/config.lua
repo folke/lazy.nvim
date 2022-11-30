@@ -13,6 +13,7 @@ M.defaults = {
   packpath = vim.fn.stdpath("data") .. "/site/pack/lazy", -- package path where new plugins will be installed
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
   install_missing = true, -- install missing plugins on startup. This doesn't increase startup time.
+  concurrency = nil, -- set to a number to limit the maximum amount of concurrent tasks
   git = {
     -- defaults for `Lazy log`
     -- log = { "-10" }, -- last 10 commits

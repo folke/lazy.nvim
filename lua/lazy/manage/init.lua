@@ -20,6 +20,8 @@ function M.run(ropts, opts)
     ropts.plugins = opts.plugins
   end
 
+  ropts.concurrency = ropts.concurrency or Config.options.concurrency
+
   if opts.clear then
     M.clear()
   end

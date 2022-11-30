@@ -5,6 +5,7 @@ local Util = require("lazy.util")
 ---@class RunnerOpts
 ---@field pipeline (string|{[1]:string, [string]:any})[]
 ---@field plugins? LazyPlugin[]|fun(plugin:LazyPlugin):any?
+---@field concurrency? number
 
 ---@alias PipelineStep {task:string, opts?:TaskOptions}
 ---@alias LazyRunnerTask {co:thread, status: {task?:LazyTask, waiting?:boolean}}
@@ -53,28 +54,31 @@ function Runner:_resume(entry)
 end
 
 function Runner:resume(waiting)
-  local running = false
+  local running = 0
   for _, entry in ipairs(self._running) do
     if entry.status then
       if waiting and entry.status.waiting then
         entry.status.waiting = false
       end
       if not entry.status.waiting and self:_resume(entry) then
-        running = true
+        running = running + 1
+        if self._opts.concurrency and running >= self._opts.concurrency then
+          break
+        end
       end
     end
   end
-  return running or (not waiting and self:resume(true))
+  return running > 0 or (not waiting and self:resume(true))
 end
 
 function Runner:start()
   for _, plugin in pairs(self._plugins) do
     local co = coroutine.create(self.run_pipeline)
-    local ok, status = coroutine.resume(co, self, plugin)
+    local ok, err = coroutine.resume(co, self, plugin)
     if ok then
-      table.insert(self._running, { co = co, status = status })
+      table.insert(self._running, { co = co, status = {} })
     else
-      Util.error("Could not start tasks for " .. plugin.name .. "\n" .. status)
+      Util.error("Could not start tasks for " .. plugin.name .. "\n" .. err)
     end
   end
 
@@ -95,6 +99,7 @@ end
 ---@async
 ---@param plugin LazyPlugin
 function Runner:run_pipeline(plugin)
+  coroutine.yield()
   for _, step in ipairs(self._pipeline) do
     if step.task == "wait" then
       coroutine.yield({ waiting = true })
