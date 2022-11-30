@@ -68,7 +68,7 @@ function M.setup(opts)
     pattern = "VeryLazy",
     once = true,
     callback = function()
-      require("lazy.core.cache").autosave()
+      require("lazy.core.module").autosave()
       require("lazy.view").setup()
     end,
   })

@@ -2,9 +2,6 @@ local M = {}
 
 ---@param opts? LazyConfig
 function M.setup(opts)
-  local cache_start = vim.loop.hrtime()
-  require("lazy.core.cache").setup()
-
   local module_start = vim.loop.hrtime()
   require("lazy.core.module").setup()
   local Util = require("lazy.core.util")
@@ -13,7 +10,6 @@ function M.setup(opts)
   local Handler = require("lazy.core.handler")
   local Plugin = require("lazy.core.plugin")
 
-  Util.track("cache", module_start - cache_start)
   Util.track("module", vim.loop.hrtime() - module_start)
 
   Util.track("setup")
@@ -29,10 +25,7 @@ function M.setup(opts)
     for _, plugin in pairs(Config.plugins) do
       if not plugin._.installed then
         vim.cmd("do User LazyInstallPre")
-        require("lazy.manage").install({
-          wait = true,
-          show = Config.options.interactive,
-        })
+        require("lazy.manage").install({ wait = true, show = Config.options.interactive })
         break
       end
     end
@@ -43,9 +36,10 @@ function M.setup(opts)
   Handler.setup()
   Util.track()
 
-  local lazy_delta = vim.loop.hrtime() - cache_start
+  local lazy_delta = vim.loop.hrtime() - module_start
 
   Util.track() -- end setup
+
   Loader.init_plugins()
 
   if Config.plugins["lazy.nvim"] then
