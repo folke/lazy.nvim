@@ -86,9 +86,9 @@ function Spec:add(plugin, is_dep)
   plugin.dep = is_dep
 
   -- check for plugins that should be local
-  for _, pattern in ipairs(Config.options.plugins_local.patterns) do
+  for _, pattern in ipairs(Config.options.dev.patterns) do
     if plugin[1]:find(pattern, 1, true) then
-      plugin.uri = Config.options.plugins_local.path .. "/" .. plugin.name
+      plugin.uri = Config.options.dev.path .. "/" .. plugin.name
       break
     end
   end

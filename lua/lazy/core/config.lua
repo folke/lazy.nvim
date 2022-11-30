@@ -6,10 +6,10 @@ local M = {}
 M.defaults = {
   opt = true,
   plugins = "config.plugins",
-  plugins_local = {
-    path = vim.fn.expand("~/projects"),
+  dev = {
+    path = vim.fn.expand("~/projects"), -- the path where you store your projects
     ---@type string[]
-    patterns = {},
+    patterns = {}, -- For example {"folke"}
   },
   packpath = vim.fn.stdpath("data") .. "/site/pack/lazy",
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
