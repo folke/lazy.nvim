@@ -70,18 +70,18 @@ end
 function M.packadd(plugin, load_start)
   if plugin.opt then
     vim.cmd.packadd(plugin.name)
-    M.source_plugin_files(plugin, true)
+    M.source_runtime(plugin, "/after/plugin")
   elseif load_start then
     vim.opt.runtimepath:append(plugin.dir)
-    M.source_plugin_files(plugin)
-    M.source_plugin_files(plugin, true)
+    M.source_runtime(plugin, "/plugin")
+    M.source_runtime(plugin, "/after/plugin")
   end
 end
 
 ---@param plugin LazyPlugin
----@param after? boolean
-function M.source_plugin_files(plugin, after)
-  Util.walk(plugin.dir .. (after and "/after" or "") .. "/plugin", function(path, _, t)
+---@param dir? string
+function M.source_runtime(plugin, dir)
+  Util.walk(plugin.dir .. dir, function(path, _, t)
     local ext = path:sub(-3)
     if t == "file" and (ext == "lua" or ext == "vim") then
       vim.cmd("silent source " .. path)
