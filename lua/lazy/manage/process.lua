@@ -1,37 +1,66 @@
+local Config = require("lazy.core.config")
+
 local M = {}
 
----@alias ProcessOpts {args: string[], cwd?: string, on_line?:fun(string), on_exit?: fun(ok:boolean, output:string)}
+---@diagnostic disable-next-line: no-unknown
+local uv = vim.loop
 
+---@class ProcessOpts
+---@field args string[]
+---@field cwd? string
+---@field on_line? fun(string)
+---@field on_exit? fun(ok:boolean, output:string)
+---@field timeout? number
+
+---@param opts? ProcessOpts
 function M.spawn(cmd, opts)
   opts = opts or {}
+  opts.timeout = opts.timeout or (Config.options.git.timeout * 1000)
+
   local env = {
     "GIT_TERMINAL_PROMPT=0",
     "GIT_SSH_COMMAND=ssh -oBatchMode=yes",
   }
 
   for key, value in
-    pairs(vim.loop.os_environ() --[[@as string[] ]])
+    pairs(uv.os_environ() --[[@as string[] ]])
   do
     table.insert(env, key .. "=" .. value)
   end
 
-  local stdout = vim.loop.new_pipe()
-  local stderr = vim.loop.new_pipe()
+  local stdout = uv.new_pipe()
+  local stderr = uv.new_pipe()
 
   local output = ""
   ---@type vim.loop.Process
   local handle = nil
 
-  handle = vim.loop.spawn(cmd, {
+  local timeout
+  local killed = false
+  if opts.timeout then
+    timeout = uv.new_timer()
+    timeout:start(opts.timeout, 0, function()
+      if handle and not handle:is_closing() then
+        killed = true
+        uv.process_kill(handle, "sigint")
+      end
+    end)
+  end
+
+  handle = uv.spawn(cmd, {
     stdio = { nil, stdout, stderr },
     args = opts.args,
     cwd = opts.cwd,
     env = env,
-  }, function(exit_code)
+  }, function(exit_code, signal)
+    if timeout then
+      timeout:stop()
+      timeout:close()
+    end
     handle:close()
     stdout:close()
     stderr:close()
-    local check = vim.loop.new_check()
+    local check = uv.new_check()
     check:start(function()
       if not stdout:is_closing() or not stderr:is_closing() then
         return
@@ -39,9 +68,12 @@ function M.spawn(cmd, opts)
       check:stop()
       if opts.on_exit then
         output = output:gsub("[^\r\n]+\r", "")
+        if killed then
+          output = output .. "\n" .. "Process was killed because it reached the timeout"
+        end
 
         vim.schedule(function()
-          opts.on_exit(exit_code == 0, output)
+          opts.on_exit(exit_code == 0 and signal == 0, output)
         end)
       end
     end)
@@ -51,7 +83,6 @@ function M.spawn(cmd, opts)
     if opts.on_exit then
       opts.on_exit(false, "Failed to spawn process " .. cmd .. " " .. vim.inspect(opts))
     end
-
     return
   end
 
@@ -71,8 +102,8 @@ function M.spawn(cmd, opts)
     end
   end
 
-  vim.loop.read_start(stdout, on_output)
-  vim.loop.read_start(stderr, on_output)
+  uv.read_start(stdout, on_output)
+  uv.read_start(stderr, on_output)
 
   return handle
 end

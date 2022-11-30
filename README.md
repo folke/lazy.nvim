@@ -25,7 +25,7 @@
 
 - [ ] health checks: check merge conflicts async
 - [ ] allow setting up plugins through config
-- [ ] task timeout
+- [x] task timeout
 - [ ] log file
 - [ ] deal with resourcing init.lua. Check a global?
 - [x] incorrect when switching TN from opt to start

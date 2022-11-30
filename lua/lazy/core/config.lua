@@ -18,6 +18,7 @@ M.defaults = {
     -- defaults for `Lazy log`
     -- log = { "-10" }, -- last 10 commits
     log = { "--since=1 days ago" }, -- commits from the last 3 days
+    timeout = 120, -- processes taking over 2 minutes will be killed
   },
   -- Any plugin spec that contains one of the patterns will use your
   -- local repo in the projects folder instead of fetchig it from github
