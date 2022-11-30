@@ -53,6 +53,7 @@ function M.show(mode)
   local opts = {
     relative = "editor",
     style = "minimal",
+    border = Config.options.ui.border,
     width = math.min(vim.o.columns - hpad * 2, 200),
     height = math.min(vim.o.lines - vpad * 2, 70),
   }

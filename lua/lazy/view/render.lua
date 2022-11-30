@@ -237,7 +237,7 @@ function M:reason(reason, opts)
         value = value:match("User (.*)") or value
       end
       local hl = "LazyLoader" .. key:sub(1, 1):upper() .. key:sub(2)
-      local icon = Config.options.view.icons[key]
+      local icon = Config.options.ui.icons[key]
       if icon then
         self:append(icon .. " ", hl)
         self:append(value, hl)

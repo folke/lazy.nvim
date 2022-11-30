@@ -18,6 +18,9 @@ M.defaults = {
   packpath = vim.fn.stdpath("data") .. "/site/pack/lazy",
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
   view = {
+  ui = {
+    -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
+    border = "none",
     icons = {
       start = "",
       plugin = " ",
@@ -26,10 +29,9 @@ M.defaults = {
       event = "",
       keys = " ",
       cmd = " ",
-      ft = "",
+      ft = " ",
       task = "✔ ",
     },
-  },
   install_missing = true,
   git = {
     -- defaults for `Lazy log`
