@@ -7,7 +7,7 @@ local M = {}
 ---@class ManagerOpts
 ---@field wait? boolean
 ---@field clear? boolean
----@field interactive? boolean
+---@field show? boolean
 ---@field mode? string
 ---@field plugins? LazyPlugin[]
 
@@ -15,9 +15,6 @@ local M = {}
 ---@param opts? ManagerOpts
 function M.run(ropts, opts)
   opts = opts or {}
-  if opts.interactive == nil then
-    opts.interactive = Config.options.interactive
-  end
 
   if opts.plugins then
     ropts.plugins = opts.plugins
@@ -27,7 +24,7 @@ function M.run(ropts, opts)
     M.clear()
   end
 
-  if opts.interactive then
+  if opts.show ~= false then
     vim.schedule(function()
       require("lazy.view").show(opts.mode)
     end)

@@ -11,7 +11,6 @@ M.defaults = {
     ---@type string[]
     patterns = {},
   },
-  interactive = true,
   packpath = vim.fn.stdpath("data") .. "/site/pack/lazy",
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
   view = {
@@ -58,11 +57,6 @@ function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
   M.paths.plugins = vim.fn.stdpath("config") .. "/lua/" .. M.options.plugins:gsub("%.", "/")
   M.paths.main = M.paths.plugins .. (vim.loop.fs_stat(M.paths.plugins .. ".lua") and ".lua" or "/init.lua")
-
-  -- TODO: check what this does inside a GUI. Probably still ok
-  if #vim.api.nvim_list_uis() == 0 then
-    M.options.interactive = false
-  end
 
   vim.api.nvim_create_autocmd("User", {
     pattern = "VeryLazy",
