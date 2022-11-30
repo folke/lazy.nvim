@@ -15,7 +15,7 @@ local uv = vim.loop
 ---@param opts? ProcessOpts
 function M.spawn(cmd, opts)
   opts = opts or {}
-  opts.timeout = opts.timeout or (Config.options.git.timeout * 1000)
+  opts.timeout = opts.timeout or (Config.options.git and Config.options.git.timeout * 1000)
 
   local env = {
     "GIT_TERMINAL_PROMPT=0",
