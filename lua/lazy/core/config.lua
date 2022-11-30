@@ -37,6 +37,7 @@ M.defaults = {
     -- defaults for `Lazy log`
     log = { "-10" }, -- last 10 commits
     -- log = { "--since=3 days ago" }, -- commits from the last 3 days
+    throttle = 20, -- how frequently should the ui process render events
   },
 }
 
