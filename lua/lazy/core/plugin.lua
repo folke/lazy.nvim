@@ -215,9 +215,11 @@ function M.load()
   -- load specs
   Util.track("spec")
   local spec = M.spec()
-  if not spec.plugins["lazy.nvim"] then
-    spec:add({ "folke/lazy.nvim", lazy = false })
-  end
+
+  -- add ourselves
+  spec.plugins["lazy.nvim"] = nil
+  spec:add({ "folke/lazy.nvim", lazy = true })
+
   Config.plugins = spec.plugins
   Util.track()
 
