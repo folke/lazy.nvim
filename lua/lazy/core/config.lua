@@ -10,7 +10,6 @@ M.defaults = {
     version = nil,
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
-  packpath = vim.fn.stdpath("data") .. "/site/pack/lazy", -- package path where new plugins will be installed
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
   install_missing = true, -- install missing plugins on startup. This doesn't increase startup time.
   concurrency = nil, -- set to a number to limit the maximum amount of concurrent tasks
@@ -19,6 +18,11 @@ M.defaults = {
     -- log = { "-10" }, -- last 10 commits
     log = { "--since=1 days ago" }, -- commits from the last 3 days
     timeout = 120, -- processes taking over 2 minutes will be killed
+  },
+  package = {
+    path = vim.fn.stdpath("data") .. "/site",
+    name = "lazy", -- plugins will be installed under package.path/pack/{name}/opt
+    reset = true, -- packpath will be reset to only include lazy. This makes packadd a lot faster
   },
   -- Any plugin spec that contains one of the patterns will use your
   -- local repo in the projects folder instead of fetchig it from github
@@ -50,6 +54,8 @@ M.ns = vim.api.nvim_create_namespace("lazy")
 
 M.paths = {
   ---@type string
+  opt = nil,
+  ---@type string
   main = nil,
   ---@type string
   plugins = nil,
@@ -69,6 +75,11 @@ function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
   M.paths.plugins = vim.fn.stdpath("config") .. "/lua/" .. M.options.plugins:gsub("%.", "/")
   M.paths.main = M.paths.plugins .. (vim.loop.fs_stat(M.paths.plugins .. ".lua") and ".lua" or "/init.lua")
+  M.paths.opt = M.options.package.path .. "/pack/" .. M.options.package.name .. "/opt"
+
+  if M.options.package.reset then
+    vim.go.packpath = M.options.package.path
+  end
 
   vim.api.nvim_create_autocmd("User", {
     pattern = "VeryLazy",
