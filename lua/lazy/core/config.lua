@@ -75,6 +75,8 @@ function M.setup(spec, opts)
 
   if M.options.package.reset then
     vim.go.packpath = M.options.package.path
+  else
+    vim.opt.packpath:prepend(M.options.package.path)
   end
 
   vim.api.nvim_create_autocmd("User", {
