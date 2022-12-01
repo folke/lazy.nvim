@@ -26,7 +26,8 @@
 - [ ] health checks: check merge conflicts async
   - [ ] unsupported props or props from other managers
 - [x] rename `run` to `build`
-- [ ] allow setting up plugins through config
+- [ ] delete lazy keymaps when a plugin loads
+- [x] allow setting up plugins through config
 - [x] task timeout
 - [ ] log file
 - [ ] deal with re-sourcing init.lua. Check a global?
@@ -67,6 +68,7 @@
   - `requires` => `dependencies`
   - `as` => `name`
   - `opt` => `lazy`
+  - `run` => `build`
 
 ## 📦 Other Neovim Plugin Managers in Lua
 

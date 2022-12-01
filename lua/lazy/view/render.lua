@@ -193,23 +193,12 @@ function M:reason(reason, opts)
   ---@type string?
   local source = reason.source
   if source then
-    ---@type string?
-    local modname = source:match("/lua/(.*)%.lua$")
-    if modname then
-      modname = modname:gsub("/", ".")
-    end
     local name = source:match("/([^/]-)/lua")
     for _, other in pairs(Config.plugins) do
-      if (modname and other.modname == modname) or (name and other.name == name) then
+      if name and other.name == name then
         reason.plugin = other.name
         reason.source = nil
         break
-      end
-    end
-    if reason.source then
-      reason.source = modname or reason.source
-      if reason.source == "lua" then
-        reason.source = Config.options.plugins
       end
     end
   end

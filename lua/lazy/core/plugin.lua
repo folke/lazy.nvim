@@ -147,7 +147,7 @@ end
 function M.update_state()
   ---@type table<string,FileType>
   local installed = {}
-  Util.ls(Config.paths.opt, function(_, name, type)
+  Util.ls(Config.root, function(_, name, type)
     if type == "directory" or type == "link" then
       installed[name] = type
     end
@@ -165,7 +165,7 @@ function M.update_state()
         or plugin.cmd
       plugin.lazy = lazy and true or false
     end
-    plugin.dir = Config.paths.opt .. "/" .. plugin.name
+    plugin.dir = Config.root .. "/" .. plugin.name
     plugin._.is_local = plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git"
     plugin._.is_symlink = installed[plugin.name] == "link"
     plugin._.installed = installed[plugin.name] ~= nil
@@ -178,7 +178,7 @@ function M.update_state()
   for pack, dir_type in pairs(installed) do
     table.insert(Config.to_clean, {
       name = pack,
-      dir = Config.paths.opt .. "/" .. pack,
+      dir = Config.root .. "/" .. pack,
       _ = {
         installed = true,
         is_symlink = dir_type == "link",
@@ -191,15 +191,23 @@ end
 function M.spec()
   local spec = Spec.new()
 
-  local function _load(name, modpath)
-    local modname = Config.options.plugins .. (name and ("." .. name) or "")
-    Util.try(function()
-      spec:normalize(Module.load(modname, modpath))
-    end, "Failed to load **" .. modname .. "**")
-  end
+  if type(Config.spec) == "string" then
+    -- spec is a module
+    local function _load(name, modpath)
+      local modname = Config.spec .. (name and ("." .. name) or "")
+      Util.try(function()
+        spec:normalize(Module.load(modname, modpath))
+      end, "Failed to load **" .. modname .. "**")
+    end
+    local path_plugins = vim.fn.stdpath("config") .. "/lua/" .. Config.spec:gsub("%.", "/")
+    local path_main = path_plugins .. (vim.loop.fs_stat(path_plugins .. ".lua") and ".lua" or "/init.lua")
 
-  _load(nil, Config.paths.main)
-  Util.lsmod(Config.paths.plugins, _load)
+    _load(nil, path_main)
+    Util.lsmod(path_plugins, _load)
+  else
+    -- spec is a spec
+    spec:normalize(Config.spec)
+  end
   return spec
 end
 

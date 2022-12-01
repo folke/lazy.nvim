@@ -4,7 +4,6 @@ local M = {}
 
 ---@class LazyConfig
 M.defaults = {
-  plugins = "config.plugins",
   defaults = {
     lazy = false, -- should plugins be loaded at startup?
     version = nil,
@@ -52,14 +51,11 @@ M.defaults = {
 
 M.ns = vim.api.nvim_create_namespace("lazy")
 
-M.paths = {
-  ---@type string
-  opt = nil,
-  ---@type string
-  main = nil,
-  ---@type string
-  plugins = nil,
-}
+---@type string|LazySpec Should be either a string pointing to a module, or a spec
+M.spec = nil
+
+---@type string Opt directory where plugins will be installed
+M.root = nil
 
 ---@type table<string, LazyPlugin>
 M.plugins = {}
@@ -70,12 +66,12 @@ M.to_clean = {}
 ---@type LazyConfig
 M.options = {}
 
+---@param spec LazySpec
 ---@param opts? LazyConfig
-function M.setup(opts)
+function M.setup(spec, opts)
+  M.spec = spec
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
-  M.paths.plugins = vim.fn.stdpath("config") .. "/lua/" .. M.options.plugins:gsub("%.", "/")
-  M.paths.main = M.paths.plugins .. (vim.loop.fs_stat(M.paths.plugins .. ".lua") and ".lua" or "/init.lua")
-  M.paths.opt = M.options.package.path .. "/pack/" .. M.options.package.name .. "/opt"
+  M.root = M.options.package.path .. "/pack/" .. M.options.package.name .. "/opt"
 
   if M.options.package.reset then
     vim.go.packpath = M.options.package.path

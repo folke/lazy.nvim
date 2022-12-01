@@ -1,7 +1,8 @@
 local M = {}
 
+---@param spec LazySpec Should be a module name to load, or a plugin spec
 ---@param opts? LazyConfig
-function M.setup(opts)
+function M.setup(spec, opts)
   local module_start = vim.loop.hrtime()
   require("lazy.core.module").setup()
   local Util = require("lazy.core.util")
@@ -14,22 +15,10 @@ function M.setup(opts)
   Util.track("setup")
 
   Util.track("config")
-  Config.setup(opts)
+  Config.setup(spec, opts)
   Util.track()
 
   Plugin.load()
-
-  if Config.options.install_missing then
-    Util.track("install")
-    for _, plugin in pairs(Config.plugins) do
-      if not plugin._.installed then
-        vim.cmd("do User LazyInstallPre")
-        require("lazy.manage").install({ wait = true })
-        break
-      end
-    end
-    Util.track()
-  end
 
   Util.track("loader")
   Loader.setup()

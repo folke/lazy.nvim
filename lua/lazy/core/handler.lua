@@ -127,6 +127,7 @@ function M.handlers.module(grouped)
       if plugins then
         grouped[name] = nil
         local reason = { require = modname }
+        -- almost never happens, so this does not decrease performance
         if #Loader.loading == 0 then
           local f = 3
           while not reason.source do

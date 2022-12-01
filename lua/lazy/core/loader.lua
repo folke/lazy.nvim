@@ -7,8 +7,24 @@ local M = {}
 M.loading = {}
 
 function M.setup()
+  -- install missing plugins
+  if Config.options.install_missing then
+    Util.track("install")
+    for _, plugin in pairs(Config.plugins) do
+      if not plugin._.installed then
+        vim.cmd("do User LazyInstallPre")
+        require("lazy.manage").install({ wait = true })
+        break
+      end
+    end
+    Util.track()
+  end
+
+  -- setup handlers
+  Util.track("handlers")
   local Handler = require("lazy.core.handler")
   Handler.setup()
+  Util.track()
 end
 
 function M.init_plugins()
