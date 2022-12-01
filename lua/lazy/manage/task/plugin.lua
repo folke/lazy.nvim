@@ -4,22 +4,22 @@ local Loader = require("lazy.core.loader")
 ---@type table<string, LazyTaskDef>
 local M = {}
 
-M.run = {
+M.build = {
   skip = function(plugin)
-    return not (plugin._.dirty and (plugin.opt == false or plugin.run))
+    return not (plugin._.dirty and (plugin.opt == false or plugin.build))
   end,
   run = function(self)
     Loader.load(self.plugin, { task = "run" }, { load_start = true })
 
-    local run = self.plugin.run
-    if run then
-      if type(run) == "string" and run:sub(1, 1) == ":" then
-        local cmd = vim.api.nvim_parse_cmd(run:sub(2), {})
+    local build = self.plugin.build
+    if build then
+      if type(build) == "string" and build:sub(1, 1) == ":" then
+        local cmd = vim.api.nvim_parse_cmd(build:sub(2), {})
         self.output = vim.api.nvim_cmd(cmd, { output = true })
-      elseif type(run) == "function" then
-        run()
+      elseif type(build) == "function" then
+        build()
       else
-        local args = vim.split(run, "%s+")
+        local args = vim.split(build, "%s+")
         return self:spawn(table.remove(args, 1), {
           args = args,
           cwd = self.plugin.dir,

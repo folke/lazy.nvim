@@ -8,7 +8,7 @@ local M = {}
 ---@class LazyPluginHooks
 ---@field init? fun(LazyPlugin) Will always be run
 ---@field config? fun(LazyPlugin) Will be executed when loading the plugin
----@field run? string|fun()
+---@field build? string|fun(LazyPlugin)
 
 ---@class LazyPluginState
 ---@field loaded? {[string]:string, time:number}

@@ -59,7 +59,7 @@ function M.install(opts)
       "git.checkout",
       "plugin.docs",
       "wait",
-      "plugin.run",
+      "plugin.build",
     },
     plugins = function(plugin)
       return plugin.uri and not plugin._.installed
@@ -78,7 +78,7 @@ function M.update(opts)
       { "git.checkout", lockfile = opts.lockfile },
       "plugin.docs",
       "wait",
-      "plugin.run",
+      "plugin.build",
       { "git.log", updated = true },
     },
     plugins = function(plugin)

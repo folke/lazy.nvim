@@ -24,10 +24,12 @@
 ## ✅ TODO
 
 - [ ] health checks: check merge conflicts async
+  - [ ] unsupported props or props from other managers
+- [x] rename `run` to `build`
 - [ ] allow setting up plugins through config
 - [x] task timeout
 - [ ] log file
-- [ ] deal with resourcing init.lua. Check a global?
+- [ ] deal with re-sourcing init.lua. Check a global?
 - [x] incorrect when switching TN from opt to start
 - [ ] git tests
 - [x] max concurrency
