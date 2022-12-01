@@ -67,9 +67,7 @@ function Spec:add(plugin, is_dep)
     local c = pkg:sub(1, 1)
     if c == "~" then
       plugin.uri = vim.loop.os_getenv("HOME") .. pkg:sub(2)
-    elseif c == "/" then
-      plugin.uri = pkg
-    elseif pkg:sub(1, 4) == "http" or pkg:sub(1, 3) == "ssh" then
+    elseif c == "/" or pkg:sub(1, 4) == "http" or pkg:sub(1, 3) == "ssh" then
       plugin.uri = pkg
     else
       plugin.uri = ("https://github.com/" .. pkg .. ".git")
@@ -202,8 +200,7 @@ function M.spec()
   local function _load(name, modpath)
     local modname = Config.options.plugins .. (name and ("." .. name) or "")
     Util.try(function()
-      local mod = Module.load(modname, modpath)
-      spec:normalize(assert(mod))
+      spec:normalize(Module.load(modname, modpath))
     end, "Failed to load **" .. modname .. "**")
   end
 
