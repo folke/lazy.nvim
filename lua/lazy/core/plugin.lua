@@ -34,7 +34,7 @@ local M = {}
 ---@field dir string
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 ---@field enabled? boolean|(fun():boolean)
----@field opt? boolean
+---@field lazy? boolean
 ---@field dependencies? string[]
 ---@field _ LazyPluginState
 
@@ -145,52 +145,46 @@ function Spec:merge(old, new)
 end
 
 function M.update_state()
-  ---@type table<"opt"|"start", table<string,FileType>>
-  local installed = { opt = {}, start = {} }
-  for opt, packs in pairs(installed) do
-    Util.ls(Config.options.packpath .. "/" .. opt, function(_, name, type)
-      if type == "directory" or type == "link" then
-        packs[name] = type
-      end
-    end)
-  end
+  ---@type table<string,FileType>
+  local installed = {}
+  Util.ls(Config.options.packpath .. "/opt", function(_, name, type)
+    if type == "directory" or type == "link" then
+      installed[name] = type
+    end
+  end)
 
   for _, plugin in pairs(Config.plugins) do
     plugin._ = plugin._ or {}
-    if plugin.opt == nil then
-      local opt = plugin.dep
-        or Config.options.defaults.opt
+    if plugin.lazy == nil then
+      local lazy = plugin.dep
+        or Config.options.defaults.lazy
         or plugin.module
         or plugin.event
         or plugin.keys
         or plugin.ft
         or plugin.cmd
-      plugin.opt = opt and true or false
+      plugin.lazy = lazy and true or false
     end
-    local opt = plugin.opt and "opt" or "start"
-    plugin.dir = Config.options.packpath .. "/" .. opt .. "/" .. plugin.name
+    plugin.dir = Config.options.packpath .. "/opt/" .. plugin.name
     plugin._.is_local = plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git"
-    plugin._.is_symlink = installed[opt][plugin.name] == "link"
-    plugin._.installed = installed[opt][plugin.name] ~= nil
+    plugin._.is_symlink = installed[plugin.name] == "link"
+    plugin._.installed = installed[plugin.name] ~= nil
     if plugin._.is_local == plugin._.is_symlink then
-      installed[opt][plugin.name] = nil
+      installed[plugin.name] = nil
     end
   end
 
   Config.to_clean = {}
-  for opt, packs in pairs(installed) do
-    for pack, dir_type in pairs(packs) do
-      table.insert(Config.to_clean, {
-        name = pack,
-        dir = Config.options.packpath .. "/" .. opt .. "/" .. pack,
-        opt = opt == "opt",
-        _ = {
-          installed = true,
-          is_symlink = dir_type == "link",
-          is_local = dir_type == "link",
-        },
-      })
-    end
+  for pack, dir_type in pairs(installed) do
+    table.insert(Config.to_clean, {
+      name = pack,
+      dir = Config.options.packpath .. "/opt/" .. pack,
+      _ = {
+        installed = true,
+        is_symlink = dir_type == "link",
+        is_local = dir_type == "link",
+      },
+    })
   end
 end
 
@@ -214,7 +208,7 @@ function M.load()
   Util.track("spec")
   local spec = M.spec()
   if not spec.plugins["lazy.nvim"] then
-    spec:add({ "folke/lazy.nvim", opt = false })
+    spec:add({ "folke/lazy.nvim", lazy = false })
   end
   Config.plugins = spec.plugins
   Util.track()

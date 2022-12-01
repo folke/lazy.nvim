@@ -6,7 +6,7 @@ local M = {}
 M.defaults = {
   plugins = "config.plugins",
   defaults = {
-    opt = false, -- should plugins default to "opt" or "start"
+    lazy = false, -- should plugins be loaded at startup?
     version = nil,
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },

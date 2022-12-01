@@ -6,6 +6,11 @@ local M = {}
 ---@type LazyPlugin[]
 M.loading = {}
 
+function M.setup()
+  local Handler = require("lazy.core.handler")
+  Handler.setup()
+end
+
 function M.init_plugins()
   Util.track("plugin_init")
   for _, plugin in pairs(Config.plugins) do
@@ -14,7 +19,7 @@ function M.init_plugins()
       Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
       Util.track()
     end
-    if plugin.opt == false then
+    if plugin.lazy == false then
       M.load(plugin, { start = "start" })
     end
   end
@@ -24,8 +29,7 @@ end
 ---@class Loader
 ---@param plugins string|LazyPlugin|string[]|LazyPlugin[]
 ---@param reason {[string]:string}
----@param opts? {load_start: boolean}
-function M.load(plugins, reason, opts)
+function M.load(plugins, reason)
   ---@diagnostic disable-next-line: cast-local-type
   plugins = type(plugins) == "string" or plugins.name and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
@@ -47,7 +51,7 @@ function M.load(plugins, reason, opts)
       table.insert(M.loading, plugin)
 
       Util.track({ plugin = plugin.name, start = reason.start })
-      M.packadd(plugin, opts and opts.load_start)
+      M.packadd(plugin)
 
       if plugin.dependencies then
         M.load(plugin.dependencies, {})
@@ -67,15 +71,9 @@ function M.load(plugins, reason, opts)
 end
 
 ---@param plugin LazyPlugin
-function M.packadd(plugin, load_start)
-  if plugin.opt then
-    vim.cmd.packadd(plugin.name)
-    M.source_runtime(plugin, "/after/plugin")
-  elseif load_start then
-    vim.opt.runtimepath:append(plugin.dir)
-    M.source_runtime(plugin, "/plugin")
-    M.source_runtime(plugin, "/after/plugin")
-  end
+function M.packadd(plugin)
+  vim.cmd.packadd(plugin.name)
+  M.source_runtime(plugin, "/after/plugin")
 end
 
 ---@param plugin LazyPlugin

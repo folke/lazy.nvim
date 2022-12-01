@@ -7,7 +7,6 @@ function M.setup(opts)
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
-  local Handler = require("lazy.core.handler")
   local Plugin = require("lazy.core.plugin")
 
   Util.track("module", vim.loop.hrtime() - module_start)
@@ -32,8 +31,8 @@ function M.setup(opts)
     Util.track()
   end
 
-  Util.track("handlers")
-  Handler.setup()
+  Util.track("loader")
+  Loader.setup()
   Util.track()
 
   local lazy_delta = vim.loop.hrtime() - module_start

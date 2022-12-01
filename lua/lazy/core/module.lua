@@ -70,7 +70,6 @@ end
 
 function M.save_cache()
   local f = assert(uv.fs_open(cache_path, "w", 438))
-  vim.loop.fs_ftruncate(f, 0)
   for modname, entry in pairs(M.cache) do
     if entry.used then
       entry.modname = modname

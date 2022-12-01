@@ -6,10 +6,10 @@ local M = {}
 
 M.build = {
   skip = function(plugin)
-    return not (plugin._.dirty and (plugin.opt == false or plugin.build))
+    return not (plugin._.dirty and plugin.build)
   end,
   run = function(self)
-    Loader.load(self.plugin, { task = "run" }, { load_start = true })
+    Loader.load(self.plugin, { task = "build" })
 
     local build = self.plugin.build
     if build then

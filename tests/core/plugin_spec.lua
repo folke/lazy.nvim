@@ -30,7 +30,7 @@ end)
 
 describe("plugin spec opt", function()
   it("handles dependencies", function()
-    Config.options.defaults.opt = false
+    Config.options.defaults.lazy = false
     local tests = {
       { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } },
       { "foo/bar", dependencies = { { "foo/dep1" }, "foo/dep2" } },
@@ -43,53 +43,53 @@ describe("plugin spec opt", function()
       assert(vim.tbl_count(spec.plugins) == 3)
       assert(#spec.plugins.bar.dependencies == 2)
       assert(spec.plugins.bar.dep ~= true)
-      assert(spec.plugins.bar.opt == false)
+      assert(spec.plugins.bar.lazy == false)
       assert(spec.plugins.dep1.dep == true)
-      assert(spec.plugins.dep1.opt == true)
+      assert(spec.plugins.dep1.lazy == true)
       assert(spec.plugins.dep2.dep == true)
-      assert(spec.plugins.dep2.opt == true)
+      assert(spec.plugins.dep2.lazy == true)
     end
   end)
 
   it("handles opt from dep", function()
-    Config.options.defaults.opt = false
+    Config.options.defaults.lazy = false
     local spec = Plugin.Spec.new({ "foo/dep1", { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } } })
     Config.plugins = spec.plugins
     Plugin.update_state()
     assert.same(3, vim.tbl_count(spec.plugins))
     assert(spec.plugins.bar.dep ~= true)
-    assert(spec.plugins.bar.opt == false)
+    assert(spec.plugins.bar.lazy == false)
     assert(spec.plugins.dep2.dep == true)
-    assert(spec.plugins.dep2.opt == true)
+    assert(spec.plugins.dep2.lazy == true)
     assert(spec.plugins.dep1.dep ~= true)
-    assert(spec.plugins.dep1.opt == false)
+    assert(spec.plugins.dep1.lazy == false)
   end)
 
   it("handles defaults opt", function()
     do
-      Config.options.defaults.opt = true
+      Config.options.defaults.lazy = true
       local spec = Plugin.Spec.new({ "foo/bar" })
       Config.plugins = spec.plugins
       Plugin.update_state()
-      assert(spec.plugins.bar.opt == true)
+      assert(spec.plugins.bar.lazy == true)
     end
     do
-      Config.options.defaults.opt = false
+      Config.options.defaults.lazy = false
       local spec = Plugin.Spec.new({ "foo/bar" })
       Config.plugins = spec.plugins
       Plugin.update_state()
-      assert(spec.plugins.bar.opt == false)
+      assert(spec.plugins.bar.lazy == false)
     end
   end)
 
   it("handles opt from dep", function()
-    Config.options.defaults.opt = false
+    Config.options.defaults.lazy = false
     local spec = Plugin.Spec.new({ "foo/bar", module = "foo" })
     Config.plugins = spec.plugins
     Plugin.update_state()
     assert.same(1, vim.tbl_count(spec.plugins))
     assert(spec.plugins.bar.dep ~= true)
-    assert(spec.plugins.bar.opt == true)
+    assert(spec.plugins.bar.lazy == true)
   end)
 
   it("merges lazy loaders", function()
