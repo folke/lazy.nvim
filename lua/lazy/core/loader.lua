@@ -28,15 +28,15 @@ function M.setup()
 end
 
 function M.init_plugins()
-  Util.track("plugin_init")
+  Util.track({ start = "init" })
   for _, plugin in pairs(Config.plugins) do
     if plugin.init then
-      Util.track({ plugin = plugin.name, start = "init" })
+      Util.track({ plugin = plugin.name, init = "init" })
       Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
       Util.track()
     end
     if plugin.lazy == false then
-      M.load(plugin, { start = "start" })
+      M.load(plugin, { start = "startup" })
     end
   end
   Util.track()

@@ -3,17 +3,16 @@ local M = {}
 ---@param spec LazySpec Should be a module name to load, or a plugin spec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
-  local module_start = vim.loop.hrtime()
+  local start = vim.loop.hrtime()
   require("lazy.core.module").setup()
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
   local Plugin = require("lazy.core.plugin")
 
-  Util.track("module", vim.loop.hrtime() - module_start)
+  Util.track({ plugin = "lazy.nvim" })
 
-  Util.track("setup")
-
+  Util.track("module", vim.loop.hrtime() - start)
   Util.track("config")
   Config.setup(spec, opts)
   Util.track()
@@ -24,14 +23,14 @@ function M.setup(spec, opts)
   Loader.setup()
   Util.track()
 
-  local lazy_delta = vim.loop.hrtime() - module_start
+  local delta = vim.loop.hrtime() - start
 
-  Util.track() -- end setup
+  Util.track().time = delta -- end setup
 
   Loader.init_plugins()
 
   if Config.plugins["lazy.nvim"] then
-    Config.plugins["lazy.nvim"]._.loaded.time = lazy_delta
+    Config.plugins["lazy.nvim"]._.loaded = { time = delta, source = "init.lua" }
   end
 
   vim.cmd("do User LazyDone")

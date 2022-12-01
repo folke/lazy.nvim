@@ -217,7 +217,16 @@ function M:reason(reason, opts)
   self:append(" ")
   -- self:append(" (", "Conceal")
   local first = true
-  for key, value in pairs(reason) do
+  local keys = vim.tbl_keys(reason)
+  table.sort(keys)
+  if vim.tbl_contains(keys, "plugin") then
+    keys = vim.tbl_filter(function(key)
+      return key ~= "plugin"
+    end, keys)
+    table.insert(keys, "plugin")
+  end
+  for _, key in ipairs(keys) do
+    local value = reason[key]
     if type(key) == "number" then
     elseif key == "require" then
       -- self:append("require", "@function.builtin")

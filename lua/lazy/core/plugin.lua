@@ -11,7 +11,7 @@ local M = {}
 ---@field build? string|fun(LazyPlugin)
 
 ---@class LazyPluginState
----@field loaded? {[string]:string, time:number}
+---@field loaded? {[string]:string}|{time:number}
 ---@field installed boolean
 ---@field tasks? LazyTask[]
 ---@field dirty? boolean

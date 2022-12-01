@@ -36,6 +36,7 @@ M.defaults = {
     border = "none",
     icons = {
       start = "",
+      init = " ",
       plugin = " ",
       source = " ",
       config = "",
