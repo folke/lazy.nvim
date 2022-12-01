@@ -66,6 +66,7 @@
   - `setup` => `init`
   - `requires` => `dependencies`
   - `as` => `name`
+  - `opt` => `lazy`
 
 ## 📦 Other Neovim Plugin Managers in Lua
 
