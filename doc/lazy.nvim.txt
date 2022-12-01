@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 November 30
+*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 01
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -39,10 +39,12 @@ TODO                                                          *lazy.nvim-todo*
 
 
 - health checks: check merge conflicts async
+    - unsupported props or props from other managers
+- rename `run` to `build`
 - allow setting up plugins through config
 - task timeout
 - log file
-- deal with resourcing init.lua. Check a global?
+- deal with re-sourcing init.lua. Check a global?
 - incorrect when switching TN from opt to start
 - git tests
 - max concurrency
