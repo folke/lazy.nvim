@@ -82,6 +82,7 @@ DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
     - `setup` => `init`
     - `requires` => `dependencies`
     - `as` => `name`
+    - `opt` => `lazy`
 
 
 OTHER NEOVIM PLUGIN MANAGERS IN LUA*lazy.nvim-other-neovim-plugin-managers-in-lua*
