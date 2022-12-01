@@ -41,6 +41,7 @@ TODO                                                          *lazy.nvim-todo*
 - health checks: check merge conflicts async
     - unsupported props or props from other managers
 - rename `run` to `build`
+- delete lazy keymaps when a plugin loads
 - allow setting up plugins through config
 - task timeout
 - log file
@@ -83,6 +84,7 @@ DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
     - `requires` => `dependencies`
     - `as` => `name`
     - `opt` => `lazy`
+    - `run` => `build`
 
 
 OTHER NEOVIM PLUGIN MANAGERS IN LUA*lazy.nvim-other-neovim-plugin-managers-in-lua*
