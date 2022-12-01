@@ -4,35 +4,39 @@ local M = {}
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
   local start = vim.loop.hrtime()
+
+  -- load module cache before anything else
   require("lazy.core.module").setup()
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
   local Plugin = require("lazy.core.plugin")
 
-  Util.track({ plugin = "lazy.nvim" })
-
+  Util.track({ plugin = "lazy.nvim" }) -- setup start
   Util.track("module", vim.loop.hrtime() - start)
+
+  -- load config
   Util.track("config")
   Config.setup(spec, opts)
   Util.track()
 
+  -- load the plugins
   Plugin.load()
 
-  Util.track("loader")
+  -- setup loader and handlers
   Loader.setup()
-  Util.track()
 
+  -- correct time delta and loaded
   local delta = vim.loop.hrtime() - start
-
   Util.track().time = delta -- end setup
-
-  Loader.init_plugins()
-
   if Config.plugins["lazy.nvim"] then
     Config.plugins["lazy.nvim"]._.loaded = { time = delta, source = "init.lua" }
   end
 
+  -- load plugins with lazy=false or Plugin.init
+  Loader.init_plugins()
+
+  -- all done!
   vim.cmd("do User LazyDone")
 end
 
@@ -48,7 +52,7 @@ function M.stats()
 end
 
 function M.bootstrap()
-  local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/start/lazy.nvim"
+  local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/opt/lazy.nvim"
   if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
       "git",
