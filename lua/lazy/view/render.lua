@@ -16,9 +16,7 @@ local Text = require("lazy.view.text")
 ---@field _diagnostics LazyDiagnostic[]
 ---@field plugin_range table<string, {from: number, to: number}>
 ---@field _details? string
-local M = setmetatable({}, {
-  __index = Text,
-})
+local M = setmetatable({}, { __index = Text })
 
 function M.new(buf, win, padding)
   local self = setmetatable({}, { __index = M })
@@ -199,6 +197,16 @@ function M:reason(reason, opts)
         reason.plugin = other.name
         reason.source = nil
         break
+      end
+    end
+    if reason.source then
+      source = vim.loop.fs_realpath(source) or source
+      local config = vim.loop.fs_realpath(vim.fn.stdpath("config") .. "/lua")
+      if source:find(config, 1, true) == 1 then
+        reason.source = source:sub(#config + 2):gsub("/", "."):gsub("%.lua$", "")
+        if reason.source == "lua" then
+          reason.source = "init.lua"
+        end
       end
     end
   end
