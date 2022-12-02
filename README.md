@@ -25,8 +25,11 @@
 
 - [ ] health checks: check merge conflicts async
   - [ ] unsupported props or props from other managers
+  - [ ] other packages still in site?
+  - [ ] other package manager artifacts still present? compiled etc
 - [x] rename `run` to `build`
 - [ ] delete lazy keymaps when a plugin loads
+- [ ] temp colorscheme
 - [x] allow setting up plugins through config
 - [x] task timeout
 - [ ] log file
@@ -37,20 +40,20 @@
 - [x] ui border
 - [ ] make sure we can reload specs while keeping state
 - [ ] show disabled plugins (strikethrough?)
-- [ ] Import specs from Packer
+- [ ] Import specs from other plugin managers
 - [ ] use uv file watcher (or stat) to check for config changes
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
     - default semver merging strategy: if no version matches all, then use highest version?
+  - [ ] package meta index (package.lua cache for all packages)
 - [x] support for Plugin.lock
 - [x] defaults for git log
 - [x] view keybindings for update/clean/...
 - [x] add profiler to view
 - [x] add buttons for actions
 - [x] show time taken for op in view
-- [ ] package meta index (package.lua cache for all packages)
-- [ ] auto lazy-loading of lua modules
+- [x] auto lazy-loading of lua modules
 - [x] clear errors
 - [x] add support for versions `git tag --sort v:refname`
 - [x] rename requires to dependencies
@@ -58,7 +61,7 @@
 - [x] handlers imply opt
 - [x] dependencies imply opt for deps
 - [x] fix local plugin spec
-- [ ] investigate all opt=true. Simplifies logic (easily switch between opt/start afterwards)
+- [x] investigate all opt=true. Simplifies logic (easily switch between opt/start afterwards)
 
 ## 📦 Differences with Packer
 
@@ -69,6 +72,8 @@
   - `as` => `name`
   - `opt` => `lazy`
   - `run` => `build`
+  - `lock` => `pin`
+  - `module` is auto-loaded. No need to specify
 
 ## 📦 Other Neovim Plugin Managers in Lua
 
