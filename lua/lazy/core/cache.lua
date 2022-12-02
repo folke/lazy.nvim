@@ -5,7 +5,19 @@ local uv = vim.loop
 local M = {}
 M.dirty = false
 
-local cache_path = vim.fn.stdpath("state") .. "/lazy.state"
+---@class LazyCacheConfig
+M.config = {
+  enabled = true,
+  path = vim.fn.stdpath("state") .. "/lazy.state",
+  -- choose what should be cached
+  --  * lazy: cache all lazy.nvim core modules and your config files
+  --  * init: all of the above and any module needed to init your plugins
+  --  * VimEnter: any module till VimEnter
+  --  * VeryLazy: any module till VeryLazy
+  --  * allthethings: all mdules. Not recommended
+  strategy = "VimEnter", ---@type "lazy"|"init"|"VimEnter"|"allthethings"
+}
+
 ---@type CacheHash
 local cache_hash
 
@@ -27,13 +39,25 @@ function M.check_load(modname, modpath)
   require("lazy.core.loader").autoload(modname, modpath)
 end
 
+---@param step? string
+function M.disable(step)
+  if not M.enabled then
+    return
+  end
+  if step and M.config.strategy ~= step then
+    return
+  end
+
+  local idx = M.idx()
+  if idx then
+    table.remove(package.loaders, idx)
+  end
+  M.enabled = false
+end
+
 ---@param modname string
 ---@return any
 function M.loader(modname)
-  if not M.enabled then
-    return "lazy loader is disabled"
-  end
-
   local entry = M.cache[modname]
 
   local chunk, err
@@ -68,11 +92,10 @@ function M.loader(modname)
   return chunk or error(err)
 end
 
----@param modname string
-function M.find(modname)
+function M.idx()
   -- update our loader position if needed
   if package.loaders[M.loader_idx] ~= M.loader then
-    M.loader_idx = 1
+    M.loader_idx = nil
     ---@diagnostic disable-next-line: no-unknown
     for i, loader in ipairs(package.loaders) do
       if loader == M.loader then
@@ -81,29 +104,49 @@ function M.find(modname)
       end
     end
   end
+  return M.loader_idx
+end
 
-  -- find the module and its modpath
-  for i = M.loader_idx + 1, #package.loaders do
-    ---@diagnostic disable-next-line: no-unknown
-    local chunk = package.loaders[i](modname)
-    if type(chunk) == "function" then
-      local info = debug.getinfo(chunk, "S")
-      return chunk, (info.what ~= "C" and info.source:sub(2))
+---@param modname string
+function M.find(modname)
+  if M.idx() then
+    -- find the module and its modpath
+    for i = M.loader_idx + 1, #package.loaders do
+      ---@diagnostic disable-next-line: no-unknown
+      local chunk = package.loaders[i](modname)
+      if type(chunk) == "function" then
+        local info = debug.getinfo(chunk, "S")
+        return chunk, (info.what ~= "C" and info.source:sub(2))
+      end
     end
   end
 end
 
-function M.setup()
+---@param opts? LazyConfig
+function M.setup(opts)
+  -- no fancy deep extend here. just set the options
+  if opts and opts.performance and opts.performance.cache then
+    for k, v in pairs(opts.performance.cache) do
+      M.config[k] = v
+    end
+  end
+
   M.load_cache()
   table.insert(package.loaders, M.loader_idx, M.loader)
 
-  vim.api.nvim_create_autocmd("VimEnter", {
-    once = true,
-    callback = function()
-      -- startup done, so stop caching
-      M.enabled = false
-    end,
-  })
+  if M.config.strategy == "VimEnter" then
+    vim.api.nvim_create_autocmd("VimEnter", {
+      once = true,
+      callback = function()
+        -- use schedule so all other VimEnter handlers will have run
+        vim.schedule(function()
+          -- startup done, so stop caching
+          M.disable()
+        end)
+      end,
+    })
+  end
+  return M
 end
 
 ---@return CacheHash?
@@ -118,7 +161,7 @@ function M.eq(h1, h2)
 end
 
 function M.save_cache()
-  local f = assert(uv.fs_open(cache_path, "w", 438))
+  local f = assert(uv.fs_open(M.config.path, "w", 438))
   for modname, entry in pairs(M.cache) do
     if entry.used > os.time() - M.ttl then
       entry.modname = modname
@@ -142,7 +185,7 @@ end
 
 function M.load_cache()
   M.cache = {}
-  local f = uv.fs_open(cache_path, "r", 438)
+  local f = uv.fs_open(M.config.path, "r", 438)
   if f then
     cache_hash = uv.fs_fstat(f) --[[@as CacheHash]]
     local data = uv.fs_read(f, cache_hash.size, 0) --[[@as string]]
@@ -172,7 +215,7 @@ function M.autosave()
   vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
       if M.dirty then
-        local hash = M.hash(cache_path)
+        local hash = M.hash(M.config.path)
         -- abort when the file was changed in the meantime
         if hash == nil or M.eq(cache_hash, hash) then
           M.save_cache()

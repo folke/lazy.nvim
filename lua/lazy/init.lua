@@ -8,8 +8,12 @@ function M.setup(spec, opts)
   end
   local start = vim.loop.hrtime()
 
-  -- load module cache before anything else
-  require("lazy.core.module").setup()
+  local Cache
+  if not (opts and opts.performance and opts.performance.cache and opts.performance.cache.enabled == false) then
+    -- load module cache before anything else
+    Cache = require("lazy.core.cache").setup(opts)
+  end
+
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
@@ -36,8 +40,16 @@ function M.setup(spec, opts)
     Config.plugins["lazy.nvim"]._.loaded = { time = delta, source = "init.lua" }
   end
 
+  if Cache then
+    Cache.disable("lazy")
+  end
+
   -- load plugins with lazy=false or Plugin.init
   Loader.init_plugins()
+
+  if Cache then
+    Cache.disable("init")
+  end
 
   -- all done!
   vim.cmd("do User LazyDone")

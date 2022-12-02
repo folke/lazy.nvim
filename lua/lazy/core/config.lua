@@ -48,6 +48,10 @@ M.defaults = {
     },
     throttle = 20, -- how frequently should the ui process render events
   },
+  performance = {
+    ---@type LazyCacheConfig
+    cache = nil,
+  },
 }
 
 M.ns = vim.api.nvim_create_namespace("lazy")
@@ -72,6 +76,7 @@ M.options = {}
 function M.setup(spec, opts)
   M.spec = spec
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
+  M.options.performance.cache = require("lazy.core.cache")
   M.root = M.options.package.path .. "/pack/" .. M.options.package.name .. "/opt"
 
   if M.options.package.reset then
@@ -84,7 +89,7 @@ function M.setup(spec, opts)
     pattern = "VeryLazy",
     once = true,
     callback = function()
-      require("lazy.core.module").autosave()
+      require("lazy.core.cache").autosave()
       require("lazy.view").setup()
     end,
   })
