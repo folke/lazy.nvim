@@ -84,7 +84,7 @@ describe("plugin spec opt", function()
 
   it("handles opt from dep", function()
     Config.options.defaults.lazy = false
-    local spec = Plugin.Spec.new({ "foo/bar", module = "foo" })
+    local spec = Plugin.Spec.new({ "foo/bar", event = "foo" })
     Config.plugins = spec.plugins
     Plugin.update_state()
     assert.same(1, vim.tbl_count(spec.plugins))
@@ -94,17 +94,17 @@ describe("plugin spec opt", function()
 
   it("merges lazy loaders", function()
     local tests = {
-      { { "foo/bar", module = "mod1" }, { "foo/bar", module = "mod2" } },
-      { { "foo/bar", module = { "mod1" } }, { "foo/bar", module = { "mod2" } } },
-      { { "foo/bar", module = "mod1" }, { "foo/bar", module = { "mod2" } } },
+      { { "foo/bar", event = "mod1" }, { "foo/bar", event = "mod2" } },
+      { { "foo/bar", event = { "mod1" } }, { "foo/bar", event = { "mod2" } } },
+      { { "foo/bar", event = "mod1" }, { "foo/bar", event = { "mod2" } } },
     }
     for _, test in ipairs(tests) do
       local spec = Plugin.Spec.new(test)
       assert(vim.tbl_count(spec.plugins) == 1)
-      assert(type(spec.plugins.bar.module) == "table")
-      assert(#spec.plugins.bar.module == 2)
-      assert(vim.tbl_contains(spec.plugins.bar.module, "mod1"))
-      assert(vim.tbl_contains(spec.plugins.bar.module, "mod2"))
+      assert(type(spec.plugins.bar.event) == "table")
+      assert(#spec.plugins.bar.event == 2)
+      assert(vim.tbl_contains(spec.plugins.bar.event, "mod1"))
+      assert(vim.tbl_contains(spec.plugins.bar.event, "mod2"))
     end
   end)
 
