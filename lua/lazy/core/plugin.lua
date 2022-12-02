@@ -18,6 +18,7 @@ local M = {}
 ---@field is_local boolean
 ---@field is_symlink? boolean
 ---@field cloned? boolean
+---@field dep? boolean True if this plugin is only in the spec as a dependency
 
 ---@class LazyPluginRef
 ---@field branch? string
@@ -31,7 +32,6 @@ local M = {}
 ---@field name string display name and name used for plugin config files
 ---@field uri string
 ---@field dir string
----@field dep? boolean True if this plugin is only in the spec as a dependency
 ---@field enabled? boolean|(fun():boolean)
 ---@field lazy? boolean
 ---@field dependencies? string[]
@@ -80,7 +80,8 @@ function Spec:add(plugin, is_dep)
     plugin.name = slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
   end
 
-  plugin.dep = is_dep
+  plugin._ = {}
+  plugin._.dep = is_dep
 
   -- check for plugins that should be local
   for _, pattern in ipairs(Config.options.dev.patterns) do
@@ -120,11 +121,11 @@ end
 ---@param new LazyPlugin
 ---@return LazyPlugin
 function Spec:merge(old, new)
-  local is_dep = old.dep and new.dep
+  local is_dep = old._.dep and new._.dep
 
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(new) do
-    if k == "dep" then
+    if k == "_" then
     elseif old[k] ~= nil and old[k] ~= v then
       if Handler.handlers[k] then
         local values = type(v) == "string" and { v } or v
@@ -139,7 +140,7 @@ function Spec:merge(old, new)
       old[k] = v
     end
   end
-  old.dep = is_dep
+  old._.dep = is_dep
   return old
 end
 
@@ -155,7 +156,12 @@ function M.update_state()
   for _, plugin in pairs(Config.plugins) do
     plugin._ = plugin._ or {}
     if plugin.lazy == nil then
-      local lazy = plugin.dep or Config.options.defaults.lazy or plugin.event or plugin.keys or plugin.ft or plugin.cmd
+      local lazy = plugin._.dep
+        or Config.options.defaults.lazy
+        or plugin.event
+        or plugin.keys
+        or plugin.ft
+        or plugin.cmd
       plugin.lazy = lazy and true or false
     end
     plugin.dir = Config.root .. "/" .. plugin.name

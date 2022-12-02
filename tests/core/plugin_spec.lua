@@ -19,6 +19,7 @@ describe("plugin spec uri/name", function()
   }
 
   for _, test in ipairs(tests) do
+    test[2]._ = {}
     it("parses " .. vim.inspect(test[1]):gsub("%s+", " "), function()
       local spec = Plugin.Spec.new(test[1])
       local plugins = vim.tbl_values(spec.plugins)
@@ -42,11 +43,11 @@ describe("plugin spec opt", function()
       Plugin.update_state()
       assert(vim.tbl_count(spec.plugins) == 3)
       assert(#spec.plugins.bar.dependencies == 2)
-      assert(spec.plugins.bar.dep ~= true)
+      assert(spec.plugins.bar._.dep ~= true)
       assert(spec.plugins.bar.lazy == false)
-      assert(spec.plugins.dep1.dep == true)
+      assert(spec.plugins.dep1._.dep == true)
       assert(spec.plugins.dep1.lazy == true)
-      assert(spec.plugins.dep2.dep == true)
+      assert(spec.plugins.dep2._.dep == true)
       assert(spec.plugins.dep2.lazy == true)
     end
   end)
@@ -57,11 +58,11 @@ describe("plugin spec opt", function()
     Config.plugins = spec.plugins
     Plugin.update_state()
     assert.same(3, vim.tbl_count(spec.plugins))
-    assert(spec.plugins.bar.dep ~= true)
+    assert(spec.plugins.bar._.dep ~= true)
     assert(spec.plugins.bar.lazy == false)
-    assert(spec.plugins.dep2.dep == true)
+    assert(spec.plugins.dep2._.dep == true)
     assert(spec.plugins.dep2.lazy == true)
-    assert(spec.plugins.dep1.dep ~= true)
+    assert(spec.plugins.dep1._.dep ~= true)
     assert(spec.plugins.dep1.lazy == false)
   end)
 
@@ -88,7 +89,7 @@ describe("plugin spec opt", function()
     Config.plugins = spec.plugins
     Plugin.update_state()
     assert.same(1, vim.tbl_count(spec.plugins))
-    assert(spec.plugins.bar.dep ~= true)
+    assert(spec.plugins.bar._.dep ~= true)
     assert(spec.plugins.bar.lazy == true)
   end)
 
