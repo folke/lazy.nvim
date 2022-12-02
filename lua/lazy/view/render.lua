@@ -3,6 +3,7 @@ local Util = require("lazy.util")
 local Sections = require("lazy.view.sections")
 local Handler = require("lazy.core.handler")
 local Git = require("lazy.manage.git")
+local Plugin = require("lazy.core.plugin")
 
 local Text = require("lazy.view.text")
 
@@ -191,16 +192,12 @@ function M:reason(reason, opts)
   ---@type string?
   local source = reason.source
   if source then
-    source = vim.loop.fs_realpath(source) or source
-    for _, other in pairs(Config.plugins) do
-      if source:find(vim.loop.fs_realpath(other.dir), 1, true) then
-        reason.plugin = other.name
-        reason.source = nil
-        break
-      end
-    end
-    if reason.source then
-      local config = vim.loop.fs_realpath(vim.fn.stdpath("config"))
+    local plugin = Plugin.find(source)
+    if plugin then
+      reason.plugin = plugin.name
+      reason.source = nil
+    else
+      local config = vim.fn.stdpath("config")
       if source == config .. "/init.lua" then
         reason.source = "init.lua"
       else
