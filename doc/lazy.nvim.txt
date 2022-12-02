@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 01
+*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 02
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -40,8 +40,11 @@ TODO                                                          *lazy.nvim-todo*
 
 - health checks: check merge conflicts async
     - unsupported props or props from other managers
+    - other packages still in site?
+    - other package manager artifacts still present? compiled etc
 - rename `run` to `build`
 - delete lazy keymaps when a plugin loads
+- temp colorscheme
 - allow setting up plugins through config
 - task timeout
 - log file
@@ -52,19 +55,19 @@ TODO                                                          *lazy.nvim-todo*
 - ui border
 - make sure we can reload specs while keeping state
 - show disabled plugins (strikethrough?)
-- Import specs from Packer
+- Import specs from other plugin managers
 - use uv file watcher (or stat) to check for config changes
 - packspec <https://github.com/nvim-lua/nvim-package-specification>
     - add support to specify `engines`, `os` and `cpu` like in `package.json`
     - semver merging. Should check if two or more semver ranges are compatible and calculate the union range
         - default semver merging strategy: if no version matches all, then use highest version?
+    - package meta index (package.lua cache for all packages)
 - support for Plugin.lock
 - defaults for git log
 - view keybindings for update/clean/…
 - add profiler to view
 - add buttons for actions
 - show time taken for op in view
-- package meta index (package.lua cache for all packages)
 - auto lazy-loading of lua modules
 - clear errors
 - add support for versions `git tag --sort v:refname`
@@ -85,6 +88,8 @@ DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
     - `as` => `name`
     - `opt` => `lazy`
     - `run` => `build`
+    - `lock` => `pin`
+    - `module` is auto-loaded. No need to specify
 
 
 OTHER NEOVIM PLUGIN MANAGERS IN LUA*lazy.nvim-other-neovim-plugin-managers-in-lua*
