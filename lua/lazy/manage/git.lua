@@ -51,41 +51,54 @@ function M.get_versions(repo, spec)
 end
 
 ---@param plugin LazyPlugin
----@return {branch:string, commit?:string}?
+---@return string?
 function M.get_branch(plugin)
   if plugin.branch then
-    return {
-      branch = plugin.branch,
-      commit = M.ref(plugin.dir, "heads/" .. plugin.branch),
-    }
+    return plugin.branch
   else
+    -- we need to return the default branch
+    -- Try origin first
     local main = M.ref(plugin.dir, "remotes/origin/HEAD")
     if main then
       local branch = main:match("ref: refs/remotes/origin/(.*)")
       if branch then
-        return {
-          branch = branch,
-          commit = M.ref(plugin.dir, "heads/" .. branch),
-        }
+        return branch
       end
     end
+
+    -- fallback to local HEAD
+    main = assert(Util.head(plugin.dir .. "/.git/HEAD"))
+    return main and main:match("ref: refs/heads/(.*)")
+  end
+end
+
+-- Return the last commit for the given branch
+---@param repo string
+---@param branch string
+---@param origin? boolean
+function M.get_commit(repo, branch, origin)
+  if origin then
+    -- origin ref might not exist if it is the same as local
+    return M.ref(repo, "remotes/origin", branch) or M.ref(repo, "heads", branch)
+  else
+    return M.ref(repo, "heads", branch)
   end
 end
 
 ---@param plugin LazyPlugin
 ---@return GitInfo?
 function M.get_target(plugin)
-  local branch = M.get_branch(plugin) or M.info(plugin.dir)
+  local branch = assert(M.get_branch(plugin))
 
   if plugin.commit then
     return {
-      branch = branch and branch.branch,
+      branch = branch,
       commit = plugin.commit,
     }
   end
   if plugin.tag then
     return {
-      branch = branch and branch.branch,
+      branch = branch,
       tag = plugin.tag,
       commit = M.ref(plugin.dir, "tags/" .. plugin.tag),
     }
@@ -95,7 +108,7 @@ function M.get_target(plugin)
     local last = Semver.last(M.get_versions(plugin.dir, version))
     if last then
       return {
-        branch = branch and branch.branch,
+        branch = branch,
         version = last,
         tag = last.tag,
         commit = M.ref(plugin.dir, "tags/" .. last.tag),
@@ -103,11 +116,11 @@ function M.get_target(plugin)
     end
   end
   ---@diagnostic disable-next-line: return-type-mismatch
-  return branch
+  return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
 end
 
-function M.ref(repo, ref)
-  return Util.head(repo .. "/.git/refs/" .. ref)
+function M.ref(repo, ...)
+  return Util.head(repo .. "/.git/refs/" .. table.concat({ ... }, "/"))
 end
 
 return M

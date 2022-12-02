@@ -29,8 +29,7 @@ function M.update()
     if not plugin._.is_local and plugin._.installed then
       local info = assert(Git.info(plugin.dir))
       if not info.branch then
-        local branch = assert(Git.get_branch(plugin))
-        info.branch = branch.branch
+        info.branch = assert(Git.get_branch(plugin))
       end
       info.commit = info.commit
       -- f:write(([[  [%q] = { branch = %q, commit = %q },]]):format(name, info.branch, info.commit) .. "\n")

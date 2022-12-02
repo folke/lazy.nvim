@@ -30,6 +30,7 @@ M.log = {
     elseif opts.check then
       local info = assert(Git.info(self.plugin.dir))
       local target = assert(Git.get_target(self.plugin))
+      assert(target.commit, self.plugin.name .. " " .. target.branch)
       table.insert(args, info.commit .. ".." .. target.commit)
     else
       vim.list_extend(args, opts.args or Config.options.git.log)
@@ -76,22 +77,23 @@ M.clone = {
   end,
 }
 
+-- setup origin branches if needed
+-- fetch will retrieve the data
 M.branch = {
   skip = function(plugin)
     if not plugin._.installed or plugin._.is_local then
       return true
     end
     local branch = assert(Git.get_branch(plugin))
-    return branch and branch.commit
+    return Git.get_commit(plugin.dir, branch)
   end,
   run = function(self)
-    local branch = assert(Git.get_branch(self.plugin))
     local args = {
       "remote",
       "set-branches",
       "--add",
       "origin",
-      branch.branch,
+      assert(Git.get_branch(self.plugin)),
     }
 
     self:spawn("git", {
@@ -101,6 +103,7 @@ M.branch = {
   end,
 }
 
+-- fetches all needed origin branches
 M.fetch = {
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
@@ -121,6 +124,8 @@ M.fetch = {
   end,
 }
 
+-- checkout to the target commit
+-- branches will exists at this point, so so will the commit
 M.checkout = {
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
@@ -131,7 +136,7 @@ M.checkout = {
     local info = assert(Git.info(self.plugin.dir))
     local target = assert(Git.get_target(self.plugin))
 
-    -- if the plugin is locked and we did not just clone it,
+    -- if the plugin is pinned and we did not just clone it,
     -- then don't update
     if self.plugin.pin and not self.plugin._.cloned then
       target = info
@@ -139,6 +144,7 @@ M.checkout = {
 
     local lock
     if opts.lockfile then
+      -- restore to the lock if it exists
       lock = Lock.get(self.plugin)
       if lock then
         ---@diagnostic disable-next-line: cast-local-type
@@ -146,6 +152,8 @@ M.checkout = {
       end
     end
 
+    -- dont run checkout if target is already reached.
+    -- unless we just clones, since then we won't have any data yet
     if not self.plugin._.cloned and info.commit == target.commit and info.branch == target.branch then
       self.plugin._.updated = {
         from = info.commit,
@@ -165,8 +173,8 @@ M.checkout = {
       table.insert(args, "tags/" .. target.tag)
     elseif self.plugin.commit then
       table.insert(args, self.plugin.commit)
-    elseif target.branch then
-      table.insert(args, target.branch)
+    else
+      table.insert(args, target.commit)
     end
 
     self:spawn("git", {
