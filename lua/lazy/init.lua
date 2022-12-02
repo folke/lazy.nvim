@@ -3,6 +3,9 @@ local M = {}
 ---@param spec LazySpec Should be a module name to load, or a plugin spec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
+  if not vim.go.loadplugins then
+    return
+  end
   local start = vim.loop.hrtime()
 
   -- load module cache before anything else
