@@ -10,7 +10,6 @@ M.defaults = {
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
-  install_missing = true, -- install missing plugins on startup. This doesn't increase startup time.
   concurrency = nil, -- set to a number to limit the maximum amount of concurrent tasks
   git = {
     -- defaults for `Lazy log`
@@ -29,6 +28,13 @@ M.defaults = {
     path = vim.fn.expand("~/projects"), -- the path where you store your projects
     ---@type string[]
     patterns = {}, -- For example {"folke"}
+  },
+  install = {
+    -- install missing plugins on startup. This doesn't increase startup time.
+    missing = true,
+    -- try to load one of the colorschemes in this list when starting an install during startup
+    -- the first colorscheme that is found will be used
+    colorscheme = { "habamax" },
   },
   ui = {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
@@ -78,6 +84,8 @@ function M.setup(spec, opts)
   M.spec = spec
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
   M.options.performance.cache = require("lazy.core.cache")
+  table.insert(M.options.install.colorscheme, "habamax")
+
   M.root = M.options.package.path .. "/pack/" .. M.options.package.name .. "/opt"
 
   if M.options.performance.reset_packpath then

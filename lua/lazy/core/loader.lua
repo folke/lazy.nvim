@@ -9,8 +9,13 @@ M.init_done = false
 
 function M.setup()
   -- install missing plugins
-  if Config.options.install_missing then
+  if Config.options.install.missing then
     Util.track("install")
+    for _, colorscheme in ipairs(Config.options.install.colorscheme) do
+      if pcall(vim.cmd.colorscheme, colorscheme) then
+        break
+      end
+    end
     for _, plugin in pairs(Config.plugins) do
       if not plugin._.installed then
         vim.cmd("do User LazyInstallPre")
