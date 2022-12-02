@@ -17,6 +17,7 @@ M.config = {
   --  * allthethings: all mdules. Not recommended
   strategy = "VimEnter", ---@type "lazy"|"init"|"VimEnter"|"allthethings"
 }
+M.debug = false
 
 ---@type CacheHash
 local cache_hash
@@ -82,9 +83,11 @@ function M.loader(modname)
       M.cache[modname] = entry
     end
   end
-  vim.schedule(function()
-    vim.notify("loading " .. modname)
-  end)
+  if M.debug then
+    vim.schedule(function()
+      vim.notify("[cache:load] " .. modname)
+    end)
+  end
   if entry and chunk then
     M.dirty = true
     entry.chunk = string.dump(chunk)
@@ -130,6 +133,7 @@ function M.setup(opts)
       M.config[k] = v
     end
   end
+  M.debug = opts and opts.debug
 
   M.load_cache()
   table.insert(package.loaders, M.loader_idx, M.loader)

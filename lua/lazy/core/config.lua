@@ -52,6 +52,7 @@ M.defaults = {
     cache = nil,
     reset_packpath = true, -- packpath will be reset to only include lazy. This makes packadd a lot faster
   },
+  debug = false,
 }
 
 M.ns = vim.api.nvim_create_namespace("lazy")

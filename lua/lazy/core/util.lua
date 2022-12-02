@@ -159,7 +159,9 @@ function M.lsmod(root, fn)
   end)
 end
 
+---@param msg string|string[]
 function M.notify(msg, level)
+  msg = type(msg) == "table" and table.concat(msg, "\n") or msg
   vim.notify(msg, level, {
     on_open = function(win)
       vim.wo[win].conceallevel = 3
@@ -172,12 +174,19 @@ function M.notify(msg, level)
   })
 end
 
+---@param msg string|string[]
 function M.error(msg)
   M.notify(msg, vim.log.levels.ERROR)
 end
 
+---@param msg string|string[]
 function M.info(msg)
   M.notify(msg, vim.log.levels.INFO)
+end
+
+---@param msg string|string[]
+function M.warn(msg)
+  M.notify(msg, vim.log.levels.WARN)
 end
 
 return M
