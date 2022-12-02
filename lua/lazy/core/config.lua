@@ -33,7 +33,7 @@ M.defaults = {
     -- install missing plugins on startup. This doesn't increase startup time.
     missing = true,
     -- try to load one of the colorschemes in this list when starting an install during startup
-    -- the first colorscheme that is found will be used
+    -- the first colorscheme that is found will be loaded
     colorscheme = { "habamax" },
   },
   ui = {
@@ -100,6 +100,7 @@ function M.setup(spec, opts)
     callback = function()
       require("lazy.core.cache").autosave()
       require("lazy.view").setup()
+      require("lazy.manage.reloader").enable()
     end,
   })
 

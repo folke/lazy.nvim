@@ -29,8 +29,8 @@
   - [ ] other package manager artifacts still present? compiled etc
 - [x] rename `run` to `build`
 - [ ] delete lazy keymaps when a plugin loads
-- [ ] temp colorscheme
-- [x] allow setting up plugins through config
+- [x] temp colorscheme
+- [x] allow setting up plugins through config **fooo**
 - [x] task timeout
 - [ ] log file
 - [ ] deal with re-sourcing init.lua. Check a global?
@@ -38,10 +38,10 @@
 - [ ] git tests
 - [x] max concurrency
 - [x] ui border
-- [ ] make sure we can reload specs while keeping state
+- [x] make sure we can reload specs while keeping state
 - [ ] show disabled plugins (strikethrough?)
 - [ ] Import specs from other plugin managers
-- [ ] use uv file watcher (or stat) to check for config changes
+- [x] use uv file watcher (or stat) to check for config changes
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range

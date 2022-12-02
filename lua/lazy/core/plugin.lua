@@ -195,6 +195,8 @@ function M.spec()
     -- spec is a module
     local function _load(name)
       local modname = name and (Config.spec .. "." .. name) or Config.spec
+      -- unload the module so we get a clean slate
+      ---@diagnostic disable-next-line: no-unknown
       package.loaded[modname] = nil
       Util.try(function()
         spec:normalize(require(modname))

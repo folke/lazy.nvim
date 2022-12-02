@@ -115,7 +115,6 @@ end
 
 ---@param opts? ManagerOpts
 function M.clean(opts)
-  Plugin.update_state()
   M.run({
     pipeline = { "fs.clean" },
     plugins = Config.to_clean,
@@ -123,7 +122,7 @@ function M.clean(opts)
 end
 
 function M.clear()
-  Plugin.update_state()
+  Plugin.load()
   for _, plugin in pairs(Config.plugins) do
     plugin._.updated = nil
     plugin._.cloned = nil

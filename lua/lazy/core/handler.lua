@@ -63,7 +63,9 @@ function M.trigger(groups, events, pattern)
           end
           Util.info(lines)
         end
-        vim.api.nvim_exec_autocmds(autocmd.event, { group = autocmd.group, modeline = false })
+        Util.try(function()
+          vim.api.nvim_exec_autocmds(autocmd.event, { group = autocmd.group, modeline = false })
+        end)
       end
     end
   end
