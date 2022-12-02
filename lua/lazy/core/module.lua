@@ -10,51 +10,100 @@ local cache_path = vim.fn.stdpath("state") .. "/lazy.state"
 local cache_hash
 
 ---@alias CacheHash {mtime: {sec:number, nsec:number}, size:number}
----@alias CacheEntry {hash:CacheHash, chunk:string, used:boolean}
+---@alias CacheEntry {hash:CacheHash, modpath:string, chunk:string, used:number}
 ---@type table<string,CacheEntry?>
 M.cache = {}
+M.loader_idx = 2 -- 2 so preload still works
+M.enabled = true
+M.ttl = 3600 * 24 * 5 -- keep unused modules for up to 5 days
 
+-- Check if we need to load this plugin
 ---@param modname string
 ---@param modpath string
----@return any
-function M.load(modname, modpath)
-  local entry = M.cache[modname]
-  local hash = assert(M.hash(modpath))
-
-  if entry and not M.eq(entry.hash, hash) then
-    entry = nil
+function M.check_load(modname, modpath)
+  if modname:sub(1, 4) == "lazy" then
+    return
   end
+  require("lazy.core.loader").autoload(modname, modpath)
+end
+
+---@param modname string
+---@return any
+function M.loader(modname)
+  if not M.enabled then
+    return "lazy loader is disabled"
+  end
+
+  local entry = M.cache[modname]
 
   local chunk, err
   if entry then
-    entry.used = true
-    chunk, err = load(entry.chunk --[[@as string]], "@" .. modpath, "b")
+    M.check_load(modname, entry.modpath)
+    entry.used = os.time()
+    local hash = assert(M.hash(entry.modpath))
+    if M.eq(entry.hash, hash) then
+      -- found in cache and up to date
+      chunk, err = load(entry.chunk --[[@as string]], "@" .. entry.modpath)
+      return chunk or error(err)
+    end
+    -- reload from file
+    entry.hash = hash
+    chunk, err = loadfile(entry.modpath)
   else
-    vim.schedule(function()
-      vim.notify("loadfile(" .. modname .. ")")
-    end)
-    chunk, err = loadfile(modpath)
-    if chunk then
-      M.dirty = true
-      M.cache[modname] = { hash = hash, chunk = string.dump(chunk), used = true }
+    -- load the module and find its modpath
+    local modpath
+    chunk, modpath = M.find(modname)
+    if modpath then
+      entry = { hash = M.hash(modpath), modpath = modpath, used = os.time() }
+      M.cache[modname] = entry
+    end
+  end
+  vim.schedule(function()
+    vim.notify("loading " .. modname)
+  end)
+  if entry and chunk then
+    M.dirty = true
+    entry.chunk = string.dump(chunk)
+  end
+  return chunk or error(err)
+end
+
+---@param modname string
+function M.find(modname)
+  -- update our loader position if needed
+  if package.loaders[M.loader_idx] ~= M.loader then
+    M.loader_idx = 1
+    ---@diagnostic disable-next-line: no-unknown
+    for i, loader in ipairs(package.loaders) do
+      if loader == M.loader then
+        M.loader_idx = i
+        break
+      end
     end
   end
 
-  return chunk and chunk() or error(err)
+  -- find the module and its modpath
+  for i = M.loader_idx + 1, #package.loaders do
+    ---@diagnostic disable-next-line: no-unknown
+    local chunk = package.loaders[i](modname)
+    if type(chunk) == "function" then
+      local info = debug.getinfo(chunk, "S")
+      return chunk, (info.what ~= "C" and info.source:sub(2))
+    end
+  end
 end
 
 function M.setup()
   M.load_cache()
-  -- preload core modules
-  local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
-  for _, name in ipairs({ "util", "config", "loader", "plugin", "handler" }) do
-    local modname = "lazy.core." .. name
-    ---@diagnostic disable-next-line: no-unknown
-    package.preload[modname] = function()
-      return M.load(modname, root .. "/core/" .. name:gsub("%.", "/") .. ".lua")
-    end
-  end
-  return M
+  table.insert(package.loaders, M.loader_idx, M.loader)
+
+  vim.api.nvim_create_autocmd("VimEnter", {
+    once = true,
+    callback = function()
+      -- startup done, so stop caching
+      M.enabled = false
+    end,
+  })
 end
 
 ---@return CacheHash?
@@ -71,12 +120,21 @@ end
 function M.save_cache()
   local f = assert(uv.fs_open(cache_path, "w", 438))
   for modname, entry in pairs(M.cache) do
-    if entry.used then
+    if entry.used > os.time() - M.ttl then
       entry.modname = modname
-      local header = { entry.hash.size, entry.hash.mtime.sec, entry.hash.mtime.nsec, #modname, #entry.chunk }
-      uv.fs_write(f, ffi.string(ffi.new("const uint32_t[5]", header), 20))
+      local header = {
+        entry.hash.size,
+        entry.hash.mtime.sec,
+        entry.hash.mtime.nsec,
+        #modname,
+        #entry.chunk,
+        #entry.modpath,
+        entry.used,
+      }
+      uv.fs_write(f, ffi.string(ffi.new("const uint32_t[7]", header), 28))
       uv.fs_write(f, modname)
       uv.fs_write(f, entry.chunk)
+      uv.fs_write(f, entry.modpath)
     end
   end
   uv.fs_close(f)
@@ -92,13 +150,20 @@ function M.load_cache()
 
     local offset = 1
     while offset + 1 < #data do
-      local header = ffi.cast("uint32_t*", ffi.new("const char[20]", data:sub(offset, offset + 19)))
-      offset = offset + 20
+      local header = ffi.cast("uint32_t*", ffi.new("const char[28]", data:sub(offset, offset + 27)))
+      offset = offset + 28
       local modname = data:sub(offset, offset + header[3] - 1)
       offset = offset + header[3]
       local chunk = data:sub(offset, offset + header[4] - 1)
       offset = offset + header[4]
-      M.cache[modname] = { hash = { size = header[0], mtime = { sec = header[1], nsec = header[2] } }, chunk = chunk }
+      local file = data:sub(offset, offset + header[5] - 1)
+      offset = offset + header[5]
+      M.cache[modname] = {
+        hash = { size = header[0], mtime = { sec = header[1], nsec = header[2] } },
+        chunk = chunk,
+        modpath = file,
+        used = header[6],
+      }
     end
   end
 end
