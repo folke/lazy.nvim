@@ -21,7 +21,6 @@ M.defaults = {
   package = {
     path = vim.fn.stdpath("data") .. "/site",
     name = "lazy", -- plugins will be installed under package.path/pack/{name}/opt
-    reset = true, -- packpath will be reset to only include lazy. This makes packadd a lot faster
   },
   -- Any plugin spec that contains one of the patterns will use your
   -- local repo in the projects folder instead of fetchig it from github
@@ -51,6 +50,7 @@ M.defaults = {
   performance = {
     ---@type LazyCacheConfig
     cache = nil,
+    reset_packpath = true, -- packpath will be reset to only include lazy. This makes packadd a lot faster
   },
 }
 
@@ -79,7 +79,7 @@ function M.setup(spec, opts)
   M.options.performance.cache = require("lazy.core.cache")
   M.root = M.options.package.path .. "/pack/" .. M.options.package.name .. "/opt"
 
-  if M.options.package.reset then
+  if M.options.performance.reset_packpath then
     vim.go.packpath = M.options.package.path
   else
     vim.opt.packpath:prepend(M.options.package.path)
