@@ -188,6 +188,7 @@ function M.spec()
     -- spec is a module
     local function _load(name)
       local modname = name and (Config.spec .. "." .. name) or Config.spec
+      package.loaded[modname] = nil
       Util.try(function()
         spec:normalize(require(modname))
       end, "Failed to load **" .. modname .. "**")
@@ -212,7 +213,14 @@ function M.load()
   spec.plugins["lazy.nvim"] = nil
   spec:add({ "folke/lazy.nvim", lazy = true })
 
+  local existing = Config.plugins
   Config.plugins = spec.plugins
+  -- copy state. This wont do anything during startup
+  for name, plugin in pairs(existing) do
+    if Config.plugins[name] then
+      Config.plugins[name]._ = plugin._
+    end
+  end
   Util.track()
 
   Util.track("state")
