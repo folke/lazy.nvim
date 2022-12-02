@@ -6,7 +6,6 @@ local Config = require("lazy.core.config")
 ---@field event? string|string[]
 ---@field cmd? string|string[]
 ---@field ft? string|string[]
----@field module? string|string[]
 ---@field keys? string|string[]
 
 local M = {}
@@ -114,38 +113,6 @@ function M.handlers.cmd(grouped)
       end,
     })
   end
-end
-
-function M.handlers.module(grouped)
-  ---@param modname string
-  table.insert(package.loaders, 2, function(modname)
-    local idx = modname:find(".", 1, true) or #modname + 1
-    while idx do
-      local name = modname:sub(1, idx - 1)
-      ---@diagnostic disable-next-line: redefined-local
-      local plugins = grouped[name]
-      if plugins then
-        grouped[name] = nil
-        local reason = { require = modname }
-        -- almost never happens, so this does not decrease performance
-        if #Loader.loading == 0 then
-          local f = 3
-          while not reason.source do
-            local info = debug.getinfo(f, "S")
-            if not info then
-              break
-            end
-            if info.what ~= "C" then
-              reason.source = info.source:sub(2)
-            end
-            f = f + 1
-          end
-        end
-        Loader.load(plugins, reason)
-      end
-      idx = modname:find(".", idx + 1, true)
-    end
-  end)
 end
 
 return M

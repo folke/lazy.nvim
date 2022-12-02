@@ -38,7 +38,7 @@ function M.try(fn, msg)
       if not info then
         break
       end
-      if info.what == "Lua" and not info.source:find("lazy.nvim") then
+      if info.what ~= "C" and not info.source:find("lazy.nvim") then
         local source = info.source:sub(2)
         if source:find(Config.root, 1, true) == 1 then
           source = source:sub(#Config.root + 1)
@@ -65,6 +65,20 @@ function M.try(fn, msg)
   ---@type boolean, any
   local ok, result = xpcall(fn, error_handler)
   return ok and result or nil
+end
+
+function M.get_source()
+  local f = 2
+  while true do
+    local info = debug.getinfo(f, "S")
+    if not info then
+      break
+    end
+    if info.what ~= "C" and not info.source:find("lazy.nvim", 1, true) then
+      return info.source:sub(2)
+    end
+    f = f + 1
+  end
 end
 
 -- Fast implementation to check if a table is a list

@@ -1,6 +1,5 @@
 local Config = require("lazy.core.config")
 local Util = require("lazy.core.util")
-local Module = require("lazy.core.module")
 local Handler = require("lazy.core.handler")
 
 local M = {}
@@ -38,7 +37,7 @@ local M = {}
 ---@field dependencies? string[]
 ---@field _ LazyPluginState
 
----@alias LazySpec string|LazyPlugin|LazySpec[]|{dependencies:LazySpec}
+---@alias LazySpec string|LazyPlugin|LazyPlugin[]|{dependencies:LazySpec}
 
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
@@ -156,13 +155,7 @@ function M.update_state()
   for _, plugin in pairs(Config.plugins) do
     plugin._ = plugin._ or {}
     if plugin.lazy == nil then
-      local lazy = plugin.dep
-        or Config.options.defaults.lazy
-        or plugin.module
-        or plugin.event
-        or plugin.keys
-        or plugin.ft
-        or plugin.cmd
+      local lazy = plugin.dep or Config.options.defaults.lazy or plugin.event or plugin.keys or plugin.ft or plugin.cmd
       plugin.lazy = lazy and true or false
     end
     plugin.dir = Config.root .. "/" .. plugin.name
@@ -193,16 +186,15 @@ function M.spec()
 
   if type(Config.spec) == "string" then
     -- spec is a module
-    local function _load(name, modpath)
-      local modname = Config.spec .. (name and ("." .. name) or "")
+    local function _load(name)
+      local modname = name and (Config.spec .. "." .. name) or Config.spec
       Util.try(function()
-        spec:normalize(Module.load(modname, modpath))
+        spec:normalize(require(modname))
       end, "Failed to load **" .. modname .. "**")
     end
     local path_plugins = vim.fn.stdpath("config") .. "/lua/" .. Config.spec:gsub("%.", "/")
-    local path_main = path_plugins .. (vim.loop.fs_stat(path_plugins .. ".lua") and ".lua" or "/init.lua")
 
-    _load(nil, path_main)
+    _load()
     Util.lsmod(path_plugins, _load)
   else
     -- spec is a spec
@@ -226,6 +218,16 @@ function M.load()
   Util.track("state")
   M.update_state()
   Util.track()
+end
+
+-- Finds the plugin that has this path
+---@param path string
+function M.find(path)
+  if path:find(Config.root, 1, true) == 1 then
+    local plugin = path:sub(#Config.root + 2)
+    local idx = plugin:find("/", 1, true)
+    return idx and Config.plugins[plugin:sub(1, idx - 1)] or nil
+  end
 end
 
 return M

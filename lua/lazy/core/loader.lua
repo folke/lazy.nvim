@@ -5,6 +5,7 @@ local M = {}
 
 ---@type LazyPlugin[]
 M.loading = {}
+M.init_done = false
 
 function M.setup()
   -- install missing plugins
@@ -25,6 +26,9 @@ function M.setup()
   local Handler = require("lazy.core.handler")
   Handler.setup()
   Util.track()
+
+  -- autoload opt plugins
+  table.insert(package.loaders, M.autoload)
 end
 
 function M.init_plugins()
@@ -42,6 +46,7 @@ function M.init_plugins()
   end
   Util.track()
   Util.track()
+  M.init_done = true
 end
 
 ---@class Loader
@@ -49,7 +54,7 @@ end
 ---@param reason {[string]:string}
 function M.load(plugins, reason)
   ---@diagnostic disable-next-line: cast-local-type
-  plugins = type(plugins) == "string" or plugins.name and { plugins } or plugins
+  plugins = (type(plugins) == "string" or plugins.name) and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
 
   for _, plugin in ipairs(plugins) do
@@ -64,17 +69,21 @@ function M.load(plugins, reason)
       end
       if #M.loading > 0 then
         plugin._.loaded.plugin = M.loading[#M.loading].name
+      elseif reason.require then
+        plugin._.loaded.source = Util.get_source()
       end
 
       table.insert(M.loading, plugin)
 
       Util.track({ plugin = plugin.name, start = reason.start })
-      M.packadd(plugin)
+
+      vim.opt.runtimepath:prepend(plugin.dir)
 
       if plugin.dependencies then
         M.load(plugin.dependencies, {})
       end
 
+      M.packadd(plugin)
       if plugin.config then
         Util.try(plugin.config, "Failed to run `config` for " .. plugin.name)
       end
@@ -90,8 +99,16 @@ end
 
 ---@param plugin LazyPlugin
 function M.packadd(plugin)
-  vim.cmd.packadd(plugin.name)
-  M.source_runtime(plugin, "/after/plugin")
+  -- FIXME: investigate further what else is needed
+  -- vim.cmd.packadd(plugin.name)
+  -- M.source_runtime(plugin, "/after/plugin")
+  if M.init_done then
+    M.source_runtime(plugin, "/plugin")
+    if vim.g.did_load_filetypes == 1 then
+      M.source_runtime(plugin, "/ftdetect")
+    end
+    M.source_runtime(plugin, "/after/plugin")
+  end
 end
 
 ---@param plugin LazyPlugin
@@ -103,6 +120,38 @@ function M.source_runtime(plugin, dir)
       vim.cmd("silent source " .. path)
     end
   end)
+end
+
+-- This loader is added as the very last one.
+-- This only hits when the modname is not cached and
+-- even then only once per plugin. So pretty much never.
+--
+-- lazy.module will call this when loading a cached file with modpath set.
+---@param modname string
+---@param modpath string?
+function M.autoload(modname, modpath)
+  -- fast return when we know the modpath
+  if modpath then
+    local plugin = require("lazy.core.plugin").find(modpath)
+    if plugin and not plugin._.loaded then
+      M.load(plugin, { require = modname })
+    end
+    return
+  end
+  -- check if a lazy plugin should be loaded
+  for _, plugin in pairs(Config.plugins) do
+    if not plugin._.loaded then
+      for _, pattern in ipairs({ ".lua", "/init.lua" }) do
+        local path = plugin.dir .. "/lua/" .. modname:gsub("%.", "/") .. pattern
+        if vim.loop.fs_stat(path) then
+          M.load(plugin, { require = modname })
+          local chunk, err = loadfile(path)
+          return chunk or error(err)
+        end
+      end
+    end
+  end
+  return modname .. " not found in unloaded opt plugins"
 end
 
 return M
