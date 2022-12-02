@@ -191,21 +191,22 @@ function M:reason(reason, opts)
   ---@type string?
   local source = reason.source
   if source then
-    local name = source:match("/([^/]-)/lua")
+    source = vim.loop.fs_realpath(source) or source
     for _, other in pairs(Config.plugins) do
-      if name and other.name == name then
+      if source:find(vim.loop.fs_realpath(other.dir), 1, true) then
         reason.plugin = other.name
         reason.source = nil
         break
       end
     end
     if reason.source then
-      source = vim.loop.fs_realpath(source) or source
-      local config = vim.loop.fs_realpath(vim.fn.stdpath("config") .. "/lua")
-      if source:find(config, 1, true) == 1 then
-        reason.source = source:sub(#config + 2):gsub("/", "."):gsub("%.lua$", "")
-        if reason.source == "lua" then
-          reason.source = "init.lua"
+      local config = vim.loop.fs_realpath(vim.fn.stdpath("config"))
+      if source == config .. "/init.lua" then
+        reason.source = "init.lua"
+      else
+        config = config .. "/lua"
+        if source:find(config, 1, true) == 1 then
+          reason.source = source:sub(#config + 2):gsub("/", "."):gsub("%.lua$", "")
         end
       end
     end
