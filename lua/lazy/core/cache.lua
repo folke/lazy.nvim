@@ -65,7 +65,10 @@ function M.loader(modname)
   if entry then
     M.check_load(modname, entry.modpath)
     entry.used = os.time()
-    local hash = assert(M.hash(entry.modpath))
+    local hash = M.hash(entry.modpath)
+    if not hash then
+      return
+    end
     if M.eq(entry.hash, hash) then
       -- found in cache and up to date
       chunk, err = load(entry.chunk --[[@as string]], "@" .. entry.modpath)
@@ -155,7 +158,8 @@ end
 
 ---@return CacheHash?
 function M.hash(file)
-  return uv.fs_stat(file)
+  local ok, ret = pcall(uv.fs_stat, file)
+  return ok and ret or nil
 end
 
 ---@param h1 CacheHash
