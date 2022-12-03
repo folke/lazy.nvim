@@ -82,3 +82,4 @@
 - [neopm](https://github.com/ii14/neopm)
 - [dep](https://github.com/chiyadev/dep)
 - [optpack.nvim](https://github.com/notomo/optpack.nvim)
+- [pact.nvim](https://github.com/rktjmp/pact.nvim)
