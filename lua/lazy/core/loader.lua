@@ -121,11 +121,11 @@ function M.packadd(plugin)
   -- vim.cmd.packadd(plugin.name)
   -- M.source_runtime(plugin, "/after/plugin")
   if M.init_done then
-    M.source_runtime(plugin.dir, "/plugin")
+    M.source_runtime(plugin.dir, "plugin")
     if vim.g.did_load_filetypes == 1 then
-      M.source_runtime(plugin.dir, "/ftdetect")
+      M.source_runtime(plugin.dir, "ftdetect")
     end
-    M.source_runtime(plugin.dir, "/after/plugin")
+    M.source_runtime(plugin.dir, "after/plugin")
   end
 end
 
