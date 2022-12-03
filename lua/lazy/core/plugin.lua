@@ -127,7 +127,7 @@ function Spec:merge(old, new)
   for k, v in pairs(new) do
     if k == "_" then
     elseif old[k] ~= nil and old[k] ~= v then
-      if Handler.handlers[k] then
+      if Handler.types[k] then
         local values = type(v) == "string" and { v } or v
         vim.list_extend(values, type(old[k]) == "string" and { old[k] } or old[k])
         ---@diagnostic disable-next-line: no-unknown

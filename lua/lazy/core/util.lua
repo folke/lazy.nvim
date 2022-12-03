@@ -161,7 +161,14 @@ end
 
 ---@param msg string|string[]
 function M.notify(msg, level)
-  msg = type(msg) == "table" and table.concat(msg, "\n") or msg
+  if type(msg) == "table" then
+    msg = table.concat(
+      vim.tbl_filter(function(line)
+        return line or false
+      end, msg),
+      "\n"
+    )
+  end
   vim.notify(msg, level, {
     on_open = function(win)
       vim.wo[win].conceallevel = 3

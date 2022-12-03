@@ -1,5 +1,6 @@
 local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
+local Handler = require("lazy.core.handler")
 
 local M = {}
 
@@ -27,7 +28,6 @@ function M.setup()
 
   -- setup handlers
   Util.track("handlers")
-  local Handler = require("lazy.core.handler")
   Handler.setup()
   Util.track()
 
@@ -81,6 +81,7 @@ function M.load(plugins, reason)
       table.insert(M.loading, plugin)
 
       Util.track({ plugin = plugin.name, start = reason.start })
+      Handler.cleanup(plugin)
 
       vim.opt.runtimepath:prepend(plugin.dir)
       if not M.init_done then

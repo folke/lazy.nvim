@@ -382,7 +382,7 @@ function M:details(plugin)
     end
   end)
 
-  for handler in pairs(Handler.handlers) do
+  for handler in pairs(Handler.types) do
     if plugin[handler] then
       table.insert(props, {
         handler,

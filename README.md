@@ -27,26 +27,28 @@
   - [ ] unsupported props or props from other managers
   - [ ] other packages still in site?
   - [ ] other package manager artifacts still present? compiled etc
-- [x] rename `run` to `build`
-- [ ] delete lazy keymaps when a plugin loads
-- [x] temp colorscheme
-- [x] allow setting up plugins through config **fooo**
-- [x] task timeout
+- [ ] status page showing running handlers and cache stats
+- [x] delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
+- [ ] fix plugin details
+- [ ] show disabled plugins (strikethrough?)
 - [ ] log file
 - [ ] deal with re-sourcing init.lua. Check a global?
-- [x] incorrect when switching TN from opt to start
 - [ ] git tests
-- [x] max concurrency
-- [x] ui border
-- [x] make sure we can reload specs while keeping state
-- [ ] show disabled plugins (strikethrough?)
 - [ ] Import specs from other plugin managers
-- [x] use uv file watcher (or stat) to check for config changes
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
+- [x] rename `run` to `build`
+- [x] temp colorscheme
+- [x] allow setting up plugins through config **fooo**
+- [x] task timeout
+- [x] incorrect when switching TN from opt to start
+- [x] max concurrency
+- [x] ui border
+- [x] make sure we can reload specs while keeping state
+- [x] use uv file watcher (or stat) to check for config changes
 - [x] support for Plugin.lock
 - [x] defaults for git log
 - [x] view keybindings for update/clean/...
