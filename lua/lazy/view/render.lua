@@ -361,6 +361,7 @@ function M:details(plugin)
   table.insert(props, { "uri", (plugin.uri:gsub("%.git$", "")), "@text.reference" })
   local git = Git.info(plugin.dir, true)
   if git then
+    git.branch = git.branch or Git.get_branch(plugin)
     if git.version then
       table.insert(props, { "version", tostring(git.version) })
     end
