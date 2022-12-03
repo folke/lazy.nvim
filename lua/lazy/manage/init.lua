@@ -54,7 +54,6 @@ end
 function M.install(opts)
   M.run({
     pipeline = {
-      "fs.symlink",
       "git.clone",
       "git.checkout",
       "plugin.docs",
@@ -72,7 +71,6 @@ function M.update(opts)
   opts = opts or {}
   M.run({
     pipeline = {
-      "fs.symlink",
       "git.branch",
       "git.fetch",
       { "git.checkout", lockfile = opts.lockfile },

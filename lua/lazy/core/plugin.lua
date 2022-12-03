@@ -16,7 +16,6 @@ local M = {}
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
 ---@field is_local boolean
----@field is_symlink? boolean
 ---@field cloned? boolean
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 
@@ -165,11 +164,13 @@ function M.update_state()
         or plugin.cmd
       plugin.lazy = lazy and true or false
     end
-    plugin.dir = Config.root .. "/" .. plugin.name
-    plugin._.is_local = plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git"
-    plugin._.is_symlink = installed[plugin.name] == "link"
-    plugin._.installed = installed[plugin.name] ~= nil
-    if plugin._.is_local == plugin._.is_symlink then
+    if plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git" then
+      plugin._.is_local = true
+      plugin.dir = plugin.uri
+      plugin._.installed = true -- user should make sure the directory exists
+    else
+      plugin.dir = Config.root .. "/" .. plugin.name
+      plugin._.installed = installed[plugin.name] ~= nil
       installed[plugin.name] = nil
     end
   end
@@ -240,11 +241,8 @@ end
 -- Finds the plugin that has this path
 ---@param path string
 function M.find(path)
-  if path:find(Config.root, 1, true) == 1 then
-    local plugin = path:sub(#Config.root + 2)
-    local idx = plugin:find("/", 1, true)
-    return idx and Config.plugins[plugin:sub(1, idx - 1)] or nil
-  end
+  local name = path:match("/([^/]+)/lua") or path:match("/([^/]+)/?$")
+  return name and Config.plugins[name] or nil
 end
 
 return M
