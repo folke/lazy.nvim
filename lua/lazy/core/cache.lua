@@ -9,13 +9,12 @@ M.dirty = false
 M.config = {
   enabled = true,
   path = vim.fn.stdpath("state") .. "/lazy.state",
-  -- choose what should be cached
-  --  * lazy: cache all lazy.nvim core modules and your config files
-  --  * init: all of the above and any module needed to init your plugins
-  --  * VimEnter: any module till VimEnter
-  --  * VeryLazy: any module till VeryLazy
-  --  * allthethings: all mdules. Not recommended
-  strategy = "VimEnter", ---@type "lazy"|"init"|"VimEnter"|"allthethings"
+  -- Once one of the following events triggers, caching will be disabled.
+  -- To cache all modules, set this to `{}`, but that is not recommended.
+  -- The default is to disable on:
+  --  * VimEnter: not useful to cache anything else beyond startup
+  --  * BufReadPre: this will be triggered early when opening a file from the command line directly
+  disable_events = { "VimEnter", "BufReadPre" },
 }
 M.debug = false
 
@@ -40,15 +39,10 @@ function M.check_load(modname, modpath)
   require("lazy.core.loader").autoload(modname, modpath)
 end
 
----@param step? string
-function M.disable(step)
+function M.disable()
   if not M.enabled then
     return
   end
-  if step and M.config.strategy ~= step then
-    return
-  end
-
   local idx = M.idx()
   if idx then
     table.remove(package.loaders, idx)
@@ -141,17 +135,8 @@ function M.setup(opts)
   M.load_cache()
   table.insert(package.loaders, M.loader_idx, M.loader)
 
-  if M.config.strategy == "VimEnter" then
-    vim.api.nvim_create_autocmd("VimEnter", {
-      once = true,
-      callback = function()
-        -- use schedule so all other VimEnter handlers will have run
-        vim.schedule(function()
-          -- startup done, so stop caching
-          M.disable()
-        end)
-      end,
-    })
+  if #M.config.disable_events > 0 then
+    vim.api.nvim_create_autocmd(M.config.disable_events, { once = true, callback = M.disable })
   end
   return M
 end
