@@ -6,7 +6,7 @@ local M = {}
 M.defaults = {
   root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
   defaults = {
-    lazy = false, -- should plugins be loaded at startup?
+    lazy = false, -- should plugins be lazy-loaded?
     version = nil,
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
@@ -53,8 +53,8 @@ M.defaults = {
   performance = {
     ---@type LazyCacheConfig
     cache = nil,
-    reset_packpath = true, -- packpath will be reset to only include lazy. This makes packadd a lot faster
-    reset_rtp = true,
+    reset_packpath = true, -- packpath will be reset to nothing. This will improver startup time.
+    reset_rtp = true, -- the runtime path will be reset to $VIMRUNTIME and your config directory
   },
   debug = false,
 }
@@ -88,9 +88,10 @@ function M.setup(spec, opts)
     local me = debug.getinfo(1, "S").source:sub(2)
     me = vim.fn.fnamemodify(me, ":p:h:h:h:h")
     vim.opt.rtp = {
-      vim.fn.stdpath("config"),
       "$VIMRUNTIME",
+      vim.fn.stdpath("config"),
       me,
+      vim.fn.stdpath("config") .. "/after",
     }
   end
 

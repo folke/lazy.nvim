@@ -36,8 +36,6 @@ function M.setup()
 end
 
 function M.init_plugins()
-  Util.track("loader")
-
   Util.track({ start = "init" })
   for _, plugin in pairs(Config.plugins) do
     -- run plugin init
@@ -52,8 +50,6 @@ function M.init_plugins()
       M.load(plugin, { start = "startup" })
     end
   end
-  Util.track()
-
   Util.track()
   M.init_done = true
 end
