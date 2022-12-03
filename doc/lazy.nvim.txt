@@ -42,26 +42,28 @@ TODO                                                          *lazy.nvim-todo*
     - unsupported props or props from other managers
     - other packages still in site?
     - other package manager artifacts still present? compiled etc
-- rename `run` to `build`
-- delete lazy keymaps when a plugin loads
-- temp colorscheme
-- allow setting up plugins through config **fooo**
-- task timeout
+- status page showing running handlers and cache stats
+- delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
+- fix plugin details
+- show disabled plugins (strikethrough?)
 - log file
 - deal with re-sourcing init.lua. Check a global?
-- incorrect when switching TN from opt to start
 - git tests
-- max concurrency
-- ui border
-- make sure we can reload specs while keeping state
-- show disabled plugins (strikethrough?)
 - Import specs from other plugin managers
-- use uv file watcher (or stat) to check for config changes
 - packspec <https://github.com/nvim-lua/nvim-package-specification>
     - add support to specify `engines`, `os` and `cpu` like in `package.json`
     - semver merging. Should check if two or more semver ranges are compatible and calculate the union range
         - default semver merging strategy: if no version matches all, then use highest version?
     - package meta index (package.lua cache for all packages)
+- rename `run` to `build`
+- temp colorscheme
+- allow setting up plugins through config **fooo**
+- task timeout
+- incorrect when switching TN from opt to start
+- max concurrency
+- ui border
+- make sure we can reload specs while keeping state
+- use uv file watcher (or stat) to check for config changes
 - support for Plugin.lock
 - defaults for git log
 - view keybindings for update/clean/…
