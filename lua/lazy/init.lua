@@ -3,9 +3,11 @@ local M = {}
 ---@param spec LazySpec Should be a module name to load, or a plugin spec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
-  if not vim.go.loadplugins then
+  if not vim.go.loadplugins or vim.g.lazy_did_setup then
+    vim.notify("Re-sourcing your config is not supported with lazy.nvim", vim.log.levels.WARN, { title = "lazy.nvim" })
     return
   end
+  vim.g.lazy_did_setup = true
   local start = vim.loop.hrtime()
 
   if not (opts and opts.performance and opts.performance.cache and opts.performance.cache.enabled == false) then
