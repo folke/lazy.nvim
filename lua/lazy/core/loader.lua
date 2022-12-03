@@ -37,18 +37,23 @@ end
 
 function M.init_plugins()
   Util.track("loader")
+
   Util.track({ start = "init" })
   for _, plugin in pairs(Config.plugins) do
+    -- run plugin init
     if plugin.init then
       Util.track({ plugin = plugin.name, init = "init" })
       Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
       Util.track()
     end
+
+    -- load start plugin
     if plugin.lazy == false then
       M.load(plugin, { start = "startup" })
     end
   end
   Util.track()
+
   Util.track()
   M.init_done = true
 end
@@ -82,6 +87,15 @@ function M.load(plugins, reason)
       Util.track({ plugin = plugin.name, start = reason.start })
 
       vim.opt.runtimepath:prepend(plugin.dir)
+      if not M.init_done then
+        local after = plugin.dir .. "/after"
+        -- only add the after directories during startup
+        -- afterwards we only source the runtime files in after
+        -- Check if it exists here, to prevent further rtp file checks during startup
+        if vim.loop.fs_stat(after) then
+          vim.opt.runtimepath:append(after)
+        end
+      end
 
       if plugin.dependencies then
         M.load(plugin.dependencies, {})
@@ -102,24 +116,23 @@ function M.load(plugins, reason)
 end
 
 ---@param plugin LazyPlugin
----@param force? boolean
-function M.packadd(plugin, force)
+function M.packadd(plugin)
   -- FIXME: investigate further what else is needed
   -- vim.cmd.packadd(plugin.name)
   -- M.source_runtime(plugin, "/after/plugin")
-  if M.init_done or force then
-    M.source_runtime(plugin, "/plugin")
+  if M.init_done then
+    M.source_runtime(plugin.dir, "/plugin")
     if vim.g.did_load_filetypes == 1 then
-      M.source_runtime(plugin, "/ftdetect")
+      M.source_runtime(plugin.dir, "/ftdetect")
     end
-    M.source_runtime(plugin, "/after/plugin")
+    M.source_runtime(plugin.dir, "/after/plugin")
   end
 end
 
----@param plugin LazyPlugin
----@param dir? string
-function M.source_runtime(plugin, dir)
-  Util.walk(plugin.dir .. dir, function(path, _, t)
+---@param ... string
+function M.source_runtime(...)
+  local dir = table.concat({ ... }, "/")
+  Util.walk(dir, function(path, _, t)
     local ext = path:sub(-3)
     if t == "file" and (ext == "lua" or ext == "vim") then
       vim.cmd("silent source " .. path)
