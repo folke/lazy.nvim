@@ -376,6 +376,11 @@ function M:details(plugin)
   if Util.file_exists(plugin.dir .. "/README.md") then
     table.insert(props, { "readme", "README.md" })
   end
+  Util.ls(plugin.dir .. "/doc", function(_, name)
+    if name:find("%.txt$") then
+      table.insert(props, { "help", "|" .. name:gsub("%.txt", "") .. "|" })
+    end
+  end)
 
   for handler in pairs(Handler.handlers) do
     if plugin[handler] then

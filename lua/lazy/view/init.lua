@@ -155,6 +155,7 @@ function M.show(mode)
       local plugin = get_plugin()
       Util.open(plugin.dir .. "/README.md")
     end,
+    ["|(%S-)|"] = vim.cmd.help, -- vim help links
     ["(https?://%S+)"] = function(url)
       Util.open(url)
     end,
