@@ -10,7 +10,7 @@ M.clean = {
   end,
   run = function(self)
     local dir = self.plugin.dir:gsub("/+$", "")
-    assert(dir:find(Config.root, 1, true) == 1, self.plugin.dir .. " should be under packpath!")
+    assert(dir:find(Config.options.root, 1, true) == 1, self.plugin.dir .. " should be under packpath!")
 
     local stat = vim.loop.fs_lstat(dir)
     assert(stat.type == "directory", self.plugin.dir .. " should be a directory!")

@@ -102,11 +102,12 @@ function M.load(plugins, reason)
 end
 
 ---@param plugin LazyPlugin
-function M.packadd(plugin)
+---@param force? boolean
+function M.packadd(plugin, force)
   -- FIXME: investigate further what else is needed
   -- vim.cmd.packadd(plugin.name)
   -- M.source_runtime(plugin, "/after/plugin")
-  if M.init_done then
+  if M.init_done or force then
     M.source_runtime(plugin, "/plugin")
     if vim.g.did_load_filetypes == 1 then
       M.source_runtime(plugin, "/ftdetect")

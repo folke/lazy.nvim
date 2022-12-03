@@ -147,7 +147,7 @@ end
 function M.update_state()
   ---@type table<string,FileType>
   local installed = {}
-  Util.ls(Config.root, function(_, name, type)
+  Util.ls(Config.options.root, function(_, name, type)
     if type == "directory" or type == "link" then
       installed[name] = type
     end
@@ -169,7 +169,7 @@ function M.update_state()
       plugin.dir = plugin.uri
       plugin._.installed = true -- user should make sure the directory exists
     else
-      plugin.dir = Config.root .. "/" .. plugin.name
+      plugin.dir = Config.options.root .. "/" .. plugin.name
       plugin._.installed = installed[plugin.name] ~= nil
       installed[plugin.name] = nil
     end
@@ -179,7 +179,7 @@ function M.update_state()
   for pack, dir_type in pairs(installed) do
     table.insert(Config.to_clean, {
       name = pack,
-      dir = Config.root .. "/" .. pack,
+      dir = Config.options.root .. "/" .. pack,
       _ = {
         installed = true,
         is_symlink = dir_type == "link",

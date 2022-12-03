@@ -4,6 +4,7 @@ local M = {}
 
 ---@class LazyConfig
 M.defaults = {
+  root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
   defaults = {
     lazy = false, -- should plugins be loaded at startup?
     version = nil,
@@ -16,10 +17,6 @@ M.defaults = {
     -- log = { "-10" }, -- last 10 commits
     log = { "--since=1 days ago" }, -- commits from the last 3 days
     timeout = 120, -- processes taking over 2 minutes will be killed
-  },
-  package = {
-    path = vim.fn.stdpath("data") .. "/site",
-    name = "lazy", -- plugins will be installed under package.path/pack/{name}/opt
   },
   -- Any plugin spec that contains one of the patterns will use your
   -- local repo in the projects folder instead of fetchig it from github
@@ -66,9 +63,6 @@ M.ns = vim.api.nvim_create_namespace("lazy")
 ---@type string|LazySpec Should be either a string pointing to a module, or a spec
 M.spec = nil
 
----@type string Opt directory where plugins will be installed
-M.root = nil
-
 ---@type table<string, LazyPlugin>
 M.plugins = {}
 
@@ -86,12 +80,8 @@ function M.setup(spec, opts)
   M.options.performance.cache = require("lazy.core.cache")
   table.insert(M.options.install.colorscheme, "habamax")
 
-  M.root = M.options.package.path .. "/pack/" .. M.options.package.name .. "/opt"
-
   if M.options.performance.reset_packpath then
-    vim.go.packpath = M.options.package.path
-  else
-    vim.opt.packpath:prepend(M.options.package.path)
+    vim.go.packpath = ""
   end
 
   vim.api.nvim_create_autocmd("User", {

@@ -40,8 +40,8 @@ function M.try(fn, msg)
       end
       if info.what ~= "C" and not info.source:find("lazy.nvim") then
         local source = info.source:sub(2)
-        if source:find(Config.root, 1, true) == 1 then
-          source = source:sub(#Config.root + 1)
+        if source:find(Config.options.root, 1, true) == 1 then
+          source = source:sub(#Config.options.root + 1)
         end
         source = vim.fn.fnamemodify(source, ":p:~:.")
         local line = "  - " .. source .. ":" .. info.currentline

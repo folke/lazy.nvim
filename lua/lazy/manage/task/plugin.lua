@@ -10,6 +10,9 @@ M.build = {
   end,
   run = function(self)
     Loader.load(self.plugin, { task = "build" })
+    -- when installing during startup, add the package
+    -- to make sure all runtime files are loaded
+    Loader.packadd(self.plugin, true)
 
     local build = self.plugin.build
     if build then
