@@ -54,6 +54,7 @@ M.defaults = {
     ---@type LazyCacheConfig
     cache = nil,
     reset_packpath = true, -- packpath will be reset to only include lazy. This makes packadd a lot faster
+    reset_rtp = true,
   },
   debug = false,
 }
@@ -82,6 +83,15 @@ function M.setup(spec, opts)
 
   if M.options.performance.reset_packpath then
     vim.go.packpath = ""
+  end
+  if M.options.performance.reset_rtp then
+    local me = debug.getinfo(1, "S").source:sub(2)
+    me = vim.fn.fnamemodify(me, ":p:h:h:h:h")
+    vim.opt.rtp = {
+      vim.fn.stdpath("config"),
+      "$VIMRUNTIME",
+      me,
+    }
   end
 
   vim.api.nvim_create_autocmd("User", {
