@@ -60,6 +60,8 @@ function M:update()
     self:help()
   elseif mode == "profile" then
     self:profile()
+  elseif mode == "debug" then
+    self:debug()
   else
     for _, section in ipairs(Sections) do
       self:section(section)
@@ -109,7 +111,7 @@ function M:title()
   end
   self:nl()
 
-  if View.mode ~= "help" and View.mode ~= "profile" then
+  if View.mode ~= "help" and View.mode ~= "profile" and View.mode ~= "debug" then
     if self.progress.done < self.progress.total then
       self:append("Tasks: ", "LazyH2")
       self:append(self.progress.done .. "/" .. self.progress.total, "LazyMuted")
@@ -208,8 +210,8 @@ function M:reason(reason, opts)
       end
     end
   end
-  local time = " " .. math.floor((reason.time or 0) / 1e6 * 100) / 100 .. "ms"
-  if not opts.time_right then
+  local time = reason.time and (" " .. math.floor(reason.time / 1e6 * 100) / 100 .. "ms")
+  if time and not opts.time_right then
     self:append(time, "Bold")
   end
   self:append(" ")
@@ -227,10 +229,6 @@ function M:reason(reason, opts)
     local value = reason[key]
     if type(key) == "number" then
     elseif key == "require" then
-      -- self:append("require", "@function.builtin")
-      -- self:append("(", "@punctuation.bracket")
-      -- self:append('"' .. value .. '"', "@string")
-      -- self:append(")", "@punctuation.bracket")
     elseif key ~= "time" then
       if first then
         first = false
@@ -239,8 +237,10 @@ function M:reason(reason, opts)
       end
       if key == "event" then
         value = value:match("User (.*)") or value
+      elseif key == "ft" then
+        value = value:match("FileType (.*)") or value
       end
-      local hl = "LazyLoader" .. key:sub(1, 1):upper() .. key:sub(2)
+      local hl = "LazyHandler" .. key:sub(1, 1):upper() .. key:sub(2)
       local icon = Config.options.ui.icons[key]
       if icon then
         self:append(icon .. " ", hl)
@@ -251,7 +251,7 @@ function M:reason(reason, opts)
       end
     end
   end
-  if opts.time_right then
+  if time and opts.time_right then
     self:append(time, "Bold")
   end
   -- self:append(")", "Conceal")
@@ -430,6 +430,39 @@ function M:profile()
   for _, entry in ipairs(Util._profiles[1]) do
     _profile(entry, 1)
   end
+end
+
+function M:debug()
+  self:append("Active Handlers", "LazyH2"):nl()
+  self
+    :append(
+      "This shows only the lazy handlers that are still active. When a plugin loads, its handlers are removed",
+      "Comment",
+      { indent = 2 }
+    )
+    :nl()
+
+  Util.foreach(require("lazy.core.handler").handlers, function(type, handler)
+    Util.foreach(handler.active, function(value, plugins)
+      if not vim.tbl_isempty(plugins) then
+        plugins = vim.tbl_values(plugins)
+        table.sort(plugins)
+        self:append("●", "LazySpecial", { indent = 2 })
+        self:reason({ [type] = value }, { time_right = true })
+        for _, plugin in pairs(plugins) do
+          self:reason({ plugin = plugin }, { time_right = true })
+        end
+        self:nl()
+      end
+    end)
+  end)
+  self:nl()
+  self:append("Cache", "LazyH2"):nl()
+  local Cache = require("lazy.core.cache")
+  Util.foreach(Cache.cache, function(modname, entry)
+    local kb = math.floor(#entry.chunk / 10.24) / 100
+    self:append("● ", "LazySpecial", { indent = 2 }):append(modname):append(" " .. kb .. "Kb", "Bold"):nl()
+  end)
 end
 
 return M

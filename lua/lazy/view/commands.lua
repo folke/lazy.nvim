@@ -36,6 +36,9 @@ M.commands = {
   help = function()
     View.show("help")
   end,
+  debug = function()
+    View.show("debug")
+  end,
   profile = function()
     View.show("profile")
   end,
