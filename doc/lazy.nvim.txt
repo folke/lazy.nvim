@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 03
+*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 05
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -42,12 +42,9 @@ TODO                                                          *lazy.nvim-todo*
     - unsupported props or props from other managers
     - other packages still in site?
     - other package manager artifacts still present? compiled etc
-- status page showing running handlers and cache stats
-- delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
 - fix plugin details
 - show disabled plugins (strikethrough?)
 - log file
-- deal with re-sourcing init.lua. Check a global?
 - git tests
 - Import specs from other plugin managers
 - packspec <https://github.com/nvim-lua/nvim-package-specification>
@@ -55,6 +52,9 @@ TODO                                                          *lazy.nvim-todo*
     - semver merging. Should check if two or more semver ranges are compatible and calculate the union range
         - default semver merging strategy: if no version matches all, then use highest version?
     - package meta index (package.lua cache for all packages)
+- status page showing running handlers and cache stats
+- delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
+- deal with re-sourcing init.lua. Check a global?
 - rename `run` to `build`
 - temp colorscheme
 - allow setting up plugins through config **fooo**
