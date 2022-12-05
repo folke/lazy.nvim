@@ -23,10 +23,10 @@
 
 ## ✅ TODO
 
-- [ ] health checks: check merge conflicts async
-  - [ ] unsupported props or props from other managers
-  - [ ] other packages still in site?
-  - [ ] other package manager artifacts still present? compiled etc
+- [x] health checks: check merge conflicts async
+  - [x] unsupported props or props from other managers
+  - [x] other packages still in site?
+  - [x] other package manager artifacts still present? compiled etc
 - [ ] fix plugin details
 - [ ] show disabled plugins (strikethrough?)
 - [ ] log file
