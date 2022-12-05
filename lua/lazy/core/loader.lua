@@ -62,7 +62,7 @@ function M.load(plugins, reason)
   plugins = (type(plugins) == "string" or plugins.name) and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
 
-  for _, plugin in ipairs(plugins) do
+  for _, plugin in pairs(plugins) do
     plugin = type(plugin) == "string" and Config.plugins[plugin] or plugin
     ---@cast plugin LazyPlugin
 
@@ -81,7 +81,7 @@ function M.load(plugins, reason)
       table.insert(M.loading, plugin)
 
       Util.track({ plugin = plugin.name, start = reason.start })
-      Handler.cleanup(plugin)
+      Handler.disable(plugin)
 
       vim.opt.runtimepath:prepend(plugin.dir)
       if not M.init_done then
@@ -114,16 +114,18 @@ end
 
 ---@param plugin LazyPlugin
 function M.packadd(plugin)
-  -- FIXME: investigate further what else is needed
-  -- vim.cmd.packadd(plugin.name)
-  -- M.source_runtime(plugin, "/after/plugin")
   if M.init_done then
     M.source_runtime(plugin.dir, "plugin")
-    if vim.g.did_load_filetypes == 1 then
-      M.source_runtime(plugin.dir, "ftdetect")
-    end
+    M.ftdetect(plugin)
     M.source_runtime(plugin.dir, "after/plugin")
   end
+end
+
+---@param plugin LazyPlugin
+function M.ftdetect(plugin)
+  vim.cmd("augroup filetypedetect")
+  M.source_runtime(plugin.dir, "ftdetect")
+  vim.cmd("augroup END")
 end
 
 ---@param ... string
