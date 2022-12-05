@@ -23,21 +23,21 @@
 
 ## ✅ TODO
 
-- [x] health checks: check merge conflicts async
-  - [x] unsupported props or props from other managers
-  - [x] other packages still in site?
-  - [x] other package manager artifacts still present? compiled etc
 - [ ] fix plugin details
 - [ ] show disabled plugins (strikethrough?)
 - [ ] log file
 - [ ] git tests
 - [ ] Import specs from other plugin managers
-- [x] Background update checker
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
+- [x] Background update checker
+- [x] health checks: check merge conflicts async
+  - [x] unsupported props or props from other managers
+  - [x] other packages still in site?
+  - [x] other package manager artifacts still present? compiled etc
 - [x] status page showing running handlers and cache stats
 - [x] delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
 - [x] deal with re-sourcing init.lua. Check a global?
