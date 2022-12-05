@@ -134,4 +134,16 @@ function M.dump(value)
   return table.concat(result, "")
 end
 
+---@generic V
+---@param t table<string, V>
+---@param fn fun(key:string, value:V)
+function M.foreach(t, fn)
+  ---@type string[]
+  local keys = vim.tbl_keys(t)
+  table.sort(keys)
+  for _, key in ipairs(keys) do
+    fn(key, t[key])
+  end
+end
+
 return M
