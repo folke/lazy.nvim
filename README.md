@@ -32,6 +32,7 @@
 - [ ] log file
 - [ ] git tests
 - [ ] Import specs from other plugin managers
+- [x] Background update checker
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
