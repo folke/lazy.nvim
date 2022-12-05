@@ -16,6 +16,7 @@ M.colors = {
   },
   ProgressTodo = "LineNr",
   Special = "@punctuation.special",
+  HandlerRuntime = "@macro",
   HandlerPlugin = "Special",
   HandlerEvent = "Constant",
   HandlerKeys = "Statement",

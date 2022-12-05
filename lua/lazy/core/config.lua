@@ -37,15 +37,16 @@ M.defaults = {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
-      start = "",
-      init = " ",
-      plugin = " ",
-      source = " ",
+      cmd = " ",
       config = "",
       event = "",
-      keys = " ",
-      cmd = " ",
       ft = " ",
+      init = " ",
+      keys = " ",
+      plugin = " ",
+      runtime = " ",
+      source = " ",
+      start = "",
       task = "✔ ",
     },
     throttle = 20, -- how frequently should the ui process render events

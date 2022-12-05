@@ -134,7 +134,9 @@ function M.source_runtime(...)
   Util.walk(dir, function(path, _, t)
     local ext = path:sub(-3)
     if t == "file" and (ext == "lua" or ext == "vim") then
+      Util.track({ runtime = path })
       vim.cmd("silent source " .. path)
+      Util.track()
     end
   end)
 end
