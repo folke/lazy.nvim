@@ -16,6 +16,7 @@ local M = {}
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
 ---@field is_local boolean
+---@field has_updates? boolean
 ---@field cloned? boolean
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 

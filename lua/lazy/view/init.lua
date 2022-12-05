@@ -42,7 +42,7 @@ function M.show(mode)
   require("lazy.view.colors").setup()
 
   if M._buf and vim.api.nvim_buf_is_valid(M._buf) then
-    vim.api.nvim_win_set_cursor(M._win, { 1, 0 })
+    -- vim.api.nvim_win_set_cursor(M._win, { 1, 0 })
     vim.cmd([[do User LazyRender]])
     return
   end

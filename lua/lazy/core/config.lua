@@ -50,6 +50,13 @@ M.defaults = {
     },
     throttle = 20, -- how frequently should the ui process render events
   },
+  checker = {
+    -- lazy can automatically check for updates
+    enabled = false,
+    concurrency = 10, -- set to 1 to very slowly check for updates
+    notify = true, -- get a notification if new updates are found
+    frequency = 3600, -- every hour
+  },
   performance = {
     ---@type LazyCacheConfig
     cache = nil,
@@ -102,6 +109,9 @@ function M.setup(spec, opts)
       require("lazy.core.cache").autosave()
       require("lazy.view").setup()
       require("lazy.manage.reloader").enable()
+      if M.options.checker.enabled then
+        require("lazy.manage.checker").start()
+      end
     end,
   })
 
