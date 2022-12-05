@@ -10,6 +10,7 @@ local M = {}
 ---@field show? boolean
 ---@field mode? string
 ---@field plugins? LazyPlugin[]
+---@field concurrency? number
 
 ---@param ropts RunnerOpts
 ---@param opts? ManagerOpts
@@ -20,7 +21,7 @@ function M.run(ropts, opts)
     ropts.plugins = opts.plugins
   end
 
-  ropts.concurrency = ropts.concurrency or Config.options.concurrency
+  ropts.concurrency = ropts.concurrency or opts.concurrency or Config.options.concurrency
 
   if opts.clear then
     M.clear()
@@ -52,7 +53,7 @@ end
 
 ---@param opts? ManagerOpts
 function M.install(opts)
-  M.run({
+  return M.run({
     pipeline = {
       "git.clone",
       "git.checkout",
@@ -69,7 +70,7 @@ end
 ---@param opts? ManagerOpts|{lockfile?:boolean}
 function M.update(opts)
   opts = opts or {}
-  M.run({
+  return M.run({
     pipeline = {
       "git.branch",
       "git.fetch",
@@ -87,9 +88,10 @@ function M.update(opts)
   end)
 end
 
+---@param opts? ManagerOpts
 function M.check(opts)
   opts = opts or {}
-  M.run({
+  return M.run({
     pipeline = {
       "git.fetch",
       "wait",
@@ -103,7 +105,7 @@ end
 
 ---@param opts? ManagerOpts
 function M.log(opts)
-  M.run({
+  return M.run({
     pipeline = { "git.log" },
     plugins = function(plugin)
       return plugin.uri and plugin._.installed
@@ -113,7 +115,7 @@ end
 
 ---@param opts? ManagerOpts
 function M.clean(opts)
-  M.run({
+  return M.run({
     pipeline = { "fs.clean" },
     plugins = Config.to_clean,
   }, opts)
@@ -122,6 +124,7 @@ end
 function M.clear()
   Plugin.load()
   for _, plugin in pairs(Config.plugins) do
+    plugin._.has_updates = nil
     plugin._.updated = nil
     plugin._.cloned = nil
     plugin._.dirty = nil
