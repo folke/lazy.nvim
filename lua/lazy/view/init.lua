@@ -57,6 +57,7 @@ function M.show(mode)
     border = Config.options.ui.border,
     width = math.min(vim.o.columns - hpad * 2, 200),
     height = math.min(vim.o.lines - vpad * 2, 70),
+    noautocmd = true,
   }
   opts.row = (vim.o.lines - opts.height) / 2
   opts.col = (vim.o.columns - opts.width) / 2
@@ -75,16 +76,14 @@ function M.show(mode)
   local function close()
     M._buf = nil
     vim.diagnostic.reset(Config.ns, buf)
-
-    if vim.api.nvim_buf_is_valid(buf) then
-      vim.api.nvim_buf_delete(buf, {
-        force = true,
-      })
-    end
-
-    if vim.api.nvim_win_is_valid(win) then
-      vim.api.nvim_win_close(win, true)
-    end
+    vim.schedule(function()
+      if vim.api.nvim_buf_is_valid(buf) then
+        vim.api.nvim_buf_delete(buf, { force = true })
+      end
+      if vim.api.nvim_win_is_valid(win) then
+        vim.api.nvim_win_close(win, true)
+      end
+    end)
   end
 
   vim.keymap.set("n", "q", close, {
