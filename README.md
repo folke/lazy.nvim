@@ -27,12 +27,9 @@
   - [ ] unsupported props or props from other managers
   - [ ] other packages still in site?
   - [ ] other package manager artifacts still present? compiled etc
-- [ ] status page showing running handlers and cache stats
-- [x] delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
 - [ ] fix plugin details
 - [ ] show disabled plugins (strikethrough?)
 - [ ] log file
-- [ ] deal with re-sourcing init.lua. Check a global?
 - [ ] git tests
 - [ ] Import specs from other plugin managers
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
@@ -40,6 +37,9 @@
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
+- [x] status page showing running handlers and cache stats
+- [x] delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
+- [x] deal with re-sourcing init.lua. Check a global?
 - [x] rename `run` to `build`
 - [x] temp colorscheme
 - [x] allow setting up plugins through config **fooo**
