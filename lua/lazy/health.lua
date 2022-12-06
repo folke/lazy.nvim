@@ -25,7 +25,7 @@ function M.check()
   local valid = {
     1,
     "name",
-    "uri",
+    "url",
     "enabled",
     "lazy",
     "dev",

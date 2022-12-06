@@ -130,7 +130,7 @@ function M.show(mode)
   local function open(path)
     local plugin = get_plugin()
     if plugin then
-      local url = plugin.uri:gsub("%.git$", "")
+      local url = plugin.url:gsub("%.git$", "")
       if Util.file_exists(url) then
         url = "https://github.com/" .. plugin[1]
       end

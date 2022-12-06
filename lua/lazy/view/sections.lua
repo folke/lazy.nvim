@@ -70,7 +70,7 @@ return {
   },
   {
     filter = function(plugin)
-      return plugin._.installed and not plugin.uri
+      return plugin._.installed and not plugin.url
     end,
     title = "Clean",
   },

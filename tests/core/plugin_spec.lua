@@ -5,17 +5,17 @@ local assert = require("luassert")
 
 Config.setup()
 
-describe("plugin spec uri/name", function()
+describe("plugin spec url/name", function()
   local tests = {
-    { { "~/foo" }, { [1] = "~/foo", name = "foo", uri = vim.fn.fnamemodify("~/foo", ":p") } },
-    { { "/tmp/foo" }, { [1] = "/tmp/foo", name = "foo", uri = "/tmp/foo" } },
-    { { "foo/bar" }, { [1] = "foo/bar", name = "bar", uri = "https://github.com/foo/bar.git" } },
-    { { "foo/bar", name = "foobar" }, { [1] = "foo/bar", name = "foobar", uri = "https://github.com/foo/bar.git" } },
-    { { "foo/bar", uri = "123" }, { [1] = "foo/bar", name = "bar", uri = "123" } },
-    { { "https://foobar" }, { [1] = "https://foobar", name = "foobar", uri = "https://foobar" } },
-    { { "ssh://foobar" }, { [1] = "ssh://foobar", name = "foobar", uri = "ssh://foobar" } },
-    { "foo/bar", { [1] = "foo/bar", name = "bar", uri = "https://github.com/foo/bar.git" } },
-    { { { { "foo/bar" } } }, { [1] = "foo/bar", name = "bar", uri = "https://github.com/foo/bar.git" } },
+    { { "~/foo" }, { [1] = "~/foo", name = "foo", url = vim.fn.fnamemodify("~/foo", ":p") } },
+    { { "/tmp/foo" }, { [1] = "/tmp/foo", name = "foo", url = "/tmp/foo" } },
+    { { "foo/bar" }, { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
+    { { "foo/bar", name = "foobar" }, { [1] = "foo/bar", name = "foobar", url = "https://github.com/foo/bar.git" } },
+    { { "foo/bar", url = "123" }, { [1] = "foo/bar", name = "bar", url = "123" } },
+    { { "https://foobar" }, { [1] = "https://foobar", name = "foobar", url = "https://foobar" } },
+    { { "ssh://foobar" }, { [1] = "ssh://foobar", name = "foobar", url = "ssh://foobar" } },
+    { "foo/bar", { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
+    { { { { "foo/bar" } } }, { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
   }
 
   for _, test in ipairs(tests) do

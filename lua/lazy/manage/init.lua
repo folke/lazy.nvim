@@ -62,7 +62,7 @@ function M.install(opts)
       "plugin.build",
     },
     plugins = function(plugin)
-      return plugin.uri and not plugin._.installed
+      return plugin.url and not plugin._.installed
     end,
   }, opts)
 end
@@ -81,7 +81,7 @@ function M.update(opts)
       { "git.log", updated = true },
     },
     plugins = function(plugin)
-      return plugin.uri and plugin._.installed
+      return plugin.url and plugin._.installed
     end,
   }, opts):wait(function()
     require("lazy.manage.lock").update()
@@ -98,7 +98,7 @@ function M.check(opts)
       { "git.log", check = true },
     },
     plugins = function(plugin)
-      return plugin.uri and plugin._.installed
+      return plugin.url and plugin._.installed
     end,
   }, opts)
 end
@@ -108,7 +108,7 @@ function M.log(opts)
   return M.run({
     pipeline = { "git.log" },
     plugins = function(plugin)
-      return plugin.uri and plugin._.installed
+      return plugin.url and plugin._.installed
     end,
   }, opts)
 end

@@ -363,7 +363,7 @@ end
 function M:details(plugin)
   ---@type string[][]
   local props = {}
-  table.insert(props, { "uri", (plugin.uri:gsub("%.git$", "")), "@text.reference" })
+  table.insert(props, { "url", (plugin.url:gsub("%.git$", "")), "@text.reference" })
   local git = Git.info(plugin.dir, true)
   if git then
     git.branch = git.branch or Git.get_branch(plugin)

@@ -36,7 +36,7 @@ local M = {}
 ---@class LazyPlugin: LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field [1] string
 ---@field name string display name and name used for plugin config files
----@field uri string
+---@field url string
 ---@field dir string
 ---@field enabled? boolean|(fun():boolean)
 ---@field lazy? boolean
@@ -69,14 +69,14 @@ function Spec:add(plugin, is_dep)
     Util.error("Invalid plugin spec " .. vim.inspect(plugin))
   end
 
-  if not plugin.uri then
+  if not plugin.url then
     local c = pkg:sub(1, 1)
     if c == "~" then
-      plugin.uri = vim.loop.os_getenv("HOME") .. pkg:sub(2)
+      plugin.url = vim.loop.os_getenv("HOME") .. pkg:sub(2)
     elseif c == "/" or pkg:sub(1, 4) == "http" or pkg:sub(1, 3) == "ssh" then
-      plugin.uri = pkg
+      plugin.url = pkg
     else
-      plugin.uri = ("https://github.com/" .. pkg .. ".git")
+      plugin.url = ("https://github.com/" .. pkg .. ".git")
     end
   end
 
@@ -93,7 +93,7 @@ function Spec:add(plugin, is_dep)
   -- check for plugins that should be local
   for _, pattern in ipairs(Config.options.dev.patterns) do
     if plugin.dev or (plugin[1]:find(pattern, 1, true) and plugin.dev ~= false) then
-      plugin.uri = Config.options.dev.path .. "/" .. plugin.name
+      plugin.url = Config.options.dev.path .. "/" .. plugin.name
       break
     end
   end
@@ -171,9 +171,9 @@ function M.update_state()
         or plugin.cmd
       plugin.lazy = lazy and true or false
     end
-    if plugin.uri:sub(1, 4) ~= "http" and plugin.uri:sub(1, 3) ~= "git" then
+    if plugin.url:sub(1, 4) ~= "http" and plugin.url:sub(1, 3) ~= "git" then
       plugin._.is_local = true
-      plugin.dir = plugin.uri
+      plugin.dir = plugin.url
       plugin._.installed = true -- user should make sure the directory exists
     else
       plugin.dir = Config.options.root .. "/" .. plugin.name

@@ -51,7 +51,7 @@ M.clone = {
   run = function(self)
     local args = {
       "clone",
-      self.plugin.uri,
+      self.plugin.url,
       "--filter=blob:none",
       "--recurse-submodules",
       "--single-branch",
