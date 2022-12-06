@@ -4,11 +4,6 @@ local Handler = require("lazy.core.handler")
 
 local M = {}
 
----@class LazyPluginHooks
----@field init? fun(LazyPlugin) Will always be run
----@field config? fun(LazyPlugin) Will be executed when loading the plugin
----@field build? string|fun(LazyPlugin)
-
 ---@class LazyPluginState
 ---@field loaded? {[string]:string}|{time:number}
 ---@field installed boolean
@@ -19,6 +14,17 @@ local M = {}
 ---@field has_updates? boolean
 ---@field cloned? boolean
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
+
+---@class LazyPluginHooks
+---@field init? fun(LazyPlugin) Will always be run
+---@field config? fun(LazyPlugin) Will be executed when loading the plugin
+---@field build? string|fun(LazyPlugin)
+
+---@class LazyPluginHandlers: table<LazyHandlerTypes, string|string[]>
+---@field event? string|string[]
+---@field cmd? string|string[]
+---@field ft? string|string[]
+---@field keys? string|string[]
 
 ---@class LazyPluginRef
 ---@field branch? string

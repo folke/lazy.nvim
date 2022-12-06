@@ -1,11 +1,5 @@
 local Config = require("lazy.core.config")
 
----@class LazyPluginHandlers: table<LazyHandlerTypes, string|string[]>
----@field event? string|string[]
----@field cmd? string|string[]
----@field ft? string|string[]
----@field keys? string|string[]
-
 ---@class LazyHandler
 ---@field type LazyHandlerTypes
 ---@field extends? LazyHandler
