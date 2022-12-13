@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 06
+*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 13
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -14,30 +14,40 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 
 FEATURES                                                  *lazy.nvim-features*
 
-
-- Partial clones instead of shallow clones
-- waits till missing deps are installed (bootstrap Neovim and start using it right away)
-- Async
-- No need for compile
-- Fast
-- Correct sequencing of dependencies (deps should always be opt. Maybe make everything opt?)
-- Config in multiple files
-- Patterns for local packages
-- Profiling
-- lockfile
-- upvalues in `config` & `init`
-- check for updates
-- lazy-lock.lua
-- tag/version support `git tag --sort version:refname`
-- auto-loading on completion for lazy-loaded commands
-- bootstrap code
-- semver https://devhints.io/semver
-    https://semver.npmjs.com/
-
-
 TODO                                                          *lazy.nvim-todo*
 
 
+- fancy UI to manage all your Neovim plugins
+- auto lazy-loading of lua modules
+- lazy-loading on events, commands, filetypes and key mappings
+- Partial clones instead of shallow clones
+- waits till missing deps are installed (bootstrap Neovim and start using it right away)
+- Async
+- No need to manually compile
+- Fast. Automatically caches and compiles byte code of all lua modules needed during startup
+- Correct sequencing of dependencies (deps should always be opt. Maybe make everything opt?)
+- Config in multiple files
+- dev option and patterns for local packages
+- Profiling
+- lockfile `lazy-lock.json`
+- upvalues in `config` & `init`
+- check for updates
+- commit, branch, tag, version support
+- semver https://devhints.io/semver
+- auto-loading on completion for lazy-loaded commands
+- bootstrap code
+- Background update checker
+- statusline component to see number of pending updates
+- health checks: check merge conflicts async
+    - unsupported props or props from other managers
+    - other packages still in site?
+    - other package manager artifacts still present? compiled etc
+- status page showing running handlers and cache stats
+- temp colorscheme used during startup when installing missing plugins
+- automatically reloads when config changes are detected
+- handlers imply opt
+- dependencies imply opt for deps
+- show spec errors in health
 - fix plugin details
 - show disabled plugins (strikethrough?)
 - log file
@@ -48,38 +58,6 @@ TODO                                                          *lazy.nvim-todo*
     - semver merging. Should check if two or more semver ranges are compatible and calculate the union range
         - default semver merging strategy: if no version matches all, then use highest version?
     - package meta index (package.lua cache for all packages)
-- Background update checker
-- health checks: check merge conflicts async
-    - unsupported props or props from other managers
-    - other packages still in site?
-    - other package manager artifacts still present? compiled etc
-- status page showing running handlers and cache stats
-- delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
-- deal with re-sourcing init.lua. Check a global?
-- rename `run` to `build`
-- temp colorscheme
-- allow setting up plugins through config **fooo**
-- task timeout
-- incorrect when switching TN from opt to start
-- max concurrency
-- ui border
-- make sure we can reload specs while keeping state
-- use uv file watcher (or stat) to check for config changes
-- support for Plugin.lock
-- defaults for git log
-- view keybindings for update/clean/…
-- add profiler to view
-- add buttons for actions
-- show time taken for op in view
-- auto lazy-loading of lua modules
-- clear errors
-- add support for versions `git tag --sort v:refname`
-- rename requires to dependencies
-- move tasks etc to Plugin.state
-- handlers imply opt
-- dependencies imply opt for deps
-- fix local plugin spec
-- investigate all opt=true. Simplifies logic (easily switch between opt/start afterwards)
 
 
 DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
