@@ -28,10 +28,10 @@ function M:_add(plugin, cmd)
   end, {
     bang = true,
     nargs = "*",
-    complete = function()
+    complete = function(_, line)
       _load(plugin, cmd)
-      -- HACK: trick Neovim to show the newly loaded command completion
-      vim.api.nvim_input("<space><bs><tab>")
+      -- NOTE: return the newly loaded command completion
+      return vim.fn.getcompletion(line, "cmdline")
     end,
   })
 end
