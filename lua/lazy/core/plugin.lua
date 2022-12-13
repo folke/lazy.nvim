@@ -76,6 +76,7 @@ function Spec:add(plugin, is_dep)
   end
 
   if plugin.dir then
+    plugin.dir = plugin.dir:gsub("~", os.getenv("HOME") or "~")
     -- local plugin
     plugin.name = plugin.name or Spec.get_name(plugin.dir)
   elseif plugin.url then
