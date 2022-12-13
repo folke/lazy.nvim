@@ -7,13 +7,13 @@ Config.setup()
 
 describe("plugin spec url/name", function()
   local tests = {
-    { { "~/foo" }, { [1] = "~/foo", name = "foo", url = vim.fn.fnamemodify("~/foo", ":p") } },
-    { { "/tmp/foo" }, { [1] = "/tmp/foo", name = "foo", url = "/tmp/foo" } },
+    { { dir = "~/foo" }, { name = "foo", dir = vim.fn.fnamemodify("~/foo", ":p") } },
+    { { dir = "/tmp/foo" }, { dir = "/tmp/foo", name = "foo" } },
     { { "foo/bar" }, { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
     { { "foo/bar", name = "foobar" }, { [1] = "foo/bar", name = "foobar", url = "https://github.com/foo/bar.git" } },
-    { { "foo/bar", url = "123" }, { [1] = "foo/bar", name = "bar", url = "123" } },
-    { { "https://foobar" }, { [1] = "https://foobar", name = "foobar", url = "https://foobar" } },
-    { { "ssh://foobar" }, { [1] = "ssh://foobar", name = "foobar", url = "ssh://foobar" } },
+    { { "foo/bar", url = "123" }, { [1] = "foo/bar", name = "123", url = "123" } },
+    { { url = "https://foobar" }, { name = "foobar", url = "https://foobar" } },
+    { { url = "ssh://foobar" }, { name = "foobar", url = "ssh://foobar" } },
     { "foo/bar", { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
     { { { { "foo/bar" } } }, { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
   }
@@ -21,6 +21,9 @@ describe("plugin spec url/name", function()
   for _, test in ipairs(tests) do
     test[2]._ = {}
     it("parses " .. vim.inspect(test[1]):gsub("%s+", " "), function()
+      if not test[2].dir then
+        test[2].dir = Config.options.root .. "/" .. test[2].name
+      end
       local spec = Plugin.Spec.new(test[1])
       local plugins = vim.tbl_values(spec.plugins)
       assert.equal(1, #plugins)
