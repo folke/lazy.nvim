@@ -2,27 +2,39 @@
 
 ## ✨ Features
 
+## ✅ TODO
+
+- [x] fancy UI to manage all your Neovim plugins
+- [x] auto lazy-loading of lua modules
+- [x] lazy-loading on events, commands, filetypes and key mappings
 - [x] Partial clones instead of shallow clones
 - [x] waits till missing deps are installed (bootstrap Neovim and start using it right away)
 - [x] Async
-- [x] No need for compile
-- [x] Fast
+- [x] No need to manually compile
+- [x] Fast. Automatically caches and compiles byte code of all lua modules needed during startup
 - [x] Correct sequencing of dependencies (deps should always be opt. Maybe make everything opt?)
 - [x] Config in multiple files
-- [x] Patterns for local packages
+- [x] dev option and patterns for local packages
 - [x] Profiling
-- [x] lockfile
+- [x] lockfile `lazy-lock.json`
 - [x] upvalues in `config` & `init`
 - [x] check for updates
-- [x] lazy-lock.lua
-- [x] tag/version support `git tag --sort version:refname`
+- [x] commit, branch, tag, version support
+- [x] semver https://devhints.io/semver
 - [x] auto-loading on completion for lazy-loaded commands
 - [x] bootstrap code
-- [x] semver https://devhints.io/semver
-      https://semver.npmjs.com/
-
-## ✅ TODO
-
+- [x] Background update checker
+- [x] statusline component to see number of pending updates
+- [x] health checks: check merge conflicts async
+  - [x] unsupported props or props from other managers
+  - [x] other packages still in site?
+  - [x] other package manager artifacts still present? compiled etc
+- [x] status page showing running handlers and cache stats
+- [x] temp colorscheme used during startup when installing missing plugins
+- [x] automatically reloads when config changes are detected
+- [x] handlers imply opt
+- [x] dependencies imply opt for deps
+- [ ] show spec errors in health
 - [ ] fix plugin details
 - [ ] show disabled plugins (strikethrough?)
 - [ ] log file
@@ -33,38 +45,6 @@
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
-- [x] Background update checker
-- [x] health checks: check merge conflicts async
-  - [x] unsupported props or props from other managers
-  - [x] other packages still in site?
-  - [x] other package manager artifacts still present? compiled etc
-- [x] status page showing running handlers and cache stats
-- [x] delete lazy keymaps when a plugin loads. Reset handlers for a plugin?
-- [x] deal with re-sourcing init.lua. Check a global?
-- [x] rename `run` to `build`
-- [x] temp colorscheme
-- [x] allow setting up plugins through config **fooo**
-- [x] task timeout
-- [x] incorrect when switching TN from opt to start
-- [x] max concurrency
-- [x] ui border
-- [x] make sure we can reload specs while keeping state
-- [x] use uv file watcher (or stat) to check for config changes
-- [x] support for Plugin.lock
-- [x] defaults for git log
-- [x] view keybindings for update/clean/...
-- [x] add profiler to view
-- [x] add buttons for actions
-- [x] show time taken for op in view
-- [x] auto lazy-loading of lua modules
-- [x] clear errors
-- [x] add support for versions `git tag --sort v:refname`
-- [x] rename requires to dependencies
-- [x] move tasks etc to Plugin.state
-- [x] handlers imply opt
-- [x] dependencies imply opt for deps
-- [x] fix local plugin spec
-- [x] investigate all opt=true. Simplifies logic (easily switch between opt/start afterwards)
 
 ## 📦 Differences with Packer
 
