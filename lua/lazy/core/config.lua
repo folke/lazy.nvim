@@ -54,7 +54,7 @@ M.defaults = {
   checker = {
     -- lazy can automatically check for updates
     enabled = false,
-    concurrency = 10, -- set to 1 to very slowly check for updates
+    concurrency = nil, ---@type number? set to 1 to very slowly check for updates
     notify = true, -- get a notification if new updates are found
     frequency = 3600, -- every hour
   },

@@ -7,6 +7,7 @@ local M = {}
 
 M.running = false
 M.updated = {}
+M.reported = {}
 
 function M.start()
   M.fast_check()
@@ -15,6 +16,7 @@ end
 
 function M.fast_check()
   for _, plugin in pairs(Config.plugins) do
+    plugin._.has_updates = nil
     local info = Git.info(plugin.dir)
     local target = Git.get_target(plugin)
     if info and target and info.commit ~= target.commit then
@@ -36,10 +38,14 @@ end
 
 function M.report()
   local lines = {}
+  M.updated = {}
   for _, plugin in pairs(Config.plugins) do
-    if plugin._.has_updates and not vim.tbl_contains(M.updated, plugin.name) then
-      table.insert(lines, "- **" .. plugin.name .. "**")
+    if plugin._.has_updates then
       table.insert(M.updated, plugin.name)
+      if not vim.tbl_contains(M.reported, plugin.name) then
+        table.insert(lines, "- **" .. plugin.name .. "**")
+        table.insert(M.reported, plugin.name)
+      end
     end
   end
   if #lines > 0 and Config.options.checker.notify then

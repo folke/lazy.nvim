@@ -43,6 +43,7 @@ function M.run(ropts, opts)
   runner:wait(function()
     vim.cmd([[do User LazyRender]])
     Plugin.update_state()
+    require("lazy.manage.checker").fast_check()
   end)
 
   if opts.wait then
