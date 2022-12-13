@@ -61,42 +61,47 @@ function Spec.new(spec)
   return self
 end
 
+-- PERF: optimized code to get package name without using lua patterns
+function Spec.get_name(pkg)
+  local name = pkg:sub(-4) == ".git" and pkg:sub(1, -5) or pkg
+  local slash = name:reverse():find("/", 1, true) --[[@as number?]]
+  return slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
+end
+
 ---@param plugin LazyPlugin
 ---@param is_dep? boolean
 function Spec:add(plugin, is_dep)
-  local pkg = plugin[1]
-  if type(pkg) ~= "string" then
-    Util.error("Invalid plugin spec " .. vim.inspect(plugin))
+  if not plugin.url and plugin[1] then
+    plugin.url = Config.options.git.url_format:format(plugin[1])
   end
 
-  if not plugin.url then
-    local c = pkg:sub(1, 1)
-    if c == "~" then
-      plugin.url = vim.loop.os_getenv("HOME") .. pkg:sub(2)
-    elseif c == "/" or pkg:sub(1, 4) == "http" or pkg:sub(1, 3) == "ssh" then
-      plugin.url = pkg
-    else
-      plugin.url = ("https://github.com/" .. pkg .. ".git")
+  if plugin.dir then
+    -- local plugin
+    plugin.name = plugin.name or Spec.get_name(plugin.dir)
+  elseif plugin.url then
+    plugin.name = plugin.name or Spec.get_name(plugin.url)
+    -- check for dev plugins
+    if plugin.dev == nil then
+      for _, pattern in ipairs(Config.options.dev.patterns) do
+        if plugin.url:find(pattern, 1, true) then
+          plugin.dev = true
+          break
+        end
+      end
     end
-  end
-
-  -- PERF: optimized code to get package name without using lua patterns
-  if not plugin.name then
-    local name = pkg:sub(-4) == ".git" and pkg:sub(1, -5) or pkg
-    local slash = name:reverse():find("/", 1, true) --[[@as number?]]
-    plugin.name = slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
+    -- dev plugins
+    if plugin.dev then
+      plugin.dir = Config.options.dev.path .. "/" .. plugin.name
+    else
+      -- remote plugin
+      plugin.dir = Config.options.root .. "/" .. plugin.name
+    end
+  else
+    Util.error("Invalid plugin spec " .. vim.inspect(plugin))
   end
 
   plugin._ = {}
   plugin._.dep = is_dep
-
-  -- check for plugins that should be local
-  for _, pattern in ipairs(Config.options.dev.patterns) do
-    if plugin.dev or (plugin[1]:find(pattern, 1, true) and plugin.dev ~= false) then
-      plugin.url = Config.options.dev.path .. "/" .. plugin.name
-      break
-    end
-  end
 
   local other = self.plugins[plugin.name]
   self.plugins[plugin.name] = other and self:merge(other, plugin) or plugin
@@ -171,14 +176,12 @@ function M.update_state()
         or plugin.cmd
       plugin.lazy = lazy and true or false
     end
-    if plugin.url:sub(1, 4) ~= "http" and plugin.url:sub(1, 3) ~= "git" then
-      plugin._.is_local = true
-      plugin.dir = plugin.url
-      plugin._.installed = true -- user should make sure the directory exists
-    else
-      plugin.dir = Config.options.root .. "/" .. plugin.name
+    if plugin.dir:find(Config.options.root) == 1 then
       plugin._.installed = installed[plugin.name] ~= nil
       installed[plugin.name] = nil
+    else
+      plugin._.is_local = true
+      plugin._.installed = true -- local plugins are managed by the user
     end
   end
 
