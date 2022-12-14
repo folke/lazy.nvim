@@ -1,24 +1,23 @@
 # 💤 lazy.nvim
 
-Modern plugin manager for Neovim
+**lazy.nvim** is a modern plugin manager for Neovim.
 
 ![image](https://user-images.githubusercontent.com/292349/207705153-077e183e-ae5f-4cbe-b1d8-07b7bf86026e.png)
 
 ## ✨ Features
 
-- 📦 Manage all your Neovim plugins with a fancy UI
-- 🚀 Fast startup: Automatically caches and compiles byte code of all lua modules needed during startup
+- 📦 Manage all your Neovim plugins with a sleek and intuitive UI
+- 🚀 Fast startup times thanks to automatic caching and bytecode compilation of lua modules.
 - 💾 Partial clones instead of shallow clones
-- 🔌 Auto lazy-loading of lua modules
-- 📆 Lazy-loading on events, commands, filetypes and key mappings
-- ⏳ Automatically installs missing plugins before starting up so you can start using Neovim right away
+- 🔌 Automatic lazy-loading of lua modules and lazy-loading on events, commands, filetypes, and key mappings.
+- ⏳ Automatically install missing plugins before starting up Neovim, allowing you to start using it right away.
 - 💪 Async execution for improved performance
 - 🛠️ No need to manually compile plugins
 - 🧪 Correct sequencing of dependencies
 - 📁 Configurable in multiple files
-- 💻 Dev option and patterns for using local plugin
+- 💻 Dev options and patterns for using local plugins
 - 📊 Profiling tools to optimize performance
-- 🔒 Lockfile `lazy-lock.json` to keep track of installed plugin versions
+- 🔒 Lockfile `lazy-lock.json` to keep track of installed plugins
 - 🔎 Automatically check for updates
 - 📋 Commit, branch, tag, version, and full [Semver](https://devhints.io/semver) support
 - 📈 Statusline component to see the number of pending updates
