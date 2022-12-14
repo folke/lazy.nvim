@@ -68,7 +68,7 @@ function M.stats()
 end
 
 function M.bootstrap()
-  local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/opt/lazy.nvim"
+  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
   if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
       "git",
@@ -78,7 +78,7 @@ function M.bootstrap()
       "https://github.com/folke/lazy.nvim.git",
       lazypath,
     })
-    vim.opt.runtimepath:append(lazypath)
+    vim.opt.runtimepath:prepend(lazypath)
   end
 end
 
