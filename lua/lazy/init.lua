@@ -74,4 +74,9 @@ function M.bootstrap()
   end
 end
 
+---@return LazyPlugin[]
+function M.plugins()
+  return vim.tbl_values(require("lazy.core.config").plugins)
+end
+
 return M
