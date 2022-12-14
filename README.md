@@ -67,6 +67,11 @@ Modern plugin manager for Neovim
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
+  
+## Profiler
+
+![image](https://user-images.githubusercontent.com/292349/207703263-3b38ca45-9779-482b-b684-4f8c3b3e76d0.png)
+
 
 ## 📦 Differences with Packer
 
