@@ -30,6 +30,8 @@
 
 You can use the following Lua code to bootstrap **lazy.nvim**
 
+<!-- bootstrap_start -->
+
 ```lua
   local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
   if not vim.loop.fs_stat(lazypath) then
@@ -44,6 +46,8 @@ You can use the following Lua code to bootstrap **lazy.nvim**
     vim.opt.runtimepath:prepend(lazypath)
   end
 ```
+
+<!-- bootstrap_end -->
 
 Next step is to add **lazy.nvim** to the top of your `init.lua`
 
