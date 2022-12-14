@@ -14,6 +14,11 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 
 Modern plugin manager for Neovim
 
+<div class="figure">
+<img src="https://user-images.githubusercontent.com/292349/207702945-6f1e7c89-9076-430b-b9e1-0bae8864a772.png" title="fig:"/>
+<p class="caption">image</p>
+</div>
+
 FEATURES                                                  *lazy.nvim-features*
 
 
