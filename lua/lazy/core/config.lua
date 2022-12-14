@@ -113,6 +113,9 @@ function M.setup(spec, opts)
     }
   end
 
+  -- disable plugin loading since we do all of that ourselves
+  vim.go.loadplugins = false
+
   vim.api.nvim_create_autocmd("User", {
     pattern = "VeryLazy",
     once = true,
