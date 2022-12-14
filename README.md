@@ -23,6 +23,10 @@ Modern plugin manager for Neovim
 - 📋 Commit, branch, tag, version, and full [Semver](https://devhints.io/semver) support
 - 📈 Statusline component to see the number of pending updates
 
+## ⚡️ Requirements
+
+- Neovim >= **0.8.0**
+
 ## Profiler
 
 The profiling view shows you why and how long it took to load your plugins.
