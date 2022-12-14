@@ -46,9 +46,7 @@ You can use the following Lua code to bootstrap **lazy.nvim**
   end
 ```
 
-## 🚀 Usage
-
-Add **lazy.nvim** to the top of your `init.lua`
+Next step is to add **lazy.nvim** to the top of your `init.lua`
 
 ```lua
 -- You can use a lua module that contains your plugins.
@@ -148,13 +146,15 @@ require("lazy").setup({
 }
 ```
 
-## Profiler
+## 🚀 Usage
+
+## 📊 Profiler
 
 The profiling view shows you why and how long it took to load your plugins.
 
 ![image](https://user-images.githubusercontent.com/292349/207703263-3b38ca45-9779-482b-b684-4f8c3b3e76d0.png)
 
-## Debug
+## 🪲 Debug
 
 See an overview of active lazy-loading handlers and what's in the module cache
 
