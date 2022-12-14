@@ -2,6 +2,8 @@
 
 Modern plugin manager for Neovim
 
+![image](https://user-images.githubusercontent.com/292349/207702945-6f1e7c89-9076-430b-b9e1-0bae8864a772.png)
+
 ## ✨ Features
 
 - 📦 Manage all your Neovim plugins with a fancy UI
