@@ -2,7 +2,7 @@
 
 Modern plugin manager for Neovim
 
-![image](https://user-images.githubusercontent.com/292349/207702945-6f1e7c89-9076-430b-b9e1-0bae8864a772.png)
+![image](https://user-images.githubusercontent.com/292349/207705153-077e183e-ae5f-4cbe-b1d8-07b7bf86026e.png)
 
 ## ✨ Features
 
