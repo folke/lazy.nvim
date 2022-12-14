@@ -33,18 +33,18 @@ You can use the following Lua code to bootstrap **lazy.nvim**
 <!-- bootstrap_start -->
 
 ```lua
-  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-      "git",
-      "clone",
-      "--filter=blob:none",
-      "--single-branch",
-      "https://github.com/folke/lazy.nvim.git",
-      lazypath,
-    })
-    vim.opt.runtimepath:prepend(lazypath)
-  end
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+ if not vim.loop.fs_stat(lazypath) then
+   vim.fn.system({
+     "git",
+     "clone",
+     "--filter=blob:none",
+     "--single-branch",
+     "https://github.com/folke/lazy.nvim.git",
+     lazypath,
+   })
+   vim.opt.runtimepath:prepend(lazypath)
+ end
 ```
 
 <!-- bootstrap_end -->
@@ -69,9 +69,92 @@ require("lazy").setup({
 })
 ```
 
+## 🔌 Plugin Spec
+
+<!-- spec_start -->
+
+```lua
+return {
+  -- the colorscheme should be available when starting Neovim
+  "folke/tokyonight.nvim",
+
+  -- I have a separate config.mappings file where I require which-key.
+  -- With lazy the plugin will be automatically loaded when it is required somewhere
+  { "folke/which-key.nvim", lazy = true },
+
+  {
+    "nvim-neorg/neorg",
+    -- lazy-load on filetype
+    ft = "norg",
+    -- custom config that will be executed when loading the plugin
+    config = function()
+      require("neorg").setup()
+    end,
+  },
+
+  {
+    "dstein64/vim-startuptime",
+    -- lazy-load on a command
+    cmd = "StartupTime",
+  },
+
+  {
+    "hrsh7th/nvim-cmp",
+    -- load cmp on InsertEnter
+    event = "InsertEnter",
+    -- these dependencies will only be loaded when cmp loads
+    -- dependencies are always lazy-loaded unless specified otherwise
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+    },
+    config = function()
+      -- ...
+    end,
+  },
+
+  -- you can use the VeryLazy event for things that can
+  -- load later and are not important for the initial UI
+  { "stevearc/dressing.nvim", event = "VeryLazy" },
+
+  {
+    "cshuaimin/ssr.nvim",
+    -- init is always executed during startup, but doesn't load the plugin yet.
+    -- init implies lazy loading
+    init = function()
+      vim.keymap.set({ "n", "x" }, "<leader>cR", function()
+        -- this require will automatically load the plugin
+        require("ssr").open()
+      end, { desc = "Structural Replace" })
+    end,
+  },
+
+  {
+    "monaqa/dial.nvim",
+    -- lazy-load on keys
+    keys = { "<C-a>", "<C-x>" },
+  },
+
+  -- local plugins need to be explicitely configured with dir
+  { dir = "~/projects/secret.nvim" },
+
+  -- you can use a custom url to fetch a plugin
+  { url = "git@github.com:folke/noice.nvim.git" },
+
+  -- local plugins can also be configure with the dev option.
+  -- This will use ~/projects/noice.nvim/ instead of fetching it from Github
+  -- With the dev option, you can easily switch between the local and installed version of a plugin
+  { "folke/noice.nvim", dev = true },
+}
+```
+
+<!-- spec_end -->
+
 ## ⚙️ Configuration
 
 **lazy.nvim** comes with the following defaults:
+
+<!-- config_start -->
 
 ```lua
 {
@@ -156,6 +239,8 @@ require("lazy").setup({
   },
 }
 ```
+
+<!-- config_end -->
 
 ## 🚀 Usage
 
