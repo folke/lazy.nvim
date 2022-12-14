@@ -6,6 +6,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 1. lazy.nvim                                             |lazy.nvim-lazy.nvim|
   - Features                                              |lazy.nvim-features|
   - TODO                                                      |lazy.nvim-todo|
+  - Profiler                                              |lazy.nvim-profiler|
   - Differences with Packer                |lazy.nvim-differences-with-packer|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
 
@@ -88,6 +89,13 @@ TODO                                                          *lazy.nvim-todo*
         - default semver merging strategy: if no version matches all, then use highest version?
     - package meta index (package.lua cache for all packages)
 
+
+PROFILER                                                  *lazy.nvim-profiler*
+
+<div class="figure">
+<img src="https://user-images.githubusercontent.com/292349/207703263-3b38ca45-9779-482b-b684-4f8c3b3e76d0.png" title="fig:"/>
+<p class="caption">image</p>
+</div>
 
 DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
 
