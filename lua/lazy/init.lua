@@ -7,6 +7,8 @@ function M.setup(spec, opts)
     vim.notify("Re-sourcing your config is not supported with lazy.nvim", vim.log.levels.WARN, { title = "lazy.nvim" })
     return
   end
+  vim.go.loadplugins = false
+
   vim.g.lazy_did_setup = true
   local start = vim.loop.hrtime()
 
@@ -42,7 +44,7 @@ function M.setup(spec, opts)
   end
 
   -- load plugins with lazy=false or Plugin.init
-  Loader.init_plugins()
+  Loader.startup()
 
   -- all done!
   vim.cmd("do User LazyDone")

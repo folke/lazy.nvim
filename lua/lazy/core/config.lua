@@ -11,27 +11,24 @@ M.defaults = {
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
-  concurrency = nil, -- set to a number to limit the maximum amount of concurrent tasks
+  concurrency = nil, ---@type number limit the maximum amount of concurrent tasks
   git = {
-    -- defaults for `Lazy log`
-    -- log = { "-10" }, -- last 10 commits
-    log = { "--since=1 days ago" }, -- commits from the last 3 days
-    timeout = 120, -- processes taking over 2 minutes will be killed
+    -- defaults for the `Lazy log` command
+    -- log = { "-10" }, -- show the last 10 commits
+    log = { "--since=1 days ago" }, -- show commits from the last 3 days
+    timeout = 120, -- kill processes that take more than 2 minutes
     url_format = "https://github.com/%s.git",
   },
-  -- Any plugin spec that contains one of the patterns will use your
-  -- local repo in the projects folder instead of fetchig it from github
-  -- Mostly useful for plugin developers.
   dev = {
-    path = vim.fn.expand("~/projects"), -- the path where you store your projects
-    ---@type string[]
+    -- directory where you store your local plugin projects
+    path = vim.fn.expand("~/projects"),
+    ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
   },
   install = {
     -- install missing plugins on startup. This doesn't increase startup time.
     missing = true,
-    -- try to load one of the colorschemes in this list when starting an install during startup
-    -- the first colorscheme that is found will be loaded
+    -- try to load one of these colorschemes when starting an installation during startup
     colorscheme = { "habamax" },
   },
   ui = {
@@ -53,17 +50,30 @@ M.defaults = {
     throttle = 20, -- how frequently should the ui process render events
   },
   checker = {
-    -- lazy can automatically check for updates
+    -- automcatilly check for plugin updates
     enabled = false,
-    concurrency = nil, ---@type number? set to 1 to very slowly check for updates
-    notify = true, -- get a notification if new updates are found
-    frequency = 3600, -- every hour
+    concurrency = nil, ---@type number? set to 1 to check for updates very slowly
+    notify = true, -- get a notification when new updates are found
+    frequency = 3600, -- check for updates every hour
   },
   performance = {
     ---@type LazyCacheConfig
     cache = nil,
-    reset_packpath = true, -- packpath will be reset to nothing. This will improver startup time.
-    reset_rtp = true, -- the runtime path will be reset to $VIMRUNTIME and your config directory
+    reset_packpath = true, -- reset the package path to improve startup time
+    rtp = {
+      reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
+      ---@type string[] list any plugins you want to disable here
+      disabled_plugins = {
+        -- "gzip",
+        -- "matchit",
+        -- "matchparen",
+        -- "netrwPlugin",
+        -- "tarPlugin",
+        -- "tohtml",
+        -- "tutor",
+        -- "zipPlugin",
+      },
+    },
   },
   debug = false,
 }
@@ -93,14 +103,13 @@ function M.setup(spec, opts)
   if M.options.performance.reset_packpath then
     vim.go.packpath = ""
   end
-  if M.options.performance.reset_rtp then
+  if M.options.performance.rtp.reset then
     local me = debug.getinfo(1, "S").source:sub(2)
     me = vim.fn.fnamemodify(me, ":p:h:h:h:h")
     vim.opt.rtp = {
-      "$VIMRUNTIME",
-      vim.fn.stdpath("config"),
       me,
-      vim.fn.stdpath("config") .. "/after",
+      vim.env.VIMRUNTIME,
+      vim.fn.stdpath("config"),
     }
   end
 

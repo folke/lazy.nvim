@@ -7,6 +7,8 @@ local M = {}
 ---@type LazyPlugin[]
 M.loading = {}
 M.init_done = false
+---@type table<string,true>
+M.disabled_rtp_plugins = {}
 
 function M.setup()
   -- install missing plugins
@@ -31,11 +33,38 @@ function M.setup()
   Handler.setup()
   Util.track()
 
+  for _, file in ipairs(Config.options.performance.rtp.disabled_plugins) do
+    M.disabled_rtp_plugins[file] = true
+  end
+
   -- autoload opt plugins
   table.insert(package.loaders, M.autoload)
 end
 
-function M.init_plugins()
+-- Startup sequence
+-- 1. load any start plugins and do init
+function M.startup()
+  Util.track({ start = "startup" })
+
+  -- load plugins from rtp
+  Util.track({ start = "rtp plugins" })
+  for _, path in ipairs(vim.opt.rtp:get()) do
+    if not path:find("after/?$") then
+      M.source_runtime(path, "plugin")
+      M.ftdetect(path)
+    end
+  end
+  Util.track()
+
+  Util.track({ start = "start" })
+  for _, plugin in pairs(Config.plugins) do
+    -- load start plugin
+    if plugin.lazy == false then
+      M.load(plugin, { start = "start" })
+    end
+  end
+  Util.track()
+
   Util.track({ start = "init" })
   for _, plugin in pairs(Config.plugins) do
     -- run plugin init
@@ -44,14 +73,22 @@ function M.init_plugins()
       Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
       Util.track()
     end
+  end
+  Util.track()
 
-    -- load start plugin
-    if plugin.lazy == false then
-      M.load(plugin, { start = "startup" })
+  -- load after files
+  Util.track({ start = "after" })
+  for _, path in ipairs(vim.opt.rtp:get()) do
+    if path:find("after/?$") then
+      M.source_runtime(path, "plugin")
+    else
+      M.source_runtime(path, "after/plugin")
     end
   end
   Util.track()
+
   M.init_done = true
+  Util.track()
 end
 
 ---@class Loader
@@ -84,21 +121,12 @@ function M.load(plugins, reason)
       Handler.disable(plugin)
 
       vim.opt.runtimepath:prepend(plugin.dir)
-      if not M.init_done then
-        local after = plugin.dir .. "/after"
-        -- only add the after directories during startup
-        -- afterwards we only source the runtime files in after
-        -- Check if it exists here, to prevent further rtp file checks during startup
-        if vim.loop.fs_stat(after) then
-          vim.opt.runtimepath:append(after)
-        end
-      end
 
       if plugin.dependencies then
         M.load(plugin.dependencies, {})
       end
 
-      M.packadd(plugin)
+      M.packadd(plugin.dir)
       if plugin.config then
         Util.try(plugin.config, "Failed to run `config` for " .. plugin.name)
       end
@@ -112,28 +140,29 @@ function M.load(plugins, reason)
   end
 end
 
----@param plugin LazyPlugin
-function M.packadd(plugin)
+---@param path string
+function M.packadd(path)
+  M.source_runtime(path, "plugin")
+  M.ftdetect(path)
   if M.init_done then
-    M.source_runtime(plugin.dir, "plugin")
-    M.ftdetect(plugin)
-    M.source_runtime(plugin.dir, "after/plugin")
+    M.source_runtime(path, "after/plugin")
   end
 end
 
----@param plugin LazyPlugin
-function M.ftdetect(plugin)
+---@param path string
+function M.ftdetect(path)
   vim.cmd("augroup filetypedetect")
-  M.source_runtime(plugin.dir, "ftdetect")
+  M.source_runtime(path, "ftdetect")
   vim.cmd("augroup END")
 end
 
 ---@param ... string
 function M.source_runtime(...)
   local dir = table.concat({ ... }, "/")
-  Util.walk(dir, function(path, _, t)
-    local ext = path:sub(-3)
-    if t == "file" and (ext == "lua" or ext == "vim") then
+  Util.walk(dir, function(path, name, t)
+    local ext = name:sub(-3)
+    name = name:sub(1, -5)
+    if t == "file" and (ext == "lua" or ext == "vim") and not M.disabled_rtp_plugins[name] then
       Util.track({ runtime = path })
       vim.cmd("silent source " .. path)
       Util.track()

@@ -13,7 +13,7 @@ end
 ---@param plugin LazyPlugin
 ---@param value string
 function M:_add(plugin, value)
-  Loader.ftdetect(plugin)
+  Loader.ftdetect(plugin.dir)
   Event._add(self, plugin, value)
 end
 
