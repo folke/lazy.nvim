@@ -274,6 +274,10 @@ function M:diagnostics(plugin)
         message = "updated from " .. plugin._.updated.from:sub(1, 7) .. " to " .. plugin._.updated.to:sub(1, 7),
       })
     end
+  elseif plugin._.has_updates then
+    self:diagnostic({
+      message = "updates available",
+    })
   end
   for _, task in ipairs(plugin._.tasks or {}) do
     if task:is_running() then
