@@ -72,6 +72,9 @@ Modern plugin manager for Neovim
 
 ![image](https://user-images.githubusercontent.com/292349/207703263-3b38ca45-9779-482b-b684-4f8c3b3e76d0.png)
 
+![image](https://user-images.githubusercontent.com/292349/207703522-8bb20678-bb4c-4424-80e4-add3219711c3.png)
+
+
 
 ## 📦 Differences with Packer
 
