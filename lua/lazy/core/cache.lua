@@ -155,6 +155,8 @@ end
 
 function M.save_cache()
   local f = assert(uv.fs_open(M.config.path, "w", 438))
+  uv.fs_write(f, vim.env.VIMRUNTIME)
+  uv.fs_write(f, "\0")
   for modname, entry in pairs(M.cache) do
     if entry.used > os.time() - M.ttl then
       entry.modname = modname
@@ -184,7 +186,16 @@ function M.load_cache()
     local data = uv.fs_read(f, cache_hash.size, 0) --[[@as string]]
     uv.fs_close(f)
 
-    local offset = 1
+    local zero = data:find("\0", 1, true)
+    if not zero then
+      return
+    end
+
+    if vim.env.VIMRUNTIME ~= data:sub(1, zero - 1) then
+      return
+    end
+
+    local offset = zero + 1
     while offset + 1 < #data do
       local header = ffi.cast("uint32_t*", ffi.new("const char[28]", data:sub(offset, offset + 27)))
       offset = offset + 28
