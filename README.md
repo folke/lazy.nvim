@@ -22,6 +22,21 @@
 - 📋 Commit, branch, tag, version, and full [Semver](https://devhints.io/semver) support
 - 📈 Statusline component to see the number of pending updates
 
+## Table of Contents
+
+<!--toc:start-->
+
+- [⚡️ Requirements](#️-requirements)
+- [📦 Installation](#📦-installation)
+- [🔌 Plugin Spec](#🔌-plugin-spec)
+- [⚙️ Configuration](#️-configuration)
+- [🚀 Usage](#🚀-usage)
+- [📊 Profiler](#📊-profiler)
+- [🪲 Debug](#🪲-debug)
+- [📦 Differences with Packer](#📦-differences-with-packer)
+- [📦 Other Neovim Plugin Managers in Lua](#📦-other-neovim-plugin-managers-in-lua)
+  <!--toc:end-->
+
 ## ⚡️ Requirements
 
 - Neovim >= **0.8.0**
@@ -56,7 +71,7 @@ Next step is to add **lazy.nvim** to the top of your `init.lua`
 -- All sub modules of the lua module will also be automatically loaded
 -- This is the preferred setup so your plugin specs can be properly cached.
 require("lazy").setup("config.plugins", {
-  -- add any optional configuration options here
+  -- add any optional configuration here
 })
 
 -- Alternatively you can specify a plugin list
@@ -65,11 +80,16 @@ require("lazy").setup({
     "folke/which-key.nvim",
     { "folke/neoconf.nvim", cmd = "Neoconf" },
   }, {
-  -- add any optional configuration options here
+  -- add any optional configuration here
 })
 ```
 
 ## 🔌 Plugin Spec
+
+| Property | Type    | Description |
+| -------- | ------- | ----------- |
+| Item1.1  | Item2.1 | Item3.1     |
+| Item1.2  | Item2.2 | Item3.2     |
 
 <!-- spec_start -->
 
