@@ -5,6 +5,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 
 1. lazy.nvim                                             |lazy.nvim-lazy.nvim|
   - Features                                              |lazy.nvim-features|
+  - Table of Contents                            |lazy.nvim-table-of-contents|
   - Requirements                                      |lazy.nvim-requirements|
   - Installation                                      |lazy.nvim-installation|
   - Plugin Spec                                        |lazy.nvim-plugin-spec|
@@ -45,6 +46,21 @@ FEATURES                                                  *lazy.nvim-features*
 - Statusline component to see the number of pending updates
 
 
+TABLE OF CONTENTS                                *lazy.nvim-table-of-contents*
+
+
+- |lazy.nvim-requirements|
+- |lazy.nvim-installation|
+- |lazy.nvim-plugin-spec|
+- |lazy.nvim-configuration|
+- |lazy.nvim-usage|
+- |lazy.nvim-profiler|
+- |lazy.nvim-🪲-debug|
+- |lazy.nvim-differences-with-packer|
+- |lazy.nvim-other-neovim-plugin-managers-in-lua|
+    <!--toc:end-->
+
+
 REQUIREMENTS                                          *lazy.nvim-requirements*
 
 
@@ -78,7 +94,7 @@ Next step is to add **lazy.nvim** to the top of your `init.lua`
     -- All sub modules of the lua module will also be automatically loaded
     -- This is the preferred setup so your plugin specs can be properly cached.
     require("lazy").setup("config.plugins", {
-      -- add any optional configuration options here
+      -- add any optional configuration here
     })
     
     -- Alternatively you can specify a plugin list
@@ -87,12 +103,17 @@ Next step is to add **lazy.nvim** to the top of your `init.lua`
         "folke/which-key.nvim",
         { "folke/neoconf.nvim", cmd = "Neoconf" },
       }, {
-      -- add any optional configuration options here
+      -- add any optional configuration here
     })
 <
 
 
 PLUGIN SPEC                                            *lazy.nvim-plugin-spec*
+
+│Property│ Type  │Description│
+│Item1.1 │Item2.1│Item3.1    │
+│Item1.2 │Item2.2│Item3.2    │
+
 
 >
     return {
