@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 13
+*lazy.nvim.txt*          For NVIM v0.5.0         Last change: 2022 December 14
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -12,7 +12,28 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 ==============================================================================
 1. lazy.nvim                                             *lazy.nvim-lazy.nvim*
 
+Modern plugin manager for Neovim
+
 FEATURES                                                  *lazy.nvim-features*
+
+
+- Manage all your Neovim plugins with a fancy UI
+- Fast startup: Automatically caches and compiles byte code of all lua modules needed during startup
+- Partial clones instead of shallow clones
+- Auto lazy-loading of lua modules
+- Lazy-loading on events, commands, filetypes and key mappings
+- Automatically installs missing plugins before starting up so you can start using Neovim right away
+- Async execution for improved performance
+- No need to manually compile plugins
+- Correct sequencing of dependencies
+- Configurable in multiple files
+- Dev option and patterns for using local plugin
+- Profiling tools to optimize performance
+- Lockfile `lazy-lock.json` to keep track of installed plugin versions
+- Automatically check for updates
+- Commit, branch, tag, version, and full Semver <https://devhints.io/semver> support
+- Statusline component to see the number of pending updates
+
 
 TODO                                                          *lazy.nvim-todo*
 
@@ -21,23 +42,26 @@ TODO                                                          *lazy.nvim-todo*
 - auto lazy-loading of lua modules
 - lazy-loading on events, commands, filetypes and key mappings
 - Partial clones instead of shallow clones
-- waits till missing deps are installed (bootstrap Neovim and start using it right away)
+- waits till missing deps are installed (bootstrap Neovim and start using it
+    right away)
 - Async
 - No need to manually compile
-- Fast. Automatically caches and compiles byte code of all lua modules needed during startup
-- Correct sequencing of dependencies (deps should always be opt. Maybe make everything opt?)
+- Fast. Automatically caches and compiles byte code of all lua modules needed
+    during startup
+- Correct sequencing of dependencies (deps should always be opt. Maybe make
+    everything opt?)
 - Config in multiple files
 - dev option and patterns for local packages
 - Profiling
 - lockfile `lazy-lock.json`
 - upvalues in `config` & `init`
-- check for updates
-- commit, branch, tag, version support
+- automatically check for updates
+- commit, branch, tag, version and full semver support
+- statusline component to see number of pending updates
 - semver https://devhints.io/semver
 - auto-loading on completion for lazy-loaded commands
 - bootstrap code
 - Background update checker
-- statusline component to see number of pending updates
 - health checks: check merge conflicts async
     - unsupported props or props from other managers
     - other packages still in site?
