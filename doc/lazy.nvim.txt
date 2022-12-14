@@ -7,10 +7,10 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Features                                              |lazy.nvim-features|
   - Requirements                                      |lazy.nvim-requirements|
   - Installation                                      |lazy.nvim-installation|
-  - Usage                                                    |lazy.nvim-usage|
   - Configuration                                    |lazy.nvim-configuration|
+  - Usage                                                    |lazy.nvim-usage|
   - Profiler                                              |lazy.nvim-profiler|
-  - Debug                                                    |lazy.nvim-debug|
+  - 🪲 Debug                                          |lazy.nvim-🪲-debug|
   - Differences with Packer                |lazy.nvim-differences-with-packer|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
 
@@ -71,9 +71,7 @@ You can use the following Lua code to bootstrap **lazy.nvim**
 <
 
 
-USAGE                                                        *lazy.nvim-usage*
-
-Add **lazy.nvim** to the top of your `init.lua`
+Next step is to add **lazy.nvim** to the top of your `init.lua`
 
 >
     -- You can use a lua module that contains your plugins.
@@ -175,6 +173,8 @@ CONFIGURATION                                        *lazy.nvim-configuration*
 <
 
 
+USAGE                                                        *lazy.nvim-usage*
+
 PROFILER                                                  *lazy.nvim-profiler*
 
 The profiling view shows you why and how long it took to load your plugins.
@@ -184,7 +184,7 @@ The profiling view shows you why and how long it took to load your plugins.
 <p class="caption">image</p>
 </div>
 
-DEBUG                                                        *lazy.nvim-debug*
+🪲 DEBUG                                              *lazy.nvim-🪲-debug*
 
 See an overview of active lazy-loading handlers and what’s in the module
 cache
