@@ -27,6 +27,25 @@ Modern plugin manager for Neovim
 
 - Neovim >= **0.8.0**
 
+## 📦 Installation
+
+You can use the following Lua code to bootstrap **lazy.nvim**
+
+```lua
+  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "--single-branch",
+      "https://github.com/folke/lazy.nvim.git",
+      lazypath,
+    })
+    vim.opt.runtimepath:prepend(lazypath)
+  end
+```
+
 ## Profiler
 
 The profiling view shows you why and how long it took to load your plugins.
