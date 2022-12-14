@@ -1,6 +1,25 @@
-# lazy.nvim
+# 💤 lazy.nvim
+
+Modern plugin manager for Neovim
 
 ## ✨ Features
+
+- 📦 Manage all your Neovim plugins with a fancy UI
+- 🚀 Fast startup: Automatically caches and compiles byte code of all lua modules needed during startup
+- 💾 Partial clones instead of shallow clones
+- 🔌 Auto lazy-loading of lua modules
+- 📆 Lazy-loading on events, commands, filetypes and key mappings
+- ⏳ Automatically installs missing plugins before starting up so you can start using Neovim right away
+- 💪 Async execution for improved performance
+- 🛠️ No need to manually compile plugins
+- 🧪 Correct sequencing of dependencies
+- 📁 Configurable in multiple files
+- 💻 Dev option and patterns for using local plugin
+- 📊 Profiling tools to optimize performance
+- 🔒 Lockfile `lazy-lock.json` to keep track of installed plugin versions
+- 🔎 Automatically check for updates
+- 📋 Commit, branch, tag, version, and full [Semver](https://devhints.io/semver) support
+- 📈 Statusline component to see the number of pending updates
 
 ## ✅ TODO
 
@@ -18,13 +37,14 @@
 - [x] Profiling
 - [x] lockfile `lazy-lock.json`
 - [x] upvalues in `config` & `init`
-- [x] check for updates
-- [x] commit, branch, tag, version support
+- [x] automatically check for updates
+- [x] commit, branch, tag, version and full semver support
+- [x] statusline component to see number of pending updates
+
 - [x] semver https://devhints.io/semver
 - [x] auto-loading on completion for lazy-loaded commands
 - [x] bootstrap code
 - [x] Background update checker
-- [x] statusline component to see number of pending updates
 - [x] health checks: check merge conflicts async
   - [x] unsupported props or props from other managers
   - [x] other packages still in site?
