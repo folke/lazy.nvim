@@ -5,6 +5,8 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 
 1. lazy.nvim                                             |lazy.nvim-lazy.nvim|
   - Features                                              |lazy.nvim-features|
+  - Requirements                                      |lazy.nvim-requirements|
+  - Installation                                      |lazy.nvim-installation|
   - Profiler                                              |lazy.nvim-profiler|
   - Debug                                                    |lazy.nvim-debug|
   - Differences with Packer                |lazy.nvim-differences-with-packer|
@@ -39,6 +41,32 @@ FEATURES                                                  *lazy.nvim-features*
 - Automatically check for updates
 - Commit, branch, tag, version, and full Semver <https://devhints.io/semver> support
 - Statusline component to see the number of pending updates
+
+
+REQUIREMENTS                                          *lazy.nvim-requirements*
+
+
+- Neovim >= **0.8.0**
+
+
+INSTALLATION                                          *lazy.nvim-installation*
+
+You can use the following Lua code to bootstrap **lazy.nvim**
+
+>
+      local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+      if not vim.loop.fs_stat(lazypath) then
+        vim.fn.system({
+          "git",
+          "clone",
+          "--filter=blob:none",
+          "--single-branch",
+          "https://github.com/folke/lazy.nvim.git",
+          lazypath,
+        })
+        vim.opt.runtimepath:prepend(lazypath)
+      end
+<
 
 
 PROFILER                                                  *lazy.nvim-profiler*
