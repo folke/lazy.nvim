@@ -1,11 +1,6 @@
-local M = {}
+local Util = require("lazy.util")
 
-function M.read(file)
-  local fd = assert(io.open(file, "r"))
-  local data = fd:read("*a") ---@type string
-  fd:close()
-  return data
-end
+local M = {}
 
 function M.indent(str, indent)
   local lines = vim.split(str, "\n")
@@ -52,7 +47,7 @@ end
 
 ---@param contents table<string, string>
 function M.save(contents)
-  local readme = M.read("README.md")
+  local readme = Util.read_file("README.md")
   contents.toc = M.toc(readme)
   for tag, content in pairs(contents) do
     content = M.fix_indent(content)
@@ -69,14 +64,12 @@ function M.save(contents)
     end
   end
 
-  local fd = assert(io.open("README.md", "w+"))
-  fd:write(readme)
-  fd:close()
+  Util.write_file("README.md", readme)
 end
 
 ---@return string
 function M.extract(file, pattern)
-  local init = M.read(file)
+  local init = Util.read_file(file)
   return assert(init:match(pattern))
 end
 
@@ -91,7 +84,7 @@ function M.update()
   M.save({
     bootstrap = M.extract("lua/lazy/init.lua", "function M%.bootstrap%(%)\n(.-)\nend"),
     config = config,
-    spec = M.read("lua/lazy/example.lua"),
+    spec = Util.read_file("lua/lazy/example.lua"),
   })
   vim.cmd.checktime()
 end
