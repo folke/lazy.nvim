@@ -28,6 +28,20 @@ function M.open(uri)
   end
 end
 
+function M.read_file(file)
+  local fd = assert(io.open(file, "r"))
+  ---@type string
+  local data = fd:read("*a")
+  fd:close()
+  return data
+end
+
+function M.write_file(file, contents)
+  local fd = assert(io.open(file, "w+"))
+  fd:write(contents)
+  fd:close()
+end
+
 ---@param ms number
 ---@param fn fun()
 function M.throttle(ms, fn)
