@@ -28,14 +28,14 @@
 <!-- toc:start -->
 
 - [⚡️ Requirements](#-requirements)
-- [📦 Installation](#-installation)
-- [🔌 Plugin Spec](#-plugin-spec)
-- [⚙️ Configuration](#-configuration)
-- [🚀 Usage](#-usage)
-- [📊 Profiler](#-profiler)
-- [🪲 Debug](#-debug)
-- [📦 Differences with Packer](#-differences-with-packer)
-- [📦 Other Neovim Plugin Managers in Lua](#-other-neovim-plugin-managers-in-lua)
+ - [📦 Installation](#-installation)
+ - [🔌 Plugin Spec](#-plugin-spec)
+ - [⚙️ Configuration](#-configuration)
+ - [🚀 Usage](#-usage)
+ - [📊 Profiler](#-profiler)
+ - [🪲 Debug](#-debug)
+ - [📦 Differences with Packer](#-differences-with-packer)
+ - [📦 Other Neovim Plugin Managers in Lua](#-other-neovim-plugin-managers-in-lua)
 
 <!-- toc:end -->
 
@@ -276,6 +276,15 @@ return {
         -- "zipPlugin",
       },
     },
+  },
+  -- lazy can generate helptags from the headings in markdown readme files,
+  -- so :help works even for plugins that don't have vim docs.
+  -- when the readme opens with :help it will be correctly displayed as markdown
+  readme = {
+    root = vim.fn.stdpath("state") .. "/lazy/readme",
+    files = { "README.md" },
+    -- only generate markdown helptags for plugins that dont have docs
+    skip_if_doc_exists = true,
   },
 }
 ```
