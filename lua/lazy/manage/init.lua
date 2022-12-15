@@ -65,7 +65,9 @@ function M.install(opts)
     plugins = function(plugin)
       return plugin.url and not plugin._.installed
     end,
-  }, opts)
+  }, opts):wait(function()
+    require("lazy.help").update()
+  end)
 end
 
 ---@param opts? ManagerOpts|{lockfile?:boolean}
@@ -86,6 +88,7 @@ function M.update(opts)
     end,
   }, opts):wait(function()
     require("lazy.manage.lock").update()
+    require("lazy.help").update()
   end)
 end
 

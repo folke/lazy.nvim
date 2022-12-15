@@ -75,6 +75,11 @@ M.defaults = {
       },
     },
   },
+  readme = {
+    root = vim.fn.stdpath("state") .. "/lazy/readme",
+    files = { "README.md" },
+    skip_if_doc_exists = true,
+  },
   debug = false,
 }
 
@@ -112,6 +117,7 @@ function M.setup(spec, opts)
       vim.fn.stdpath("config"),
     }
   end
+  vim.opt.rtp:append(M.options.readme.root)
 
   -- disable plugin loading since we do all of that ourselves
   vim.go.loadplugins = false
