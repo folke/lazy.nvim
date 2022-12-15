@@ -119,6 +119,7 @@ function M.setup(spec, opts)
       me,
       vim.env.VIMRUNTIME,
       vim.fn.stdpath("config"),
+      vim.fn.stdpath("config") .. "/after",
     }
   end
   vim.opt.rtp:append(M.options.readme.root)

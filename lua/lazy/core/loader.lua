@@ -46,9 +46,11 @@ end
 function M.startup()
   Util.track({ start = "startup" })
 
-  -- load plugins from rtp
+  local rtp = vim.opt.rtp:get()
+
+  -- load plugins from rtp, excluding after
   Util.track({ start = "rtp plugins" })
-  for _, path in ipairs(vim.opt.rtp:get()) do
+  for _, path in ipairs(rtp) do
     if not path:find("after/?$") then
       M.source_runtime(path, "plugin")
       M.ftdetect(path)
@@ -56,33 +58,38 @@ function M.startup()
   end
   Util.track()
 
+  -- load start plugin
   Util.track({ start = "start" })
   for _, plugin in pairs(Config.plugins) do
-    -- load start plugin
     if plugin.lazy == false then
       M.load(plugin, { start = "start" })
     end
   end
   Util.track()
 
-  Util.track({ start = "init" })
+  -- load after files
+  Util.track({ start = "after" })
+  -- load after files from plugins
   for _, plugin in pairs(Config.plugins) do
-    -- run plugin init
-    if plugin.init then
-      Util.track({ plugin = plugin.name, init = "init" })
-      Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
-      Util.track()
+    if plugin._.loaded then
+      M.source_runtime(plugin.dir, "after/plugin")
+    end
+  end
+  -- load after files from rtp plugins
+  for _, path in ipairs(rtp) do
+    if path:find("after/?$") then
+      M.source_runtime(path, "plugin")
     end
   end
   Util.track()
 
-  -- load after files
-  Util.track({ start = "after" })
-  for _, path in ipairs(vim.opt.rtp:get()) do
-    if path:find("after/?$") then
-      M.source_runtime(path, "plugin")
-    else
-      M.source_runtime(path, "after/plugin")
+  -- run plugin init
+  Util.track({ start = "init" })
+  for _, plugin in pairs(Config.plugins) do
+    if plugin.init then
+      Util.track({ plugin = plugin.name, init = "init" })
+      Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
+      Util.track()
     end
   end
   Util.track()
