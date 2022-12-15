@@ -233,7 +233,7 @@ function M.load()
 
   -- add ourselves
   spec.plugins["lazy.nvim"] = nil
-  spec:add({ "folke/lazy.nvim", lazy = true })
+  spec:add({ "folke/lazy.nvim", lazy = true, dev = false })
 
   local existing = Config.plugins
   Config.plugins = spec.plugins
