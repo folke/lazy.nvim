@@ -15,6 +15,26 @@ function M.indent(str, indent)
   return table.concat(lines, "\n")
 end
 
+function M.toc(md)
+  local toc = {}
+  local lines = vim.split(md, "\n")
+  local toc_found = false
+  for _, line in ipairs(lines) do
+    local hash, title = line:match("^(#+)%s*(.*)")
+    if hash then
+      if toc_found then
+        local anchor = string.gsub(title:lower(), "[^\32-\126]", "")
+        anchor = string.gsub(anchor, " ", "-")
+        toc[#toc + 1] = string.rep("  ", #hash - 1) .. "- [" .. title .. "](#" .. anchor .. ")"
+      end
+      if title:find("Table of Contents") then
+        toc_found = true
+      end
+    end
+  end
+  return M.fix_indent(table.concat(toc, "\n"))
+end
+
 ---@param str string
 function M.fix_indent(str)
   local lines = vim.split(str, "\n")
@@ -33,15 +53,20 @@ end
 ---@param contents table<string, string>
 function M.save(contents)
   local readme = M.read("README.md")
+  contents.toc = M.toc(readme)
   for tag, content in pairs(contents) do
     content = M.fix_indent(content)
     content = content:gsub("%%", "%%%%")
     content = vim.trim(content)
-    local pattern = "(<%!%-%- " .. tag .. "_start %-%->).*(<%!%-%- " .. tag .. "_end %-%->)"
+    local pattern = "(<%!%-%- " .. tag .. ":start %-%->).*(<%!%-%- " .. tag .. ":end %-%->)"
     if not readme:find(pattern) then
       error("tag " .. tag .. " not found")
     end
-    readme = readme:gsub(pattern, "%1\n\n```lua\n" .. content .. "\n```\n\n%2")
+    if tag == "toc" then
+      readme = readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
+    else
+      readme = readme:gsub(pattern, "%1\n\n```lua\n" .. content .. "\n```\n\n%2")
+    end
   end
 
   local fd = assert(io.open("README.md", "w+"))
