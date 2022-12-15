@@ -15,6 +15,7 @@
 - 🛠️ No need to manually compile plugins
 - 🧪 Correct sequencing of dependencies
 - 📁 Configurable in multiple files
+- 📚 Generates helptags of the headings in `README.md` files for plugins that don't have vimdocs
 - 💻 Dev options and patterns for using local plugins
 - 📊 Profiling tools to optimize performance
 - 🔒 Lockfile `lazy-lock.json` to keep track of installed plugins
