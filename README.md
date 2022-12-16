@@ -57,11 +57,11 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
      "clone",
      "--filter=blob:none",
      "--single-branch",
-     "https://github.com/folke/lazy.nvim.git",
+     "git@github.com:folke/lazy.nvim.git",
      lazypath,
    })
-   vim.opt.runtimepath:prepend(lazypath)
  end
+ vim.opt.runtimepath:prepend(lazypath)
 ```
 
 <!-- bootstrap:end -->
