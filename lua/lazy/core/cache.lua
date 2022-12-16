@@ -92,6 +92,10 @@ function M.loader(modname)
   return chunk or error(err)
 end
 
+function M.require(modname)
+  return M.loader(modname)()
+end
+
 function M.idx()
   -- update our loader position if needed
   if package.loaders[M.loader_idx] ~= M.loader then

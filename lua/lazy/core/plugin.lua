@@ -1,6 +1,7 @@
 local Config = require("lazy.core.config")
 local Util = require("lazy.core.util")
 local Handler = require("lazy.core.handler")
+local Cache = require("lazy.core.cache")
 
 local M = {}
 
@@ -217,7 +218,7 @@ function M.spec()
       ---@diagnostic disable-next-line: no-unknown
       package.loaded[modname] = nil
       Util.try(function()
-        spec:normalize(require(modname))
+        spec:normalize(Cache.require(modname))
       end, "Failed to load **" .. modname .. "**")
     end
     local path_plugins = vim.fn.stdpath("config") .. "/lua/" .. Config.spec:gsub("%.", "/")
