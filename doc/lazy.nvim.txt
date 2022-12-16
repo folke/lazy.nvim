@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 15
+*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 16
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -13,6 +13,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Usage                                                    |lazy.nvim-usage|
   - Profiler                                              |lazy.nvim-profiler|
   - 🪲 Debug                                          |lazy.nvim-🪲-debug|
+  - Startup Sequence                              |lazy.nvim-startup-sequence|
   - Differences with Packer                |lazy.nvim-differences-with-packer|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
 
@@ -57,6 +58,7 @@ TABLE OF CONTENTS                                *lazy.nvim-table-of-contents*
 - |lazy.nvim-usage|
 - |lazy.nvim-profiler|
 - |lazy.nvim-🪲-debug|
+- |lazy.nvim-startup-sequence|
 - |lazy.nvim-differences-with-packer|
 - |lazy.nvim-other-neovim-plugin-managers-in-lua|
 
@@ -79,11 +81,11 @@ You can use the following Lua code to bootstrap **lazy.nvim**
          "clone",
          "--filter=blob:none",
          "--single-branch",
-         "https://github.com/folke/lazy.nvim.git",
+         "git@github.com:folke/lazy.nvim.git",
          lazypath,
        })
-       vim.opt.runtimepath:prepend(lazypath)
      end
+     vim.opt.runtimepath:prepend(lazypath)
 <
 
 
@@ -327,6 +329,14 @@ cache
 <img src="https://user-images.githubusercontent.com/292349/207703522-8bb20678-bb4c-4424-80e4-add3219711c3.png" title="fig:"/>
 <p class="caption">image</p>
 </div>
+
+STARTUP SEQUENCE                                  *lazy.nvim-startup-sequence*
+
+**lazy.nvim** does **NOT** use Neovim packages and even disables plugin loading
+completely (`vim.go.loadplugins = false`). It takes over the complete startup
+sequence for more flexibility and better performance.
+
+In practice this means that step 10 of |Neovim Initialization| is done by Lazy.
 
 DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
 
