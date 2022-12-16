@@ -34,6 +34,7 @@
  - [🚀 Usage](#-usage)
  - [📊 Profiler](#-profiler)
  - [🪲 Debug](#-debug)
+ - [▶️ Startup Sequence](#-startup-sequence)
  - [📦 Differences with Packer](#-differences-with-packer)
  - [📦 Other Neovim Plugin Managers in Lua](#-other-neovim-plugin-managers-in-lua)
 
@@ -304,6 +305,14 @@ The profiling view shows you why and how long it took to load your plugins.
 See an overview of active lazy-loading handlers and what's in the module cache
 
 ![image](https://user-images.githubusercontent.com/292349/207703522-8bb20678-bb4c-4424-80e4-add3219711c3.png)
+
+## ▶️ Startup Sequence
+
+**lazy.nvim** does **NOT** use Neovim packages and even disables plugin loading
+completely (`vim.go.loadplugins = false`). It takes over the complete
+startup sequence for more flexibility and better performance.
+
+In practice this means that step 10 of [Neovim Initialization](https://neovim.io/doc/user/starting.html#initialization) is done by Lazy.
 
 ## 📦 Differences with Packer
 
