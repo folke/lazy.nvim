@@ -258,8 +258,15 @@ end
 -- Finds the plugin that has this path
 ---@param path string
 function M.find(path)
-  local name = path:match("/([^/]+)/lua") or path:match("/([^/]+)/?$")
-  return name and Config.plugins[name] or nil
+  local lua = path:find("/lua", 1, true)
+  if lua then
+    local name = path:sub(1, lua - 1)
+    local slash = name:reverse():find("/", 1, true)
+    if slash then
+      name = name:sub(#name - slash + 2)
+      return name and Config.plugins[name] or nil
+    end
+  end
 end
 
 return M
