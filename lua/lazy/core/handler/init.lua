@@ -4,6 +4,7 @@ local Config = require("lazy.core.config")
 ---@field type LazyHandlerTypes
 ---@field extends? LazyHandler
 ---@field active table<string,table<string,string>>
+---@field super LazyHandler
 local M = {}
 
 ---@enum LazyHandlerTypes
@@ -50,68 +51,44 @@ end
 function M.new(type)
   ---@type LazyHandler
   local handler = require("lazy.core.handler." .. type)
-  local self = setmetatable({}, {
-    __index = function(_, k)
-      return handler[k] or (handler.extends and handler.extends[k]) or M[k]
-    end,
-  })
+  local super = handler.extends or M
+  local self = setmetatable({}, { __index = setmetatable(handler, { __index = super }) })
+  self.super = super
   self.active = {}
   self.type = type
-  self:init()
   return self
 end
 
+---@param value string
 ---@protected
-function M:init() end
+function M:_add(value) end
+
+---@param value string
+---@protected
+function M:_del(value) end
 
 ---@param plugin LazyPlugin
----@param value string
----@protected
-function M:_add(plugin, value) end
-
----@param plugin LazyPlugin
----@param value string
----@protected
-function M:_del(plugin, value) end
-
----@param value string
-function M:_value(value)
-  return value
-end
-
----@param values? string|string[]
----@param fn fun(value:string)
-function M:foreach(values, fn)
-  if type(values) == "string" then
-    fn(values)
-  elseif values ~= nil then
-    for _, value in ipairs(values) do
-      fn(value)
+function M:add(plugin)
+  for _, value in ipairs(plugin[self.type] or {}) do
+    if not self.active[value] then
+      self.active[value] = {}
+      self:_add(value)
     end
+    self.active[value][plugin.name] = plugin.name
   end
 end
 
 ---@param plugin LazyPlugin
-function M:add(plugin)
-  self:foreach(plugin[self.type], function(value)
-    value = self:_value(value)
-    if not (self.active[value] and self.active[value][plugin.name]) then
-      self.active[value] = self.active[value] or {}
-      self.active[value][plugin.name] = plugin.name
-      self:_add(plugin, value)
-    end
-  end)
-end
-
----@param plugin LazyPlugin
 function M:del(plugin)
-  self:foreach(plugin[self.type], function(value)
-    value = self:_value(value)
+  for _, value in ipairs(plugin[self.type] or {}) do
     if self.active[value] and self.active[value][plugin.name] then
       self.active[value][plugin.name] = nil
-      self:_del(plugin, value)
+      if vim.tbl_isempty(self.active[value]) then
+        self:_del(value)
+        self.active[value] = nil
+      end
     end
-  end)
+  end
 end
 
 return M

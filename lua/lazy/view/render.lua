@@ -242,8 +242,6 @@ function M:reason(reason, opts)
       end
       if key == "event" then
         value = value:match("User (.*)") or value
-      elseif key == "ft" then
-        value = value:match("FileType (.*)") or value
       end
       local hl = "LazyHandler" .. key:sub(1, 1):upper() .. key:sub(2)
       local icon = Config.options.ui.icons[key]

@@ -4,18 +4,17 @@ local Loader = require("lazy.core.loader")
 ---@class LazyCmdHandler:LazyHandler
 local M = {}
 
-local function _load(plugin, cmd)
+function M:_load(cmd)
   vim.api.nvim_del_user_command(cmd)
   Util.track({ cmd = cmd })
-  Loader.load(plugin, { cmd = cmd })
+  Loader.load(self.active[cmd], { cmd = cmd })
   Util.track()
 end
 
----@param plugin LazyPlugin
 ---@param cmd string
-function M:_add(plugin, cmd)
+function M:_add(cmd)
   vim.api.nvim_create_user_command(cmd, function(event)
-    _load(plugin, cmd)
+    self:_load(cmd)
     vim.cmd(
       ("%s %s%s%s %s"):format(
         event.mods or "",
@@ -29,7 +28,7 @@ function M:_add(plugin, cmd)
     bang = true,
     nargs = "*",
     complete = function(_, line)
-      _load(plugin, cmd)
+      self:_load(cmd)
       -- NOTE: return the newly loaded command completion
       return vim.fn.getcompletion(line, "cmdline")
     end,

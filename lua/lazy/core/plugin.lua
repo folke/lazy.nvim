@@ -21,10 +21,10 @@ local M = {}
 ---@field build? string|fun(LazyPlugin)
 
 ---@class LazyPluginHandlers: table<LazyHandlerTypes, string|string[]>
----@field event? string|string[]
----@field cmd? string|string[]
----@field ft? string|string[]
----@field keys? string|string[]
+---@field event? string[]
+---@field cmd? string[]
+---@field ft? string[]
+---@field keys? string[]
 
 ---@class LazyPluginRef
 ---@field branch? string
@@ -100,6 +100,11 @@ function Spec:add(plugin, is_dep)
   else
     Util.error("Invalid plugin spec " .. vim.inspect(plugin))
   end
+
+  plugin.event = type(plugin.event) == "string" and { plugin.event } or plugin.event
+  plugin.keys = type(plugin.keys) == "string" and { plugin.keys } or plugin.keys
+  plugin.cmd = type(plugin.cmd) == "string" and { plugin.cmd } or plugin.cmd
+  plugin.ft = type(plugin.ft) == "string" and { plugin.ft } or plugin.ft
 
   plugin._ = {}
   plugin._.dep = is_dep

@@ -6,15 +6,16 @@ local M = {}
 M.extends = Event
 
 ---@param value string
-function M:_value(value)
+function M:_event(value)
   return "FileType " .. value
 end
 
 ---@param plugin LazyPlugin
----@param value string
-function M:_add(plugin, value)
-  Loader.ftdetect(plugin.dir)
-  Event._add(self, plugin, value)
+function M:add(plugin)
+  self.super.add(self, plugin)
+  if plugin.ft then
+    Loader.ftdetect(plugin.dir)
+  end
 end
 
 return M

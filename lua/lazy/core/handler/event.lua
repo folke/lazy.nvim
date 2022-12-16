@@ -11,26 +11,11 @@ M.trigger_events = {
   BufRead = { "BufReadPre", "BufRead" },
   BufReadPost = { "BufReadPre", "BufRead", "BufReadPost" },
 }
-
-function M:init()
-  self.group = vim.api.nvim_create_augroup("lazy_handler_" .. self.type, { clear = true })
-  self.events = {}
-end
-
----@param event_spec string
-function M:_add(_, event_spec)
-  if not self.events[event_spec] then
-    self:listen(event_spec)
-  end
-end
+M.group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
 
 ---@param value string
-function M:_value(value)
-  return value == "VeryLazy" and "User VeryLazy" or value
-end
-
-function M:listen(event_spec)
-  self.events[event_spec] = true
+function M:_add(value)
+  local event_spec = self:_event(value)
   ---@type string?, string?
   local event, pattern = event_spec:match("^(%w+)%s+(.*)$")
   event = event or event_spec
@@ -39,19 +24,23 @@ function M:listen(event_spec)
     once = true,
     pattern = pattern,
     callback = function()
-      if not self.active[event_spec] then
+      if not self.active[value] then
         return
       end
-      Util.track({ [self.type] = event_spec })
+      Util.track({ [self.type] = value })
       local groups = M.get_augroups(event, pattern)
       -- load the plugins
-      Loader.load(self.active[event_spec], { [self.type] = event_spec })
-      self.events[event_spec] = nil
+      Loader.load(self.active[value], { [self.type] = value })
       -- check if any plugin created an event handler for this event and fire the group
       M.trigger(event, pattern, groups)
       Util.track()
     end,
   })
+end
+
+---@param value string
+function M:_event(value)
+  return value == "VeryLazy" and "User VeryLazy" or value
 end
 
 -- Get all augroups for the events
