@@ -36,7 +36,7 @@ function M.check_load(modname, modpath)
   if modname:sub(1, 4) == "lazy" then
     return
   end
-  require("lazy.core.loader").autoload(modname, modpath)
+  require("lazy.core.loader").check_load(modname, modpath)
 end
 
 function M.disable()

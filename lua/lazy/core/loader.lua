@@ -52,8 +52,7 @@ function M.startup()
   Util.track({ start = "rtp plugins" })
   for _, path in ipairs(rtp) do
     if not path:find("after/?$") then
-      M.source_runtime(path, "plugin")
-      M.ftdetect(path)
+      M.packadd(path)
     end
   end
   Util.track()
@@ -83,6 +82,8 @@ function M.startup()
   end
   Util.track()
 
+  M.init_done = true
+
   -- run plugin init
   Util.track({ start = "init" })
   for _, plugin in pairs(Config.plugins) do
@@ -94,7 +95,6 @@ function M.startup()
   end
   Util.track()
 
-  M.init_done = true
   Util.track()
 end
 
@@ -180,19 +180,8 @@ end
 -- This loader is added as the very last one.
 -- This only hits when the modname is not cached and
 -- even then only once per plugin. So pretty much never.
---
--- lazy.module will call this when loading a cached file with modpath set.
 ---@param modname string
----@param modpath string?
-function M.autoload(modname, modpath)
-  -- fast return when we know the modpath
-  if modpath then
-    local plugin = require("lazy.core.plugin").find(modpath)
-    if plugin and not plugin._.loaded then
-      M.load(plugin, { require = modname })
-    end
-    return
-  end
+function M.autoload(modname)
   -- check if a lazy plugin should be loaded
   for _, plugin in pairs(Config.plugins) do
     if not plugin._.loaded then
@@ -200,13 +189,33 @@ function M.autoload(modname, modpath)
         local path = plugin.dir .. "/lua/" .. modname:gsub("%.", "/") .. pattern
         if vim.loop.fs_stat(path) then
           M.load(plugin, { require = modname })
+          -- check if the module has been loaded in the meantime
+          if type(package.loaded[modname]) == "table" then
+            local mod = package.loaded[modname]
+            return function()
+              return mod
+            end
+          end
           local chunk, err = loadfile(path)
           return chunk or error(err)
         end
       end
     end
   end
-  return modname .. " not found in unloaded opt plugins"
+  return modname .. " not found in lazy plugins"
+end
+
+-- lazy.cache will call this when loading a cached file with modpath set.
+---@param modname string
+---@param modpath string
+function M.check_load(modname, modpath)
+  -- no need to check anything before init
+  if M.init_done then
+    local plugin = require("lazy.core.plugin").find(modpath)
+    if plugin and not plugin._.loaded then
+      M.load(plugin, { require = modname })
+    end
+  end
 end
 
 return M
