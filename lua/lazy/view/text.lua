@@ -137,9 +137,9 @@ function Text:center()
 end
 
 function Text:trim()
-  while #self._lines > 0 and #self._lines[1] == 0 do
-    table.remove(self._lines, 1)
-  end
+  -- while #self._lines > 0 and #self._lines[1] == 0 do
+  --   table.remove(self._lines, 1)
+  -- end
 
   while #self._lines > 0 and #self._lines[#self._lines] == 0 do
     table.remove(self._lines)

@@ -7,7 +7,7 @@ local M = {}
 ---@param cmd string
 ---@param plugins? LazyPlugin[]
 function M.cmd(cmd, plugins)
-  cmd = cmd == "" and "show" or cmd
+  cmd = cmd == "" and "home" or cmd
   local command = M.commands[cmd]
   if command == nil then
     Util.error("Invalid lazy command '" .. cmd .. "'")
@@ -30,8 +30,8 @@ M.commands = {
   log = function(plugins)
     Manage.log({ clear = true, mode = "log", plugins = plugins })
   end,
-  show = function()
-    View.show()
+  home = function()
+    View.show("home")
   end,
   help = function()
     View.show("help")

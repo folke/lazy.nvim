@@ -5,6 +5,7 @@ local Config = require("lazy.core.config")
 local M = {}
 
 M.modes = {
+  { name = "home", key = "H", desc = "Go back to plugin list" },
   { name = "install", key = "I", desc = "Install missing plugins" },
   { name = "update", key = "U", desc = "Update all plugins. This will also update the lockfile" },
   { name = "sync", key = "S", desc = "Run install, clean and update" },
@@ -14,7 +15,7 @@ M.modes = {
   { name = "restore", key = "R", desc = "Updates all plugins to the state in the lockfile" },
   { name = "profile", key = "P", desc = "Show detailed profiling", toggle = true },
   { name = "debug", key = "D", desc = "Show debug information", toggle = true },
-  { name = "help", key = "?", hide = true, desc = "Toggle this help page", toggle = true },
+  { name = "help", key = "?", desc = "Toggle this help page", toggle = true },
 
   { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
   {
@@ -38,7 +39,7 @@ function M.setup()
 end
 
 function M.show(mode)
-  M.mode = mode or M.mode
+  M.mode = mode or M.mode or "home"
   require("lazy.view.colors").setup()
 
   if M._buf and vim.api.nvim_buf_is_valid(M._buf) then

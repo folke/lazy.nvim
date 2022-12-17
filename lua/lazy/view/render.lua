@@ -94,15 +94,32 @@ function M:get_plugin(row)
 end
 
 function M:title()
-  self:append(" lazy.nvim ", "LazyH1"):center():nl()
-  self:append("press "):append("<?>", "LazySpecial"):append(" for help"):center():nl()
-  self:append("https://github.com/folke/lazy.nvim", "LazyMuted"):center():nl()
-
+  self:nl():nl()
   local View = require("lazy.view")
+
   for _, mode in ipairs(View.modes) do
     if not mode.hide and not mode.plugin then
       local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
-      self:append(title, View.mode == mode.name and "LazyButtonActive" or "LazyButton"):append(" ")
+      if mode.name == "home" then
+        if View.mode == "home" then
+          title = " lazy.nvim  鈴 "
+        else
+          title = " lazy.nvim (H) "
+        end
+      end
+
+      if View.mode == mode.name then
+        if mode.name == "home" then
+          self:append(title, "LazyH1")
+        else
+          self:append(title, "LazyButtonActive")
+          self:highlight({ ["%(.%)"] = "LazySpecial" })
+        end
+      else
+        self:append(title, "LazyButton")
+        self:highlight({ ["%(.%)"] = "LazySpecial" })
+      end
+      self:append(" ")
     end
   end
   self:nl()
