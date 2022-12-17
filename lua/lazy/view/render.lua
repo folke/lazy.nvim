@@ -338,6 +338,7 @@ end
 
 ---@param task LazyTask
 function M:log(task)
+  -- FIXME: only show last log task
   local log = vim.trim(task.output)
   if log ~= "" then
     local lines = vim.split(log, "\n")
@@ -365,7 +366,10 @@ end
 function M:details(plugin)
   ---@type string[][]
   local props = {}
-  table.insert(props, { "url", (plugin.url:gsub("%.git$", "")), "@text.reference" })
+  table.insert(props, { "dir", plugin.dir, "@text.reference" })
+  if plugin.url then
+    table.insert(props, { "url", (plugin.url:gsub("%.git$", "")), "@text.reference" })
+  end
   local git = Git.info(plugin.dir, true)
   if git then
     git.branch = git.branch or Git.get_branch(plugin)
@@ -385,6 +389,7 @@ function M:details(plugin)
   end
   Util.ls(plugin.dir .. "/doc", function(_, name)
     if name:find("%.txt$") then
+      -- FIXME: the help tag is wrong
       table.insert(props, { "help", "|" .. name:gsub("%.txt", "") .. "|" })
     end
   end)
