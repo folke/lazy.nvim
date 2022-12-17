@@ -101,6 +101,9 @@ M.to_clean = {}
 ---@type LazyConfig
 M.options = {}
 
+---@type string
+M.me = nil
+
 ---@param spec LazySpec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
@@ -113,10 +116,10 @@ function M.setup(spec, opts)
     vim.go.packpath = ""
   end
   if M.options.performance.rtp.reset then
-    local me = debug.getinfo(1, "S").source:sub(2)
-    me = vim.fn.fnamemodify(me, ":p:h:h:h:h")
+    M.me = debug.getinfo(1, "S").source:sub(2)
+    M.me = vim.fn.fnamemodify(M.me, ":p:h:h:h:h")
     vim.opt.rtp = {
-      me,
+      M.me,
       vim.env.VIMRUNTIME,
       vim.fn.stdpath("config"),
       vim.fn.stdpath("config") .. "/after",
