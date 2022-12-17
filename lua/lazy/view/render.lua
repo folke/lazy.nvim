@@ -218,8 +218,8 @@ function M:reason(reason, opts)
   local time = reason.time and (" " .. math.floor(reason.time / 1e6 * 100) / 100 .. "ms")
   if time and not opts.time_right then
     self:append(time, "Bold")
+    self:append(" ")
   end
-  self:append(" ")
   -- self:append(" (", "Conceal")
   local first = true
   local keys = vim.tbl_keys(reason)
@@ -387,10 +387,13 @@ function M:details(plugin)
   if Util.file_exists(plugin.dir .. "/README.md") then
     table.insert(props, { "readme", "README.md" })
   end
-  Util.ls(plugin.dir .. "/doc", function(_, name)
-    if name:find("%.txt$") then
-      -- FIXME: the help tag is wrong
-      table.insert(props, { "help", "|" .. name:gsub("%.txt", "") .. "|" })
+  Util.ls(plugin.dir .. "/doc", function(path, name)
+    if name:sub(-3) == "txt" then
+      local data = Util.read_file(path)
+      local tag = data:match("%*(%S-)%*")
+      if tag then
+        table.insert(props, { "help", "|" .. tag .. "|" })
+      end
     end
   end)
 
@@ -398,8 +401,12 @@ function M:details(plugin)
     if plugin[handler] then
       table.insert(props, {
         handler,
-        type(plugin[handler]) == "string" and plugin[handler] or table.concat(plugin[handler], ", "),
-        "@string",
+        function()
+          for _, value in ipairs(plugin[handler]) do
+            self:reason({ [handler] = value })
+            self:append(" ")
+          end
+        end,
       })
     end
   end
@@ -410,7 +417,11 @@ function M:details(plugin)
   end
   for _, prop in ipairs(props) do
     self:append(prop[1] .. string.rep(" ", width - #prop[1] + 1), "LazyKey", { indent = 6 })
-    self:append(prop[2], prop[3] or "LazyValue")
+    if type(prop[2]) == "function" then
+      prop[2]()
+    else
+      self:append(prop[2], prop[3] or "LazyValue")
+    end
     self:nl()
   end
   self:nl()
@@ -430,7 +441,7 @@ function M:profile()
     local data = type(entry.data) == "string" and { source = entry.data } or entry.data
     data.time = entry.time
     local symbol = symbols[depth] or symbols[#symbols]
-    self:append(("  "):rep(depth)):append(" " .. symbol, "LazySpecial")
+    self:append(("  "):rep(depth)):append(" " .. symbol, "LazySpecial"):append(" ")
     self:reason(data, { time_right = true })
     self:nl()
 
@@ -459,10 +470,11 @@ function M:debug()
       if not vim.tbl_isempty(plugins) then
         plugins = vim.tbl_values(plugins)
         table.sort(plugins)
-        self:append("●", "LazySpecial", { indent = 2 })
-        self:reason({ [type] = value }, { time_right = true })
+        self:append("● ", "LazySpecial", { indent = 2 })
+        self:reason({ [type] = value })
         for _, plugin in pairs(plugins) do
-          self:reason({ plugin = plugin }, { time_right = true })
+          self:append(" ")
+          self:reason({ plugin = plugin })
         end
         self:nl()
       end
