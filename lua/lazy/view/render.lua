@@ -111,6 +111,7 @@ function M:title()
       if View.mode == mode.name then
         if mode.name == "home" then
           self:append(title, "LazyH1")
+          self:highlight({ ["%w+"] = "Bold" })
         else
           self:append(title, "LazyButtonActive")
           self:highlight({ ["%(.%)"] = "LazySpecial" })
