@@ -338,7 +338,6 @@ end
 
 ---@param task LazyTask
 function M:log(task)
-  -- FIXME: only show last log task
   local log = vim.trim(task.output)
   if log ~= "" then
     local lines = vim.split(log, "\n")

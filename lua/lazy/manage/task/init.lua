@@ -9,7 +9,6 @@ local Process = require("lazy.manage.process")
 ---@class LazyTask
 ---@field plugin LazyPlugin
 ---@field name string
----@field type string
 ---@field output string
 ---@field status string
 ---@field error? string
@@ -40,6 +39,10 @@ function Task.new(plugin, name, task, opts)
   self.output = ""
   self.status = ""
   plugin._.tasks = plugin._.tasks or {}
+  ---@param other LazyTask
+  plugin._.tasks = vim.tbl_filter(function(other)
+    return other.name ~= name or other:is_running()
+  end, plugin._.tasks)
   table.insert(plugin._.tasks, self)
   return self
 end
