@@ -1,11 +1,10 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 16
+*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 17
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
 
 1. lazy.nvim                                             |lazy.nvim-lazy.nvim|
   - Features                                              |lazy.nvim-features|
-  - Table of Contents                            |lazy.nvim-table-of-contents|
   - Requirements                                      |lazy.nvim-requirements|
   - Installation                                      |lazy.nvim-installation|
   - Plugin Spec                                        |lazy.nvim-plugin-spec|
@@ -46,21 +45,6 @@ FEATURES                                                  *lazy.nvim-features*
 - Automatically check for updates
 - Commit, branch, tag, version, and full Semver <https://devhints.io/semver> support
 - Statusline component to see the number of pending updates
-
-
-TABLE OF CONTENTS                                *lazy.nvim-table-of-contents*
-
-
-- |lazy.nvim-requirements|
-- |lazy.nvim-installation|
-- |lazy.nvim-plugin-spec|
-- |lazy.nvim-configuration|
-- |lazy.nvim-usage|
-- |lazy.nvim-profiler|
-- |lazy.nvim-🪲-debug|
-- |lazy.nvim-startup-sequence|
-- |lazy.nvim-differences-with-packer|
-- |lazy.nvim-other-neovim-plugin-managers-in-lua|
 
 
 REQUIREMENTS                                          *lazy.nvim-requirements*
