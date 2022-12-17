@@ -8,7 +8,7 @@ local M = {}
 M.loading = {}
 M.init_done = false
 ---@type table<string,true>
-M.disabled_rtp_plugins = {}
+M.disabled_rtp_plugins = { packer_compiled = true }
 
 function M.setup()
   -- install missing plugins
