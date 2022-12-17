@@ -171,7 +171,9 @@ function M.source_runtime(...)
     name = name:sub(1, -5)
     if t == "file" and (ext == "lua" or ext == "vim") and not M.disabled_rtp_plugins[name] then
       Util.track({ runtime = path })
-      vim.cmd("silent source " .. path)
+      Util.try(function()
+        vim.cmd("silent source " .. path)
+      end, "Failed to source `" .. path .. "`")
       Util.track()
     end
   end)
