@@ -6,6 +6,7 @@ end
 
 function M.open(uri)
   if M.file_exists(uri) then
+    vim.cmd.split()
     return vim.cmd.view(uri)
   end
   local cmd
