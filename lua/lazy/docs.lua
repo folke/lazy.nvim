@@ -48,7 +48,7 @@ end
 ---@param contents table<string, string>
 function M.save(contents)
   local readme = Util.read_file("README.md")
-  contents.toc = M.toc(readme)
+  -- contents.toc = M.toc(readme)
   for tag, content in pairs(contents) do
     content = M.fix_indent(content)
     content = content:gsub("%%", "%%%%")

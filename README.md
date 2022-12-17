@@ -23,23 +23,6 @@
 - 📋 Commit, branch, tag, version, and full [Semver](https://devhints.io/semver) support
 - 📈 Statusline component to see the number of pending updates
 
-## 📄 Table of Contents
-
-<!-- toc:start -->
-
-- [⚡️ Requirements](#-requirements)
- - [📦 Installation](#-installation)
- - [🔌 Plugin Spec](#-plugin-spec)
- - [⚙️ Configuration](#-configuration)
- - [🚀 Usage](#-usage)
- - [📊 Profiler](#-profiler)
- - [🪲 Debug](#-debug)
- - [▶️ Startup Sequence](#-startup-sequence)
- - [📦 Differences with Packer](#-differences-with-packer)
- - [📦 Other Neovim Plugin Managers in Lua](#-other-neovim-plugin-managers-in-lua)
-
-<!-- toc:end -->
-
 ## ⚡️ Requirements
 
 - Neovim >= **0.8.0**
