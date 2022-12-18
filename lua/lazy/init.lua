@@ -4,18 +4,22 @@ local M = {}
 ---@param spec LazySpec Should be a module name to load, or a plugin spec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
-  if vim.fn.has("nvim-0.8.0") ~= 1 then
-    vim.notify("lazy.nvim requires Neovim >= 0.8.0", vim.log.levels.ERROR, { title = "lazy.nvim" })
-    return
-  end
   if not vim.go.loadplugins then
     return
   end
-  if vim.g.lazy_did_setup then
-    vim.notify("Re-sourcing your config is not supported with lazy.nvim", vim.log.levels.WARN, { title = "lazy.nvim" })
-    return
+  if vim.fn.has("nvim-0.8.0") ~= 1 then
+    return vim.notify("lazy.nvim requires Neovim >= 0.8.0", vim.log.levels.ERROR, { title = "lazy.nvim" })
   end
-
+  if not pcall(require, "ffi") then
+    return vim.notify("lazy.nvim requires Neovim built with LuaJIT", vim.log.levels.ERROR, { title = "lazy.nvim" })
+  end
+  if vim.g.lazy_did_setup then
+    return vim.notify(
+      "Re-sourcing your config is not supported with lazy.nvim",
+      vim.log.levels.WARN,
+      { title = "lazy.nvim" }
+    )
+  end
   vim.g.lazy_did_setup = true
   local start = vim.loop.hrtime()
 
