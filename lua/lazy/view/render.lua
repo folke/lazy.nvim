@@ -145,6 +145,8 @@ function M:help()
   local View = require("lazy.view")
   self:append("Help", "LazyH2"):nl():nl()
 
+  self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl():nl()
+
   self:append("Keyboard Shortcuts", "LazyH2"):nl()
   for _, mode in ipairs(View.modes) do
     local title = mode.name:sub(1, 1):upper() .. mode.name:sub(2)
