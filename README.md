@@ -135,6 +135,17 @@ The `version` property supports [Semver](https://semver.org/) ranges:
 > You can set `config.defaults.version = "*"` to install the latest stable
 > version of plugins that support Semver.
 
+### Examples
+
+My personal dots:
+
+- [init.lua](https://github.com/folke/dot/blob/master/config/nvim/init.lua) where I require `config.lazy`
+- [config.lazy](https://github.com/folke/dot/blob/master/config/nvim/lua/config/lazy.lua) where I bootstrap and setup **lazy.nvim**
+- [config.plugins](https://github.com/folke/dot/blob/master/config/nvim/lua/config/plugins.lua) is my main plugin config module
+- Any submodule of [config.plugins (submodules)](https://github.com/folke/dot/tree/master/config/nvim/lua/config/plugins) will be automatically loaded as well.
+
+Other examples:
+
 <!-- spec:start -->
 
 ```lua
