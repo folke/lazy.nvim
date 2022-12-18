@@ -57,7 +57,7 @@ function M.save(contents)
     if not readme:find(pattern) then
       error("tag " .. tag .. " not found")
     end
-    if tag == "toc" then
+    if tag == "toc" or tag == "commands" then
       readme = readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
     else
       readme = readme:gsub(pattern, "%1\n\n```lua\n" .. content .. "\n```\n\n%2")
@@ -73,6 +73,32 @@ function M.extract(file, pattern)
   return assert(init:match(pattern))
 end
 
+function M.commands()
+  local commands = require("lazy.view.commands").commands
+  local modes = require("lazy.view").modes
+  local lines = {
+    { "Command", "Lua", "Key Mapping", "Description" },
+    { "---", "---", "---", "---" },
+  }
+  for _, mode in ipairs(modes) do
+    if not mode.plugin and commands[mode.name] then
+      lines[#lines + 1] = {
+        ("`:Lazy %s`"):format(mode.name) .. " or " .. ("`:Lazy%s`"):format(
+          mode.name:sub(1, 1):upper() .. mode.name:sub(2)
+        ),
+        ([[`require("lazy").%s()`]]):format(mode.name),
+        mode.key and ("`<%s>`"):format(mode.key) or "",
+        mode.desc,
+      }
+    end
+  end
+  local ret = {}
+  for _, line in ipairs(lines) do
+    ret[#ret + 1] = "| " .. table.concat(line, " | ") .. " |"
+  end
+  return table.concat(ret, "\n")
+end
+
 function M.update()
   local cache_config = M.extract("lua/lazy/core/cache.lua", "\nM%.config = ({.-\n})")
   local config = M.extract("lua/lazy/core/config.lua", "\nM%.defaults = ({.-\n})")
@@ -85,6 +111,7 @@ function M.update()
     bootstrap = M.extract("lua/lazy/init.lua", "function M%.bootstrap%(%)\n(.-)\nend"),
     config = config,
     spec = Util.read_file("lua/lazy/example.lua"),
+    commands = M.commands(),
   })
   vim.cmd.checktime()
 end

@@ -16,6 +16,7 @@ M.modes = {
   { name = "profile", key = "P", desc = "Show detailed profiling", toggle = true },
   { name = "debug", key = "D", desc = "Show debug information", toggle = true },
   { name = "help", key = "?", desc = "Toggle this help page", toggle = true },
+  { name = "clear", desc = "Clear finished tasks", hide = true },
 
   { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
   {
@@ -163,21 +164,23 @@ function M.show(mode)
   })
 
   for _, m in ipairs(M.modes) do
-    vim.keymap.set("n", m.key, function()
-      local Commands = require("lazy.view.commands")
-      if m.plugin then
-        local plugin = get_plugin()
-        if plugin then
-          Commands.cmd(m.name, { plugin })
+    if m.key then
+      vim.keymap.set("n", m.key, function()
+        local Commands = require("lazy.view.commands")
+        if m.plugin then
+          local plugin = get_plugin()
+          if plugin then
+            Commands.cmd(m.name, { plugin })
+          end
+        else
+          if M.mode == m.name and m.toggle then
+            M.mode = nil
+            return update()
+          end
+          Commands.cmd(m.name)
         end
-      else
-        if M.mode == m.name and m.toggle then
-          M.mode = nil
-          return update()
-        end
-        Commands.cmd(m.name)
-      end
-    end, { buffer = buf })
+      end, { buffer = buf })
+    end
   end
 
   vim.api.nvim_create_autocmd("User", {

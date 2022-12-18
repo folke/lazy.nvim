@@ -150,8 +150,11 @@ function M:help()
   for _, mode in ipairs(View.modes) do
     local title = mode.name:sub(1, 1):upper() .. mode.name:sub(2)
     self:append("- ", "LazySpecial", { indent = 2 })
-    self:append(title, "Title"):append(" <" .. mode.key .. "> ", "LazyKey")
-    self:append(mode.desc or ""):nl()
+    self:append(title, "Title")
+    if mode.key then
+      self:append(" <" .. mode.key .. ">", "LazyKey")
+    end
+    self:append(" " .. (mode.desc or "")):nl()
   end
 end
 

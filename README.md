@@ -277,6 +277,28 @@ return {
 
 ## 🚀 Usage
 
+You can manage all your plugins with the main `:Lazy` command.
+Alternatively you can start any operation with a specific command, sub command or API function:
+
+<!-- commands:start -->
+
+| Command                           | Lua                         | Key Mapping | Description                                            |
+| --------------------------------- | --------------------------- | ----------- | ------------------------------------------------------ |
+| `:Lazy home` or `:LazyHome`       | `require("lazy").home()`    | `<H>`       | Go back to plugin list                                 |
+| `:Lazy install` or `:LazyInstall` | `require("lazy").install()` | `<I>`       | Install missing plugins                                |
+| `:Lazy update` or `:LazyUpdate`   | `require("lazy").update()`  | `<U>`       | Update all plugins. This will also update the lockfile |
+| `:Lazy sync` or `:LazySync`       | `require("lazy").sync()`    | `<S>`       | Run install, clean and update                          |
+| `:Lazy clean` or `:LazyClean`     | `require("lazy").clean()`   | `<X>`       | Clean plugins that are no longer needed                |
+| `:Lazy check` or `:LazyCheck`     | `require("lazy").check()`   | `<C>`       | Check for updates and show the log (git fetch)         |
+| `:Lazy log` or `:LazyLog`         | `require("lazy").log()`     | `<L>`       | Show recent updates for all plugins                    |
+| `:Lazy restore` or `:LazyRestore` | `require("lazy").restore()` | `<R>`       | Updates all plugins to the state in the lockfile       |
+| `:Lazy profile` or `:LazyProfile` | `require("lazy").profile()` | `<P>`       | Show detailed profiling                                |
+| `:Lazy debug` or `:LazyDebug`     | `require("lazy").debug()`   | `<D>`       | Show debug information                                 |
+| `:Lazy help` or `:LazyHelp`       | `require("lazy").help()`    | `<?>`       | Toggle this help page                                  |
+| `:Lazy clear` or `:LazyClear`     | `require("lazy").clear()`   |             | Clear finished tasks                                   |
+
+<!-- commands:end -->
+
 ## 📊 Profiler
 
 The profiling view shows you why and how long it took to load your plugins.
