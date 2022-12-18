@@ -72,6 +72,8 @@ require("lazy").setup({
 })
 ```
 
+> ℹ️ It is recommended to run `:checkhealth lazy` after installation
+
 ## 🔌 Plugin Spec
 
 | Property         | Type                          | Description                                                                                                                                                                                   |
