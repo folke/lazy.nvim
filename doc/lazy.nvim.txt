@@ -121,6 +121,64 @@ PLUGIN SPEC                                            *lazy.nvim-plugin-spec*
 │**keys**        │string? or string[]              │Lazy-load on key mapping                                                                                                                                                                         │
 
 
+LAZY LOADING ~
+
+**lazy.nvim** automagically lazy-loads Lua modules, so it is not needed to
+specify `module=...` everywhere in your plugin specification. This mean that if
+you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
+module of plugin `A`, then plugin `A` will be loaded on demand as expected.
+
+You can configure **lazy.nvim** to lazy-load all plugins by default with
+`config.defaults.lazy = true`.
+
+Additionally, you can also lazy-load on **events**, **commands**, **file
+types** and **key mappings**.
+
+Plugins will be lazy-loaded when one of the following is `true`:
+
+
+- the plugin only exists as a dependency in your spec
+- it has an `event`, `cmd`, `ft` or `cmd` key
+- it defines an `init` method
+- `config.defaults.lazy == true`
+
+
+VERSIONING ~
+
+If you want to install a specific revision of a plugin, you can use `commit`,
+`tag`, `branch`, `version`.
+
+The `version` property supports Semver <https://semver.org/> ranges:
+
+
+- :latest stable version (this excludes pre-release versions)
+- `1.2.x`: any version that starts with `1.2`, such as `1.2.0`, `1.2.3`, etc.
+- `^1.2.3`: any version that is compatible with `1.2.3`, such as `1.3.0`, `1.4.5`, etc., but not `2.0.0`.
+- `~1.2.3`: any version that is compatible with `1.2.3`, such as `1.2.4`, `1.2.5`, but not `1.3.0`.
+- `>1.2.3`: any version that is greater than `1.2.3`, such as `1.3.0`, `1.4.5`, etc.
+- `>=1.2.3`: any version that is greater than or equal to `1.2.3`, such as `1.2.3`, `1.3.0`, `1.4.5`, etc.
+- `<1.2.3`: any version that is less than `1.2.3`, such as `1.1.0`, `1.0.5`, etc.
+- `<=1.2.3`: any version that is less than or equal to `1.2.3`, such as `1.2.3`, `1.1.0`, `1.0.5`, etc
+
+
+
+  You can set `config.defaults.version = ""` to install the latest stable version
+  of plugins that support Semver.
+
+
+EXAMPLES ~
+
+My personal dots:
+
+
+- init.lua <https://github.com/folke/dot/blob/master/config/nvim/init.lua> where I require `config.lazy`
+- config.lazy <https://github.com/folke/dot/blob/master/config/nvim/lua/config/lazy.lua> where I bootstrap and setup **lazy.nvim**
+- config.plugins <https://github.com/folke/dot/blob/master/config/nvim/lua/config/plugins.lua> is my main plugin config module
+- Any submodule of config.plugins (submodules) <https://github.com/folke/dot/tree/master/config/nvim/lua/config/plugins> will be automatically loaded as well.
+
+
+Other examples:
+
 >lua
     return {
       -- the colorscheme should be available when starting Neovim
