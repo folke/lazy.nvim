@@ -26,6 +26,7 @@
 ## ⚡️ Requirements
 
 - Neovim >= **0.8.0**
+- Built for **Linux** and **MacOS**
 
 ## 📦 Installation
 
@@ -317,7 +318,15 @@ See an overview of active lazy-loading handlers and what's in the module cache
 completely (`vim.go.loadplugins = false`). It takes over the complete
 startup sequence for more flexibility and better performance.
 
-In practice this means that step 10 of [Neovim Initialization](https://neovim.io/doc/user/starting.html#initialization) is done by Lazy.
+In practice this means that step 10 of [Neovim Initialization](https://neovim.io/doc/user/starting.html#initialization) is done by Lazy:
+
+1. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+2. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
+3. all plugins' `/after/plugin` files are sourced
+4. all `/after/plugin` files from the original rtp are sourced
+5. all the plugins' `init()` functions are executed
+
+Files from runtime directories are always sourced in alphabetical order.
 
 ## 📦 Differences with Packer
 
