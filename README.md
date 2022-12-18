@@ -97,6 +97,25 @@ require("lazy").setup({
 | **ft**           | `string?` or `string[]`       | Lazy-load on filetype                                                                                                                                                                         |
 | **keys**         | `string?` or `string[]`       | Lazy-load on key mapping                                                                                                                                                                      |
 
+### Lazy Loading
+
+**lazy.nvim** automagically lazy-loads Lua modules, so it is not needed to
+specify `module=...` everywhere in your plugin specification. This mean that if
+you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
+module of plugin `A`, then plugin `A` will be loaded on demand as expected.
+
+You can configure **lazy.nvim** to lazy-load all plugins by default with `config.defaults.lazy = true`.
+
+Additionally, you can also lazy-load on **events**, **commands**,
+**file types** and **key mappings**.
+
+Plugins will be lazy-loaded when one of the following is `true`:
+
+- the plugin only exists as a dependency in your spec
+- it has an `event`, `cmd`, `ft` or `cmd` key
+- it defines an `init` method
+- `config.defaults.lazy == true`
+
 <!-- spec:start -->
 
 ```lua
