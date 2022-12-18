@@ -94,7 +94,9 @@ end
 
 setmetatable(M, {
   __index = function(_, key)
-    return require("lazy.view.commands").commands[key]
+    return function(...)
+      return require("lazy.view.commands").commands[key](...)
+    end
   end,
 })
 
