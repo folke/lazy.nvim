@@ -50,8 +50,9 @@ FEATURES                                                  *lazy.nvim-features*
 REQUIREMENTS                                          *lazy.nvim-requirements*
 
 
-- Neovim >= **0.8.0**
+- Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Built for **Linux** and **MacOS**
+- Git >= **2.19.0** (for partial clones support)
 
 
 INSTALLATION                                          *lazy.nvim-installation*
