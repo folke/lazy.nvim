@@ -10,6 +10,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Plugin Spec                                        |lazy.nvim-plugin-spec|
   - Configuration                                    |lazy.nvim-configuration|
   - Usage                                                    |lazy.nvim-usage|
+  - Lockfile `lazy-lock.json`            |lazy.nvim-lockfile-`lazy-lock.json`|
   - Profiler                                              |lazy.nvim-profiler|
   - 🪲 Debug                                          |lazy.nvim-🪲-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
@@ -373,6 +374,17 @@ function:
 │:Lazy help or :LazyHelp              │require("lazy").help()       │<?>        │Toggle this help page                                 │
 │:Lazy clear or :LazyClear            │require("lazy").clear()      │           │Clear finished tasks                                  │
 
+
+LOCKFILE `LAZY-LOCK.JSON`                *lazy.nvim-lockfile-`lazy-lock.json`*
+
+After every **update**, the local lockfile is updated with the installed
+revisions. It is recommended to have this file under version control.
+
+If you use your Neovim config on multiple machines, using the lockfile, you can
+ensure that the same version of every plugin is installed.
+
+On the other machine, you can do `Lazy restore`, to update all your plugins to
+the version from the lockfile
 
 PROFILER                                                  *lazy.nvim-profiler*
 
