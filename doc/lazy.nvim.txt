@@ -97,6 +97,10 @@ Next step is to add **lazy.nvim** to the top of your `init.lua`
 <
 
 
+
+  It is recommended to run `:checkhealth lazy` after installation
+
+
 PLUGIN SPEC                                            *lazy.nvim-plugin-spec*
 
 │    Property    │              Type               │                                                                                           Description                                                                                           │
