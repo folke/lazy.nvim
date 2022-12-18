@@ -2,7 +2,7 @@
 
 **lazy.nvim** is a modern plugin manager for Neovim.
 
-![image](https://user-images.githubusercontent.com/292349/207705153-077e183e-ae5f-4cbe-b1d8-07b7bf86026e.png)
+![image](https://user-images.githubusercontent.com/292349/208301737-68fb279c-ba70-43ef-a369-8c3e8367d6b1.png)
 
 ## ✨ Features
 
@@ -365,13 +365,13 @@ the version from the lockfile
 
 The profiling view shows you why and how long it took to load your plugins.
 
-![image](https://user-images.githubusercontent.com/292349/207703263-3b38ca45-9779-482b-b684-4f8c3b3e76d0.png)
+![image](https://user-images.githubusercontent.com/292349/208301766-5c400561-83c3-4811-9667-1ec4bb3c43b8.png)
 
 ## 🪲 Debug
 
 See an overview of active lazy-loading handlers and what's in the module cache
 
-![image](https://user-images.githubusercontent.com/292349/207703522-8bb20678-bb4c-4424-80e4-add3219711c3.png)
+![image](https://user-images.githubusercontent.com/292349/208301790-7eedbfa5-d202-4e70-852e-de68aa47233b.png)
 
 ## ▶️ Startup Sequence
 
