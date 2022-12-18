@@ -1,3 +1,4 @@
+---@type LazyCommands
 local M = {}
 
 ---@param spec LazySpec Should be a module name to load, or a plugin spec
@@ -86,5 +87,11 @@ end
 function M.plugins()
   return vim.tbl_values(require("lazy.core.config").plugins)
 end
+
+setmetatable(M, {
+  __index = function(_, key)
+    return require("lazy.view.commands").commands[key]
+  end,
+})
 
 return M

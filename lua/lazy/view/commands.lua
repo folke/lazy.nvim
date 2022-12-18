@@ -16,6 +16,7 @@ function M.cmd(cmd, plugins)
   end
 end
 
+---@class LazyCommands
 M.commands = {
   clean = function(plugins)
     Manage.clean({ clear = true, mode = "clean", plugins = plugins })
@@ -33,6 +34,9 @@ M.commands = {
   home = function()
     View.show("home")
   end,
+  show = function()
+    View.show("home")
+  end,
   help = function()
     View.show("help")
   end,
@@ -44,8 +48,8 @@ M.commands = {
   end,
   sync = function()
     Manage.clean({ clear = true, wait = true, mode = "sync" })
-    Manage.update({ interactive = true })
-    Manage.install({ interactive = true })
+    Manage.update()
+    Manage.install()
   end,
   update = function(plugins)
     Manage.update({ clear = true, mode = "update", plugins = plugins })
