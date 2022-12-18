@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 17
+*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 18
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -51,6 +51,7 @@ REQUIREMENTS                                          *lazy.nvim-requirements*
 
 
 - Neovim >= **0.8.0**
+- Built for **Linux** and **MacOS**
 
 
 INSTALLATION                                          *lazy.nvim-installation*
@@ -295,6 +296,25 @@ CONFIGURATION                                        *lazy.nvim-configuration*
 
 USAGE                                                        *lazy.nvim-usage*
 
+You can manage all your plugins with the main `:Lazy` command. Alternatively
+you can start any operation with a specific command, sub command or API
+function:
+
+│               Command               │             Lua             │Key Mapping│                     Description                      │
+│:Lazy home or :LazyHome              │require("lazy").home()       │<H>        │Go back to plugin list                                │
+│:Lazy install or :LazyInstall        │require("lazy").install()    │<I>        │Install missing plugins                               │
+│:Lazy update or :LazyUpdate          │require("lazy").update()     │<U>        │Update all plugins. This will also update the lockfile│
+│:Lazy sync or :LazySync              │require("lazy").sync()       │<S>        │Run install, clean and update                         │
+│:Lazy clean or :LazyClean            │require("lazy").clean()      │<X>        │Clean plugins that are no longer needed               │
+│:Lazy check or :LazyCheck            │require("lazy").check()      │<C>        │Check for updates and show the log (git fetch)        │
+│:Lazy log or :LazyLog                │require("lazy").log()        │<L>        │Show recent updates for all plugins                   │
+│:Lazy restore or :LazyRestore        │require("lazy").restore()    │<R>        │Updates all plugins to the state in the lockfile      │
+│:Lazy profile or :LazyProfile        │require("lazy").profile()    │<P>        │Show detailed profiling                               │
+│:Lazy debug or :LazyDebug            │require("lazy").debug()      │<D>        │Show debug information                                │
+│:Lazy help or :LazyHelp              │require("lazy").help()       │<?>        │Toggle this help page                                 │
+│:Lazy clear or :LazyClear            │require("lazy").clear()      │           │Clear finished tasks                                  │
+
+
 PROFILER                                                  *lazy.nvim-profiler*
 
 The profiling view shows you why and how long it took to load your plugins.
@@ -320,7 +340,17 @@ STARTUP SEQUENCE                                  *lazy.nvim-startup-sequence*
 completely (`vim.go.loadplugins = false`). It takes over the complete startup
 sequence for more flexibility and better performance.
 
-In practice this means that step 10 of |Neovim Initialization| is done by Lazy.
+In practice this means that step 10 of |Neovim Initialization| is done by Lazy:
+
+
+1. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+2. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
+3. all plugins’ `/after/plugin` files are sourced
+4. all `/after/plugin` files from the original rtp are sourced
+5. all the plugins’ `init()` functions are executed
+
+
+Files from runtime directories are always sourced in alphabetical order.
 
 DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
 
