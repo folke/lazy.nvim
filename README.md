@@ -290,7 +290,7 @@ return {
   performance = {
     cache = {
       enabled = true,
-      path = vim.fn.stdpath("state") .. "/lazy.state",
+      path = vim.fn.stdpath("state") .. "/lazy/cache",
       -- Once one of the following events triggers, caching will be disabled.
       -- To cache all modules, set this to `{}`, but that is not recommended.
       -- The default is to disable on:
@@ -335,20 +335,21 @@ Alternatively you can start any operation with a specific command, sub command o
 
 <!-- commands:start -->
 
-| Command                           | Lua                         | Key Mapping | Description                                            |
-| --------------------------------- | --------------------------- | ----------- | ------------------------------------------------------ |
-| `:Lazy home` or `:LazyHome`       | `require("lazy").home()`    | `<H>`       | Go back to plugin list                                 |
-| `:Lazy install` or `:LazyInstall` | `require("lazy").install()` | `<I>`       | Install missing plugins                                |
-| `:Lazy update` or `:LazyUpdate`   | `require("lazy").update()`  | `<U>`       | Update all plugins. This will also update the lockfile |
-| `:Lazy sync` or `:LazySync`       | `require("lazy").sync()`    | `<S>`       | Run install, clean and update                          |
-| `:Lazy clean` or `:LazyClean`     | `require("lazy").clean()`   | `<X>`       | Clean plugins that are no longer needed                |
-| `:Lazy check` or `:LazyCheck`     | `require("lazy").check()`   | `<C>`       | Check for updates and show the log (git fetch)         |
-| `:Lazy log` or `:LazyLog`         | `require("lazy").log()`     | `<L>`       | Show recent updates for all plugins                    |
-| `:Lazy restore` or `:LazyRestore` | `require("lazy").restore()` | `<R>`       | Updates all plugins to the state in the lockfile       |
-| `:Lazy profile` or `:LazyProfile` | `require("lazy").profile()` | `<P>`       | Show detailed profiling                                |
-| `:Lazy debug` or `:LazyDebug`     | `require("lazy").debug()`   | `<D>`       | Show debug information                                 |
-| `:Lazy help` or `:LazyHelp`       | `require("lazy").help()`    | `<?>`       | Toggle this help page                                  |
-| `:Lazy clear` or `:LazyClear`     | `require("lazy").clear()`   |             | Clear finished tasks                                   |
+| Command         | Lua                         | Key Mapping | Description                                                                                   |
+| --------------- | --------------------------- | ----------- | --------------------------------------------------------------------------------------------- |
+| `:Lazy home`    | `require("lazy").home()`    | `<H>`       | Go back to plugin list                                                                        |
+| `:Lazy install` | `require("lazy").install()` | `<I>`       | Install missing plugins                                                                       |
+| `:Lazy update`  | `require("lazy").update()`  | `<U>`       | Update all plugins. This will also update the lockfile                                        |
+| `:Lazy sync`    | `require("lazy").sync()`    | `<S>`       | Run install, clean and update                                                                 |
+| `:Lazy clean`   | `require("lazy").clean()`   | `<X>`       | Clean plugins that are no longer needed                                                       |
+| `:Lazy check`   | `require("lazy").check()`   | `<C>`       | Check for updates and show the log (git fetch)                                                |
+| `:Lazy log`     | `require("lazy").log()`     | `<L>`       | Show recent updates for all plugins                                                           |
+| `:Lazy restore` | `require("lazy").restore()` | `<R>`       | Updates all plugins to the state in the lockfile                                              |
+| `:Lazy profile` | `require("lazy").profile()` | `<P>`       | Show detailed profiling                                                                       |
+| `:Lazy debug`   | `require("lazy").debug()`   | `<D>`       | Show debug information                                                                        |
+| `:Lazy help`    | `require("lazy").help()`    | `<?>`       | Toggle this help page                                                                         |
+| `:Lazy clear`   | `require("lazy").clear()`   |             | Clear finished tasks                                                                          |
+| `:Lazy load`    | `require("lazy").load()`    |             | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim` |
 
 <!-- commands:end -->
 

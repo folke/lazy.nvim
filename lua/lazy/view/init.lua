@@ -17,6 +17,11 @@ M.modes = {
   { name = "debug", key = "D", desc = "Show debug information", toggle = true },
   { name = "help", key = "?", desc = "Toggle this help page", toggle = true },
   { name = "clear", desc = "Clear finished tasks", hide = true },
+  {
+    name = "load",
+    desc = "Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`",
+    hide = true,
+  },
 
   { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
   {

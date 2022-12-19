@@ -1,6 +1,7 @@
 local View = require("lazy.view")
 local Manage = require("lazy.manage")
 local Util = require("lazy.util")
+local Config = require("lazy.core.config")
 
 local M = {}
 
@@ -60,20 +61,46 @@ M.commands = {
   restore = function(plugins)
     Manage.update({ clear = true, lockfile = true, mode = "restore", plugins = plugins })
   end,
+  load = function(plugins)
+    require("lazy.core.loader").load(plugins, { cmd = "LazyLoad" })
+  end,
 }
 
+function M.complete_unloaded(prefix)
+  local plugins = {}
+  for name, plugin in pairs(Config.plugins) do
+    if not plugin._.loaded then
+      plugins[#plugins + 1] = name
+    end
+  end
+  table.sort(plugins)
+  ---@param key string
+  return vim.tbl_filter(function(key)
+    return key:find(prefix) == 1
+  end, plugins)
+end
+
 function M.setup()
-  vim.api.nvim_create_user_command("Lazy", function(args)
-    M.cmd(vim.trim(args.args or ""))
+  vim.api.nvim_create_user_command("Lazy", function(cmd)
+    local args = vim.split(vim.trim(cmd.args or ""), " ")
+    local name = args[1]
+    table.remove(args, 1)
+    M.cmd(name, #args > 0 and args or nil)
   end, {
     nargs = "?",
     desc = "Lazy",
     complete = function(_, line)
+      ---@type string?
+      local prefix = line:match("^%s*Lazy load (%w*)")
+      if prefix then
+        return M.complete_unloaded(prefix)
+      end
+
       if line:match("^%s*Lazy %w+ ") then
         return {}
       end
 
-      local prefix = line:match("^%s*Lazy (%w*)") or ""
+      prefix = line:match("^%s*Lazy (%w*)") or ""
 
       ---@param key string
       return vim.tbl_filter(function(key)

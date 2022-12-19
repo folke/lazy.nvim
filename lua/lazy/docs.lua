@@ -83,9 +83,7 @@ function M.commands()
   for _, mode in ipairs(modes) do
     if not mode.plugin and commands[mode.name] then
       lines[#lines + 1] = {
-        ("`:Lazy %s`"):format(mode.name) .. " or " .. ("`:Lazy%s`"):format(
-          mode.name:sub(1, 1):upper() .. mode.name:sub(2)
-        ),
+        ("`:Lazy %s`"):format(mode.name),
         ([[`require("lazy").%s()`]]):format(mode.name),
         mode.key and ("`<%s>`"):format(mode.key) or "",
         mode.desc,
