@@ -9,7 +9,7 @@ M.VERSION = "1"
 ---@class LazyCacheConfig
 M.config = {
   enabled = true,
-  path = vim.fn.stdpath("state") .. "/lazy.state",
+  path = vim.fn.stdpath("state") .. "/lazy/cache",
   -- Once one of the following events triggers, caching will be disabled.
   -- To cache all modules, set this to `{}`, but that is not recommended.
   -- The default is to disable on:
@@ -219,6 +219,7 @@ function M.eq(h1, h2)
 end
 
 function M.save_cache()
+  vim.fn.mkdir(vim.fn.fnamemodify(M.config.path, ":p:h"), "p")
   local f = assert(uv.fs_open(M.config.path, "w", 438))
   uv.fs_write(f, M.VERSION)
   uv.fs_write(f, "\0")
