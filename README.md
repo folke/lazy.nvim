@@ -107,10 +107,10 @@ specify `module=...` everywhere in your plugin specification. This mean that if
 you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
 module of plugin `A`, then plugin `A` will be loaded on demand as expected.
 
-You can configure **lazy.nvim** to lazy-load all plugins by default with `config.defaults.lazy = true`.
-
 If you don't want this behavior for a certain plugin, you can specify that with `module=false`.
 You can then manually load the plugin with `:Lazy load foobar.nvim`.
+
+You can configure **lazy.nvim** to lazy-load all plugins by default with `config.defaults.lazy = true`.
 
 Additionally, you can also lazy-load on **events**, **commands**,
 **file types** and **key mappings**.
@@ -127,7 +127,10 @@ Plugins will be lazy-loaded when one of the following is `true`:
 If you want to install a specific revision of a plugin, you can use `commit`,
 `tag`, `branch`, `version`.
 
-The `version` property supports [Semver](https://semver.org/) ranges:
+The `version` property supports [Semver](https://semver.org/) ranges.
+
+<details>
+<summary>Click to see some examples</summary>
 
 - `*`: latest stable version (this excludes pre-release versions)
 - `1.2.x`: any version that starts with `1.2`, such as `1.2.0`, `1.2.3`, etc.
@@ -138,8 +141,10 @@ The `version` property supports [Semver](https://semver.org/) ranges:
 - `<1.2.3`: any version that is less than `1.2.3`, such as `1.1.0`, `1.0.5`, etc.
 - `<=1.2.3`: any version that is less than or equal to `1.2.3`, such as `1.2.3`, `1.1.0`, `1.0.5`, etc
 
-> You can set `config.defaults.version = "*"` to install the latest stable
-> version of plugins that support Semver.
+</details>
+
+You can set `config.defaults.version = "*"` to install the latest stable
+version of plugins that support Semver.
 
 ### Examples
 
