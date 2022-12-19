@@ -26,11 +26,12 @@ local cache_hash
 ---@alias CacheEntry {hash:CacheHash, modpath:string, chunk:string, used:number}
 ---@type table<string,CacheEntry?>
 M.cache = {}
-M.loader_idx = 2 -- 2 so preload still works
 M.enabled = true
 M.ttl = 3600 * 24 * 5 -- keep unused modules for up to 5 days
 ---@type string[]
 M.rtp = nil
+-- selene:allow(global_usage)
+M._loadfile = _G.loadfile
 
 -- checks wether the cached modpath is still valid
 function M.check_path(modname, modpath)
@@ -65,9 +66,14 @@ function M.disable()
   if not M.enabled then
     return
   end
-  local idx = M.idx()
-  if idx then
-    table.remove(package.loaders, idx)
+  -- selene:allow(global_usage)
+  _G.loadfile = M._loadfile
+  ---@diagnostic disable-next-line: no-unknown
+  for i, loader in ipairs(package.loaders) do
+    if loader == M.loader then
+      table.remove(package.loaders, i)
+      break
+    end
   end
   M.enabled = false
 end
@@ -79,82 +85,82 @@ function M.loader(modname)
 
   local chunk, err
   if entry and M.check_path(modname, entry.modpath) then
-    entry.used = os.time()
-    local hash = M.hash(entry.modpath)
-    if not hash then
-      return
+    chunk, err = M.load(modname, entry.modpath)
+  else
+    -- find the modpath and load the module
+    local modpath = M.find(modname)
+    if modpath then
+      chunk, err = M.load(modname, modpath)
     end
+  end
+  return chunk or (err and error(err)) or "not found in lazy cache"
+end
+
+---@param modpath string
+---@return any, string?
+function M.loadfile(modpath)
+  return M.load(modpath, modpath)
+end
+
+---@param modkey string
+---@param modpath string
+---@return function?, string? error_message
+function M.load(modkey, modpath)
+  local hash = M.hash(modpath)
+  if not hash then
+    -- trigger correct error
+    return M._loadfile(modpath)
+  end
+
+  local entry = M.cache[modkey]
+  if entry then
+    entry.used = os.time()
     if M.eq(entry.hash, hash) then
       -- found in cache and up to date
-      chunk, err = load(entry.chunk --[[@as string]], "@" .. entry.modpath)
-      return chunk or error(err)
+      return loadstring(entry.chunk --[[@as string]], "@" .. entry.modpath)
     end
-    -- reload from file
-    entry.hash = hash
-    chunk, err = loadfile(entry.modpath)
   else
-    -- load the module and find its modpath
-    local modpath
-    chunk, modpath = M.find(modname)
-    if modpath then
-      entry = { hash = M.hash(modpath), modpath = modpath, used = os.time() }
-      M.cache[modname] = entry
-    end
+    entry = { hash = hash, modpath = modpath, used = os.time() }
+    M.cache[modkey] = entry
   end
+  entry.hash = hash
+
   if M.debug then
     vim.schedule(function()
-      vim.notify("[cache:load] " .. modname)
+      vim.notify("[cache:load] " .. modpath)
     end)
   end
-  if entry and chunk then
+
+  local chunk, err = M._loadfile(entry.modpath)
+  if chunk then
     M.dirty = true
     entry.chunk = string.dump(chunk)
   end
-  return chunk or error(err)
+  return chunk, err
 end
 
 function M.require(modname)
   return M.loader(modname)()
 end
 
-function M.idx()
-  -- update our loader position if needed
-  if package.loaders[M.loader_idx] ~= M.loader then
-    M.loader_idx = nil
-    ---@diagnostic disable-next-line: no-unknown
-    for i, loader in ipairs(package.loaders) do
-      if loader == M.loader then
-        M.loader_idx = i
-        break
-      end
-    end
-  end
-  return M.loader_idx
-end
-
 ---@param modname string
+---@return string?
 function M.find(modname)
-  if M.idx() then
-    -- find the module and its modpath
-    for i = M.loader_idx + 1, #package.loaders do
-      ---@diagnostic disable-next-line: no-unknown
-      local chunk = package.loaders[i](modname)
-      if type(chunk) == "function" then
-        local info = debug.getinfo(chunk, "S")
-        return chunk, (info.what ~= "C" and info.source:sub(2))
-      end
-    end
-  end
+  local basename = modname:gsub("%.", "/")
+  local paths = { "lua/" .. basename .. ".lua", "lua/" .. basename .. "/init.lua" }
+  return vim.api.nvim__get_runtime(paths, false, { is_lua = true })[1]
 end
 
+-- returns the cached RTP excluding plugin dirs
 function M.get_rtp()
   if not M.rtp then
     M.rtp = {}
+    ---@type table<string,true>
     local skip = {}
     -- only skip plugins once Config has been setup
     if package.loaded["lazy.core.config"] then
       local Config = require("lazy.core.config")
-      for _, plugin in ipairs(Config.plugins) do
+      for _, plugin in pairs(Config.plugins) do
         if plugin.name ~= "lazy.nvim" then
           skip[plugin.dir] = true
         end
@@ -173,14 +179,18 @@ end
 function M.setup(opts)
   -- no fancy deep extend here. just set the options
   if opts and opts.performance and opts.performance.cache then
+    ---@diagnostic disable-next-line: no-unknown
     for k, v in pairs(opts.performance.cache) do
+      ---@diagnostic disable-next-line: no-unknown
       M.config[k] = v
     end
   end
   M.debug = opts and opts.debug
 
   M.load_cache()
-  table.insert(package.loaders, M.loader_idx, M.loader)
+  table.insert(package.loaders, 2, M.loader)
+  -- selene:allow(global_usage)
+  _G.loadfile = M.loadfile
 
   -- reset rtp when it changes
   vim.api.nvim_create_autocmd("OptionSet", {
