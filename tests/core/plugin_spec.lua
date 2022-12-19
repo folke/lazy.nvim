@@ -123,4 +123,15 @@ describe("plugin spec opt", function()
       })
     end)
   end)
+
+  -- it("recursive deps", function()
+  --   local spec = Plugin.Spec.new({
+  --     "nvim-telescope/telescope.nvim",
+  --     dependencies = {
+  --       "nvim-lua/plenary.nvim",
+  --       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+  --       { "nvim-telescope/telescope-frecency.nvim", dependencies = "kkharji/sqlite.lua" },
+  --     },
+  --   })
+  -- end)
 end)

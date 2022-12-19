@@ -38,7 +38,31 @@
 - [ ] git tests
 - [ ] Import specs from other plugin managers
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
+
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
+
+- [x] check in cache if rtp files match
+- [ ] I think the installation section, specifically the loading part, could use an
+      extra sentence or two. I was confused on what `config.plugins` was initially.
+      Maybe a quick, "for example, if you have a lua file
+      `~/.config/nvim/lua/config/plugins.lua` that returns a table" or something it'd
+      remove most question marks I think.
+- [x] When autoinstalling the plugins the cursor isn't focused on the floating
+      window, but on the non-floating window in the background.
+- [ ] Doing `:Lazy clean` doesn't show which plugins were removed.
+- [ ] Shouldn't the "Versioning" section be in the "Lockfile" chapter?
+- [ ] Why are personal dotfiles used as examples? Dotfiles change all the time,
+      there's no guarantee this will be relevant or even exist in two years.
+- [ ] What's the difference between lazy-loading and verylazy-loading?
+- [ ] Most emojis in "Configuration" aren't shown for me.
+- [ ] add section on how to uninstall
+- [ ] add `:Packadd` command or something similar
+
+Typos:
+
+- [x] **automcatilly** check for plugin updates
+- [x] A custom name for the plugin used for the local plugin directory and as the **dispay** name
+- [x] local plugins need to be **explicitely** configured with dir
