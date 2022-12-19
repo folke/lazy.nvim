@@ -7,10 +7,10 @@
 ## ✨ Features
 
 - 📦 Manage all your Neovim plugins with a powerful UI
-- 🚀 Fast startup times thanks to automatic caching and bytecode compilation of lua modules.
+- 🚀 Fast startup times thanks to automatic caching and bytecode compilation of lua modules
 - 💾 Partial clones instead of shallow clones
-- 🔌 Automatic lazy-loading of lua modules and lazy-loading on events, commands, filetypes, and key mappings.
-- ⏳ Automatically install missing plugins before starting up Neovim, allowing you to start using it right away.
+- 🔌 Automatic lazy-loading of lua modules and lazy-loading on events, commands, filetypes, and key mappings
+- ⏳ Automatically install missing plugins before starting up Neovim, allowing you to start using it right away
 - 💪 Async execution for improved performance
 - 🛠️ No need to manually compile plugins
 - 🧪 Correct sequencing of dependencies
