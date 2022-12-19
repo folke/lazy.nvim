@@ -33,9 +33,9 @@ M.rtp = nil
 -- selene:allow(global_usage)
 M._loadfile = _G.loadfile
 
--- checks wether the cached modpath is still valid
+-- checks whether the cached modpath is still valid
 function M.check_path(modname, modpath)
-  -- check rtp exlcuding plugins. This is a very small list, so should be fast
+  -- check rtp excluding plugins. This is a very small list, so should be fast
   for _, path in ipairs(M.get_rtp()) do
     if modpath:find(path, 1, true) == 1 then
       return true
