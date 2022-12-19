@@ -50,7 +50,7 @@ M.defaults = {
     throttle = 20, -- how frequently should the ui process render events
   },
   checker = {
-    -- automcatilly check for plugin updates
+    -- automatically check for plugin updates
     enabled = false,
     concurrency = nil, ---@type number? set to 1 to check for updates very slowly
     notify = true, -- get a notification when new updates are found

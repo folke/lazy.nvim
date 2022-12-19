@@ -81,7 +81,7 @@ require("lazy").setup({
 | `[1]`            | `string?`                     | Short plugin url. Will be expanded using `config.git.url_format`                                                                                                                              |
 | **dir**          | `string?`                     | A directory pointing to a local plugin                                                                                                                                                        |
 | **url**          | `string?`                     | A custom git url where the plugin is hosted                                                                                                                                                   |
-| **name**         | `string?`                     | A custom name for the plugin used for the local plugin directory and as the dispay name                                                                                                       |
+| **name**         | `string?`                     | A custom name for the plugin used for the local plugin directory and as the display name                                                                                                      |
 | **dev**          | `boolean?`                    | When `true`, a local plugin directory will be used instead. See `config.dev`                                                                                                                  |
 | **lazy**         | `boolean?`                    | When `true`, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their lua modules are `required`, or when one of the laz-loading handlers triggers |
 | **enabled**      | `boolean?` or `fun():boolean` | When `false`, or if the `function` returns false, then this plugin will not be used                                                                                                           |
@@ -212,7 +212,7 @@ return {
     keys = { "<C-a>", "<C-x>" },
   },
 
-  -- local plugins need to be explicitely configured with dir
+  -- local plugins need to be explicitly configured with dir
   { dir = "~/projects/secret.nvim" },
 
   -- you can use a custom url to fetch a plugin
@@ -281,7 +281,7 @@ return {
     throttle = 20, -- how frequently should the ui process render events
   },
   checker = {
-    -- automcatilly check for plugin updates
+    -- automatically check for plugin updates
     enabled = false,
     concurrency = nil, ---@type number? set to 1 to check for updates very slowly
     notify = true, -- get a notification when new updates are found

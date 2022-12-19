@@ -59,7 +59,7 @@ return {
     keys = { "<C-a>", "<C-x>" },
   },
 
-  -- local plugins need to be explicitely configured with dir
+  -- local plugins need to be explicitly configured with dir
   { dir = "~/projects/secret.nvim" },
 
   -- you can use a custom url to fetch a plugin
