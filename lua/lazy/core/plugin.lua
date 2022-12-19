@@ -26,6 +26,7 @@ local M = {}
 ---@field cmd? string[]
 ---@field ft? string[]
 ---@field keys? string[]
+---@field module? false
 
 ---@class LazyPluginRef
 ---@field branch? string

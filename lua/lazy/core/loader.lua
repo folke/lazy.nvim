@@ -194,7 +194,7 @@ end
 function M.autoload(modname)
   -- check if a lazy plugin should be loaded
   for _, plugin in pairs(Config.plugins) do
-    if not plugin._.loaded then
+    if not (plugin._.loaded or plugin.module == false) then
       for _, pattern in ipairs({ ".lua", "/init.lua" }) do
         local path = plugin.dir .. "/lua/" .. modname:gsub("%.", "/") .. pattern
         if vim.loop.fs_stat(path) then

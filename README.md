@@ -108,6 +108,9 @@ module of plugin `A`, then plugin `A` will be loaded on demand as expected.
 
 You can configure **lazy.nvim** to lazy-load all plugins by default with `config.defaults.lazy = true`.
 
+If you don't want this behavior for a certain plugin, you can specify that with `module=false`.
+You can then manually load the plugin with `:Lazy load foobar.nvim`.
+
 Additionally, you can also lazy-load on **events**, **commands**,
 **file types** and **key mappings**.
 
