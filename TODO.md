@@ -58,11 +58,5 @@
       there's no guarantee this will be relevant or even exist in two years.
 - [ ] What's the difference between lazy-loading and verylazy-loading?
 - [ ] Most emojis in "Configuration" aren't shown for me.
-- [ ] add section on how to uninstall
-- [ ] add `:Packadd` command or something similar
-
-Typos:
-
-- [x] **automcatilly** check for plugin updates
-- [x] A custom name for the plugin used for the local plugin directory and as the **dispay** name
-- [x] local plugins need to be **explicitely** configured with dir
+- [x] add section on how to uninstall
+- [x] add `:Packadd` command or something similar

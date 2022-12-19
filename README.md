@@ -404,6 +404,16 @@ Files from runtime directories are always sourced in alphabetical order.
   - `lock` => `pin`
   - `module` is auto-loaded. No need to specify
 
+## ❌ Uninstalling
+
+To uninstall **lazy.nvim**, you need to remove the following files and directories:
+
+- **data**: `~/.local/share/nvim/lazy`
+- **state**: `~/.local/state/nvim/lazy`
+- **lockfile**: `~/.config/nvim/lazy-lock.json`
+
+> paths can differ if you changed `XDG` environment variables.
+
 ## 📦 Other Neovim Plugin Managers in Lua
 
 - [packer.nvim](https://github.com/wbthomason/packer.nvim)
