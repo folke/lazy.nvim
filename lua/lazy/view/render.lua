@@ -145,7 +145,11 @@ function M:help()
   local View = require("lazy.view")
   self:append("Help", "LazyH2"):nl():nl()
 
-  self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl():nl()
+  self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl()
+
+  self:append("Most properties can be hovered with ")
+  self:append("<K>", "LazySpecial")
+  self:append(" to open links, help files, readmes and git commits."):nl():nl()
 
   self:append("Keyboard Shortcuts", "LazyH2"):nl()
   for _, mode in ipairs(View.modes) do

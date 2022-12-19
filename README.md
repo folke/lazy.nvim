@@ -6,7 +6,7 @@
 
 ## ✨ Features
 
-- 📦 Manage all your Neovim plugins with a sleek and intuitive UI
+- 📦 Manage all your Neovim plugins with a powerful UI
 - 🚀 Fast startup times thanks to automatic caching and bytecode compilation of lua modules.
 - 💾 Partial clones instead of shallow clones
 - 🔌 Automatic lazy-loading of lua modules and lazy-loading on events, commands, filetypes, and key mappings.
@@ -200,8 +200,9 @@ return {
   },
 
   -- you can use the VeryLazy event for things that can
-  -- load later and are not important for the initial UI
-  { "stevearc/dressing.nvim", event = "VeryLazy" },
+  -- load later and are not important for rendering the initial UI
+  -- The event is triggered by Lazy, so it does exist :)
+  { "stevearc/dressing.nvim", event = "User VeryLazy" },
 
   {
     "cshuaimin/ssr.nvim",
@@ -364,8 +365,14 @@ return {
 
 ## 🚀 Usage
 
-You can manage all your plugins with the main `:Lazy` command.
-Alternatively you can start any operation with a specific command, sub command or API function:
+Plugins are managed with the `:Lazy` command.
+Open the help with `<?>` to see all the key mappings.
+
+You can press `<CR>` on a plugin to show its details. Most properties
+can be hovered with `<K>` to open links, help files, readmes and
+git commits.
+
+Any operation can alternatively be started with a sub command or API function:
 
 <!-- commands:start -->
 
