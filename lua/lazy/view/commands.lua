@@ -66,10 +66,19 @@ M.commands = {
   end,
 }
 
-function M.complete_unloaded(prefix)
+function M.complete(cmd, prefix)
+  local with_plugins = false
+  for _, mode in ipairs(View.modes) do
+    if mode.name == cmd and mode.plugin then
+      with_plugins = true
+    end
+  end
+  if not with_plugins then
+    return
+  end
   local plugins = {}
   for name, plugin in pairs(Config.plugins) do
-    if not plugin._.loaded then
+    if cmd ~= "load" or not plugin._.loaded then
       plugins[#plugins + 1] = name
     end
   end
@@ -91,9 +100,9 @@ function M.setup()
     desc = "Lazy",
     complete = function(_, line)
       ---@type string?
-      local prefix = line:match("^%s*Lazy load (%w*)")
+      local cmd, prefix = line:match("^%s*Lazy (%w+) (%w*)")
       if prefix then
-        return M.complete_unloaded(prefix)
+        return M.complete(cmd, prefix)
       end
 
       if line:match("^%s*Lazy %w+ ") then
