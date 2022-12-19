@@ -1,6 +1,7 @@
 local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
+local Cache = require("lazy.core.cache")
 
 local M = {}
 
@@ -212,19 +213,6 @@ function M.autoload(modname)
     end
   end
   return modname .. " not found in lazy plugins"
-end
-
--- lazy.cache will call this when loading a cached file with modpath set.
----@param modname string
----@param modpath string
-function M.check_load(modname, modpath)
-  -- no need to check anything before init
-  if M.init_done then
-    local plugin = require("lazy.core.plugin").find(modpath)
-    if plugin and not plugin._.loaded then
-      M.load(plugin, { require = modname })
-    end
-  end
 end
 
 return M

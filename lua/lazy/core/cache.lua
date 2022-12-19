@@ -4,6 +4,7 @@ local uv = vim.loop
 
 local M = {}
 M.dirty = false
+M.VERSION = "1"
 
 ---@class LazyCacheConfig
 M.config = {
@@ -28,15 +29,36 @@ M.cache = {}
 M.loader_idx = 2 -- 2 so preload still works
 M.enabled = true
 M.ttl = 3600 * 24 * 5 -- keep unused modules for up to 5 days
+---@type string[]
+M.rtp = nil
 
--- Check if we need to load this plugin
----@param modname string
----@param modpath string
-function M.check_load(modname, modpath)
-  if modname:sub(1, 4) == "lazy" then
-    return
+-- checks wether the cached modpath is still valid
+function M.check_path(modname, modpath)
+  -- check rtp exlcuding plugins. This is a very small list, so should be fast
+  for _, path in ipairs(M.get_rtp()) do
+    if modpath:find(path, 1, true) == 1 then
+      return true
+    end
   end
-  require("lazy.core.loader").check_load(modname, modpath)
+
+  -- the correct lazy path should be part of rtp.
+  -- so if we get here, this is folke using the local dev instance ;)
+  if modname:sub(1, 4) == "lazy" then
+    return false
+  end
+
+  -- check plugins. Again fast, since we check the plugin name from the path.
+  -- only needed when the plugin mod has been loaded
+  if package.loaded["lazy.core.plugin"] then
+    local plugin = require("lazy.core.plugin").find(modpath)
+    if plugin and modpath:find(plugin.dir, 1, true) == 1 then
+      if not plugin._.loaded then
+        require("lazy.core.loader").load(plugin, { require = modname })
+      end
+      return true
+    end
+  end
+  return false
 end
 
 function M.disable()
@@ -56,8 +78,7 @@ function M.loader(modname)
   local entry = M.cache[modname]
 
   local chunk, err
-  if entry then
-    M.check_load(modname, entry.modpath)
+  if entry and M.check_path(modname, entry.modpath) then
     entry.used = os.time()
     local hash = M.hash(entry.modpath)
     if not hash then
@@ -126,6 +147,28 @@ function M.find(modname)
   end
 end
 
+function M.get_rtp()
+  if not M.rtp then
+    M.rtp = {}
+    local skip = {}
+    -- only skip plugins once Config has been setup
+    if package.loaded["lazy.core.config"] then
+      local Config = require("lazy.core.config")
+      for _, plugin in ipairs(Config.plugins) do
+        if plugin.name ~= "lazy.nvim" then
+          skip[plugin.dir] = true
+        end
+      end
+    end
+    for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
+      if not skip[path] then
+        M.rtp[#M.rtp + 1] = path
+      end
+    end
+  end
+  return M.rtp
+end
+
 ---@param opts? LazyConfig
 function M.setup(opts)
   -- no fancy deep extend here. just set the options
@@ -138,6 +181,14 @@ function M.setup(opts)
 
   M.load_cache()
   table.insert(package.loaders, M.loader_idx, M.loader)
+
+  -- reset rtp when it changes
+  vim.api.nvim_create_autocmd("OptionSet", {
+    pattern = "runtimepath",
+    callback = function()
+      M.rtp = nil
+    end,
+  })
 
   if #M.config.disable_events > 0 then
     vim.api.nvim_create_autocmd(M.config.disable_events, { once = true, callback = M.disable })
@@ -159,7 +210,7 @@ end
 
 function M.save_cache()
   local f = assert(uv.fs_open(M.config.path, "w", 438))
-  uv.fs_write(f, vim.env.VIMRUNTIME)
+  uv.fs_write(f, M.VERSION)
   uv.fs_write(f, "\0")
   for modname, entry in pairs(M.cache) do
     if entry.used > os.time() - M.ttl then
@@ -195,7 +246,7 @@ function M.load_cache()
       return
     end
 
-    if vim.env.VIMRUNTIME ~= data:sub(1, zero - 1) then
+    if M.VERSION ~= data:sub(1, zero - 1) then
       return
     end
 
