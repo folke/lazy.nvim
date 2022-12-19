@@ -45,7 +45,7 @@
   - [ ] package meta index (package.lua cache for all packages)
 
 - [x] check in cache if rtp files match
-- [ ] I think the installation section, specifically the loading part, could use an
+- [x] I think the installation section, specifically the loading part, could use an
       extra sentence or two. I was confused on what `config.plugins` was initially.
       Maybe a quick, "for example, if you have a lua file
       `~/.config/nvim/lua/config/plugins.lua` that returns a table" or something it'd
@@ -56,7 +56,7 @@
 - [ ] Shouldn't the "Versioning" section be in the "Lockfile" chapter?
 - [ ] Why are personal dotfiles used as examples? Dotfiles change all the time,
       there's no guarantee this will be relevant or even exist in two years.
-- [ ] What's the difference between lazy-loading and verylazy-loading?
+- [x] What's the difference between lazy-loading and verylazy-loading?
 - [x] Most emojis in "Configuration" aren't shown for me.
 - [x] add section on how to uninstall
 - [x] add `:Packadd` command or something similar
