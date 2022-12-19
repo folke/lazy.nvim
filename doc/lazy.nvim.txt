@@ -14,6 +14,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Profiler                                              |lazy.nvim-profiler|
   - 🪲 Debug                                          |lazy.nvim-🪲-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
+  - Structuring Your Plugins              |lazy.nvim-structuring-your-plugins|
   - Differences with Packer                |lazy.nvim-differences-with-packer|
   - Uninstalling                                      |lazy.nvim-uninstalling|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
@@ -31,7 +32,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 FEATURES                                                  *lazy.nvim-features*
 
 
-- Manage all your Neovim plugins with a sleek and intuitive UI
+- Manage all your Neovim plugins with a powerful UI
 - Fast startup times thanks to automatic caching and bytecode compilation of lua modules.
 - Partial clones instead of shallow clones
 - Automatic lazy-loading of lua modules and lazy-loading on events, commands, filetypes, and key mappings.
@@ -81,27 +82,28 @@ You can use the following Lua code to bootstrap **lazy.nvim**
 Next step is to add **lazy.nvim** to the top of your `init.lua`
 
 >lua
-    -- You can use a lua module that contains your plugins.
-    -- All sub modules of the lua module will also be automatically loaded
-    -- This is the preferred setup so your plugin specs can be properly cached.
-    require("lazy").setup("config.plugins", {
-      -- add any optional configuration here
-    })
-    
-    -- Alternatively you can specify a plugin list
-    require("lazy").setup({
-        "folke/neodev.nvim",
-        "folke/which-key.nvim",
-        { "folke/neoconf.nvim", cmd = "Neoconf" },
-      }, {
-      -- add any optional configuration here
-    })
+    require("lazy").setup(plugins, opts)
 <
 
 
 
-  It is recommended to run `:checkhealth lazy` after installation
+- **plugins**: this should be a `table` or a `string`
+    - `table`: a list with your |lazy.nvim-plugin-spec|
+    - `string`: a Lua module name that contains your |lazy.nvim-plugin-spec|. See |lazy.nvim-structuring-your-plugins|
+- **opts**: see |lazy.nvim-configuration| **_(optional)_**
 
+
+>lua
+    -- example using a list of specs with the default options
+    require("lazy").setup({
+      "folke/which-key.nvim",
+      { "folke/neoconf.nvim", cmd = "Neoconf" },
+      "folke/neodev.nvim",
+    })
+<
+
+
+It is recommended to run `:checkhealth lazy` after installation
 
 PLUGIN SPEC                                            *lazy.nvim-plugin-spec*
 
@@ -135,12 +137,12 @@ specify `module=...` everywhere in your plugin specification. This mean that if
 you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
 module of plugin `A`, then plugin `A` will be loaded on demand as expected.
 
-You can configure **lazy.nvim** to lazy-load all plugins by default with
-`config.defaults.lazy = true`.
-
 If you don’t want this behavior for a certain plugin, you can specify that
 with `module=false`. You can then manually load the plugin with `:Lazy load
 foobar.nvim`.
+
+You can configure **lazy.nvim** to lazy-load all plugins by default with
+`config.defaults.lazy = true`.
 
 Additionally, you can also lazy-load on **events**, **commands**, **file
 types** and **key mappings**.
@@ -159,7 +161,9 @@ VERSIONING ~
 If you want to install a specific revision of a plugin, you can use `commit`,
 `tag`, `branch`, `version`.
 
-The `version` property supports Semver <https://semver.org/> ranges:
+The `version` property supports Semver <https://semver.org/> ranges.
+
+Click to see some examples
 
 
 - :latest stable version (this excludes pre-release versions)
@@ -172,10 +176,8 @@ The `version` property supports Semver <https://semver.org/> ranges:
 - `<=1.2.3`: any version that is less than or equal to `1.2.3`, such as `1.2.3`, `1.1.0`, `1.0.5`, etc
 
 
-
-  You can set `config.defaults.version = ""` to install the latest stable version
-  of plugins that support Semver.
-
+You can set `config.defaults.version = ""` to install the latest stable version
+of plugins that support Semver.
 
 EXAMPLES ~
 
@@ -231,8 +233,9 @@ Other examples:
       },
     
       -- you can use the VeryLazy event for things that can
-      -- load later and are not important for the initial UI
-      { "stevearc/dressing.nvim", event = "VeryLazy" },
+      -- load later and are not important for rendering the initial UI
+      -- The event is triggered by Lazy, so it does exist :)
+      { "stevearc/dressing.nvim", event = "User VeryLazy" },
     
       {
         "cshuaimin/ssr.nvim",
@@ -389,9 +392,13 @@ If you don’t want to use a Nerd Font, you can replace the icons with Unicode s
 
 USAGE                                                        *lazy.nvim-usage*
 
-You can manage all your plugins with the main `:Lazy` command. Alternatively
-you can start any operation with a specific command, sub command or API
-function:
+Plugins are managed with the `:Lazy` command. Open the help with `<?>` to see
+all the key mappings.
+
+You can press `<CR>` on a plugin to show its details. Most properties can be
+hovered with `<K>` to open links, help files, readmes and git commits.
+
+Any operation can alternatively be started with a sub command or API function:
 
 │          Command          │                 Lua                 │                                           Description                                           │
 │:Lazy home                 │require("lazy").home()               │Go back to plugin list                                                                           │
@@ -456,6 +463,50 @@ In practice this means that step 10 of |Neovim Initialization| is done by Lazy:
 
 
 Files from runtime directories are always sourced in alphabetical order.
+
+STRUCTURING YOUR PLUGINS                  *lazy.nvim-structuring-your-plugins*
+
+Some users may want to split their plugin specs in multiple files. Instead of
+passing a spec table to `setup()`, you can use a lua module. The specs from the
+**module** and any **sub-modules** will be merged together in the final spec,
+so it is not needed to add `require` calls in your main plugin file to the
+other files.
+
+The benefits of using this approach:
+
+
+- simple to **add** new plugin specs. Just create a new file in your plugins module.
+- allows for **caching** of all your plugin specs. This becomes important if you have a lot of smaller plugin specs.
+- spec changes will automatically be **reloaded** when they’re updated, so the `:Lazy` UI is always up to date
+
+
+Example:
+
+
+- `~/.config/nvim/init.lua`
+
+
+>lua
+    require("lazy").setup("plugins")
+<
+
+
+
+- `~/.config/nvim/lua/plugins.lua` or `~/.config/nvim/lua/plugins/init.lua`
+
+
+>lua
+    return {
+      "folke/neodev.nvim",
+        "folke/which-key.nvim",
+        { "folke/neoconf.nvim", cmd = "Neoconf" },
+    }
+<
+
+
+
+- any lua file in `~/.config/nvim/lua/plugins/.lua` will be automatically merged in the main plugin spec
+
 
 DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
 
