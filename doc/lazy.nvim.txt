@@ -15,6 +15,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - 🪲 Debug                                          |lazy.nvim-🪲-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
   - Differences with Packer                |lazy.nvim-differences-with-packer|
+  - Uninstalling                                      |lazy.nvim-uninstalling|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
 
 ==============================================================================
@@ -439,6 +440,21 @@ DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
     - `run` => `build`
     - `lock` => `pin`
     - `module` is auto-loaded. No need to specify
+
+
+UNINSTALLING                                          *lazy.nvim-uninstalling*
+
+To uninstall **lazy.nvim**, you need to remove the following files and
+directories:
+
+
+- **data**: `~/.local/share/nvim/lazy`
+- **state**: `~/.local/state/nvim/lazy`
+- **lockfile**: `~/.config/nvim/lazy-lock.json`
+
+
+
+  paths can differ if you changed `XDG` environment variables.
 
 
 OTHER NEOVIM PLUGIN MANAGERS IN LUA*lazy.nvim-other-neovim-plugin-managers-in-lua*
