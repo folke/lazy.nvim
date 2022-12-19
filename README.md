@@ -28,6 +28,7 @@
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Built for **Linux** and **MacOS**
 - Git >= **2.19.0** (for partial clones support)
+- a [Nerd Font](https://www.nerdfonts.com/) **_(optional)_**
 
 ## 📦 Installation
 
@@ -330,6 +331,31 @@ return {
 ```
 
 <!-- config:end -->
+
+<details>
+<summary>If you don't want to use a Nerd Font, you can replace the icons with Unicode symbols.</summary>
+
+```lua
+{
+  ui = {
+    icons = {
+      cmd = "⌘",
+      config = "🛠",
+      event = "📅",
+      ft = "📂",
+      init = "⚙",
+      keys = "🗝",
+      plugin = "🔌",
+      runtime = "💻",
+      source = "📄",
+      start = "🚀",
+      task = "📌",
+    },
+  },
+}
+```
+
+</details>
 
 ## 🚀 Usage
 

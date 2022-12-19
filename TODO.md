@@ -57,6 +57,6 @@
 - [ ] Why are personal dotfiles used as examples? Dotfiles change all the time,
       there's no guarantee this will be relevant or even exist in two years.
 - [ ] What's the difference between lazy-loading and verylazy-loading?
-- [ ] Most emojis in "Configuration" aren't shown for me.
+- [x] Most emojis in "Configuration" aren't shown for me.
 - [x] add section on how to uninstall
 - [x] add `:Packadd` command or something similar
