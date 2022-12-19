@@ -77,17 +77,37 @@ function M.commands()
   local commands = require("lazy.view.commands").commands
   local modes = require("lazy.view").modes
   local lines = {
-    { "Command", "Lua", "Key Mapping", "Description" },
+    { "Command", "Lua", "Description" },
     { "---", "---", "---", "---" },
   }
+  local with_plugins = {}
+  for _, mode in ipairs(modes) do
+    if mode.plugin then
+      with_plugins[mode.name] = true
+    end
+  end
+  local plugins_required = { load = true }
   for _, mode in ipairs(modes) do
     if not mode.plugin and commands[mode.name] then
-      lines[#lines + 1] = {
-        ("`:Lazy %s`"):format(mode.name),
-        ([[`require("lazy").%s()`]]):format(mode.name),
-        mode.key and ("`<%s>`"):format(mode.key) or "",
-        mode.desc,
-      }
+      if plugins_required[mode.name] then
+        lines[#lines + 1] = {
+          ("`:Lazy %s {plugins}`"):format(mode.name),
+          ([[`require("lazy").%s(plugins)`]]):format(mode.name),
+          mode.desc,
+        }
+      elseif with_plugins[mode.name] then
+        lines[#lines + 1] = {
+          ("`:Lazy %s [plugins]`"):format(mode.name),
+          ([[`require("lazy").%s(plugins?)`]]):format(mode.name),
+          mode.desc,
+        }
+      else
+        lines[#lines + 1] = {
+          ("`:Lazy %s`"):format(mode.name),
+          ([[`require("lazy").%s()`]]):format(mode.name),
+          mode.desc,
+        }
+      end
     end
   end
   local ret = {}
