@@ -56,24 +56,24 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 Next step is to add **lazy.nvim** to the top of your `init.lua`
 
 ```lua
--- You can use a lua module that contains your plugins.
--- All sub modules of the lua module will also be automatically loaded
--- This is the preferred setup so your plugin specs can be properly cached.
-require("lazy").setup("config.plugins", {
-  -- add any optional configuration here
-})
+require("lazy").setup(plugins, opts)
+```
 
--- Alternatively you can specify a plugin list
+- **plugins**: this should be a `table` or a `string`
+  - `table`: a list with your [Plugin Spec](#-plugin-spec)
+  - `string`: a Lua module name that contains your [Plugin Spec](#-plugin-spec). See [Structuring Your Plugins](#-structuring-your-plugins)
+- **opts**: see [Configuration](#%EF%B8%8F-configuration) **_(optional)_**
+
+```lua
+-- example using a list of specs with the default options
 require("lazy").setup({
-    "folke/neodev.nvim",
-    "folke/which-key.nvim",
-    { "folke/neoconf.nvim", cmd = "Neoconf" },
-  }, {
-  -- add any optional configuration here
+  "folke/which-key.nvim",
+  { "folke/neoconf.nvim", cmd = "Neoconf" },
+  "folke/neodev.nvim",
 })
 ```
 
-> ℹ️ It is recommended to run `:checkhealth lazy` after installation
+ℹ️ It is recommended to run `:checkhealth lazy` after installation
 
 ## 🔌 Plugin Spec
 
@@ -432,6 +432,39 @@ In practice this means that step 10 of [Neovim Initialization](https://neovim.io
 5. all the plugins' `init()` functions are executed
 
 Files from runtime directories are always sourced in alphabetical order.
+
+## 📂 Structuring Your Plugins
+
+Some users may want to split their plugin specs in multiple files.
+Instead of passing a spec table to `setup()`, you can use a lua module.
+The specs from the **module** and any **sub-modules** will be merged together in the final spec,
+so it is not needed to add `require` calls in your main plugin file to the other files.
+
+The benefits of using this approach:
+
+- simple to **add** new plugin specs. Just create a new file in your plugins module.
+- allows for **caching** of all your plugin specs. This becomes important if you have a lot of smaller plugin specs.
+- spec changes will automatically be **reloaded** when they're updated, so the `:Lazy` UI is always up to date
+
+Example:
+
+- `~/.config/nvim/init.lua`
+
+```lua
+require("lazy").setup("plugins")
+```
+
+- `~/.config/nvim/lua/plugins.lua` or `~/.config/nvim/lua/plugins/init.lua`
+
+```lua
+return {
+  "folke/neodev.nvim",
+    "folke/which-key.nvim",
+    { "folke/neoconf.nvim", cmd = "Neoconf" },
+}
+```
+
+- any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec
 
 ## 📦 Differences with Packer
 
