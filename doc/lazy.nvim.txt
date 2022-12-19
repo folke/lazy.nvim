@@ -55,6 +55,7 @@ REQUIREMENTS                                          *lazy.nvim-requirements*
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Built for **Linux** and **MacOS**
 - Git >= **2.19.0** (for partial clones support)
+- a Nerd Font <https://www.nerdfonts.com/> **_(optional)_**
 
 
 INSTALLATION                                          *lazy.nvim-installation*
@@ -358,6 +359,29 @@ CONFIGURATION                                        *lazy.nvim-configuration*
         files = { "README.md" },
         -- only generate markdown helptags for plugins that dont have docs
         skip_if_doc_exists = true,
+      },
+    }
+<
+
+
+If you don’t want to use a Nerd Font, you can replace the icons with Unicode symbols.
+
+>lua
+    {
+      ui = {
+        icons = {
+          cmd = "⌘",
+          config = "",
+          event = "",
+          ft = "",
+          init = "",
+          keys = "",
+          plugin = "",
+          runtime = "",
+          source = "",
+          start = "",
+          task = "",
+        },
       },
     }
 <
