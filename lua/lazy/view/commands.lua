@@ -81,16 +81,6 @@ function M.setup()
       end, vim.tbl_keys(M.commands))
     end,
   })
-
-  for name in pairs(M.commands) do
-    local cmd = "Lazy" .. name:sub(1, 1):upper() .. name:sub(2)
-
-    vim.api.nvim_create_user_command(cmd, function()
-      M.cmd(name)
-    end, {
-      desc = "Lazy " .. name,
-    })
-  end
 end
 
 return M
