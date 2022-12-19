@@ -65,8 +65,18 @@ function M.show(mode)
   opts.col = (vim.o.columns - opts.width) / 2
   local win = vim.api.nvim_open_win(buf, true, opts)
   M._win = win
-
   vim.api.nvim_set_current_win(win)
+
+  -- it seems that setting the current win doesn't work before VimEnter,
+  -- so do that then
+  if vim.v.vim_did_enter ~= 1 then
+    vim.api.nvim_create_autocmd("VimEnter", {
+      once = true,
+      callback = function()
+        vim.api.nvim_set_current_win(win)
+      end,
+    })
+  end
 
   vim.bo[buf].buftype = "nofile"
   vim.bo[buf].bufhidden = "wipe"
