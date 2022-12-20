@@ -185,7 +185,7 @@ function M.update_state()
         or plugin.init
       plugin.lazy = lazy and true or false
     end
-    if plugin.dir:find(Config.options.root) == 1 then
+    if plugin.dir:find(Config.options.root, 1, true) == 1 then
       plugin._.installed = installed[plugin.name] ~= nil
       installed[plugin.name] = nil
     else
