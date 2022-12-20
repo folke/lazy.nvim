@@ -468,8 +468,6 @@ For a real-life example, you can check my personal dots:
 - [config.plugins](https://github.com/folke/dot/blob/master/config/nvim/lua/config/plugins.lua) is my main plugin config module
 - Any submodule of [config.plugins (submodules)](https://github.com/folke/dot/tree/master/config/nvim/lua/config/plugins) will be automatically loaded as well.
 
-## ⚡ Performance
-
 ## 📦 Migration Guide
 
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
