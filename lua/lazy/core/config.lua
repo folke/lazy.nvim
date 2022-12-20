@@ -126,6 +126,7 @@ function M.setup(spec, opts)
     vim.opt.rtp = {
       M.me,
       vim.env.VIMRUNTIME,
+      vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
       vim.fn.stdpath("config"),
       vim.fn.stdpath("config") .. "/after",
     }
