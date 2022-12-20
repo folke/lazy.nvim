@@ -65,6 +65,7 @@ function Text:render(buf)
   end
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.api.nvim_buf_clear_namespace(buf, Config.ns, 0, -1)
 
   for l, line in ipairs(self._lines) do
     local col = self.padding
