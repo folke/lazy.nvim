@@ -179,7 +179,7 @@ function M.get_rtp()
     end
     for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
       path = path:gsub("\\", "/")
-      if not skip[path] then
+      if not skip[path] and not path:find("after/?$") then
         M.rtp[#M.rtp + 1] = path
       end
     end

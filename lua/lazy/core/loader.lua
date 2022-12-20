@@ -46,18 +46,11 @@ end
 function M.startup()
   Util.track({ start = "startup" })
 
-  local rtp = vim.opt.rtp:get()
-
-  Util.track({ start = "filetype" })
-  local ft = vim.env.VIMRUNTIME .. "/filetype.lua"
-  Util.try(function()
-    vim.cmd("silent source " .. ft)
-  end, "Failed to source `" .. ft .. "`")
-  Util.track()
+  M.source(vim.env.VIMRUNTIME .. "/filetype.lua")
 
   -- load plugins from rtp, excluding after
   Util.track({ start = "rtp plugins" })
-  for _, path in ipairs(rtp) do
+  for _, path in ipairs(vim.opt.rtp:get()) do
     if not path:find("after/?$") then
       M.packadd(path)
     end
@@ -73,16 +66,9 @@ function M.startup()
   end
   Util.track()
 
-  -- load after files
+  -- load after plugins
   Util.track({ start = "after" })
-  -- load after files from plugins
-  for _, plugin in pairs(Config.plugins) do
-    if plugin._.loaded then
-      M.source_runtime(plugin.dir, "after/plugin")
-    end
-  end
-  -- load after files from rtp plugins
-  for _, path in ipairs(rtp) do
+  for _, path in ipairs(vim.opt.rtp:get()) do
     if path:find("after/?$") then
       M.source_runtime(path, "plugin")
     end
@@ -135,6 +121,10 @@ function M.load(plugins, reason)
       Handler.disable(plugin)
 
       vim.opt.runtimepath:prepend(plugin.dir)
+      local after = plugin.dir .. "/after"
+      if vim.loop.fs_stat(after) then
+        vim.opt.runtimepath:append(after)
+      end
 
       if plugin.dependencies then
         M.load(plugin.dependencies, {})
@@ -185,12 +175,16 @@ function M.source_runtime(...)
   -- plugin files are sourced alphabetically per directory
   table.sort(files)
   for _, path in ipairs(files) do
-    Util.track({ runtime = path })
-    Util.try(function()
-      vim.cmd("silent source " .. path)
-    end, "Failed to source `" .. path .. "`")
-    Util.track()
+    M.source(path)
   end
+end
+
+function M.source(path)
+  Util.track({ runtime = path })
+  Util.try(function()
+    vim.cmd("silent source " .. path)
+  end, "Failed to source `" .. path .. "`")
+  Util.track()
 end
 
 -- This loader is added as the very last one.
