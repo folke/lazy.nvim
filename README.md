@@ -44,7 +44,7 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
      "clone",
      "--filter=blob:none",
      "--single-branch",
-     "git@github.com:folke/lazy.nvim.git",
+     "https://github.com/folke/lazy.nvim.git",
      lazypath,
    })
  end

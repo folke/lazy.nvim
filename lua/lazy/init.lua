@@ -80,7 +80,7 @@ function M.bootstrap()
       "clone",
       "--filter=blob:none",
       "--single-branch",
-      "git@github.com:folke/lazy.nvim.git",
+      "https://github.com/folke/lazy.nvim.git",
       lazypath,
     })
   end
