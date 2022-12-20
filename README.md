@@ -289,6 +289,11 @@ return {
     notify = true, -- get a notification when new updates are found
     frequency = 3600, -- check for updates every hour
   },
+  change_detection = {
+    -- automatically check for config file changes and reload the ui
+    enabled = true,
+    notify = true, -- get a notification when changes are found
+  },
   performance = {
     cache = {
       enabled = true,
