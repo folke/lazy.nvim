@@ -1,7 +1,6 @@
 local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
-local Cache = require("lazy.core.cache")
 
 local M = {}
 

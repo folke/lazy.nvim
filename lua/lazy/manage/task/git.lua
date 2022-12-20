@@ -1,4 +1,3 @@
-local Util = require("lazy.util")
 local Git = require("lazy.manage.git")
 local Lock = require("lazy.manage.lock")
 local Config = require("lazy.core.config")
