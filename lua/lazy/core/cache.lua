@@ -88,6 +88,12 @@ function M.loader(modname)
 
   local chunk, err
   if entry and M.check_path(modname, entry.modpath) then
+    local mod = package.loaded[modname]
+    if type(mod) == "table" then
+      return function()
+        return mod
+      end
+    end
     chunk, err = M.load(modname, entry.modpath)
   else
     -- find the modpath and load the module

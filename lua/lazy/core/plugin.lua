@@ -36,10 +36,10 @@ local M = {}
 ---@field pin? boolean
 
 ---@class LazyPlugin: LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
----@field [1] string
----@field name string display name and name used for plugin config files
----@field url string
----@field dir string
+---@field [1] string?
+---@field name string? display name and name used for plugin config files
+---@field url string?
+---@field dir string?
 ---@field enabled? boolean|(fun():boolean)
 ---@field lazy? boolean
 ---@field dev? boolean If set, then link to the respective folder under your ~/projects
