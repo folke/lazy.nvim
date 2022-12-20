@@ -10,9 +10,10 @@ function M:_add(keys)
     vim.keymap.del("n", keys)
     Util.track({ keys = keys })
     Loader.load(self.active[keys], { keys = keys })
-    vim.api.nvim_input(keys)
+    local feed = vim.api.nvim_replace_termcodes(keys, true, false, true)
+    vim.api.nvim_feedkeys(feed, "m", false)
     Util.track()
-  end)
+  end, { silent = true })
 end
 
 ---@param keys string
