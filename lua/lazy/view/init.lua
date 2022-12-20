@@ -87,6 +87,7 @@ function M.show(mode)
   end
 
   vim.bo[buf].buftype = "nofile"
+  vim.bo[buf].filetype = "lazy"
   vim.bo[buf].bufhidden = "wipe"
   vim.wo[win].conceallevel = 3
   vim.wo[win].spell = false
