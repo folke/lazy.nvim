@@ -61,7 +61,8 @@ REQUIREMENTS                                          *lazy.nvim-requirements*
 
 INSTALLATION                                          *lazy.nvim-installation*
 
-You can use the following Lua code to bootstrap **lazy.nvim**
+You can add the following Lua code to your `init.lua` to bootstrap
+**lazy.nvim**
 
 >lua
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -95,6 +96,8 @@ Next step is to add **lazy.nvim** to the top of your `init.lua`
 
 >lua
     -- example using a list of specs with the default options
+    vim.g.mapleader = " " -- make sure to set `mapleader` before lazy so your mappings are correct
+    
     require("lazy").setup({
       "folke/which-key.nvim",
       { "folke/neoconf.nvim", cmd = "Neoconf" },
