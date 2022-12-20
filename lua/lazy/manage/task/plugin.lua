@@ -23,9 +23,11 @@ M.build = {
       elseif type(build) == "function" then
         build()
       else
-        local args = vim.split(build, "%s+")
-        return self:spawn(table.remove(args, 1), {
-          args = args,
+        local shell = vim.env.SHELL or vim.o.shell
+        local shell_args = shell:find("cmd.exe", 1, true) and "/c" or "-c"
+
+        return self:spawn(shell, {
+          args = { shell_args, build },
           cwd = self.plugin.dir,
         })
       end
