@@ -37,9 +37,9 @@ local M = {}
 
 ---@class LazyPlugin: LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field [1] string?
----@field name string? display name and name used for plugin config files
+---@field name string display name and name used for plugin config files
 ---@field url string?
----@field dir string?
+---@field dir string
 ---@field enabled? boolean|(fun():boolean)
 ---@field lazy? boolean
 ---@field dev? boolean If set, then link to the respective folder under your ~/projects
@@ -129,9 +129,16 @@ function Spec:normalize(spec, results, is_dep)
       self:normalize(s, results, is_dep)
     end
   elseif spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
-    ---@cast spec LazyPlugin
-    local plugin = self:add(spec, is_dep)
-    plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+    local plugin
+    -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
+    -- see https://github.com/folke/lazy.nvim/issues/45
+    if spec._ then
+      plugin = spec
+    else
+      ---@cast spec LazyPlugin
+      plugin = self:add(spec, is_dep)
+      plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+    end
     table.insert(results, plugin.name)
   end
   return results
