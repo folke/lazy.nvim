@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.1.0](https://github.com/folke/lazy.nvim/compare/v5.0.1...v5.1.0) (2022-12-20)
+
+
+### Features
+
+* added options to configure change detection. Fixes [#32](https://github.com/folke/lazy.nvim/issues/32) ([6c767a6](https://github.com/folke/lazy.nvim/commit/6c767a604de025c0d03c4e2b65f6c4a01ec4918d))
+* **ui:** make the windoww size configurable. Fixes [#34](https://github.com/folke/lazy.nvim/issues/34) ([941df31](https://github.com/folke/lazy.nvim/commit/941df31a41560b4131260c47c482bd12502ed8c5))
+
+
+### Bug Fixes
+
+* add filetype to window buffer. ([#41](https://github.com/folke/lazy.nvim/issues/41)) ([897d6df](https://github.com/folke/lazy.nvim/commit/897d6df5ac8d0e575d52eec60722ce9ffc80cf6f))
+* **git:** don't run git log for submodules. Fixes [#33](https://github.com/folke/lazy.nvim/issues/33) ([9d12cdc](https://github.com/folke/lazy.nvim/commit/9d12cdcc0624c8a7f3c7c89f87abf992bc6c217e))
+* **loader:** source filetype.lua before plugins. Fixes [#35](https://github.com/folke/lazy.nvim/issues/35) ([ffcd0ab](https://github.com/folke/lazy.nvim/commit/ffcd0ab7bb61bd15b24d2a47509861e30644143c))
+* **spec:** only process a spec once ([b193f96](https://github.com/folke/lazy.nvim/commit/b193f96f7b71026f80fd89b6c3fc55fe982bbd1a))
+* use nvim_feekeys instead of nvim_input for keys handler. Fixes [#28](https://github.com/folke/lazy.nvim/issues/28) ([5298441](https://github.com/folke/lazy.nvim/commit/52984419ffa051d66bccec9f93e7cbb4fdd94976))
+
+
+### Performance Improvements
+
+* **ui:** clear existing extmarks before rendering ([06ac8bd](https://github.com/folke/lazy.nvim/commit/06ac8bda66caccca08a18ddac7d25526dff45bb6))
+
 ## [5.0.1](https://github.com/folke/lazy.nvim/compare/v5.0.0...v5.0.1) (2022-12-20)
 
 
