@@ -32,7 +32,8 @@
 
 ## 📦 Installation
 
-You can use the following Lua code to bootstrap **lazy.nvim**
+You can use the following Lua code to bootstrap **lazy.nvim**.
+For example, in `$HOME/.config/nvim/lua/lazy/init.lua` add:
 
 <!-- bootstrap:start -->
 
