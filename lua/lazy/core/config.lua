@@ -120,9 +120,10 @@ function M.setup(spec, opts)
   if M.options.performance.reset_packpath then
     vim.go.packpath = ""
   end
+
+  M.me = debug.getinfo(1, "S").source:sub(2)
+  M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
   if M.options.performance.rtp.reset then
-    M.me = debug.getinfo(1, "S").source:sub(2)
-    M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
     vim.opt.rtp = {
       M.me,
       vim.env.VIMRUNTIME,
