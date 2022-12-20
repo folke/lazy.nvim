@@ -11,10 +11,11 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Configuration                                    |lazy.nvim-configuration|
   - Usage                                                    |lazy.nvim-usage|
   - Lockfile `lazy-lock.json`            |lazy.nvim-lockfile-`lazy-lock.json`|
-  - Profiler                                              |lazy.nvim-profiler|
+  - Performance                                        |lazy.nvim-performance|
   - 🪲 Debug                                          |lazy.nvim-🪲-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
   - Structuring Your Plugins              |lazy.nvim-structuring-your-plugins|
+  - Performance                                        |lazy.nvim-performance|
   - Migration Guide                                |lazy.nvim-migration-guide|
   - Uninstalling                                      |lazy.nvim-uninstalling|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
@@ -395,7 +396,8 @@ Plugins are managed with the `:Lazy` command. Open the help with `<?>` to see
 all the key mappings.
 
 You can press `<CR>` on a plugin to show its details. Most properties can be
-hovered with `<K>` to open links, help files, readmes and git commits.
+hovered with `<K>` to open links, help files, readmes, git commits and git
+issues.
 
 Any operation can alternatively be started with a sub command or API function:
 
@@ -426,9 +428,16 @@ ensure that the same version of every plugin is installed.
 On the other machine, you can do `Lazy restore`, to update all your plugins to
 the version from the lockfile
 
-PROFILER                                                  *lazy.nvim-profiler*
+PERFORMANCE                                            *lazy.nvim-performance*
 
-The profiling view shows you why and how long it took to load your plugins.
+Great care has been taken to make the startup code (`lazy.core`) as efficient
+as possible. During startup, all lua files used before `VimEnter` or
+`BufReadPre` are byte-compiled and cached, similar to what impatient.nvim
+<https://github.com/lewis6991/impatient.nvim> does.
+
+**lazy.nvim** comes with an advanced profiler `:Lazy profile` to help you
+improve performance. The profiling view shows you why and how long it took to
+load your plugins.
 
 <div class="figure">
 <img src="https://user-images.githubusercontent.com/292349/208301766-5c400561-83c3-4811-9667-1ec4bb3c43b8.png" title="fig:"/>
@@ -506,6 +515,8 @@ Example:
 
 - any lua file in `~/.config/nvim/lua/plugins/.lua` will be automatically merged in the main plugin spec
 
+
+PERFORMANCE                                            *lazy.nvim-performance*
 
 MIGRATION GUIDE                                    *lazy.nvim-migration-guide*
 
