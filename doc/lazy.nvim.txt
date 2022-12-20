@@ -15,7 +15,6 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - 🪲 Debug                                          |lazy.nvim-🪲-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
   - Structuring Your Plugins              |lazy.nvim-structuring-your-plugins|
-  - Performance                                        |lazy.nvim-performance|
   - Migration Guide                                |lazy.nvim-migration-guide|
   - Uninstalling                                      |lazy.nvim-uninstalling|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
@@ -181,17 +180,6 @@ You can set `config.defaults.version = ""` to install the latest stable version
 of plugins that support Semver.
 
 EXAMPLES ~
-
-My personal dots:
-
-
-- init.lua <https://github.com/folke/dot/blob/master/config/nvim/init.lua> where I require `config.lazy`
-- config.lazy <https://github.com/folke/dot/blob/master/config/nvim/lua/config/lazy.lua> where I bootstrap and setup **lazy.nvim**
-- config.plugins <https://github.com/folke/dot/blob/master/config/nvim/lua/config/plugins.lua> is my main plugin config module
-- Any submodule of config.plugins (submodules) <https://github.com/folke/dot/tree/master/config/nvim/lua/config/plugins> will be automatically loaded as well.
-
-
-Other examples:
 
 >lua
     return {
@@ -516,7 +504,14 @@ Example:
 - any lua file in `~/.config/nvim/lua/plugins/.lua` will be automatically merged in the main plugin spec
 
 
-PERFORMANCE                                            *lazy.nvim-performance*
+For a real-life example, you can check my personal dots:
+
+
+- init.lua <https://github.com/folke/dot/blob/master/config/nvim/init.lua> where I require `config.lazy`
+- config.lazy <https://github.com/folke/dot/blob/master/config/nvim/lua/config/lazy.lua> where I bootstrap and setup **lazy.nvim**
+- config.plugins <https://github.com/folke/dot/blob/master/config/nvim/lua/config/plugins.lua> is my main plugin config module
+- Any submodule of config.plugins (submodules) <https://github.com/folke/dot/tree/master/config/nvim/lua/config/plugins> will be automatically loaded as well.
+
 
 MIGRATION GUIDE                                    *lazy.nvim-migration-guide*
 
