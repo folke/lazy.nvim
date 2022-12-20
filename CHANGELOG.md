@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.0.1](https://github.com/folke/lazy.nvim/compare/v5.0.0...v5.0.1) (2022-12-20)
+
+
+### Bug Fixes
+
+* add neovim libs to rtp for treesitter parsers etc ([df6c986](https://github.com/folke/lazy.nvim/commit/df6c9863dc05b309db9739b05bfabff55f08bf62))
+* always set Config.me regardless of reset rtp ([992c679](https://github.com/folke/lazy.nvim/commit/992c6791ef1f9f75b9f20833903bc3a9e43dce90))
+* **build:** use the shell to execute build commands ([1371a14](https://github.com/folke/lazy.nvim/commit/1371a141677afe2b0d0d66c96e15ed3ba271bbd9))
+* **cache:** if mod is loaded already in the loader, then return that ([ffabe91](https://github.com/folke/lazy.nvim/commit/ffabe91b2d72d686fb21d3159e20bf8faab7ed24))
+* checker should not error on non-existing dirs ([ddf36d7](https://github.com/folke/lazy.nvim/commit/ddf36d77486ee80fb8358da88411b28e479d9b0a))
+* deepcopy lazyspec before processing ([6e32759](https://github.com/folke/lazy.nvim/commit/6e32759c5ddc43d7095793de952fa2c62f61cb22))
+* default logs are now since 3 days ago to be in line with the docs ([e9d3a73](https://github.com/folke/lazy.nvim/commit/e9d3a73bbceaac0dafacd6a3c6c76ab37799d15b))
+* dont autoload cached modules when module=false ([316503f](https://github.com/folke/lazy.nvim/commit/316503f124eb4caf5b3bac0da16ee6ac10322424))
+* move re-sourcing check to the top ([6404d42](https://github.com/folke/lazy.nvim/commit/6404d421555de681638907bdd4d0ab4f19774ce4))
+* only run updated checker for installed plugins. Fixes [#16](https://github.com/folke/lazy.nvim/issues/16) ([ae644a6](https://github.com/folke/lazy.nvim/commit/ae644a604d4f4a4307775ccc163596a90668da34))
+* show error when merging, but continue ([f78d8bf](https://github.com/folke/lazy.nvim/commit/f78d8bf376a86349de99696c4004c36b97e859e4))
+* use jobstart instead of system to open urls ([1754056](https://github.com/folke/lazy.nvim/commit/175405647587d4d49e3b9c0992c6a8ae31cda706))
+
 ## [5.0.0](https://github.com/folke/lazy.nvim/compare/v4.2.0...v5.0.0) (2022-12-20)
 
 
