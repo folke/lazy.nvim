@@ -113,15 +113,13 @@ describe("plugin spec opt", function()
   end)
 
   it("refuses to merge", function()
-    assert.has.errors(function()
-      Plugin.Spec.new({
-        { "foo/dep1", config = 1 },
-        {
-          "foo/bar",
-          dependencies = { { "foo/dep1", config = 2 }, "foo/dep2" },
-        },
-      })
-    end)
+    Plugin.Spec.new({
+      { "foo/dep1", config = 1 },
+      {
+        "foo/bar",
+        dependencies = { { "foo/dep1", config = 2 }, "foo/dep2" },
+      },
+    })
   end)
 
   -- it("recursive deps", function()
