@@ -16,11 +16,13 @@ end
 
 function M.fast_check()
   for _, plugin in pairs(Config.plugins) do
-    plugin._.has_updates = nil
-    local info = Git.info(plugin.dir)
-    local target = Git.get_target(plugin)
-    if info and target and info.commit ~= target.commit then
-      plugin._.has_updates = true
+    if plugin._.installed then
+      plugin._.has_updates = nil
+      local info = Git.info(plugin.dir)
+      local target = Git.get_target(plugin)
+      if info and target and info.commit ~= target.commit then
+        plugin._.has_updates = true
+      end
     end
   end
   M.report()
