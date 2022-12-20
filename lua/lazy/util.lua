@@ -11,15 +11,16 @@ function M.open(uri)
   end
   local cmd
   if vim.fn.has("win32") == 1 then
-    cmd = { "cmd.exe", "/c", "start", '""', vim.fn.shellescape(uri) }
+    cmd = { "explorer", uri }
+    -- cmd = { 'cmd.exe', '/c', 'start', '""', uri }
   elseif vim.fn.has("macunix") == 1 then
     cmd = { "open", uri }
   else
     cmd = { "xdg-open", uri }
   end
 
-  local ret = vim.fn.system(cmd)
-  if vim.v.shell_error ~= 0 then
+  local ret = vim.fn.jobstart(cmd, { detach = true })
+  if ret <= 0 then
     local msg = {
       "Failed to open uri",
       ret,
