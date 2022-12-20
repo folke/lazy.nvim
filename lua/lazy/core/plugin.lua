@@ -228,7 +228,7 @@ function M.spec()
     Util.lsmod(path_plugins, _load)
   else
     -- spec is a spec
-    spec:normalize(Config.spec)
+    spec:normalize(vim.deepcopy(Config.spec))
   end
   return spec
 end
