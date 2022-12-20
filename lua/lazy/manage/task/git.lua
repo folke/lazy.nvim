@@ -12,7 +12,8 @@ M.log = {
     if opts.updated and not (plugin._.updated and plugin._.updated.from ~= plugin._.updated.to) then
       return true
     end
-    return not Util.file_exists(plugin.dir .. "/.git")
+    local stat = vim.loop.fs_stat(plugin.dir .. "/.git")
+    return stat and stat.type ~= "directory"
   end,
   ---@param opts {args?: string[], updated?:boolean, check?:boolean}
   run = function(self, opts)
