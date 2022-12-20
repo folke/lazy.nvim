@@ -15,7 +15,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - 🪲 Debug                                          |lazy.nvim-🪲-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
   - Structuring Your Plugins              |lazy.nvim-structuring-your-plugins|
-  - Differences with Packer                |lazy.nvim-differences-with-packer|
+  - Migration Guide                                |lazy.nvim-migration-guide|
   - Uninstalling                                      |lazy.nvim-uninstalling|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
 
@@ -508,17 +508,26 @@ Example:
 - any lua file in `~/.config/nvim/lua/plugins/.lua` will be automatically merged in the main plugin spec
 
 
-DIFFERENCES WITH PACKER                    *lazy.nvim-differences-with-packer*
+MIGRATION GUIDE                                    *lazy.nvim-migration-guide*
+
+PACKER.NVIM <HTTPS://GITHUB.COM/WBTHOMASON/PACKER.NVIM> ~
 
 
-- **Plugin Spec**:
-    - `setup` => `init`
-    - `requires` => `dependencies`
-    - `as` => `name`
-    - `opt` => `lazy`
-    - `run` => `build`
-    - `lock` => `pin`
-    - `module` is auto-loaded. No need to specify
+- `setup` `init`
+- `requires` `dependencies`
+- `as` `name`
+- `opt` `lazy`
+- `run` `build`
+- `lock` `pin`
+- `module` is auto-loaded. No need to specify
+
+
+PAQ-NVIM <HTTPS://GITHUB.COM/SAVQ/PAQ-NVIM> ~
+
+
+- `as` `name`
+- `opt` `lazy`
+- `run` `build`
 
 
 UNINSTALLING                                          *lazy.nvim-uninstalling*
