@@ -242,6 +242,7 @@ function M:reason(reason, opts)
     reason.runtime = reason.runtime:gsub(".*/([^/]+/plugin/.*)", "%1")
     reason.runtime = reason.runtime:gsub(".*/([^/]+/after/.*)", "%1")
     reason.runtime = reason.runtime:gsub(".*/([^/]+/ftdetect/.*)", "%1")
+    reason.runtime = reason.runtime:gsub(".*/(runtime/.*)", "%1")
   end
   local time = reason.time and (" " .. math.floor(reason.time / 1e6 * 100) / 100 .. "ms")
   if time and not opts.time_right then

@@ -49,6 +49,13 @@ function M.startup()
 
   local rtp = vim.opt.rtp:get()
 
+  Util.track({ start = "filetype" })
+  local ft = vim.env.VIMRUNTIME .. "/filetype.lua"
+  Util.try(function()
+    vim.cmd("silent source " .. ft)
+  end, "Failed to source `" .. ft .. "`")
+  Util.track()
+
   -- load plugins from rtp, excluding after
   Util.track({ start = "rtp plugins" })
   for _, path in ipairs(rtp) do
