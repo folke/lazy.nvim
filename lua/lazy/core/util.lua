@@ -29,7 +29,11 @@ end
 
 function M.norm(path)
   if path:sub(1, 1) == "~" then
-    path = vim.loop.os_homedir() .. "/" .. path:sub(2)
+    local home = vim.loop.os_homedir()
+    if home:sub(-1) == "\\" or home:sub(-1) == "/" then
+      home = home:sub(1, -2)
+    end
+    path = home .. path:sub(2)
   end
   return path:gsub("\\", "/")
 end
