@@ -466,17 +466,23 @@ return {
 
 - any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec
 
-## 📦 Differences with Packer
+## 📦 Migration Guide
 
-- **Plugin Spec**:
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
-  - `setup` => `init`
-  - `requires` => `dependencies`
-  - `as` => `name`
-  - `opt` => `lazy`
-  - `run` => `build`
-  - `lock` => `pin`
-  - `module` is auto-loaded. No need to specify
+- `setup` ➡️ `init`
+- `requires` ➡️ `dependencies`
+- `as` ➡️ `name`
+- `opt` ➡️ `lazy`
+- `run` ➡️ `build`
+- `lock` ➡️ `pin`
+- `module` is auto-loaded. No need to specify
+
+### [paq-nvim](https://github.com/savq/paq-nvim)
+
+- `as` ➡️ `name`
+- `opt` ➡️ `lazy`
+- `run` ➡️ `build`
 
 ## ❌ Uninstalling
 
