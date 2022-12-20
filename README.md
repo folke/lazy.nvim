@@ -384,6 +384,36 @@ Any operation can alternatively be started with a sub command or API function:
 
 <!-- commands:end -->
 
+If you want to display the number of plugins on your dashboard, you can use
+this simple API:
+
+```lua
+local plugins = require("lazy").stats().count
+```
+
+**lazy.nvim** provides a statusline component that you can use to show the number of pending updates.
+Make sure to enable `config.checker.enabled = true` to make this work.
+
+<details>
+<summary>Example of configuring <a href="https://github.com/nvim-lualine/lualine.nvim">lualine.nvim</a></summary>
+
+```lua
+require("lualine").setup({
+  sections = {
+    lualine_x = {
+      {
+        require("lazy.status").updates,
+        cond = require("lazy.status").has_updates,
+        color = { fg = "#ff9e64" },
+      },
+    },
+  },
+})
+
+```
+
+</details>
+
 ## 🔒 Lockfile `lazy-lock.json`
 
 After every **update**, the local lockfile is updated with the installed revisions.
@@ -400,6 +430,8 @@ the version from the lockfile
 Great care has been taken to make the startup code (`lazy.core`) as efficient as possible.
 During startup, all lua files used before `VimEnter` or `BufReadPre` are byte-compiled and cached,
 similar to what [impatient.nvim](https://github.com/lewis6991/impatient.nvim) does.
+
+My config for example loads in about `11ms` with `93` plugins. I do a lot of lazy-loading though :)
 
 **lazy.nvim** comes with an advanced profiler `:Lazy profile` to help you improve performance.
 The profiling view shows you why and how long it took to load your plugins.
