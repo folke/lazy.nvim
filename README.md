@@ -200,9 +200,8 @@ return {
   },
 
   -- you can use the VeryLazy event for things that can
-  -- load later and are not important for rendering the initial UI
-  -- The event is triggered by Lazy, so it does exist :)
-  { "stevearc/dressing.nvim", event = "User VeryLazy" },
+  -- load later and are not important for the initial UI
+  { "stevearc/dressing.nvim", event = "VeryLazy" },
 
   {
     "cshuaimin/ssr.nvim",
@@ -262,7 +261,7 @@ return {
   },
   dev = {
     -- directory where you store your local plugin projects
-    path = vim.fn.expand("~/projects"),
+    path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
   },
