@@ -369,7 +369,10 @@ You can press `<CR>` on a plugin to show its details. Most properties
 can be hovered with `<K>` to open links, help files, readmes,
 git commits and git issues.
 
-Any operation can alternatively be started with a sub command or API function:
+Lazy can automatically check for updates in the background. This feature
+can be enabled with `config.checker.enabled = true`.
+
+Any operation can be started from the UI, with a sub command or an API function:
 
 <!-- commands:start -->
 
