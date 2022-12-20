@@ -153,7 +153,7 @@ function Spec:merge(old, new)
         ---@diagnostic disable-next-line: no-unknown
         old[k] = values
       else
-        error("Merging plugins is not supported for key `" .. k .. "`")
+        Util.error("Merging plugins is not supported for key `" .. k .. "`\n" .. vim.inspect({ old = old, new = new }))
       end
     else
       ---@diagnostic disable-next-line: no-unknown
