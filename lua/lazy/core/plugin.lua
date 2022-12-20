@@ -78,7 +78,7 @@ function Spec:add(plugin, is_dep)
   end
 
   if plugin.dir then
-    plugin.dir = plugin.dir:gsub("~", os.getenv("HOME") or "~")
+    plugin.dir = Util.norm(plugin.dir)
     -- local plugin
     plugin.name = plugin.name or Spec.get_name(plugin.dir)
   elseif plugin.url then
@@ -168,7 +168,7 @@ function M.update_state()
   ---@type table<string,FileType>
   local installed = {}
   Util.ls(Config.options.root, function(_, name, type)
-    if type == "directory" or type == "link" then
+    if type == "directory" and name ~= "readme" then
       installed[name] = type
     end
   end)

@@ -21,7 +21,7 @@ M.defaults = {
   },
   dev = {
     -- directory where you store your local plugin projects
-    path = vim.fn.expand("~/projects"),
+    path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
   },
@@ -112,12 +112,17 @@ function M.setup(spec, opts)
   M.options.performance.cache = require("lazy.core.cache")
   table.insert(M.options.install.colorscheme, "habamax")
 
+  M.options.root = Util.norm(M.options.root)
+  M.options.dev.path = Util.norm(M.options.dev.path)
+  M.options.lockfile = Util.norm(M.options.lockfile)
+  M.options.readme.root = Util.norm(M.options.readme.root)
+
   if M.options.performance.reset_packpath then
     vim.go.packpath = ""
   end
   if M.options.performance.rtp.reset then
     M.me = debug.getinfo(1, "S").source:sub(2)
-    M.me = vim.fn.fnamemodify(M.me, ":p:h:h:h:h")
+    M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
     vim.opt.rtp = {
       M.me,
       vim.env.VIMRUNTIME,

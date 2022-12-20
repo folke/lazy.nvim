@@ -220,12 +220,13 @@ function M:reason(reason, opts)
   ---@type string?
   local source = reason.source
   if source then
+    source = Util.norm(source)
     local plugin = Plugin.find(source)
     if plugin then
       reason.plugin = plugin.name
       reason.source = nil
     else
-      local config = vim.fn.stdpath("config")
+      local config = Util.norm(vim.fn.stdpath("config"))
       if source == config .. "/init.lua" then
         reason.source = "init.lua"
       else
@@ -237,6 +238,7 @@ function M:reason(reason, opts)
     end
   end
   if reason.runtime then
+    reason.runtime = Util.norm(reason.runtime)
     reason.runtime = reason.runtime:gsub(".*/([^/]+/plugin/.*)", "%1")
     reason.runtime = reason.runtime:gsub(".*/([^/]+/after/.*)", "%1")
     reason.runtime = reason.runtime:gsub(".*/([^/]+/ftdetect/.*)", "%1")
