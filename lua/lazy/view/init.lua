@@ -56,16 +56,19 @@ function M.show(mode)
 
   local buf = vim.api.nvim_create_buf(false, false)
   M._buf = buf
-  local vpad = 6
-  local hpad = 20
+
+  local function size(max, value)
+    return value > 1 and math.min(value, max) or math.floor(max * value)
+  end
   local opts = {
     relative = "editor",
     style = "minimal",
     border = Config.options.ui.border,
-    width = math.min(vim.o.columns - hpad * 2, 200),
-    height = math.min(vim.o.lines - vpad * 2, 70),
+    width = size(vim.o.columns, Config.options.ui.size.width),
+    height = size(vim.o.lines, Config.options.ui.size.height),
     noautocmd = true,
   }
+
   opts.row = (vim.o.lines - opts.height) / 2
   opts.col = (vim.o.columns - opts.width) / 2
   local win = vim.api.nvim_open_win(buf, true, opts)
