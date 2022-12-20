@@ -99,6 +99,7 @@ end
 ---@param modpath string
 ---@return any, string?
 function M.loadfile(modpath)
+  modpath = modpath:gsub("\\", "/")
   return M.load(modpath, modpath)
 end
 
@@ -106,6 +107,7 @@ end
 ---@param modpath string
 ---@return function?, string? error_message
 function M.load(modkey, modpath)
+  modpath = modpath:gsub("\\", "/")
   local hash = M.hash(modpath)
   if not hash then
     -- trigger correct error
@@ -167,6 +169,7 @@ function M.get_rtp()
       end
     end
     for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
+      path = path:gsub("\\", "/")
       if not skip[path] then
         M.rtp[#M.rtp + 1] = path
       end
