@@ -26,7 +26,7 @@
 ## ⚡️ Requirements
 
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
-- Built for **Linux** and **MacOS**
+- Works on **Linux**, **MacOS** and **Windows**
 - Git >= **2.19.0** (for partial clones support)
 - a [Nerd Font](https://www.nerdfonts.com/) **_(optional)_**
 
