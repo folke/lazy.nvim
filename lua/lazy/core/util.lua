@@ -27,6 +27,13 @@ function M.track(data, time)
   end
 end
 
+function M.norm(path)
+  if path:sub(1, 1) == "~" then
+    path = vim.loop.os_homedir() .. "/" .. path:sub(2)
+  end
+  return path:gsub("\\", "/")
+end
+
 function M.try(fn, msg)
   -- error handler
   local error_handler = function(err)
