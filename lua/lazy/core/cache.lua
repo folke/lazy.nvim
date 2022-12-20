@@ -54,6 +54,9 @@ function M.check_path(modname, modpath)
     local plugin = require("lazy.core.plugin").find(modpath)
     if plugin and modpath:find(plugin.dir, 1, true) == 1 then
       if not plugin._.loaded then
+        if plugin.module == false then
+          error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
+        end
         require("lazy.core.loader").load(plugin, { require = modname })
       end
       return true
