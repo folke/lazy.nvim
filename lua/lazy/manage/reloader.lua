@@ -68,11 +68,13 @@ function M.check(start)
 
   if not (start or #changes == 0) then
     vim.schedule(function()
-      local lines = { "# Config Change Detected. Reloading...", "" }
-      for _, change in ipairs(changes) do
-        table.insert(lines, "- **" .. change.what .. "**: `" .. vim.fn.fnamemodify(change.file, ":p:~:.") .. "`")
+      if Config.options.change_detection.notify then
+        local lines = { "# Config Change Detected. Reloading...", "" }
+        for _, change in ipairs(changes) do
+          table.insert(lines, "- **" .. change.what .. "**: `" .. vim.fn.fnamemodify(change.file, ":p:~:.") .. "`")
+        end
+        Util.warn(lines)
       end
-      Util.warn(lines)
       Plugin.load()
       vim.cmd([[do User LazyRender]])
     end)

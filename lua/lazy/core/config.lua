@@ -58,6 +58,11 @@ M.defaults = {
     notify = true, -- get a notification when new updates are found
     frequency = 3600, -- check for updates every hour
   },
+  change_detection = {
+    -- automatically check for config file changes and reload the ui
+    enabled = true,
+    notify = true, -- get a notification when changes are found
+  },
   performance = {
     ---@type LazyCacheConfig
     cache = nil,
@@ -145,7 +150,9 @@ function M.setup(spec, opts)
     callback = function()
       require("lazy.core.cache").autosave()
       require("lazy.view").setup()
-      require("lazy.manage.reloader").enable()
+      if M.options.change_detection.enabled then
+        require("lazy.manage.reloader").enable()
+      end
       if M.options.checker.enabled then
         require("lazy.manage.checker").start()
       end
