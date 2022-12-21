@@ -69,6 +69,8 @@ M.defaults = {
     reset_packpath = true, -- reset the package path to improve startup time
     rtp = {
       reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
+      ---@type string[]
+      paths = {}, -- add any custom paths here that you want to indluce in the rtp
       ---@type string[] list any plugins you want to disable here
       disabled_plugins = {
         -- "gzip",
@@ -141,6 +143,9 @@ function M.setup(spec, opts)
       vim.fn.stdpath("config"),
       vim.fn.stdpath("config") .. "/after",
     }
+  end
+  for _, path in ipairs(M.options.performance.rtp.paths) do
+    vim.opt.rtp:append(path)
   end
   vim.opt.rtp:append(M.options.readme.root)
 
