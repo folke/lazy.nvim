@@ -463,11 +463,10 @@ startup sequence for more flexibility and better performance.
 
 In practice this means that step 10 of [Neovim Initialization](https://neovim.io/doc/user/starting.html#initialization) is done by Lazy:
 
-1. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
-2. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
-3. all plugins' `/after/plugin` files are sourced
-4. all `/after/plugin` files from the original rtp are sourced
-5. all the plugins' `init()` functions are executed
+1. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
+2. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+3. all `/after/plugin` files are sourced (this inludes `/after` from plugins)
+4. all the plugins' `init()` functions are executed
 
 Files from runtime directories are always sourced in alphabetical order.
 

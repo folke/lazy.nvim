@@ -46,18 +46,13 @@ end
 function M.startup()
   Util.track({ start = "startup" })
 
+  -- load filetype.lua first since plugins might depend on that
   M.source(vim.env.VIMRUNTIME .. "/filetype.lua")
 
-  -- load plugins from rtp, excluding after
-  Util.track({ start = "rtp plugins" })
-  for _, path in ipairs(vim.opt.rtp:get()) do
-    if not path:find("after/?$") then
-      M.packadd(path)
-    end
-  end
-  Util.track()
+  -- backup original rtp
+  local rtp = vim.opt.rtp:get()
 
-  -- load start plugin
+  -- 1. load start plugin
   Util.track({ start = "start" })
   for _, plugin in pairs(Config.plugins) do
     if plugin.lazy == false then
@@ -66,7 +61,16 @@ function M.startup()
   end
   Util.track()
 
-  -- load after plugins
+  -- 2. load plugins from rtp, excluding after
+  Util.track({ start = "rtp plugins" })
+  for _, path in ipairs(rtp) do
+    if not path:find("after/?$") then
+      M.packadd(path)
+    end
+  end
+  Util.track()
+
+  -- 3. load after plugins
   Util.track({ start = "after" })
   for _, path in ipairs(vim.opt.rtp:get()) do
     if path:find("after/?$") then
@@ -77,7 +81,7 @@ function M.startup()
 
   M.init_done = true
 
-  -- run plugin init
+  -- 4. run plugin init
   Util.track({ start = "init" })
   for _, plugin in pairs(Config.plugins) do
     if plugin.init then
