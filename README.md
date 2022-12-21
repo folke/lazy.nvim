@@ -120,7 +120,7 @@ Additionally, you can also lazy-load on **events**, **commands**,
 Plugins will be lazy-loaded when one of the following is `true`:
 
 - the plugin only exists as a dependency in your spec
-- it has an `event`, `cmd`, `ft` or `cmd` key
+- it has an `event`, `cmd`, `ft` or `keys` key
 - it defines an `init` method
 - `config.defaults.lazy == true`
 
