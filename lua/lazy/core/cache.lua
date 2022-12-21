@@ -95,7 +95,8 @@ function M.loader(modname)
       end
     end
     chunk, err = M.load(modname, entry.modpath)
-  else
+  end
+  if not chunk then
     -- find the modpath and load the module
     local modpath = M.find(modname)
     if modpath then
