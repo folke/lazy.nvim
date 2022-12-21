@@ -8,6 +8,7 @@ M.lock = {}
 M._loaded = false
 
 function M.update()
+  vim.fn.mkdir(vim.fn.fnamemodify(Config.options.lockfile, ":p:h"), "p")
   local f = assert(io.open(Config.options.lockfile, "w"))
   f:write("{\n")
   M.lock = {}
