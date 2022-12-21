@@ -7,7 +7,7 @@ function M.index(plugin)
   if Config.options.readme.skip_if_doc_exists and vim.loop.fs_stat(plugin.dir .. "/doc") then
     return {}
   end
-  ---@type {file:string, tag:string, line:string}[]
+  ---@type table<string,{file:string, tag:string, line:string}>
   local tags = {}
   for _, file in ipairs(Config.options.readme.files) do
     file = plugin.dir .. "/" .. file
@@ -18,7 +18,7 @@ function M.index(plugin)
         if title then
           local tag = plugin.name .. "-" .. title:lower():gsub("%W+", "-")
           tag = tag:gsub("%-+", "-"):gsub("%-$", "")
-          table.insert(tags, { tag = tag, line = line, file = plugin.name .. ".md" })
+          tags[tag] = { tag = tag, line = line, file = plugin.name .. ".md" }
         end
       end
       table.insert(lines, [[<!-- vim: set ft=markdown: -->]])
@@ -40,12 +40,14 @@ function M.update()
   ---@type {file:string, tag:string, line:string}[]
   local tags = {}
   for _, plugin in pairs(Config.plugins) do
-    vim.list_extend(tags, M.index(plugin))
+    for key, tag in pairs(M.index(plugin)) do
+      tags[key] = tag
+    end
   end
   local lines = { [[!_TAG_FILE_ENCODING	utf-8	//]] }
-  for _, tag in ipairs(tags) do
+  Util.foreach(tags, function(_, tag)
     table.insert(lines, ("%s\t%s\t/%s"):format(tag.tag, tag.file, tag.line))
-  end
+  end)
   Util.write_file(docs .. "/tags", table.concat(lines, "\n"))
 end
 
