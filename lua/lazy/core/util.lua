@@ -173,7 +173,7 @@ function M.lsmod(modname, root, fn)
     fn(modname, root .. ".lua")
   end
   M.ls(root, function(path, name, type)
-    if type == "file" and name:sub(-4) == ".lua" then
+    if (type == "file" or type == "link") and name:sub(-4) == ".lua" then
       if name == "init.lua" then
         fn(modname, path)
       else

@@ -172,7 +172,7 @@ function M.source_runtime(...)
   Util.walk(dir, function(path, name, t)
     local ext = name:sub(-3)
     name = name:sub(1, -5)
-    if t == "file" and (ext == "lua" or ext == "vim") and not M.disabled_rtp_plugins[name] then
+    if (t == "file" or t == "link") and (ext == "lua" or ext == "vim") and not M.disabled_rtp_plugins[name] then
       files[#files + 1] = path
     end
   end)
