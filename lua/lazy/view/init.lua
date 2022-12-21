@@ -81,7 +81,9 @@ function M.show(mode)
     vim.api.nvim_create_autocmd("VimEnter", {
       once = true,
       callback = function()
-        vim.api.nvim_set_current_win(win)
+        if win and vim.api.nvim_win_is_valid(win) then
+          pcall(vim.api.nvim_set_current_win, win)
+        end
       end,
     })
   end

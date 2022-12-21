@@ -60,3 +60,4 @@
 - [x] Most emojis in "Configuration" aren't shown for me.
 - [x] add section on how to uninstall
 - [x] add `:Packadd` command or something similar
+- [ ] headless install
