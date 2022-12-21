@@ -1,9 +1,10 @@
 ---
 name: Bug report
-about: "Create a report to help us improve"
-title: ""
-labels: "bug"
-assignees: ""
+about: Create a report to help us improve
+title: ''
+labels: bug
+assignees: ''
+
 ---
 
 **Describe the bug**
@@ -13,6 +14,8 @@ A clear and concise description of what the bug is.
 Gui(specify which GUI client you are using)? Nightly? Version?
 
 **To Reproduce**
+Make sure to read [creating a minimal init.lua to reproduce an issue](https://github.com/folke/lazy.nvim/wiki/Minimal-%60init.lua%60-to-Reproduce-an-Issue)
+
 Steps to reproduce the behavior:
 
 1.
