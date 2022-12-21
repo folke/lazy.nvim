@@ -75,41 +75,43 @@ end
 
 function M.commands()
   local commands = require("lazy.view.commands").commands
-  local modes = require("lazy.view").modes
+  ---@type table<string,{desc:string, plugin:boolean, opts:boolean}>
+  local modes = {}
+  for _, mode in ipairs(require("lazy.view").modes) do
+    modes[mode.name] = modes[mode.name] or {}
+    modes[mode.name].plugin = modes[mode.name].plugin or mode.plugin
+    if not modes[mode.name].desc or not mode.plugin then
+      modes[mode.name].desc = mode.desc
+    end
+  end
+  modes.load.opts = true
   local lines = {
     { "Command", "Lua", "Description" },
     { "---", "---", "---", "---" },
   }
-  local with_plugins = {}
-  for _, mode in ipairs(modes) do
-    if mode.plugin then
-      with_plugins[mode.name] = true
-    end
-  end
-  local plugins_required = { load = true }
-  for _, mode in ipairs(modes) do
-    if not mode.plugin and commands[mode.name] then
-      if plugins_required[mode.name] then
+  Util.foreach(modes, function(name, mode)
+    if commands[name] then
+      if mode.opts then
         lines[#lines + 1] = {
-          ("`:Lazy %s {plugins}`"):format(mode.name),
-          ([[`require("lazy").%s(plugins)`]]):format(mode.name),
+          ("`:Lazy %s {plugins}`"):format(name),
+          ([[`require("lazy").%s(opts)`]]):format(name),
           mode.desc,
         }
-      elseif with_plugins[mode.name] then
+      elseif mode.plugin then
         lines[#lines + 1] = {
-          ("`:Lazy %s [plugins]`"):format(mode.name),
-          ([[`require("lazy").%s(plugins?)`]]):format(mode.name),
+          ("`:Lazy %s [plugins]`"):format(name),
+          ([[`require("lazy").%s(opts?)`]]):format(name),
           mode.desc,
         }
       else
         lines[#lines + 1] = {
-          ("`:Lazy %s`"):format(mode.name),
-          ([[`require("lazy").%s()`]]):format(mode.name),
+          ("`:Lazy %s`"):format(name),
+          ([[`require("lazy").%s()`]]):format(name),
           mode.desc,
         }
       end
     end
-  end
+  end)
   local ret = {}
   for _, line in ipairs(lines) do
     ret[#ret + 1] = "| " .. table.concat(line, " | ") .. " |"

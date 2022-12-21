@@ -52,8 +52,17 @@ function M.run(ropts, opts)
   return runner
 end
 
+---@generic O: ManagerOpts
+---@param opts? O
+---@param defaults? ManagerOpts
+---@return O
+function M.opts(opts, defaults)
+  return vim.tbl_deep_extend("force", { clear = true }, defaults or {}, opts or {})
+end
+
 ---@param opts? ManagerOpts
 function M.install(opts)
+  opts = M.opts(opts, { mode = "install" })
   return M.run({
     pipeline = {
       "git.clone",
@@ -72,7 +81,7 @@ end
 
 ---@param opts? ManagerOpts|{lockfile?:boolean}
 function M.update(opts)
-  opts = opts or {}
+  opts = M.opts(opts, { mode = "update" })
   return M.run({
     pipeline = {
       "git.branch",
@@ -91,9 +100,16 @@ function M.update(opts)
     require("lazy.help").update()
   end)
 end
+--
+---@param opts? ManagerOpts
+function M.restore(opts)
+  opts = M.opts(opts, { mode = "restore", lockfile = true })
+  return M.update(opts)
+end
 
 ---@param opts? ManagerOpts
 function M.check(opts)
+  opts = M.opts(opts, { mode = "check" })
   opts = opts or {}
   return M.run({
     pipeline = {
@@ -109,6 +125,7 @@ end
 
 ---@param opts? ManagerOpts
 function M.log(opts)
+  opts = M.opts(opts, { mode = "log" })
   return M.run({
     pipeline = { "git.log" },
     plugins = function(plugin)
@@ -118,7 +135,20 @@ function M.log(opts)
 end
 
 ---@param opts? ManagerOpts
+function M.sync(opts)
+  opts = M.opts(opts, { mode = "sync" })
+  if opts.clear then
+    M.clear()
+    opts.clear = false
+  end
+  M.clean(opts)
+  M.install(opts)
+  M.update(opts)
+end
+
+---@param opts? ManagerOpts
 function M.clean(opts)
+  opts = M.opts(opts, { mode = "clean" })
   return M.run({
     pipeline = { "fs.clean" },
     plugins = Config.to_clean,

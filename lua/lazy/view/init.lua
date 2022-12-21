@@ -21,7 +21,9 @@ M.modes = {
     name = "load",
     desc = "Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`",
     hide = true,
+    plugin = true,
   },
+  { name = "sync", desc = "Run install, clean and update", hide = true, plugin = true },
 
   { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
   {
@@ -193,7 +195,7 @@ function M.show(mode)
         if m.plugin then
           local plugin = get_plugin()
           if plugin then
-            Commands.cmd(m.name, { plugin })
+            Commands.cmd(m.name, { plugins = { plugin } })
           end
         else
           if M.mode == m.name and m.toggle then

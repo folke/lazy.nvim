@@ -380,23 +380,37 @@ Any operation can be started from the UI, with a sub command or an API function:
 
 <!-- commands:start -->
 
-| Command                   | Lua                                 | Description                                                                                   |
-| ------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
-| `:Lazy home`              | `require("lazy").home()`            | Go back to plugin list                                                                        |
-| `:Lazy install [plugins]` | `require("lazy").install(plugins?)` | Install missing plugins                                                                       |
-| `:Lazy update [plugins]`  | `require("lazy").update(plugins?)`  | Update all plugins. This will also update the lockfile                                        |
-| `:Lazy sync`              | `require("lazy").sync()`            | Run install, clean and update                                                                 |
-| `:Lazy clean [plugins]`   | `require("lazy").clean(plugins?)`   | Clean plugins that are no longer needed                                                       |
-| `:Lazy check [plugins]`   | `require("lazy").check(plugins?)`   | Check for updates and show the log (git fetch)                                                |
-| `:Lazy log [plugins]`     | `require("lazy").log(plugins?)`     | Show recent updates for all plugins                                                           |
-| `:Lazy restore [plugins]` | `require("lazy").restore(plugins?)` | Updates all plugins to the state in the lockfile                                              |
-| `:Lazy profile`           | `require("lazy").profile()`         | Show detailed profiling                                                                       |
-| `:Lazy debug`             | `require("lazy").debug()`           | Show debug information                                                                        |
-| `:Lazy help`              | `require("lazy").help()`            | Toggle this help page                                                                         |
-| `:Lazy clear`             | `require("lazy").clear()`           | Clear finished tasks                                                                          |
-| `:Lazy load {plugins}`    | `require("lazy").load(plugins)`     | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim` |
+| Command                   | Lua                              | Description                                                                                   |
+| ------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------- |
+| `:Lazy check [plugins]`   | `require("lazy").check(opts?)`   | Check for updates and show the log (git fetch)                                                |
+| `:Lazy clean [plugins]`   | `require("lazy").clean(opts?)`   | Clean plugins that are no longer needed                                                       |
+| `:Lazy clear`             | `require("lazy").clear()`        | Clear finished tasks                                                                          |
+| `:Lazy debug`             | `require("lazy").debug()`        | Show debug information                                                                        |
+| `:Lazy help`              | `require("lazy").help()`         | Toggle this help page                                                                         |
+| `:Lazy home`              | `require("lazy").home()`         | Go back to plugin list                                                                        |
+| `:Lazy install [plugins]` | `require("lazy").install(opts?)` | Install missing plugins                                                                       |
+| `:Lazy load {plugins}`    | `require("lazy").load(opts)`     | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim` |
+| `:Lazy log [plugins]`     | `require("lazy").log(opts?)`     | Show recent updates for all plugins                                                           |
+| `:Lazy profile`           | `require("lazy").profile()`      | Show detailed profiling                                                                       |
+| `:Lazy restore [plugins]` | `require("lazy").restore(opts?)` | Updates all plugins to the state in the lockfile                                              |
+| `:Lazy sync [plugins]`    | `require("lazy").sync(opts?)`    | Run install, clean and update                                                                 |
+| `:Lazy update [plugins]`  | `require("lazy").update(opts?)`  | Update all plugins. This will also update the lockfile                                        |
 
 <!-- commands:end -->
+
+Any command can have a **bang** to make the command wait till it finished. For example,
+if you want to sync lazy from the cmdline, you can use:
+
+```shell
+$ nvim --headless "+Lazy! sync" +qa
+```
+
+`opts` is a table with the following key-values:
+
+- **wait**: when true, then the call will wait till the operation completed
+- **show**: when false, the UI will not be shown
+- **plugins**: a list of plugin names to run the operation on
+- **concurrency**: limit the `number` of concurrently running tasks
 
 If you want to display the number of plugins on your dashboard, you can use
 this simple API:

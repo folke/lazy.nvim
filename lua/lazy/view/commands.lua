@@ -6,31 +6,22 @@ local Config = require("lazy.core.config")
 local M = {}
 
 ---@param cmd string
----@param plugins? LazyPlugin[]
-function M.cmd(cmd, plugins)
+---@param opts? ManagerOpts
+function M.cmd(cmd, opts)
   cmd = cmd == "" and "home" or cmd
   local command = M.commands[cmd]
   if command == nil then
     Util.error("Invalid lazy command '" .. cmd .. "'")
   else
-    command(plugins)
+    command(opts)
   end
 end
 
 ---@class LazyCommands
 M.commands = {
-  clean = function(plugins)
-    Manage.clean({ clear = true, mode = "clean", plugins = plugins })
-  end,
   clear = function()
     Manage.clear()
     View.show()
-  end,
-  install = function(plugins)
-    Manage.install({ clear = true, mode = "install", plugins = plugins })
-  end,
-  log = function(plugins)
-    Manage.log({ clear = true, mode = "log", plugins = plugins })
   end,
   home = function()
     View.show("home")
@@ -47,23 +38,20 @@ M.commands = {
   profile = function()
     View.show("profile")
   end,
-  sync = function()
-    Manage.clean({ clear = true, wait = true, mode = "sync" })
-    Manage.update()
-    Manage.install()
+  ---@param opts ManagerOpts
+  load = function(opts)
+    if not (opts and opts.plugins and #opts.plugins > 0) then
+      return Util.error("`Lazy load` requires at least one plugin name to load")
+    end
+    require("lazy.core.loader").load(opts.plugins, { cmd = "LazyLoad" })
   end,
-  update = function(plugins)
-    Manage.update({ clear = true, mode = "update", plugins = plugins })
-  end,
-  check = function(plugins)
-    Manage.check({ clear = true, mode = "check", plugins = plugins })
-  end,
-  restore = function(plugins)
-    Manage.update({ clear = true, lockfile = true, mode = "restore", plugins = plugins })
-  end,
-  load = function(plugins)
-    require("lazy.core.loader").load(plugins, { cmd = "LazyLoad" })
-  end,
+  log = Manage.log,
+  clean = Manage.clean,
+  install = Manage.install,
+  sync = Manage.sync,
+  update = Manage.update,
+  check = Manage.check,
+  restore = Manage.restore,
 }
 
 function M.complete(cmd, prefix)
@@ -91,25 +79,22 @@ end
 
 function M.setup()
   vim.api.nvim_create_user_command("Lazy", function(cmd)
-    local args = vim.split(vim.trim(cmd.args or ""), " ")
-    local name = args[1]
-    table.remove(args, 1)
-    M.cmd(name, #args > 0 and args or nil)
+    ---@type ManagerOpts
+    local opts = { wait = cmd.bang == true }
+    local prefix, args = M.parse(cmd.args)
+    if #args > 0 then
+      opts.plugins = args
+    end
+    M.cmd(prefix, opts)
   end, {
+    bang = true,
     nargs = "?",
     desc = "Lazy",
     complete = function(_, line)
-      ---@type string?
-      local cmd, prefix = line:match("^%s*Lazy (%w+) (%w*)")
-      if prefix then
-        return M.complete(cmd, prefix)
+      local prefix, args = M.parse(line)
+      if #args > 0 then
+        return M.complete(prefix, args[#args])
       end
-
-      if line:match("^%s*Lazy %w+ ") then
-        return {}
-      end
-
-      prefix = line:match("^%s*Lazy (%w*)") or ""
 
       ---@param key string
       return vim.tbl_filter(function(key)
@@ -117,6 +102,18 @@ function M.setup()
       end, vim.tbl_keys(M.commands))
     end,
   })
+end
+
+---@return string, string[]
+function M.parse(args)
+  local parts = vim.split(vim.trim(args), "%s+")
+  if parts[1]:find("Lazy") then
+    table.remove(parts, 1)
+  end
+  if args:sub(-1) == " " then
+    parts[#parts + 1] = ""
+  end
+  return table.remove(parts, 1) or "", parts
 end
 
 return M
