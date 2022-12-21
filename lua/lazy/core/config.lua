@@ -111,6 +111,9 @@ M.options = {}
 ---@type string
 M.me = nil
 
+---@type string
+M.mapleader = nil
+
 ---@param spec LazySpec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
@@ -143,6 +146,7 @@ function M.setup(spec, opts)
 
   -- disable plugin loading since we do all of that ourselves
   vim.go.loadplugins = false
+  M.mapleader = vim.g.mapleader
 
   vim.api.nvim_create_autocmd("User", {
     pattern = "VeryLazy",

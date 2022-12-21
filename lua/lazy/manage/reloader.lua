@@ -2,6 +2,7 @@ local Cache = require("lazy.core.cache")
 local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 local Plugin = require("lazy.core.plugin")
+local Loader = require("lazy.core.loader")
 
 local M = {}
 
@@ -61,6 +62,11 @@ function M.check(start)
       table.insert(changes, { file = file, what = "deleted" })
       M.files[file] = nil
     end
+  end
+
+  if Loader.init_done and Config.mapleader ~= vim.g.mapleader then
+    require("lazy.core.util").warn("You need to set `vim.g.mapleader` **BEFORE** loading lazy")
+    Config.mapleader = vim.g.mapleader
   end
 
   if not (start or #changes == 0) then
