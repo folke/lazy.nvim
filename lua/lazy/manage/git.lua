@@ -1,12 +1,14 @@
 local Util = require("lazy.util")
 local Semver = require("lazy.manage.semver")
 local Config = require("lazy.core.config")
+local Process = require("lazy.manage.process")
 
 local M = {}
 
 ---@alias GitInfo {branch?:string, commit?:string, tag?:string, version?:Semver}
 
----@param details? boolean
+---@param repo string
+---@param details? boolean Fetching details is slow! Don't loop over a plugin to fetch all details!
 ---@return GitInfo?
 function M.info(repo, details)
   local line = Util.head(repo .. "/.git/HEAD")
@@ -19,13 +21,13 @@ function M.info(repo, details)
     } or { commit = line }
 
     if details then
-      Util.ls(repo .. "/.git/refs/tags", function(_, name)
-        if M.ref(repo, "tags/" .. name) == ret.commit then
-          ret.tag = name
-          ret.version = Semver.version(name)
-          return false
+      for tag, tag_ref in pairs(M.get_tag_refs(repo)) do
+        if tag_ref == ret.commit then
+          ret.tag = tag
+          ret.version = Semver.version(tag)
+          break
         end
-      end)
+      end
     end
     return ret
   end
@@ -120,7 +122,34 @@ function M.get_target(plugin)
 end
 
 function M.ref(repo, ...)
-  return Util.head(repo .. "/.git/refs/" .. table.concat({ ... }, "/"))
+  local ref = table.concat({ ... }, "/")
+
+  -- if this is a tag ref, then dereference it instead
+  if ref:find("tags/", 1, true) == 1 then
+    local tags = M.get_tag_refs(repo, ref)
+    for _, tag_ref in pairs(tags) do
+      return tag_ref
+    end
+  end
+
+  -- otherwise just get the ref
+  return Util.head(repo .. "/.git/refs/" .. ref)
+end
+
+-- this is slow, so don't use on a loop over all plugins!
+---@param tagref string?
+function M.get_tag_refs(repo, tagref)
+  tagref = tagref or "--tags"
+  ---@type table<string,string>
+  local tags = {}
+  local lines = Process.exec({ "git", "show-ref", "-d", tagref }, { cwd = repo })
+  for _, line in ipairs(lines) do
+    local ref, tag = line:match("^(%w+) refs/tags/([^%^]+)%^?{?}?$")
+    if ref then
+      tags[tag] = ref
+    end
+  end
+  return tags
 end
 
 return M
