@@ -192,8 +192,10 @@ M.checkout = {
               from = info.commit,
               to = new_info.commit,
             }
+            if self.plugin._.updated.from ~= self.plugin._.updated.to then
+              self.plugin._.dirty = true
+            end
           end
-          self.plugin._.dirty = true
         end
       end,
     })
