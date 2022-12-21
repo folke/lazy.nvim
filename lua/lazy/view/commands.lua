@@ -26,8 +26,8 @@ M.commands = {
     Manage.clear()
     View.show()
   end,
-  install = function()
-    Manage.install({ clear = true, mode = "install" })
+  install = function(plugins)
+    Manage.install({ clear = true, mode = "install", plugins = plugins })
   end,
   log = function(plugins)
     Manage.log({ clear = true, mode = "log", plugins = plugins })

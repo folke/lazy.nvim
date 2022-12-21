@@ -31,12 +31,12 @@
 - [x] automatically reloads when config changes are detected
 - [x] handlers imply opt
 - [x] dependencies imply opt for deps
-- [ ] show spec errors in health
-- [ ] fix plugin details
+- [x] show spec errors in health
+- [x] fix plugin details
 - [ ] show disabled plugins (strikethrough?)
 - [ ] log file
-- [ ] git tests
-- [ ] Import specs from other plugin managers
+- [x] git tests
+- [x] Import specs from other plugin managers
 - [ ] [packspec](https://github.com/nvim-lua/nvim-package-specification)
 
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
@@ -53,11 +53,12 @@
 - [x] When autoinstalling the plugins the cursor isn't focused on the floating
       window, but on the non-floating window in the background.
 - [ ] Doing `:Lazy clean` doesn't show which plugins were removed.
-- [ ] Shouldn't the "Versioning" section be in the "Lockfile" chapter?
-- [ ] Why are personal dotfiles used as examples? Dotfiles change all the time,
+- [x] Shouldn't the "Versioning" section be in the "Lockfile" chapter?
+- [x] Why are personal dotfiles used as examples? Dotfiles change all the time,
       there's no guarantee this will be relevant or even exist in two years.
 - [x] What's the difference between lazy-loading and verylazy-loading?
 - [x] Most emojis in "Configuration" aren't shown for me.
 - [x] add section on how to uninstall
 - [x] add `:Packadd` command or something similar
 - [ ] headless install
+- [ ] better keys handling
