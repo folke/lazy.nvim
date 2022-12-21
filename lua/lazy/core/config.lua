@@ -163,7 +163,9 @@ function M.setup(spec, opts)
         require("lazy.manage.reloader").enable()
       end
       if M.options.checker.enabled then
-        require("lazy.manage.checker").start()
+        vim.defer_fn(function()
+          require("lazy.manage.checker").start()
+        end, 10)
       end
     end,
   })
