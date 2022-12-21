@@ -1,5 +1,32 @@
 # Changelog
 
+## [5.2.0](https://github.com/folke/lazy.nvim/compare/v5.1.0...v5.2.0) (2022-12-21)
+
+
+### Features
+
+* **loader:** allow to add extra paths to rtp reset. Fixes [#64](https://github.com/folke/lazy.nvim/issues/64) ([876f7bd](https://github.com/folke/lazy.nvim/commit/876f7bd47124b4b2881917b36c5d29f3a898eab5))
+* **loader:** warn when mapleader is changed after init ([4ca3039](https://github.com/folke/lazy.nvim/commit/4ca30390ec4149763169201b651ad9e78c56896f))
+* make hover easy to override ([f0e1b85](https://github.com/folke/lazy.nvim/commit/f0e1b853a0d0d34584ecf9ecbf6ef8599db8b5c2))
+* **plugin:** allow plugin files only without a main plugin module. Fixes [#53](https://github.com/folke/lazy.nvim/issues/53) ([44f80a7](https://github.com/folke/lazy.nvim/commit/44f80a7f5d80a56dbfcc5cda34cc805a78ac7189))
+* **util:** utility method to get sync process output ([e95da35](https://github.com/folke/lazy.nvim/commit/e95da35d09989d15122ec4bb1364d9c36e36317d))
+
+
+### Bug Fixes
+
+* **cache:** if we can't load from the cache modpath, find path again instead of erroring right away ([a345649](https://github.com/folke/lazy.nvim/commit/a345649510aad552c0dab4e7a666d387b4ea22d3))
+* **checker:** allow git checks only for non-pinned plugins ([#61](https://github.com/folke/lazy.nvim/issues/61)) ([a939243](https://github.com/folke/lazy.nvim/commit/a939243639d452ef5f50fd8f87b8659862f16d37))
+* **git:** dereference tag refs. Fixes [#54](https://github.com/folke/lazy.nvim/issues/54) ([86eaa11](https://github.com/folke/lazy.nvim/commit/86eaa118c6d6b5c2806c38aac8db664ba6d780f6))
+* **git:** only mark a plugin as dirty if an update changed the commit HEAD. Fixes [#62](https://github.com/folke/lazy.nvim/issues/62) ([bbace14](https://github.com/folke/lazy.nvim/commit/bbace14dc96cd2379aa3f49446ba35a1ad5bfdfa))
+* **health:** don't show warning on `module=false` ([c228908](https://github.com/folke/lazy.nvim/commit/c228908ffc485ee01a5ac118e23e13ce3d19cbf9))
+* **help:** sort tags files for readmes so tags work properly. Fixes [#67](https://github.com/folke/lazy.nvim/issues/67) ([2fd78fb](https://github.com/folke/lazy.nvim/commit/2fd78fbed8d22524af83a78558dbc895df15d58d))
+* **keys:** feedkeys should include pending keys. Fixes [#71](https://github.com/folke/lazy.nvim/issues/71) ([2ab6518](https://github.com/folke/lazy.nvim/commit/2ab651864f30022751252e66b4cd2c1e36800d06))
+* **loader:** lua modules can be links instead of files. Fixes [#66](https://github.com/folke/lazy.nvim/issues/66) ([b7c489b](https://github.com/folke/lazy.nvim/commit/b7c489b08f79765b7c840addc4e542b875438f47))
+* **loader:** source rtp `/plugin` files after loading start plugins. Fixes ([ff24f49](https://github.com/folke/lazy.nvim/commit/ff24f493ee053f25fc8b34b74443a9f000fdbd55))
+* strip `/` from dirs. Fixes [#60](https://github.com/folke/lazy.nvim/issues/60) ([540847b](https://github.com/folke/lazy.nvim/commit/540847b7cb4afc66fea0d7a539821431c5a2b216))
+* **ui:** install command can have plugins as a parameter ([232232d](https://github.com/folke/lazy.nvim/commit/232232da5a2d012da0da27b424a016379c83c2f9))
+* **ui:** set current win only when its valid ([3814883](https://github.com/folke/lazy.nvim/commit/3814883aaae3facc931087bfa7352ca18fa658ac))
+
 ## [5.1.0](https://github.com/folke/lazy.nvim/compare/v5.0.1...v5.1.0) (2022-12-20)
 
 
