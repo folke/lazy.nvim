@@ -130,6 +130,7 @@ PLUGIN SPEC                                            *lazy.nvim-plugin-spec*
 │**cmd**         │string? or string[]              │Lazy-load on command                                                                                                                                                                             │
 │**ft**          │string? or string[]              │Lazy-load on filetype                                                                                                                                                                            │
 │**keys**        │string? or string[]              │Lazy-load on key mapping                                                                                                                                                                         │
+│**module**      │false?                           │Do not automatically load this lua module when it’s required somewhere                                                                                                                         │
 
 
 LAZY LOADING ~
