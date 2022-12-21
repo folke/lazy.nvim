@@ -36,6 +36,8 @@ M.modes = {
   { plugin = true, name = "restore", key = "r", desc = "Restore this plugin to the state in the lockfile" },
 }
 
+M.hover = "K"
+
 ---@type string?
 M.mode = nil
 
@@ -240,7 +242,7 @@ function M.keys(buf, handlers)
     end, { buffer = buf, silent = true })
   end
 
-  map("K")
+  map(M.hover)
 end
 
 return M
