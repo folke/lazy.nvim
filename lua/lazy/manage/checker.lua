@@ -16,7 +16,7 @@ end
 
 function M.fast_check()
   for _, plugin in pairs(Config.plugins) do
-    if plugin._.installed then
+    if not plugin.pin and plugin._.installed then
       plugin._.has_updates = nil
       local info = Git.info(plugin.dir)
       local ok, target = pcall(Git.get_target, plugin)
