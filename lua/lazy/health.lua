@@ -37,6 +37,7 @@ function M.check()
     "tag",
     "commit",
     "version",
+    "module",
     "pin",
     "cmd",
     "event",
@@ -48,7 +49,9 @@ function M.check()
   for _, plugin in pairs(Config.plugins) do
     for key in pairs(plugin) do
       if not vim.tbl_contains(valid, key) then
-        vim.health.report_warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
+        if key ~= "module" or type(plugin.module) ~= "boolean" then
+          vim.health.report_warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
+        end
       end
     end
   end
