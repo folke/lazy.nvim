@@ -57,9 +57,8 @@ M.clone = {
       self.plugin.url,
       "--filter=blob:none",
       "--recurse-submodules",
+      "--also-filter-submodules",
       "--single-branch",
-      "--shallow-submodules",
-      "--no-checkout",
       "--progress",
     }
 
@@ -117,7 +116,6 @@ M.fetch = {
     local args = {
       "fetch",
       "--recurse-submodules",
-      "--update-shallow",
       "--progress",
     }
 
@@ -157,8 +155,8 @@ M.checkout = {
     end
 
     -- dont run checkout if target is already reached.
-    -- unless we just clones, since then we won't have any data yet
-    if not self.plugin._.cloned and info.commit == target.commit and info.branch == target.branch then
+    -- unless we just cloned, since then we won't have any data yet
+    if info.commit == target.commit and info.branch == target.branch then
       self.plugin._.updated = {
         from = info.commit,
         to = info.commit,
@@ -169,6 +167,7 @@ M.checkout = {
     local args = {
       "checkout",
       "--progress",
+      "--recurse-submodules",
     }
 
     if lock then
