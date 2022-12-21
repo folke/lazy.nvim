@@ -43,12 +43,10 @@ M.hover = "K"
 ---@type string?
 M.mode = nil
 
-function M.setup()
-  require("lazy.view.commands").setup()
-  require("lazy.view.colors").setup()
-end
-
 function M.show(mode)
+  if Config.headless then
+    return
+  end
   M.mode = mode or M.mode or "home"
   require("lazy.view.colors").setup()
 

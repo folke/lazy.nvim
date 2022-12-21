@@ -116,6 +116,8 @@ M.me = nil
 ---@type string
 M.mapleader = nil
 
+M.headless = #vim.api.nvim_list_uis() == 0
+
 ---@param spec LazySpec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
@@ -153,22 +155,26 @@ function M.setup(spec, opts)
   vim.go.loadplugins = false
   M.mapleader = vim.g.mapleader
 
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "VeryLazy",
-    once = true,
-    callback = function()
-      require("lazy.core.cache").autosave()
-      require("lazy.view").setup()
-      if M.options.change_detection.enabled then
-        require("lazy.manage.reloader").enable()
-      end
-      if M.options.checker.enabled then
-        vim.defer_fn(function()
-          require("lazy.manage.checker").start()
-        end, 10)
-      end
-    end,
-  })
+  if M.headless then
+    require("lazy.view.commands").setup()
+  else
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "VeryLazy",
+      once = true,
+      callback = function()
+        require("lazy.core.cache").autosave()
+        require("lazy.view.commands").setup()
+        if M.options.change_detection.enabled then
+          require("lazy.manage.reloader").enable()
+        end
+        if M.options.checker.enabled then
+          vim.defer_fn(function()
+            require("lazy.manage.checker").start()
+          end, 10)
+        end
+      end,
+    })
+  end
 
   Util.very_lazy()
 end
