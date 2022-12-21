@@ -40,7 +40,7 @@ function M.fix_indent(str)
   end
 
   for l, line in ipairs(lines) do
-    lines[l] = line:sub(width)
+    lines[l] = line:sub(width + 1)
   end
   return table.concat(lines, "\n")
 end

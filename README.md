@@ -37,17 +37,17 @@ You can add the following Lua code to your `init.lua` to bootstrap **lazy.nvim**
 
 ```lua
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
- if not vim.loop.fs_stat(lazypath) then
-   vim.fn.system({
-     "git",
-     "clone",
-     "--filter=blob:none",
-     "--single-branch",
-     "https://github.com/folke/lazy.nvim.git",
-     lazypath,
-   })
- end
- vim.opt.runtimepath:prepend(lazypath)
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--single-branch",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+end
+vim.opt.runtimepath:prepend(lazypath)
 ```
 
 <!-- bootstrap:end -->
