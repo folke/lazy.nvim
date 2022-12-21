@@ -493,7 +493,7 @@ Example:
 require("lazy").setup("plugins")
 ```
 
-- `~/.config/nvim/lua/plugins.lua` or `~/.config/nvim/lua/plugins/init.lua`
+- `~/.config/nvim/lua/plugins.lua` or `~/.config/nvim/lua/plugins/init.lua` **_(this file is optional)_**
 
 ```lua
 return {

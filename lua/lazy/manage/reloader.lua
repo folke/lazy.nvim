@@ -10,7 +10,6 @@ M.files = {}
 
 ---@type vim.loop.Timer
 M.timer = nil
-M.main = nil
 M.root = nil
 
 function M.enable()
@@ -19,8 +18,7 @@ function M.enable()
   end
   if type(Config.spec) == "string" then
     M.timer = vim.loop.new_timer()
-    M.root = vim.fn.stdpath("config") .. "/lua/" .. Config.spec:gsub("%.", "/")
-    M.main = vim.loop.fs_stat(M.root .. ".lua") and (M.root .. ".lua") or (M.root .. "/init.lua")
+    M.root = vim.fn.stdpath("config") .. "/lua/"
     M.check(true)
     M.timer:start(2000, 2000, M.check)
   end
@@ -56,8 +54,7 @@ function M.check(start)
     end
   end
 
-  check(nil, M.main)
-  Util.lsmod(M.root, check)
+  Util.lsmod(Config.spec --[[@as string]], M.root, check)
 
   for file in pairs(M.files) do
     if not checked[file] then

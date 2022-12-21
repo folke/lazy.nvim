@@ -220,8 +220,7 @@ function M.spec()
 
   if type(Config.spec) == "string" then
     -- spec is a module
-    local function _load(name)
-      local modname = name and (Config.spec .. "." .. name) or Config.spec
+    local function _load(modname)
       -- unload the module so we get a clean slate
       ---@diagnostic disable-next-line: no-unknown
       package.loaded[modname] = nil
@@ -229,10 +228,7 @@ function M.spec()
         spec:normalize(Cache.require(modname))
       end, "Failed to load **" .. modname .. "**")
     end
-    local path_plugins = vim.fn.stdpath("config") .. "/lua/" .. Config.spec:gsub("%.", "/")
-
-    _load()
-    Util.lsmod(path_plugins, _load)
+    Util.lsmod(Config.spec --[[@as string]], _load)
   else
     -- spec is a spec
     spec:normalize(vim.deepcopy(Config.spec))

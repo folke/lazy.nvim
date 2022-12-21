@@ -158,14 +158,28 @@ function M.walk(path, fn)
   end)
 end
 
+---@param modname string
 ---@param root string
 ---@param fn fun(modname:string, modpath:string)
-function M.lsmod(root, fn)
+---@overload fun(modname:string, fn: fun(modname:string, modpath:string))
+function M.lsmod(modname, root, fn)
+  if type(root) == "function" then
+    fn = root
+    root = vim.fn.stdpath("config") .. "/lua"
+  end
+  root = root .. "/" .. modname:gsub("%.", "/")
+  if vim.loop.fs_stat(root .. ".lua") then
+    fn(modname, root .. ".lua")
+  end
   M.ls(root, function(path, name, type)
-    if type == "file" and name:sub(-4) == ".lua" and name ~= "init.lua" then
-      fn(name:sub(1, -5), path)
+    if type == "file" and name:sub(-4) == ".lua" then
+      if name == "init.lua" then
+        fn(modname, path)
+      else
+        fn(modname .. "." .. name:sub(1, -5), path)
+      end
     elseif type == "directory" and vim.loop.fs_stat(path .. "/init.lua") then
-      fn(name, path .. "/init.lua")
+      fn(modname .. "." .. name, path .. "/init.lua")
     end
   end)
 end
