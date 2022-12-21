@@ -14,7 +14,7 @@ A clear and concise description of what the bug is.
 Gui(specify which GUI client you are using)? Nightly? Version?
 
 **To Reproduce**
-Make sure to read [creating a minimal init.lua to reproduce an issue](https://github.com/folke/lazy.nvim/wiki/Minimal-%60init.lua%60-to-Reproduce-an-Issue)
+Make sure to read https://github.com/folke/lazy.nvim/wiki/Minimal-%60init.lua%60-to-Reproduce-an-Issue
 
 Steps to reproduce the behavior:
 
