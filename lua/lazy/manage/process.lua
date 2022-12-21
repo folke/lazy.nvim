@@ -108,4 +108,22 @@ function M.spawn(cmd, opts)
   return handle
 end
 
+---@param cmd string[]
+---@param opts? {cwd:string}
+function M.exec(cmd, opts)
+  opts = opts or {}
+  ---@type string[]
+  local lines
+  local job = vim.fn.jobstart(cmd, {
+    cwd = opts.cwd,
+    pty = false,
+    stdout_buffered = true,
+    on_stdout = function(_, _lines)
+      lines = _lines
+    end,
+  })
+  vim.fn.jobwait({ job })
+  return lines
+end
+
 return M
