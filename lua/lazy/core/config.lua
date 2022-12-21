@@ -142,7 +142,6 @@ function M.setup(spec, opts)
       vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
       vim.fn.stdpath("config"),
       vim.fn.stdpath("config") .. "/after",
-      vim.fn.stdpath("data") .. "/site",
     }
   end
   for _, path in ipairs(M.options.performance.rtp.paths) do
