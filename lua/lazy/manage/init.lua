@@ -75,6 +75,7 @@ function M.install(opts)
       return plugin.url and not plugin._.installed
     end,
   }, opts):wait(function()
+    require("lazy.manage.lock").update()
     require("lazy.help").update()
   end)
 end
