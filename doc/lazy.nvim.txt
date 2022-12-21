@@ -54,7 +54,6 @@ REQUIREMENTS                                          *lazy.nvim-requirements*
 
 
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
-- Works on **Linux**, **MacOS** and **Windows**
 - Git >= **2.19.0** (for partial clones support)
 - a Nerd Font <https://www.nerdfonts.com/> **_(optional)_**
 
@@ -66,17 +65,17 @@ You can add the following Lua code to your `init.lua` to bootstrap
 
 >lua
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-     if not vim.loop.fs_stat(lazypath) then
-       vim.fn.system({
-         "git",
-         "clone",
-         "--filter=blob:none",
-         "--single-branch",
-         "https://github.com/folke/lazy.nvim.git",
-         lazypath,
-       })
-     end
-     vim.opt.runtimepath:prepend(lazypath)
+    if not vim.loop.fs_stat(lazypath) then
+      vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "--single-branch",
+        "https://github.com/folke/lazy.nvim.git",
+        lazypath,
+      })
+    end
+    vim.opt.runtimepath:prepend(lazypath)
 <
 
 
