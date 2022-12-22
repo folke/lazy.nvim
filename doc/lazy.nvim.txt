@@ -627,8 +627,8 @@ PACKER.NVIM <HTTPS://GITHUB.COM/WBTHOMASON/PACKER.NVIM> ~
 - `opt` `lazy`
 - `run` `build`
 - `lock` `pin`
-- `disable = true` `enabled = false`
-- `tag = ''`/other uses of SemVer ’version`
+- `disable=true` `enabled = false`
+- `tag=''` `version=""`
 - `module` is auto-loaded. No need to specify
 
 
