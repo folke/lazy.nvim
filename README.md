@@ -568,6 +568,7 @@ For a real-life example, you can check my personal dots:
 - `opt` ➡️ `lazy`
 - `run` ➡️ `build`
 - `lock` ➡️ `pin`
+- `tag = '*'`/other uses of SemVer ➡️ 'version`
 - `module` is auto-loaded. No need to specify
 
 ### [paq-nvim](https://github.com/savq/paq-nvim)
