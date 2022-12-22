@@ -62,7 +62,6 @@ end
 ---@param value string|LazyKeys
 function M:_del(value)
   local keys = M.parse(value)
-  vim.pretty_print(keys)
   pcall(vim.keymap.del, keys.mode, keys[1])
   if keys[2] then
     vim.keymap.set(keys.mode, keys[1], keys[2], M.opts(keys))
