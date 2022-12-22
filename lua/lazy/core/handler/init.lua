@@ -67,25 +67,32 @@ function M:_add(value) end
 ---@protected
 function M:_del(value) end
 
+---@return string
+function M:key(value)
+  return value
+end
+
 ---@param plugin LazyPlugin
 function M:add(plugin)
   for _, value in ipairs(plugin[self.type] or {}) do
-    if not self.active[value] then
-      self.active[value] = {}
+    local key = self:key(value)
+    if not self.active[key] then
+      self.active[key] = {}
       self:_add(value)
     end
-    self.active[value][plugin.name] = plugin.name
+    self.active[key][plugin.name] = plugin.name
   end
 end
 
 ---@param plugin LazyPlugin
 function M:del(plugin)
   for _, value in ipairs(plugin[self.type] or {}) do
-    if self.active[value] and self.active[value][plugin.name] then
-      self.active[value][plugin.name] = nil
-      if vim.tbl_isempty(self.active[value]) then
+    local key = self:key(value)
+    if self.active[key] and self.active[key][plugin.name] then
+      self.active[key][plugin.name] = nil
+      if vim.tbl_isempty(self.active[key]) then
         self:_del(value)
-        self.active[value] = nil
+        self.active[key] = nil
       end
     end
   end
