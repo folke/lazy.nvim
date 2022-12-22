@@ -142,7 +142,7 @@ function M.load(plugins, reason)
 
       M.packadd(plugin.dir)
       if plugin.config then
-        Util.try(plugin.config, "Failed to run `config` for " .. plugin.name)
+        M.config(plugin)
       end
 
       plugin._.loaded.time = Util.track().time
@@ -152,6 +152,40 @@ function M.load(plugins, reason)
       end)
     end
   end
+end
+
+--- runs plugin config
+---@param plugin LazyPlugin
+function M.config(plugin)
+  local fn
+  if type(plugin.config) == "function" then
+    fn = plugin.config
+  else
+    local normname = Util.normname(plugin.name)
+    ---@type table<string, string>
+    local mods = {}
+    Util.ls(plugin.dir .. "/lua", function(_, modname)
+      modname = modname:gsub("%.lua$", "")
+      mods[modname] = modname
+      local modnorm = Util.normname(modname)
+      -- if we found an exact match, then use that
+      if modnorm == normname then
+        mods = { modname }
+        return false
+      end
+    end)
+    mods = vim.tbl_values(mods)
+    if #mods == 1 then
+      fn = function()
+        require(mods[1]).setup(plugin.config == true and {} or plugin.config)
+      end
+    else
+      return Util.error(
+        "Lua module not found for config of " .. plugin.name .. ". Please use a `config()` function instead"
+      )
+    end
+  end
+  Util.try(fn, "Failed to run `config` for " .. plugin.name)
 end
 
 ---@param path string

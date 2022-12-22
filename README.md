@@ -90,7 +90,7 @@ require("lazy").setup({
 | **enabled**      | `boolean?` or `fun():boolean`           | When `false`, or if the `function` returns false, then this plugin will not be used                                                                                                           |
 | **dependencies** | `LazySpec[]`                            | A list of plugin specs that should be loaded when the plugin loads. Dependencies are always lazy-loaded unless specified otherwise                                                            |
 | **init**         | `fun(LazyPlugin)`                       | `init` functions are always executed during startup                                                                                                                                           |
-| **config**       | `fun(LazyPlugin)`                       | `config` is executed when the plugin loads                                                                                                                                                    |
+| **config**       | `fun(LazyPlugin)` or `true` or `table`  | `config` is executed when the plugin loads. You can also set to `true` or pass a `table`, that will be passed to `require("plugin").setup(opts)`                                              |
 | **build**        | `fun(LazyPlugin)`                       | `build` is executed when a plugin is installed or updated                                                                                                                                     |
 | **branch**       | `string?`                               | Branch of the repository                                                                                                                                                                      |
 | **tag**          | `string?`                               | Tag of the repository                                                                                                                                                                         |
@@ -200,6 +200,20 @@ return {
     config = function()
       require("neorg").setup()
     end,
+  },
+
+  -- the above could also be written as
+  {
+    "nvim-neorg/neorg",
+    ft = "norg",
+    config = true, -- run require("norg").setup()
+  },
+
+  -- or set custom config
+  {
+    "nvim-neorg/neorg",
+    ft = "norg",
+    config = { foo = "bar" }, -- run require("norg").setup({foo = "bar"})
   },
 
   {

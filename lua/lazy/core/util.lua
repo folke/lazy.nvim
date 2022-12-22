@@ -27,6 +27,11 @@ function M.track(data, time)
   end
 end
 
+---@param name string
+function M.normname(name)
+  return name:lower():gsub("^n?vim%-", ""):gsub("%.n?vim$", ""):gsub("%.lua", ""):gsub("[^a-z]+", "")
+end
+
 function M.norm(path)
   if path:sub(1, 1) == "~" then
     local home = vim.loop.os_homedir()

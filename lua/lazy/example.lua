@@ -16,6 +16,20 @@ return {
     end,
   },
 
+  -- the above could also be written as
+  {
+    "nvim-neorg/neorg",
+    ft = "norg",
+    config = true, -- run require("norg").setup()
+  },
+
+  -- or set custom config
+  {
+    "nvim-neorg/neorg",
+    ft = "norg",
+    config = { foo = "bar" }, -- run require("norg").setup({foo = "bar"})
+  },
+
   {
     "dstein64/vim-startuptime",
     -- lazy-load on a command
