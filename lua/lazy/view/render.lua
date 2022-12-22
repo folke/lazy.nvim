@@ -19,11 +19,12 @@ local Text = require("lazy.view.text")
 ---@field _details? string
 local M = setmetatable({}, { __index = Text })
 
-function M.new(buf, win, padding)
+function M.new(buf, win, padding, wrap)
   local self = setmetatable({}, { __index = M })
   self.buf = buf
   self.win = win
   self.padding = padding or 0
+  self.wrap = wrap
   return self
 end
 

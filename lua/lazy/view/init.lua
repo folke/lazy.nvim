@@ -122,7 +122,7 @@ function M.show(mode)
     callback = close,
   })
 
-  local render = Render.new(buf, win, 2)
+  local render = Render.new(buf, win, 2, opts.width)
   local update = Util.throttle(Config.options.ui.throttle, function()
     if buf and vim.api.nvim_buf_is_valid(buf) then
       vim.bo[buf].modifiable = true

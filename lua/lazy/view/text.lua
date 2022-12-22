@@ -6,6 +6,7 @@ local Config = require("lazy.core.config")
 ---@class Text
 ---@field _lines TextSegment[][]
 ---@field padding number
+---@field wrap number
 local Text = {}
 
 function Text.new()
@@ -35,6 +36,9 @@ function Text:append(str, hl, opts)
       line = string.rep(" ", opts.indent) .. line
     end
     if l > 1 then
+      self:nl()
+    end
+    if self:col() > 0 and self:col() + vim.fn.strwidth(line) + self.padding > self.wrap then
       self:nl()
     end
     table.insert(self._lines[#self._lines], {
