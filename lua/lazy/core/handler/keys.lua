@@ -52,7 +52,6 @@ function M:_add(value)
   opts.noremap = false
   vim.keymap.set(keys.mode, lhs, function()
     Util.track({ keys = lhs })
-    self:_del(value)
     Loader.load(self.active[value], { keys = lhs })
     M.retrigger(lhs)
     Util.track()
