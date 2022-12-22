@@ -513,7 +513,11 @@ function M:debug()
   local Cache = require("lazy.core.cache")
   Util.foreach(Cache.cache, function(modname, entry)
     local kb = math.floor(#entry.chunk / 10.24) / 100
-    self:append("● ", "LazySpecial", { indent = 2 }):append(modname):append(" " .. kb .. "Kb", "Bold"):nl()
+    self:append("● ", "LazySpecial", { indent = 2 }):append(modname):append(" " .. kb .. "Kb", "Bold")
+    if entry.modpath ~= modname then
+      self:append(" " .. vim.fn.fnamemodify(entry.modpath, ":p:~:."), "Comment")
+    end
+    self:nl()
   end)
 end
 
