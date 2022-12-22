@@ -50,6 +50,7 @@ local M = {}
 
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
+---@field errors string[]
 local Spec = {}
 M.Spec = Spec
 
@@ -57,6 +58,7 @@ M.Spec = Spec
 function Spec.new(spec)
   local self = setmetatable({}, { __index = Spec })
   self.plugins = {}
+  self.errors = {}
   if spec then
     self:normalize(spec)
   end
@@ -100,7 +102,7 @@ function Spec:add(plugin, is_dep)
       plugin.dir = Config.options.root .. "/" .. plugin.name
     end
   else
-    Util.error("Invalid plugin spec " .. vim.inspect(plugin))
+    self:error("Invalid plugin spec " .. vim.inspect(plugin))
   end
 
   plugin.event = type(plugin.event) == "string" and { plugin.event } or plugin.event
@@ -116,13 +118,23 @@ function Spec:add(plugin, is_dep)
   return self.plugins[plugin.name]
 end
 
+function Spec:error(error)
+  self.errors[#self.errors + 1] = error
+  Util.error(error)
+end
+
 ---@param spec LazySpec
 ---@param results? string[]
 ---@param is_dep? boolean
 function Spec:normalize(spec, results, is_dep)
   results = results or {}
   if type(spec) == "string" then
-    table.insert(results, self:add({ spec }, is_dep).name)
+    if is_dep and not spec:find("/", 1, true) then
+      -- spec is a plugin name
+      table.insert(results, spec)
+    else
+      table.insert(results, self:add({ spec }, is_dep).name)
+    end
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
@@ -160,7 +172,7 @@ function Spec:merge(old, new)
         ---@diagnostic disable-next-line: no-unknown
         old[k] = values
       else
-        Util.error("Merging plugins is not supported for key `" .. k .. "`\n" .. vim.inspect({ old = old, new = new }))
+        self:error("Merging plugins is not supported for key `" .. k .. "`\n" .. vim.inspect({ old = old, new = new }))
       end
     else
       ---@diagnostic disable-next-line: no-unknown
