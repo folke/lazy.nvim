@@ -49,7 +49,6 @@ function M:_add(value)
   local keys = M.parse(value)
   local lhs = keys[1]
   local opts = M.opts(keys)
-  opts.noremap = false
   vim.keymap.set(keys.mode, lhs, function()
     Util.track({ keys = lhs })
     Loader.load(self.active[value], { keys = lhs })
