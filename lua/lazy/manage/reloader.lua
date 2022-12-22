@@ -65,7 +65,9 @@ function M.check(start)
   end
 
   if Loader.init_done and Config.mapleader ~= vim.g.mapleader then
-    require("lazy.core.util").warn("You need to set `vim.g.mapleader` **BEFORE** loading lazy")
+    vim.schedule(function()
+      require("lazy.core.util").warn("You need to set `vim.g.mapleader` **BEFORE** loading lazy")
+    end)
     Config.mapleader = vim.g.mapleader
   end
 
