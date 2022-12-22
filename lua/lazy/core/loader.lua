@@ -37,6 +37,12 @@ function M.setup()
     M.disabled_rtp_plugins[file] = true
   end
 
+  vim.api.nvim_create_autocmd("ColorSchemePre", {
+    callback = function(event)
+      M.colorscheme(event.match)
+    end,
+  })
+
   -- autoload opt plugins
   table.insert(package.loaders, M.autoload)
 end
@@ -189,6 +195,22 @@ function M.source(path)
     vim.cmd("silent source " .. path)
   end, "Failed to source `" .. path .. "`")
   Util.track()
+end
+
+function M.colorscheme(name)
+  if vim.tbl_contains(vim.fn.getcompletion("", "color"), name) then
+    return
+  end
+  for _, plugin in pairs(Config.plugins) do
+    if not plugin._.loaded then
+      for _, ext in ipairs({ "lua", "vim" }) do
+        local path = plugin.dir .. "/colors/" .. name .. "." .. ext
+        if vim.loop.fs_stat(path) then
+          return M.load(plugin, { colorscheme = name })
+        end
+      end
+    end
+  end
 end
 
 -- This loader is added as the very last one.

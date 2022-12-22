@@ -22,6 +22,7 @@
 - 🔎 Automatically check for updates
 - 📋 Commit, branch, tag, version, and full [Semver](https://devhints.io/semver) support
 - 📈 Statusline component to see the number of pending updates
+- 🎨 Automatically lazy-loads colorschemes
 
 ## ⚡️ Requirements
 
@@ -111,6 +112,9 @@ module of plugin `A`, then plugin `A` will be loaded on demand as expected.
 
 If you don't want this behavior for a certain plugin, you can specify that with `module=false`.
 You can then manually load the plugin with `:Lazy load foobar.nvim`.
+
+Colorscheme plugins can be configured with `lazy=true`. The plugin will automagically load
+when doing `colorscheme foobar`.
 
 You can configure **lazy.nvim** to lazy-load all plugins by default with `config.defaults.lazy = true`.
 
