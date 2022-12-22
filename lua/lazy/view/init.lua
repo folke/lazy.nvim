@@ -102,11 +102,11 @@ function M.show(mode)
     M._buf = nil
     vim.diagnostic.reset(Config.ns, buf)
     vim.schedule(function()
-      if vim.api.nvim_buf_is_valid(buf) then
-        vim.api.nvim_buf_delete(buf, { force = true })
-      end
       if vim.api.nvim_win_is_valid(win) then
         vim.api.nvim_win_close(win, true)
+      end
+      if vim.api.nvim_buf_is_valid(buf) then
+        vim.api.nvim_buf_delete(buf, { force = true })
       end
     end)
   end
