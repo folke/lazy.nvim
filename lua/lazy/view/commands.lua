@@ -83,7 +83,9 @@ function M.setup()
     local opts = { wait = cmd.bang == true }
     local prefix, args = M.parse(cmd.args)
     if #args > 0 then
-      opts.plugins = args
+      opts.plugins = vim.tbl_map(function(plugin)
+        return Config.plugins[plugin]
+      end, args)
     end
     M.cmd(prefix, opts)
   end, {
