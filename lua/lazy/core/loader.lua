@@ -58,36 +58,7 @@ function M.startup()
   -- backup original rtp
   local rtp = vim.opt.rtp:get()
 
-  -- 1. load start plugin
-  Util.track({ start = "start" })
-  for _, plugin in pairs(Config.plugins) do
-    if plugin.lazy == false then
-      M.load(plugin, { start = "start" })
-    end
-  end
-  Util.track()
-
-  -- 2. load plugins from rtp, excluding after
-  Util.track({ start = "rtp plugins" })
-  for _, path in ipairs(rtp) do
-    if not path:find("after/?$") then
-      M.packadd(path)
-    end
-  end
-  Util.track()
-
-  -- 3. load after plugins
-  Util.track({ start = "after" })
-  for _, path in ipairs(vim.opt.rtp:get()) do
-    if path:find("after/?$") then
-      M.source_runtime(path, "plugin")
-    end
-  end
-  Util.track()
-
-  M.init_done = true
-
-  -- 4. run plugin init
+  -- 1. run plugin init
   Util.track({ start = "init" })
   for _, plugin in pairs(Config.plugins) do
     if plugin.init then
@@ -97,6 +68,35 @@ function M.startup()
     end
   end
   Util.track()
+
+  -- 2. load start plugin
+  Util.track({ start = "start" })
+  for _, plugin in pairs(Config.plugins) do
+    if plugin.lazy == false and not plugin._.loaded then
+      M.load(plugin, { start = "start" })
+    end
+  end
+  Util.track()
+
+  -- 3. load plugins from rtp, excluding after
+  Util.track({ start = "rtp plugins" })
+  for _, path in ipairs(rtp) do
+    if not path:find("after/?$") then
+      M.packadd(path)
+    end
+  end
+  Util.track()
+
+  -- 4. load after plugins
+  Util.track({ start = "after" })
+  for _, path in ipairs(vim.opt.rtp:get()) do
+    if path:find("after/?$") then
+      M.source_runtime(path, "plugin")
+    end
+  end
+  Util.track()
+
+  M.init_done = true
 
   Util.track()
 end
