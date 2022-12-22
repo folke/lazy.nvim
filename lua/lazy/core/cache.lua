@@ -126,6 +126,7 @@ function M.load(modkey, modpath)
 
   local entry = M.cache[modkey]
   if entry then
+    entry.modpath = modpath
     entry.used = os.time()
     if M.eq(entry.hash, hash) then
       -- found in cache and up to date
