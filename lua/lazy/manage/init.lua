@@ -153,7 +153,9 @@ function M.clean(opts)
   return M.run({
     pipeline = { "fs.clean" },
     plugins = Config.to_clean,
-  }, opts)
+  }, opts):wait(function()
+    require("lazy.manage.lock").update()
+  end)
 end
 
 function M.clear()
