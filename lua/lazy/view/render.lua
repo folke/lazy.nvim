@@ -272,6 +272,9 @@ function M:reason(reason, opts)
       if key == "event" then
         value = value:match("User (.*)") or value
       end
+      if key == "keys" then
+        value = type(value) == "string" and value or value[1]
+      end
       local hl = "LazyHandler" .. key:sub(1, 1):upper() .. key:sub(2)
       local icon = Config.options.ui.icons[key]
       if icon then
@@ -493,13 +496,14 @@ function M:debug()
     )
     :nl()
 
-  Util.foreach(require("lazy.core.handler").handlers, function(type, handler)
+  Util.foreach(require("lazy.core.handler").handlers, function(handler_type, handler)
     Util.foreach(handler.active, function(value, plugins)
+      value = type(value) == "table" and value[1] or value
       if not vim.tbl_isempty(plugins) then
         plugins = vim.tbl_values(plugins)
         table.sort(plugins)
         self:append("● ", "LazySpecial", { indent = 2 })
-        self:reason({ [type] = value })
+        self:reason({ [handler_type] = value })
         for _, plugin in pairs(plugins) do
           self:append(" ")
           self:reason({ plugin = plugin })

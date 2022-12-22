@@ -1,32 +1,66 @@
 local Util = require("lazy.core.util")
 local Loader = require("lazy.core.loader")
 
+---@class LazyKeys
+---@field [1] string lhs
+---@field [2]? string|fun() rhs
+---@field desc? string
+---@field mode? string|string[]
+---@field noremap? boolean
+---@field remap? boolean
+---@field expr? boolean
+
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
 
----@param keys string
-function M:_add(keys)
-  vim.keymap.set("n", keys, function()
-    vim.keymap.del("n", keys)
-    Util.track({ keys = keys })
-    Loader.load(self.active[keys], { keys = keys })
-    local extra = ""
-    while true do
-      local c = vim.fn.getchar(0)
-      if c == 0 then
-        break
-      end
-      extra = extra .. vim.fn.nr2char(c)
+function M.retrigger(keys)
+  local pending = ""
+  while true do
+    local c = vim.fn.getchar(0)
+    if c == 0 then
+      break
     end
-    local feed = vim.api.nvim_replace_termcodes(keys .. extra, true, true, true)
-    vim.api.nvim_feedkeys(feed, "m", false)
-    Util.track()
-  end, { silent = true })
+    pending = pending .. vim.fn.nr2char(c)
+  end
+  local feed = vim.api.nvim_replace_termcodes(keys .. pending, true, true, true)
+  vim.api.nvim_feedkeys(feed, "m", false)
 end
 
----@param keys string
-function M:_del(keys)
-  pcall(vim.keymap.del, "n", keys)
+---@param value string|LazyKeys
+function M.parse(value)
+  return (type(value) == "string" and { value } or value) --[[@as LazyKeys]]
+end
+
+function M.opts(keys)
+  local opts = {}
+  for k, v in pairs(keys) do
+    if type(k) ~= "number" and k ~= "mode" then
+      opts[k] = v
+    end
+  end
+  return opts
+end
+
+---@param value string|LazyKeys
+function M:_add(value)
+  local keys = M.parse(value)
+  local lhs = keys[1]
+  vim.keymap.set(keys.mode or "n", lhs, function()
+    Util.track({ keys = lhs })
+    self:_del(value)
+    Loader.load(self.active[value], { keys = lhs })
+    M.retrigger(lhs)
+    Util.track()
+  end, M.opts(keys))
+end
+
+---@param value string|LazyKeys
+function M:_del(value)
+  local keys = M.parse(value)
+  pcall(vim.keymap.del, "n", keys[1])
+  if keys[2] then
+    vim.keymap.set(keys.mode or "n", keys[1], keys[2], M.opts(keys))
+  end
 end
 
 return M
