@@ -1,5 +1,33 @@
 # Changelog
 
+## [6.0.0](https://github.com/folke/lazy.nvim/compare/v5.2.0...v6.0.0) (2022-12-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* lazy api commands now take an opts table instead of a list of plugins
+
+### Features
+
+* added support for `nvim --headless "+Lazy! sync" +qa` ([2e14a2f](https://github.com/folke/lazy.nvim/commit/2e14a2f3243e2979e00405fe417bc530bf1e8ca3))
+* **checker:** defer checker to after VeryLazy to make sure nvim-notify and others are loaded ([fd1fbef](https://github.com/folke/lazy.nvim/commit/fd1fbefc3df2b8e92209ed932144edc49877c41e))
+* **keys:** more advanced options for setting lazy key mappings ([1c07ea1](https://github.com/folke/lazy.nvim/commit/1c07ea15a37442b7d07dcce9791c497c343ee853))
+* lazy api commands now take an opts table instead of a list of plugins ([bc61747](https://github.com/folke/lazy.nvim/commit/bc617474a0bbd9a2e8ec68fd97e09c1682be7ff9))
+* **ui:** show modpaths in debug ([6304231](https://github.com/folke/lazy.nvim/commit/63042310f4eaae19ff8a46dfd2ef931c1f498b0f))
+
+
+### Bug Fixes
+
+* **cache:** overwrite cache entry with new modpath when loading a file. Fixes [#90](https://github.com/folke/lazy.nvim/issues/90) ([2200284](https://github.com/folke/lazy.nvim/commit/22002841653574d57cef7a3137303a25da0796f6))
+* **clean:** update lockfile on clean ([#88](https://github.com/folke/lazy.nvim/issues/88)) ([dd9648f](https://github.com/folke/lazy.nvim/commit/dd9648f8ec6526ac376f3ffa85062f6a21385f4d))
+* **cmd:** allow ranges. Fixes [#93](https://github.com/folke/lazy.nvim/issues/93) ([c0c2e1b](https://github.com/folke/lazy.nvim/commit/c0c2e1bd68b48610cdca1d3e6a540fd68fc36527))
+* **git:** make sure we properly fetch git submodules. Fixes [#72](https://github.com/folke/lazy.nvim/issues/72) ([7f6f31d](https://github.com/folke/lazy.nvim/commit/7f6f31d66f2aba99fad86a64789b7d5d3e61a2cb))
+* **git:** remove --also-filter-submodules. Fixes [#86](https://github.com/folke/lazy.nvim/issues/86) [#83](https://github.com/folke/lazy.nvim/issues/83) ([488b487](https://github.com/folke/lazy.nvim/commit/488b48779c1ee6fb4a0d69e31a6c58784cceb403))
+* **install:** update lockfile also on install ([4cf176b](https://github.com/folke/lazy.nvim/commit/4cf176bdabbd1a18a20b3b4a608175fb1ba3250e))
+* removed spell again from site. not needed. can download in config/spell ([58f0876](https://github.com/folke/lazy.nvim/commit/58f0876e81881c487ea10e393fa828a1c45c74f4))
+* **rtp:** keep site in rtp ([94d0125](https://github.com/folke/lazy.nvim/commit/94d012511d19a4438c0098fff000a6d63198f2c8))
+* show mapleader warning with vim.schedule. Fixes [#91](https://github.com/folke/lazy.nvim/issues/91) ([28f1511](https://github.com/folke/lazy.nvim/commit/28f1511e0a19d41f9c5e53a64ece257449681b4d))
+
 ## [5.2.0](https://github.com/folke/lazy.nvim/compare/v5.1.0...v5.2.0) (2022-12-21)
 
 
