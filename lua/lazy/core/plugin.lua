@@ -201,7 +201,6 @@ function M.update_state()
         or plugin.keys
         or plugin.ft
         or plugin.cmd
-        or plugin.init
       plugin.lazy = lazy and true or false
     end
     if plugin.dir:find(Config.options.root, 1, true) == 1 then
