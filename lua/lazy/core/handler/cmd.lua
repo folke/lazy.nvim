@@ -26,6 +26,7 @@ function M:_add(cmd)
     )
   end, {
     bang = true,
+    range = true,
     nargs = "*",
     complete = function(_, line)
       self:_load(cmd)
