@@ -159,7 +159,6 @@ function M.clean(opts)
 end
 
 function M.clear()
-  Plugin.load()
   for _, plugin in pairs(Config.plugins) do
     plugin._.has_updates = nil
     plugin._.updated = nil
