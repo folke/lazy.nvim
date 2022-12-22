@@ -28,7 +28,10 @@ end
 
 ---@param value string|LazyKeys
 function M.parse(value)
-  return (type(value) == "string" and { value } or value) --[[@as LazyKeys]]
+  local ret = vim.deepcopy(value)
+  ret = (type(ret) == "string" and { ret } or ret) --[[@as LazyKeys]]
+  ret.mode = ret.mode or "n"
+  return ret
 end
 
 function M.opts(keys)
@@ -45,21 +48,24 @@ end
 function M:_add(value)
   local keys = M.parse(value)
   local lhs = keys[1]
-  vim.keymap.set(keys.mode or "n", lhs, function()
+  local opts = M.opts(keys)
+  opts.noremap = false
+  vim.keymap.set(keys.mode, lhs, function()
     Util.track({ keys = lhs })
     self:_del(value)
     Loader.load(self.active[value], { keys = lhs })
     M.retrigger(lhs)
     Util.track()
-  end, M.opts(keys))
+  end, opts)
 end
 
 ---@param value string|LazyKeys
 function M:_del(value)
   local keys = M.parse(value)
-  pcall(vim.keymap.del, "n", keys[1])
+  vim.pretty_print(keys)
+  pcall(vim.keymap.del, keys.mode, keys[1])
   if keys[2] then
-    vim.keymap.set(keys.mode or "n", keys[1], keys[2], M.opts(keys))
+    vim.keymap.set(keys.mode, keys[1], keys[2], M.opts(keys))
   end
 end
 
