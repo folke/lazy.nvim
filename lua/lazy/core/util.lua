@@ -1,3 +1,4 @@
+---@class LazyUtilCore
 local M = {}
 
 ---@alias LazyProfile {data: string|{[string]:string}, time: number, [number]:LazyProfile}

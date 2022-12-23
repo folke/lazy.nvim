@@ -1,3 +1,4 @@
+---@class LazyUtil: LazyUtilCore
 local M = setmetatable({}, { __index = require("lazy.core.util") })
 
 function M.file_exists(file)

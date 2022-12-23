@@ -17,10 +17,12 @@ local Text = require("lazy.view.text")
 ---@field _diagnostics LazyDiagnostic[]
 ---@field plugin_range table<string, {from: number, to: number}>
 ---@field _details? string
-local M = setmetatable({}, { __index = Text })
+local M = {}
 
+---@return Render
 function M.new(buf, win, padding, wrap)
-  local self = setmetatable({}, { __index = M })
+  ---@type Render
+  local self = setmetatable({}, { __index = setmetatable(M, { __index = Text }) })
   self.buf = buf
   self.win = win
   self.padding = padding or 0
