@@ -582,6 +582,8 @@ For a real-life example, you can check my personal dots:
 - `lock` ➡️ `pin`
 - `disable=true` ➡️ `enabled = false`
 - `tag='*'` ➡️ `version="*"`
+- `wants` ⚠️ **Not supported**
+- `after` ⚠️ **Not supported**
 - `module` is auto-loaded. No need to specify
 - `keys` spec is [different](#%EF%B8%8F-lazy-key-mappings)
 
