@@ -90,6 +90,6 @@ return {
     filter = function(plugin)
       return plugin._.installed
     end,
-    title = "Installed",
+    title = "Not Loaded",
   },
 }
