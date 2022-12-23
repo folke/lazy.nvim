@@ -9,24 +9,22 @@ local Text = require("lazy.view.text")
 
 ---@alias LazyDiagnostic {row: number, severity: number, message:string}
 
----@class Render:Text
----@field buf buffer
----@field win window
+---@class LazyRender:Text
+---@field view LazyView
 ---@field plugins LazyPlugin[]
 ---@field progress {total:number, done:number}
 ---@field _diagnostics LazyDiagnostic[]
 ---@field plugin_range table<string, {from: number, to: number}>
----@field _details? string
 local M = {}
 
----@return Render
-function M.new(buf, win, padding, wrap)
-  ---@type Render
+---@return LazyRender
+---@param view LazyView
+function M.new(view)
+  ---@type LazyRender
   local self = setmetatable({}, { __index = setmetatable(M, { __index = Text }) })
-  self.buf = buf
-  self.win = win
-  self.padding = padding or 0
-  self.wrap = wrap
+  self.view = view
+  self.padding = 2
+  self.wrap = view.win_opts.width
   return self
 end
 
@@ -72,10 +70,10 @@ function M:update()
   end
 
   self:trim()
-  self:render(self.buf)
+  self:render(self.view.buf)
   vim.diagnostic.set(
     Config.ns,
-    self.buf,
+    self.view.buf,
     ---@param diag LazyDiagnostic
     vim.tbl_map(function(diag)
       diag.col = 0
@@ -86,9 +84,10 @@ function M:update()
   )
 end
 
----@param row number
+---@param row? number
 ---@return LazyPlugin?
 function M:get_plugin(row)
+  row = row or vim.api.nvim_win_get_cursor(self.view.win)[1]
   for name, range in pairs(self.plugin_range) do
     if row >= range.from and row <= range.to then
       return Config.plugins[name]
@@ -98,20 +97,18 @@ end
 
 function M:title()
   self:nl():nl()
-  local View = require("lazy.view")
-
-  for _, mode in ipairs(View.modes) do
+  for _, mode in ipairs(self.view.modes) do
     if not mode.hide and not mode.plugin then
       local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
       if mode.name == "home" then
-        if View.mode == "home" then
+        if self.view.state.mode == "home" then
           title = " lazy.nvim  鈴 "
         else
           title = " lazy.nvim (H) "
         end
       end
 
-      if View.mode == mode.name then
+      if self.view.state.mode == mode.name then
         if mode.name == "home" then
           self:append(title, "LazyH1")
         else
@@ -131,7 +128,7 @@ function M:title()
   end
   self:nl()
 
-  if View.mode ~= "help" and View.mode ~= "profile" and View.mode ~= "debug" then
+  if self.view.state.mode ~= "help" and self.view.state.mode ~= "profile" and self.view.state.mode ~= "debug" then
     if self.progress.done < self.progress.total then
       self:append("Tasks: ", "LazyH2")
       self:append(self.progress.done .. "/" .. self.progress.total, "LazyMuted")
@@ -141,11 +138,10 @@ function M:title()
     end
     self:nl():nl()
   end
-  return View.mode
+  return self.view.state.mode
 end
 
 function M:help()
-  local View = require("lazy.view")
   self:append("Help", "LazyH2"):nl():nl()
 
   self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl()
@@ -155,7 +151,7 @@ function M:help()
   self:append(" to open links, help files, readmes and git commits."):nl():nl()
 
   self:append("Keyboard Shortcuts", "LazyH2"):nl()
-  for _, mode in ipairs(View.modes) do
+  for _, mode in ipairs(self.view.modes) do
     local title = mode.name:sub(1, 1):upper() .. mode.name:sub(2)
     self:append("- ", "LazySpecial", { indent = 2 })
     self:append(title, "Title")
@@ -167,7 +163,7 @@ function M:help()
 end
 
 function M:progressbar()
-  local width = vim.api.nvim_win_get_width(self.win) - 2 * self.padding
+  local width = vim.api.nvim_win_get_width(self.view.win) - 2 * self.padding
   local done = math.floor((self.progress.done / self.progress.total) * width + 0.5)
   if self.progress.done == self.progress.total then
     done = 0
@@ -341,7 +337,7 @@ function M:plugin(plugin)
   self:diagnostics(plugin)
   self:nl()
 
-  if self._details == plugin.name then
+  if self.view.state.plugin == plugin.name then
     self:details(plugin)
   end
   self:tasks(plugin)
@@ -351,14 +347,14 @@ end
 ---@param plugin LazyPlugin
 function M:tasks(plugin)
   for _, task in ipairs(plugin._.tasks or {}) do
-    if self._details == plugin.name then
+    if self.view.state.plugin == plugin.name then
       self:append("✔ [task] ", "Title", { indent = 4 }):append(task.name)
       self:append(" " .. math.floor((task:time()) * 100) / 100 .. "ms", "Bold")
       self:nl()
     end
     if task.name == "log" and not task.error then
       self:log(task)
-    elseif task.error or self._details == plugin.name then
+    elseif task.error or self.view.state.plugin == plugin.name then
       if task.error then
         self:append(vim.trim(task.error), "LazyError", { indent = 4, prefix = "│ " })
         self:nl()

@@ -45,23 +45,29 @@ function M.write_file(file, contents)
   fd:close()
 end
 
+---@generic F: fun()
 ---@param ms number
----@param fn fun()
+---@param fn F
+---@return F
 function M.throttle(ms, fn)
   local timer = vim.loop.new_timer()
   local running = false
   local first = true
 
-  return function()
+  return function(...)
+    local args = { ... }
+    local wrapped = function()
+      fn(unpack(args))
+    end
     if not running then
       if first then
-        fn()
+        wrapped()
         first = false
       end
 
       timer:start(ms, 0, function()
         running = false
-        vim.schedule(fn)
+        vim.schedule(wrapped)
       end)
 
       running = true
