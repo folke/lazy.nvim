@@ -53,12 +53,6 @@ function M.setup()
       M.set_hl()
     end,
   })
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "VeryLazy",
-    callback = function()
-      M.set_hl()
-    end,
-  })
 end
 
 return M
