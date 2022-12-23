@@ -1,24 +1,40 @@
 name: 🐞 Bug
 description: File a bug/issue
-title: "[bug]: <title>"
+title: "bug: "
 labels: [bug]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        _Before reporting:_ search [existing issues](https://github.com/folke/lazy.nvim/issues).
+        Usage questions such as "How do I...?" belong on the [Discussions](https://github.com/folke/lazy.nvim/discussions) and will be closed.
   - type: checkboxes
     attributes:
       label: Did you check docs and existing issues?
       description: Make sure you checked all of the below before submitting an issue
       options:
-        - label: I have read all the lazy documentation
+        - label: I have read all the lazy docs
           required: true
         - label: I have searched the existing issues of lazy
           required: true
         - label: I have searched the exsiting issues of the plugin I have a problem with
           required: true
+  - type: input
+    attributes:
+      label: "Neovim version (nvim -v)"
+      placeholder: "0.8.0 commit db1b0ee3b30f"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Operating system/version"
+      placeholder: "MacOS 11.5"
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Describe the bug
       description: A clear and concise description of what the bug is. Please include any related errors you see in Neovim.
-      render: Markdown
     validations:
       required: true
   - type: textarea
@@ -29,7 +45,6 @@ body:
         1.
         2. 
         3.
-      render: Markdown
     validations:
       required: true
   - type: textarea
