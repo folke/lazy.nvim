@@ -589,10 +589,10 @@ For a real-life example, you can check my personal dots:
 - `keys` spec is [different](#%EF%B8%8F-lazy-key-mappings)
 
 With packer `wants`, `requires` and `after` can be used to manage dependencies.
-With most of the lua dependencies this isn't necessary. They can be installed just like normal plugins (even with `lazy=true`) and will be loaded when other plugins need them.
+With lazy, this isn't needed for most of the lua dependencies. They can be installed just like normal plugins
+(even with `lazy=true`) and will be loaded when other plugins need them.
 The `dependencies` key can be used to group those required plugins with the one that requires them.
 The plugins which are added as `dependencies` will always be lazy-loaded and loaded when the plugin is loaded.
-
 
 ### [paq-nvim](https://github.com/savq/paq-nvim)
 
