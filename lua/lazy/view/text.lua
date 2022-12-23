@@ -39,7 +39,7 @@ function Text:append(str, hl, opts)
     if l > 1 then
       self:nl()
     end
-    if self:col() > 0 and self:col() + vim.fn.strwidth(line) + self.padding > self.wrap then
+    if str ~= "" and self:col() > 0 and self:col() + vim.fn.strwidth(line) + self.padding > self.wrap then
       self:nl()
     end
     table.insert(self._lines[#self._lines], {
@@ -132,27 +132,7 @@ function Text:highlight(patterns)
   end
 end
 
-function Text:center()
-  local last = self._lines[#self._lines]
-  if not last then
-    return
-  end
-  local width = 0
-  for _, segment in ipairs(last) do
-    width = width + vim.fn.strwidth(segment.str)
-  end
-  width = vim.api.nvim_win_get_width(self.win) - 2 * self.padding - width
-  table.insert(last, 1, {
-    str = string.rep(" ", math.floor(width / 2 + 0.5)),
-  })
-  return self
-end
-
 function Text:trim()
-  -- while #self._lines > 0 and #self._lines[1] == 0 do
-  --   table.remove(self._lines, 1)
-  -- end
-
   while #self._lines > 0 and #self._lines[#self._lines] == 0 do
     table.remove(self._lines)
   end
