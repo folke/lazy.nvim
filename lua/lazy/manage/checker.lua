@@ -14,7 +14,9 @@ function M.start()
   M.check()
 end
 
-function M.fast_check()
+---@param opts? {report:boolean} report defaults to true
+function M.fast_check(opts)
+  opts = opts or {}
   for _, plugin in pairs(Config.plugins) do
     if not plugin.pin and plugin._.installed then
       plugin._.has_updates = nil
@@ -25,7 +27,9 @@ function M.fast_check()
       end
     end
   end
-  M.report()
+  if opts.report ~= false then
+    M.report()
+  end
 end
 
 function M.check()
