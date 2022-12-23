@@ -379,7 +379,7 @@ CONFIGURATION                                        *lazy.nvim-configuration*
       performance = {
         cache = {
           enabled = true,
-          path = vim.fn.stdpath("state") .. "/lazy/cache",
+          path = vim.fn.stdpath("cache") .. "/lazy/cache",
           -- Once one of the following events triggers, caching will be disabled.
           -- To cache all modules, set this to `{}`, but that is not recommended.
           -- The default is to disable on:
@@ -642,6 +642,7 @@ PACKER.NVIM <HTTPS://GITHUB.COM/WBTHOMASON/PACKER.NVIM> ~
 - `disable=true` `enabled = false`
 - `tag=''` `version=""`
 - `module` is auto-loaded. No need to specify
+- `keys` spec is |lazy.nvim-different|
 
 
 PAQ-NVIM <HTTPS://GITHUB.COM/SAVQ/PAQ-NVIM> ~
