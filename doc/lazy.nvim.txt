@@ -294,7 +294,8 @@ EXAMPLES ~
       {
         "monaqa/dial.nvim",
         -- lazy-load on keys
-        keys = { "<C-a>", "<C-x>" },
+        -- mode is `n` by default. For more advanced options, check the section on key mappings
+        keys = { "<C-a>", { "<C-x>", mode = "n" } },
       },
     
       -- local plugins need to be explicitly configured with dir
@@ -641,6 +642,8 @@ PACKER.NVIM <HTTPS://GITHUB.COM/WBTHOMASON/PACKER.NVIM> ~
 - `lock` `pin`
 - `disable=true` `enabled = false`
 - `tag=''` `version=""`
+- `after` **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `wants` **_not needed_** for most use-cases. Use `dependencies` otherwise.
 - `module` is auto-loaded. No need to specify
 - `keys` spec is |lazy.nvim-different|
 
