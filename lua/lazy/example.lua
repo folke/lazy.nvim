@@ -58,7 +58,6 @@ return {
   {
     "cshuaimin/ssr.nvim",
     -- init is always executed during startup, but doesn't load the plugin yet.
-    -- init implies lazy loading
     init = function()
       vim.keymap.set({ "n", "x" }, "<leader>cR", function()
         -- this require will automatically load the plugin
