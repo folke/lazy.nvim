@@ -1,4 +1,5 @@
 local Config = require("lazy.core.config")
+local Util = require("lazy.util")
 
 ---@alias TextSegment {str: string, hl?:string|Extmark}
 ---@alias Extmark {hl_group?:string, col?:number, end_col?:number}
@@ -86,7 +87,13 @@ function Text:render(buf)
 
         local extmark_col = extmark.col or col
         extmark.col = nil
-        vim.api.nvim_buf_set_extmark(buf, Config.ns, l - 1, extmark_col, extmark)
+        local ok = pcall(vim.api.nvim_buf_set_extmark, buf, Config.ns, l - 1, extmark_col, extmark)
+        if not ok then
+          Util.error(
+            "Failed to set extmark. Please report a bug with this info:\n"
+              .. vim.inspect({ segment = segment, line = line })
+          )
+        end
       end
 
       col = col + width
