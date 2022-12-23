@@ -44,6 +44,9 @@
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
 
+- [ ] document highlight groups
+- [ ] document user events
+
 - [x] check in cache if rtp files match
 - [x] I think the installation section, specifically the loading part, could use an
       extra sentence or two. I was confused on what `config.plugins` was initially.
