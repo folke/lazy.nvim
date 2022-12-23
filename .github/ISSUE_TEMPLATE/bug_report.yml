@@ -6,8 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        _Before reporting:_ search [existing issues](https://github.com/folke/lazy.nvim/issues).
-        Usage questions such as "How do I...?" belong on the [Discussions](https://github.com/folke/lazy.nvim/discussions) and will be closed.
+        **Before** reporting an issue, make sure to search [existing issues](https://github.com/folke/lazy.nvim/issues).
+        Usage questions such as ***"How do I...?"*** belong in [Discussions](https://github.com/folke/lazy.nvim/discussions) and will be closed.
   - type: checkboxes
     attributes:
       label: Did you check docs and existing issues?
@@ -56,7 +56,7 @@ body:
   - type: textarea
     attributes:
       label: Repro
-      description: Minimal init.lua to reproduce this issue
+      description: Minimal `init.lua` to reproduce this issue. Save as `repro.lua` and run with `nvim -u repro.lua`
       value: |
         -- DO NOT change the paths and don't remove the colorscheme
         local root = vim.fn.fnamemodify("./.repro", ":p")
