@@ -152,6 +152,11 @@ When `[2]` is `nil`, then the real mapping has to be created by the `config()` f
       require("neo-tree").setup()
       end,
 }
+
+-- Example for vim-surround
+{
+    "tpope/surround", keys = { { 'S', mode = 'v' }, 'y', 'd', 'c' }
+}
 ```
 
 ### Versioning
