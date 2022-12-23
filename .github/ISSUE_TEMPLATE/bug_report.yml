@@ -6,9 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        **Before** reporting an issue, make sure to
-        read the [documentation](https://github.com/folke/lazy.nvim) and
-        search [existing issues](https://github.com/folke/lazy.nvim/issues).
+        **Before** reporting an issue, make sure to read the [documentation](https://github.com/folke/lazy.nvim) and search [existing issues](https://github.com/folke/lazy.nvim/issues).
         Usage questions such as ***"How do I...?"*** belong in [Discussions](https://github.com/folke/lazy.nvim/discussions) and will be closed.
   - type: checkboxes
     attributes:
