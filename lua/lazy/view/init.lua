@@ -2,6 +2,7 @@ local Util = require("lazy.util")
 local Render = require("lazy.view.render")
 local Config = require("lazy.core.config")
 local ViewConfig = require("lazy.view.config")
+local Git = require("lazy.manage.git")
 
 ---@class LazyViewState
 ---@field mode string
@@ -95,7 +96,7 @@ function M.create(opts)
     end
   end)
 
-  self:setup_hover()
+  self:setup_patterns()
   self:setup_modes()
   return self
 end
@@ -226,16 +227,10 @@ function M:mount()
   vim.wo[self.win].winhighlight = "Normal:LazyNormal"
 end
 
-function M:setup_hover()
-  local handlers = {
-    ["%s(" .. string.rep("[a-z0-9]", 7) .. ")%s"] = function(hash)
-      self:open_url("/commit/" .. hash)
-    end,
-    ["%s(" .. string.rep("[a-z0-9]", 7) .. ")$"] = function(hash)
-      self:open_url("/commit/" .. hash)
-    end,
-    ["^(" .. string.rep("[a-z0-9]", 7) .. ")%s"] = function(hash)
-      self:open_url("/commit/" .. hash)
+function M:setup_patterns()
+  self:on_pattern(ViewConfig.keys.hover, {
+    ["%f[a-z0-9](" .. string.rep("[a-z0-9]", 7) .. ")%f[^a-z0-9]"] = function(hash)
+      self:diff({ commit = hash, browser = true })
     end,
     ["#(%d+)"] = function(issue)
       self:open_url("/issues/" .. issue)
@@ -250,14 +245,62 @@ function M:setup_hover()
     ["(https?://%S+)"] = function(url)
       Util.open(url)
     end,
-  }
+  }, self.hover)
+function M:hover()
+  if self:diff({ browser = true }) then
+    return
+  end
+  self:open_url("")
+end
 
-  self:on_key(ViewConfig.keys.hover, function()
+---@alias LazyDiff string|{from:string, to:string}
+
+---@param opts? {commit?:string, browser:boolean}
+function M:diff(opts)
+  opts = opts or {}
+  local plugin = self.render:get_plugin()
+  if plugin then
+    local diff
+    if opts.commit then
+      diff = opts.commit
+    elseif plugin._.updated then
+      diff = plugin._.updated
+    else
+      local info = assert(Git.info(plugin.dir))
+      local target = assert(Git.get_target(plugin))
+      diff = { from = info.commit, to = target.commit }
+    end
+
+    if not diff then
+      return
+    end
+
+    if opts.browser then
+      if plugin.url then
+        local url = plugin.url:gsub("%.git$", "")
+        if type(diff) == "string" then
+          Util.open(url .. "/commit/" .. diff)
+        else
+          Util.open(url .. "/compare/" .. diff.from .. ".." .. diff.to)
+        end
+      else
+        Util.error("No url for " .. plugin.name)
+      end
+    end
+  end
+end
+
+--- will create a key mapping that can be used on certain patterns
+---@param key string
+---@param patterns table<string, fun(str:string)>
+---@param fallback? fun(self)
+function M:on_pattern(key, patterns, fallback)
+  self:on_key(key, function()
     local line = vim.api.nvim_get_current_line()
     local pos = vim.api.nvim_win_get_cursor(0)
     local col = pos[2] + 1
 
-    for pattern, handler in pairs(handlers) do
+    for pattern, handler in pairs(patterns) do
       local from = 1
       local to, url
       while from do
@@ -269,6 +312,9 @@ function M:setup_hover()
           from = to + 1
         end
       end
+    end
+    if fallback then
+      fallback(self)
     end
   end)
 end
