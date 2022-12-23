@@ -5,6 +5,13 @@ local Config = require("lazy.core.config")
 ---@class LazyViewState
 ---@field mode string
 ---@field plugin? string
+local default_state = {
+  mode = "home",
+  profile = {
+    threshold = 0,
+    sort_time_taken = true,
+  },
+}
 
 ---@class LazyView
 ---@field buf number
@@ -69,7 +76,7 @@ function M.create(opts)
   opts = opts or {}
   local self = setmetatable({}, { __index = M })
 
-  self.state = { mode = "home" }
+  self.state = vim.deepcopy(default_state)
 
   self:mount()
 
@@ -93,6 +100,33 @@ function M.create(opts)
     if plugin then
       self.state.plugin = self.state.plugin ~= plugin.name and plugin.name or nil
       self:update()
+    end
+  end)
+
+  self:on_key("<C-s>", function()
+    if self.state.mode == "profile" then
+      self.state.profile.sort_time_taken = not self.state.profile.sort_time_taken
+      self:update()
+    end
+  end)
+
+  self:on_key("<C-f>", function()
+    if self.state.mode == "profile" then
+      vim.ui.input({
+        prompt = "Enter time threshold in ms, like 0.5",
+        default = tostring(self.state.profile.threshold),
+      }, function(input)
+        if not input then
+          return
+        end
+        local num = input == "" and 0 or tonumber(input)
+        if not num then
+          Util.error("Please input a number")
+        else
+          self.state.profile.threshold = num
+          self:update()
+        end
+      end)
     end
   end)
 

@@ -145,6 +145,7 @@ function M:help()
   self:append("Help", "LazyH2"):nl():nl()
 
   self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl()
+  self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl()
 
   self:append("Most properties can be hovered with ")
   self:append("<K>", "LazySpecial")
@@ -459,6 +460,18 @@ end
 
 function M:profile()
   self:append("Profile", "LazyH2"):nl():nl()
+  self
+    :append("You can press ")
+    :append("<C-s>", "LazySpecial")
+    :append(" to change sorting between chronological order & time taken.")
+    :nl()
+  self
+    :append("Press ")
+    :append("<C-f>", "LazySpecial")
+    :append(" to filter profiling entries that took more time than a given threshold")
+    :nl()
+
+  self:nl()
   local symbols = {
     "●",
     "➜",
@@ -466,21 +479,44 @@ function M:profile()
     "‒",
   }
 
+  ---@param a LazyProfile
+  ---@param b LazyProfile
+  local function sort(a, b)
+    return a.time > b.time
+  end
+
+  ---@param entry LazyProfile
+  local function get_children(entry)
+    ---@type LazyProfile[]
+    local children = entry
+
+    if self.view.state.profile.sort_time_taken then
+      children = {}
+      for _, child in ipairs(entry) do
+        children[#children + 1] = child
+      end
+      table.sort(children, sort)
+    end
+    return children
+  end
+
   ---@param entry LazyProfile
   local function _profile(entry, depth)
+    if entry.time / 1e6 < self.view.state.profile.threshold then
+      return
+    end
     local data = type(entry.data) == "string" and { source = entry.data } or entry.data
     data.time = entry.time
     local symbol = symbols[depth] or symbols[#symbols]
-    self:append(("  "):rep(depth)):append(" " .. symbol, "LazySpecial"):append(" ")
+    self:append(("  "):rep(depth)):append(symbol, "LazySpecial"):append(" ")
     self:reason(data, { time_right = true })
     self:nl()
-
-    for _, child in ipairs(entry) do
+    for _, child in ipairs(get_children(entry)) do
       _profile(child, depth + 1)
     end
   end
 
-  for _, entry in ipairs(Util._profiles[1]) do
+  for _, entry in ipairs(get_children(Util._profiles[1])) do
     _profile(entry, 1)
   end
 end
