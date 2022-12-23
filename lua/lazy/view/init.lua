@@ -1,6 +1,7 @@
 local Util = require("lazy.util")
 local Render = require("lazy.view.render")
 local Config = require("lazy.core.config")
+local ViewConfig = require("lazy.view.config")
 
 ---@class LazyViewState
 ---@field mode string
@@ -20,42 +21,6 @@ local default_state = {
 ---@field state LazyViewState
 ---@field win_opts LazyViewWinOpts
 local M = {}
-
-M.modes = {
-  { name = "home", key = "H", desc = "Go back to plugin list" },
-  { name = "install", key = "I", desc = "Install missing plugins" },
-  { name = "update", key = "U", desc = "Update all plugins. This will also update the lockfile" },
-  { name = "sync", key = "S", desc = "Run install, clean and update" },
-  { name = "clean", key = "X", desc = "Clean plugins that are no longer needed" },
-  { name = "check", key = "C", desc = "Check for updates and show the log (git fetch)" },
-  { name = "log", key = "L", desc = "Show recent updates for all plugins" },
-  { name = "restore", key = "R", desc = "Updates all plugins to the state in the lockfile" },
-  { name = "profile", key = "P", desc = "Show detailed profiling", toggle = true },
-  { name = "debug", key = "D", desc = "Show debug information", toggle = true },
-  { name = "help", key = "?", desc = "Toggle this help page", toggle = true },
-  { name = "clear", desc = "Clear finished tasks", hide = true },
-  {
-    name = "load",
-    desc = "Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`",
-    hide = true,
-    plugin = true,
-  },
-  { name = "sync", desc = "Run install, clean and update", hide = true, plugin = true },
-
-  { plugin = true, name = "update", key = "u", desc = "Update this plugin. This will also update the lockfile" },
-  {
-    plugin = true,
-    name = "clean",
-    key = "x",
-    desc = "Delete this plugin. WARNING: this will delete the plugin even if it should be installed!",
-  },
-  { plugin = true, name = "check", key = "c", desc = "Check for updates for this plugin and show the log (git fetch)" },
-  { plugin = true, name = "install", key = "i", desc = "Install this plugin" },
-  { plugin = true, name = "log", key = "gl", desc = "Show recent updates for this plugin" },
-  { plugin = true, name = "restore", key = "r", desc = "Restore this plugin to the state in the lockfile" },
-}
-
-M.hover = "K"
 
 ---@type LazyView
 M.view = nil
@@ -83,7 +48,7 @@ function M.create(opts)
   self.render = Render.new(self)
   self.update = Util.throttle(Config.options.ui.throttle, self.update)
 
-  self:on_key("q", self.close)
+  self:on_key(ViewConfig.keys.close, self.close)
 
   self:on({ "BufDelete", "BufLeave", "BufHidden" }, self.close, { once = true })
 
@@ -95,7 +60,7 @@ function M.create(opts)
   end)
 
   -- plugin details
-  self:on_key("<cr>", function()
+  self:on_key(ViewConfig.keys.details, function()
     local plugin = self.render:get_plugin()
     if plugin then
       self.state.plugin = self.state.plugin ~= plugin.name and plugin.name or nil
@@ -103,14 +68,14 @@ function M.create(opts)
     end
   end)
 
-  self:on_key("<C-s>", function()
+  self:on_key(ViewConfig.keys.profile_sort, function()
     if self.state.mode == "profile" then
       self.state.profile.sort_time_taken = not self.state.profile.sort_time_taken
       self:update()
     end
   end)
 
-  self:on_key("<C-f>", function()
+  self:on_key(ViewConfig.keys.profile_filter, function()
     if self.state.mode == "profile" then
       vim.ui.input({
         prompt = "Enter time threshold in ms, like 0.5",
@@ -160,12 +125,14 @@ end
 
 ---@param key string
 ---@param fn fun(self?)
-function M:on_key(key, fn)
+---@param desc? string
+function M:on_key(key, fn, desc)
   vim.keymap.set("n", key, function()
     fn(self)
   end, {
     nowait = true,
     buffer = self.buf,
+    desc = desc,
   })
 end
 
@@ -285,7 +252,7 @@ function M:setup_hover()
     end,
   }
 
-  self:on_key(M.hover, function()
+  self:on_key(ViewConfig.keys.hover, function()
     local line = vim.api.nvim_get_current_line()
     local pos = vim.api.nvim_win_get_cursor(0)
     local col = pos[2] + 1
@@ -307,23 +274,23 @@ function M:setup_hover()
 end
 
 function M:setup_modes()
-  for _, m in ipairs(M.modes) do
+  local Commands = require("lazy.view.commands")
+  for name, m in pairs(ViewConfig.commands) do
     if m.key then
       self:on_key(m.key, function()
-        local Commands = require("lazy.view.commands")
-        if m.plugin then
-          local plugin = self.render:get_plugin()
-          if plugin then
-            Commands.cmd(m.name, { plugins = { plugin } })
-          end
-        else
-          if self.state.mode == m.name and m.toggle then
-            self.state.mode = "home"
-            return self:update()
-          end
-          Commands.cmd(m.name)
+        if self.state.mode == name and m.toggle then
+          return self:update("home")
         end
-      end)
+        Commands.cmd(name)
+      end, m.desc)
+    end
+    if m.key_plugin then
+      self:on_key(m.key_plugin, function()
+        local plugin = self.render:get_plugin()
+        if plugin then
+          Commands.cmd(name, { plugins = { plugin } })
+        end
+      end, m.desc_plugin)
     end
   end
 end

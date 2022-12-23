@@ -75,15 +75,7 @@ end
 
 function M.commands()
   local commands = require("lazy.view.commands").commands
-  ---@type table<string,{desc:string, plugin:boolean, opts:boolean}>
-  local modes = {}
-  for _, mode in ipairs(require("lazy.view").modes) do
-    modes[mode.name] = modes[mode.name] or {}
-    modes[mode.name].plugin = modes[mode.name].plugin or mode.plugin
-    if not modes[mode.name].desc or not mode.plugin then
-      modes[mode.name].desc = mode.desc
-    end
-  end
+  local modes = require("lazy.view.config").commands
   modes.load.opts = true
   local lines = {
     { "Command", "Lua", "Description" },
@@ -91,13 +83,13 @@ function M.commands()
   }
   Util.foreach(modes, function(name, mode)
     if commands[name] then
-      if mode.opts then
+      if mode.plugins_required then
         lines[#lines + 1] = {
           ("`:Lazy %s {plugins}`"):format(name),
           ([[`require("lazy").%s(opts)`]]):format(name),
           mode.desc,
         }
-      elseif mode.plugin then
+      elseif mode.plugins then
         lines[#lines + 1] = {
           ("`:Lazy %s [plugins]`"):format(name),
           ([[`require("lazy").%s(opts?)`]]):format(name),

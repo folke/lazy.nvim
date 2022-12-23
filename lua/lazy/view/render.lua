@@ -4,6 +4,7 @@ local Sections = require("lazy.view.sections")
 local Handler = require("lazy.core.handler")
 local Git = require("lazy.manage.git")
 local Plugin = require("lazy.core.plugin")
+local ViewConfig = require("lazy.view.config")
 
 local Text = require("lazy.view.text")
 
@@ -97,8 +98,8 @@ end
 
 function M:title()
   self:nl():nl()
-  for _, mode in ipairs(self.view.modes) do
-    if not mode.hide and not mode.plugin then
+  for _, mode in ipairs(ViewConfig.get_commands()) do
+    if mode.button then
       local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
       if mode.name == "home" then
         if self.view.state.mode == "home" then
@@ -145,21 +146,35 @@ function M:help()
   self:append("Help", "LazyH2"):nl():nl()
 
   self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl()
-  self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl()
 
   self:append("Most properties can be hovered with ")
   self:append("<K>", "LazySpecial")
   self:append(" to open links, help files, readmes and git commits."):nl():nl()
 
   self:append("Keyboard Shortcuts", "LazyH2"):nl()
-  for _, mode in ipairs(self.view.modes) do
-    local title = mode.name:sub(1, 1):upper() .. mode.name:sub(2)
-    self:append("- ", "LazySpecial", { indent = 2 })
-    self:append(title, "Title")
+  for _, mode in ipairs(ViewConfig.get_commands()) do
     if mode.key then
-      self:append(" <" .. mode.key .. ">", "LazyKey")
+      local title = mode.name:sub(1, 1):upper() .. mode.name:sub(2)
+      self:append("- ", "LazySpecial", { indent = 2 })
+      self:append(title, "Title")
+      if mode.key then
+        self:append(" <" .. mode.key .. ">", "LazyKey")
+      end
+      self:append(" " .. (mode.desc or "")):nl()
     end
-    self:append(" " .. (mode.desc or "")):nl()
+  end
+
+  self:nl():append("Keyboard Shortcuts for Plugins", "LazyH2"):nl()
+  for _, mode in ipairs(ViewConfig.get_commands()) do
+    if mode.key_plugin then
+      local title = mode.name:sub(1, 1):upper() .. mode.name:sub(2)
+      self:append("- ", "LazySpecial", { indent = 2 })
+      self:append(title, "Title")
+      if mode.key_plugin then
+        self:append(" <" .. mode.key_plugin .. ">", "LazyKey")
+      end
+      self:append(" " .. (mode.desc_plugin or mode.desc)):nl()
+    end
   end
 end
 

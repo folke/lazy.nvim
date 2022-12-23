@@ -2,6 +2,7 @@ local View = require("lazy.view")
 local Manage = require("lazy.manage")
 local Util = require("lazy.util")
 local Config = require("lazy.core.config")
+local ViewConfig = require("lazy.view.config")
 
 local M = {}
 
@@ -9,7 +10,7 @@ local M = {}
 ---@param opts? ManagerOpts
 function M.cmd(cmd, opts)
   cmd = cmd == "" and "home" or cmd
-  local command = M.commands[cmd]
+  local command = M.commands[cmd] --[[@as fun(opts)]]
   if command == nil then
     Util.error("Invalid lazy command '" .. cmd .. "'")
   else
@@ -55,15 +56,10 @@ M.commands = {
 }
 
 function M.complete(cmd, prefix)
-  local with_plugins = false
-  for _, mode in ipairs(View.modes) do
-    if mode.name == cmd and mode.plugin then
-      with_plugins = true
-    end
-  end
-  if not with_plugins then
+  if not ViewConfig.commands[cmd].plugins then
     return
   end
+  ---@type string[]
   local plugins = {}
   for name, plugin in pairs(Config.plugins) do
     if cmd ~= "load" or not plugin._.loaded then
@@ -83,6 +79,7 @@ function M.setup()
     local opts = { wait = cmd.bang == true }
     local prefix, args = M.parse(cmd.args)
     if #args > 0 then
+      ---@param plugin string
       opts.plugins = vim.tbl_map(function(plugin)
         return Config.plugins[plugin]
       end, args)
