@@ -254,7 +254,8 @@ return {
   {
     "monaqa/dial.nvim",
     -- lazy-load on keys
-    keys = { "<C-a>", "<C-x>" },
+    -- mode is `n` by default. For more advanced options, check the section on key mappings
+    keys = { "<C-a>", { "<C-x>", mode = "n" } },
   },
 
   -- local plugins need to be explicitly configured with dir
@@ -582,6 +583,8 @@ For a real-life example, you can check my personal dots:
 - `lock` ➡️ `pin`
 - `disable=true` ➡️ `enabled = false`
 - `tag='*'` ➡️ `version="*"`
+- `after` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `wants` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
 - `module` is auto-loaded. No need to specify
 - `keys` spec is [different](#%EF%B8%8F-lazy-key-mappings)
 
