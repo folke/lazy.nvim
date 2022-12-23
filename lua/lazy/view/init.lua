@@ -9,7 +9,7 @@ local default_state = {
   mode = "home",
   profile = {
     threshold = 0,
-    sort_time_taken = true,
+    sort_time_taken = false,
   },
 }
 
