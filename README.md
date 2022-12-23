@@ -86,7 +86,7 @@ require("lazy").setup({
 | **url**          | `string?`                               | A custom git url where the plugin is hosted                                                                                                                                                   |
 | **name**         | `string?`                               | A custom name for the plugin used for the local plugin directory and as the display name                                                                                                      |
 | **dev**          | `boolean?`                              | When `true`, a local plugin directory will be used instead. See `config.dev`                                                                                                                  |
-| **lazy**         | `boolean?`                              | When `true`, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their lua modules are `required`, or when one of the laz-loading handlers triggers |
+| **lazy**         | `boolean?`                              | When `true`, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their Lua modules are `required`, or when one of the lazy-loading handlers triggers |
 | **enabled**      | `boolean?` or `fun():boolean`           | When `false`, or if the `function` returns false, then this plugin will not be used                                                                                                           |
 | **dependencies** | `LazySpec[]`                            | A list of plugin specs that should be loaded when the plugin loads. Dependencies are always lazy-loaded unless specified otherwise                                                            |
 | **init**         | `fun(LazyPlugin)`                       | `init` functions are always executed during startup                                                                                                                                           |
@@ -101,7 +101,7 @@ require("lazy").setup({
 | **cmd**          | `string?` or `string[]`                 | Lazy-load on command                                                                                                                                                                          |
 | **ft**           | `string?` or `string[]`                 | Lazy-load on filetype                                                                                                                                                                         |
 | **keys**         | `string?` or `string[]` or `LazyKeys[]` | Lazy-load on key mapping                                                                                                                                                                      |
-| **module**       | `false?`                                | Do not automatically load this lua module when it's required somewhere                                                                                                                        |
+| **module**       | `false?`                                | Do not automatically load this Lua module when it's required somewhere                                                                                                                        |
 
 ### Lazy Loading
 
@@ -493,13 +493,13 @@ It is recommended to have this file under version control.
 If you use your Neovim config on multiple machines, using the lockfile, you can
 ensure that the same version of every plugin is installed.
 
-On the other machine, you can do `Lazy restore`, to update all your plugins to
-the version from the lockfile
+If you are on another machine, you can do `:Lazy restore`, to update all your plugins to
+the version from the lockfile.
 
 ## ⚡ Performance
 
 Great care has been taken to make the startup code (`lazy.core`) as efficient as possible.
-During startup, all lua files used before `VimEnter` or `BufReadPre` are byte-compiled and cached,
+During startup, all Lua files used before `VimEnter` or `BufReadPre` are byte-compiled and cached,
 similar to what [impatient.nvim](https://github.com/lewis6991/impatient.nvim) does.
 
 My config for example loads in about `11ms` with `93` plugins. I do a lot of lazy-loading though :)
@@ -533,7 +533,7 @@ Files from runtime directories are always sourced in alphabetical order.
 ## 📂 Structuring Your Plugins
 
 Some users may want to split their plugin specs in multiple files.
-Instead of passing a spec table to `setup()`, you can use a lua module.
+Instead of passing a spec table to `setup()`, you can use a Lua module.
 The specs from the **module** and any **sub-modules** will be merged together in the final spec,
 so it is not needed to add `require` calls in your main plugin file to the other files.
 
