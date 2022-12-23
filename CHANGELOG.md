@@ -1,5 +1,45 @@
 # Changelog
 
+## [7.0.0](https://github.com/folke/lazy.nvim/compare/v6.0.0...v7.0.0) (2022-12-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* default lazy cache path is now under cache instead of state
+* `init()` no longer implies lazy-loading. Add `lazy=false` for affected plugins
+* run `init()` before loading start plugins. Fixes #107
+
+### Features
+
+* `init()` no longer implies lazy-loading. Add `lazy=false` for affected plugins ([8112640](https://github.com/folke/lazy.nvim/commit/81126403a89b78e6a75948ba5cea15d9499d2025))
+* **loader:** automatically lazy-load colorschemes ([07b4677](https://github.com/folke/lazy.nvim/commit/07b467738d3ca0863e957a2bca86825f6aff92df))
+* **spec:** `config` can be `true` or a `table` that will be passed to `require("plugin").setup(config)` ([2a7b004](https://github.com/folke/lazy.nvim/commit/2a7b0047dd25f543b147b692fe100e1b2d88ffb2))
+* **spec:** allow using plugin names in dependencies ([4bf771a](https://github.com/folke/lazy.nvim/commit/4bf771a6b255fd91b2e16a21da20d55f7f274f05))
+* **ui:** added options to sort/filter profiling data ([7dfb9c1](https://github.com/folke/lazy.nvim/commit/7dfb9c1f5cb8dcad4133a93da68cbdb5c8001035))
+
+
+### Bug Fixes
+
+* added error message to debug failing extmarks [#117](https://github.com/folke/lazy.nvim/issues/117) ([65e9036](https://github.com/folke/lazy.nvim/commit/65e903652bfac5e83d4df8246a29e45c07865c34))
+* **checker:** dont report updates on install during startup ([8251c23](https://github.com/folke/lazy.nvim/commit/8251c23c90c15ef5197638777f85ef69402a2725))
+* **install:** make sure to setup loaders before attempting install so colorscheme can load. Fixes [#122](https://github.com/folke/lazy.nvim/issues/122) ([7b9b476](https://github.com/folke/lazy.nvim/commit/7b9b476a6238a53062c1c8e4331fcef054bb8761))
+* **keys:** don't create with remap! ([b440b3a](https://github.com/folke/lazy.nvim/commit/b440b3ac2d6945fab62fbfc2f2dbe9db3d9d9fe2))
+* **keys:** dont delete handlers manually. Let loader do that ([72b3899](https://github.com/folke/lazy.nvim/commit/72b38999bc547a96c769d1de964a846570cfe5d1))
+* **keys:** key handlers were not working after reload ([3f60f2d](https://github.com/folke/lazy.nvim/commit/3f60f2dc13faf4d958fdaec16596436ade2ec23d))
+* **manage:** do not reload pugins on clear ([b5d6afc](https://github.com/folke/lazy.nvim/commit/b5d6afc4fa4520a986db4898f6b22b267fc041f9))
+* pass plugins instead of plugin names to command. Fixes [#103](https://github.com/folke/lazy.nvim/issues/103) ([42f5aa7](https://github.com/folke/lazy.nvim/commit/42f5aa76e21ec34b3d7fc79218e5069610d7db2e))
+* remove debug print ([08d458c](https://github.com/folke/lazy.nvim/commit/08d458c5ba595c3ae2801215abf2d5cc09aca211))
+* remove lazy keymaps with the correct mode. Fixes [#97](https://github.com/folke/lazy.nvim/issues/97) ([56890ce](https://github.com/folke/lazy.nvim/commit/56890ce5f439e9bbf275ed5ec2573b4e29371bb5))
+* run `init()` before loading start plugins. Fixes [#107](https://github.com/folke/lazy.nvim/issues/107) ([2756a6f](https://github.com/folke/lazy.nvim/commit/2756a6f756758d62eeb4cac64d8c5efbc8878cd1))
+* **ui:** fix buffer being properly deleted ([#112](https://github.com/folke/lazy.nvim/issues/112)) ([9e98389](https://github.com/folke/lazy.nvim/commit/9e983898b131d4975680bbda023224bb90a32daf))
+* **ui:** fixed extmarks while wrapping. Fixes [#124](https://github.com/folke/lazy.nvim/issues/124) ([e973323](https://github.com/folke/lazy.nvim/commit/e973323e95d9cd9ebf41583c94a8c7433d5ae19c))
+* **ui:** sort profiling chronological by default ([50e3b91](https://github.com/folke/lazy.nvim/commit/50e3b917675b8bd693548089aeda7e9cbe881001))
+
+
+### Code Refactoring
+
+* default lazy cache path is now under cache instead of state ([cc6276e](https://github.com/folke/lazy.nvim/commit/cc6276e9b069b5c0c3bdef27dd029722b13bf17d))
+
 ## [6.0.0](https://github.com/folke/lazy.nvim/compare/v5.2.0...v6.0.0) (2022-12-22)
 
 
