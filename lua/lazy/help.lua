@@ -29,6 +29,7 @@ function M.index(plugin)
 end
 
 function M.update()
+  vim.cmd.helptags(Config.plugins["lazy.nvim"].dir .. "/doc")
   local docs = Config.options.readme.root .. "/doc"
   vim.fn.mkdir(docs, "p")
 
