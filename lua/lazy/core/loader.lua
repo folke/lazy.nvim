@@ -11,23 +11,6 @@ M.init_done = false
 M.disabled_rtp_plugins = { packer_compiled = true }
 
 function M.setup()
-  -- install missing plugins
-  if Config.options.install.missing then
-    Util.track("install")
-    for _, plugin in pairs(Config.plugins) do
-      if not plugin._.installed then
-        for _, colorscheme in ipairs(Config.options.install.colorscheme) do
-          if pcall(vim.cmd.colorscheme, colorscheme) then
-            break
-          end
-        end
-        require("lazy.manage").install({ wait = true })
-        break
-      end
-    end
-    Util.track()
-  end
-
   -- setup handlers
   Util.track("handlers")
   Handler.setup()
@@ -45,6 +28,23 @@ function M.setup()
 
   -- autoload opt plugins
   table.insert(package.loaders, M.autoload)
+
+  -- install missing plugins
+  if Config.options.install.missing then
+    Util.track("install")
+    for _, plugin in pairs(Config.plugins) do
+      if not plugin._.installed then
+        for _, colorscheme in ipairs(Config.options.install.colorscheme) do
+          if pcall(vim.cmd.colorscheme, colorscheme) then
+            break
+          end
+        end
+        require("lazy.manage").install({ wait = true })
+        break
+      end
+    end
+    Util.track()
+  end
 end
 
 -- Startup sequence
