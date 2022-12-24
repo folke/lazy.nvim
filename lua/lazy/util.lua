@@ -16,8 +16,7 @@ end
 
 function M.open(uri)
   if M.file_exists(uri) then
-    vim.cmd.split()
-    return vim.cmd.view(uri)
+    return M.float({ win_opts = { style = "" }, file = uri })
   end
   local cmd
   if vim.fn.has("win32") == 1 then
@@ -81,6 +80,38 @@ function M.throttle(ms, fn)
 
       running = true
     end
+  end
+end
+
+---@param cmd string[]
+---@param opts? {cwd:string, filetype:string, terminal?:boolean, close_on_exit?:boolean, enter?:boolean}
+function M.open_cmd(cmd, opts)
+  opts = opts or {}
+  local float = M.float()
+
+  if opts.filetype then
+    vim.bo[float.buf].filetype = opts.filetype
+  end
+  if opts.terminal then
+    opts.terminal = nil
+    vim.fn.termopen(cmd, opts)
+    if opts.enter then
+      vim.cmd.startinsert()
+    end
+    if opts.close_on_exit then
+      vim.api.nvim_create_autocmd("TermClose", {
+        once = true,
+        buffer = float.buf,
+        callback = function()
+          float:close()
+        end,
+      })
+    end
+  else
+    local Process = require("lazy.manage.process")
+    local lines = Process.exec(cmd, { cwd = opts.cwd })
+    vim.api.nvim_buf_set_lines(float.buf, 0, -1, false, lines)
+    vim.bo[float.buf].modifiable = false
   end
 end
 
