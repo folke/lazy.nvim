@@ -150,7 +150,7 @@ When `[2]` is `nil`, then the real mapping has to be created by the `config()` f
     },
     config = function()
       require("neo-tree").setup()
-      end,
+    end,
 }
 ```
 
@@ -314,17 +314,17 @@ return {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
-      cmd = " ",
-      config = "",
-      event = "",
-      ft = " ",
-      init = " ",
-      keys = " ",
-      plugin = " ",
+      cmd     = " ",
+      config  = " ",
+      event   = " ",
+      ft      = " ",
+      init    = " ",
+      keys    = " ",
+      plugin  = " ",
       runtime = " ",
-      source = " ",
-      start = "",
-      task = "✔ ",
+      source  = " ",
+      start   = " ",
+      task    = "✔ ",
     },
     throttle = 20, -- how frequently should the ui process render events
     custom_keys = {
@@ -423,17 +423,17 @@ return {
 {
   ui = {
     icons = {
-      cmd = "⌘",
-      config = "🛠",
-      event = "📅",
-      ft = "📂",
-      init = "⚙",
-      keys = "🗝",
-      plugin = "🔌",
+      cmd     = "⌘",
+      config  = "🛠",
+      event   = "📅",
+      ft      = "📂",
+      init    = "⚙",
+      keys    = "🗝",
+      plugin  = "🔌",
       runtime = "💻",
-      source = "📄",
-      start = "🚀",
-      task = "📌",
+      source  = "📄",
+      start   = "🚀",
+      task    = "📌",
     },
   },
 }
