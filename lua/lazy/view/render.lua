@@ -25,7 +25,7 @@ function M.new(view)
   local self = setmetatable({}, { __index = setmetatable(M, { __index = Text }) })
   self.view = view
   self.padding = 2
-  self.wrap = view.win_opts.width
+  self.wrap = view.opts.win_opts.width
   return self
 end
 
@@ -56,8 +56,9 @@ function M:update()
     end
   end
 
-  local mode = self:title()
+  self:title()
 
+  local mode = self.view.state.mode
   if mode == "help" then
     self:help()
   elseif mode == "profile" then
@@ -139,7 +140,6 @@ function M:title()
     end
     self:nl():nl()
   end
-  return self.view.state.mode
 end
 
 function M:help()
@@ -395,12 +395,14 @@ function M:log(task)
       if msg:find("^%S+!:") then
         self:diagnostic({ message = "Breaking Changes", severity = vim.diagnostic.severity.WARN })
       end
-      self:append(ref .. " ", "LazyCommit", { indent = 6 })
+      self:append(ref:sub(1, 7) .. " ", "LazyCommit", { indent = 6 })
       self:append(vim.trim(msg)):highlight({
         ["#%d+"] = "Number",
         ["^%S+:"] = "Title",
         ["^%S+(%(.*%)):"] = "Italic",
         ["`.-`"] = "@text.literal.markdown_inline",
+        ["%*.-%*"] = "Italic",
+        ["%*%*.-%*%*"] = "Bold",
       })
       -- string.gsub
       self:append(" " .. time, "Comment")

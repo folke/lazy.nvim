@@ -327,6 +327,14 @@ return {
       task = "✔ ",
     },
     throttle = 20, -- how frequently should the ui process render events
+  diff = {
+    -- diff command <d> can be one of:
+    -- * browser: opens the github compare view. Note that this is always mapped to <K> as well,
+    --   so you can have a different command for diff <d>
+    -- * git: will run git diff and open a buffer with filetype git
+    -- * terminal_git: will open a pseudo terminal with git diff
+    -- * diffview.nvim: will open Diffview to show the diff
+    cmd = "git",
   },
   checker = {
     -- automatically check for plugin updates

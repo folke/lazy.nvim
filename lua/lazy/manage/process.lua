@@ -109,7 +109,7 @@ function M.spawn(cmd, opts)
 end
 
 ---@param cmd string[]
----@param opts? {cwd:string}
+---@param opts? {cwd:string, env:table}
 function M.exec(cmd, opts)
   opts = opts or {}
   ---@type string[]
@@ -117,6 +117,7 @@ function M.exec(cmd, opts)
   local job = vim.fn.jobstart(cmd, {
     cwd = opts.cwd,
     pty = false,
+    env = opts.env,
     stdout_buffered = true,
     on_stdout = function(_, _lines)
       lines = _lines

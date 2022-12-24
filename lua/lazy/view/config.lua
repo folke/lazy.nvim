@@ -26,6 +26,7 @@ end
 
 M.keys = {
   hover = "K",
+  diff = "d",
   close = "q",
   details = "<cr>",
   profile_sort = "<C-s>",
