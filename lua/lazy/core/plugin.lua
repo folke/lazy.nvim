@@ -19,7 +19,7 @@ local M = {}
 ---@class LazyPluginHooks
 ---@field init? fun(LazyPlugin) Will always be run
 ---@field config? fun(LazyPlugin)|true|table Will be executed when loading the plugin
----@field build? string|fun(LazyPlugin)
+---@field build? string|fun(LazyPlugin)|(string|fun(LazyPlugin))[]
 
 ---@class LazyPluginHandlers: table<LazyHandlerTypes, string|string[]>
 ---@field event? string[]
