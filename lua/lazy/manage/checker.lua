@@ -27,9 +27,7 @@ function M.fast_check(opts)
       end
     end
   end
-  if opts.report ~= false then
-    M.report()
-  end
+  M.report(opts.report ~= false)
 end
 
 function M.check()
@@ -42,7 +40,8 @@ function M.check()
   end)
 end
 
-function M.report()
+---@param notify? boolean
+function M.report(notify)
   local lines = {}
   M.updated = {}
   for _, plugin in pairs(Config.plugins) do
@@ -54,7 +53,7 @@ function M.report()
       end
     end
   end
-  if #lines > 0 and Config.options.checker.notify then
+  if #lines > 0 and notify and Config.options.checker.notify then
     table.insert(lines, 1, "# Plugin Updates")
     Util.info(lines)
   end
