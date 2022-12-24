@@ -96,12 +96,14 @@ function M.create(opts)
   end)
 
   for key, handler in pairs(Config.options.ui.custom_keys) do
-    self:on_key(key, function()
-      local plugin = self.render:get_plugin()
-      if plugin then
-        handler(plugin)
-      end
-    end)
+    if handler then
+      self:on_key(key, function()
+        local plugin = self.render:get_plugin()
+        if plugin then
+          handler(plugin)
+        end
+      end)
+    end
   end
 
   self:setup_patterns()

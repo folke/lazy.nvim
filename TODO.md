@@ -1,4 +1,4 @@
-## ✅ TODO
+# ✅ TODO
 
 - [x] fancy UI to manage all your Neovim plugins
 - [x] auto lazy-loading of lua modules
@@ -46,6 +46,8 @@
 
 - [ ] document highlight groups
 - [ ] document user events
+- [ ] document API, like lazy.plugins()
+- [ ] icons
 
 - [x] check in cache if rtp files match
 - [x] I think the installation section, specifically the loading part, could use an

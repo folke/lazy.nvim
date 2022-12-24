@@ -50,6 +50,31 @@ M.defaults = {
       task = "✔ ",
     },
     throttle = 20, -- how frequently should the ui process render events
+    custom_keys = {
+      -- you can define custom key maps here.
+      -- To disable one of the defaults, set it to false
+
+      -- open lazygit log
+      ["<localleader>l"] = function(plugin)
+        require("lazy.util").open_cmd({ "lazygit", "log" }, {
+          cwd = plugin.dir,
+          terminal = true,
+          close_on_exit = true,
+          enter = true,
+        })
+      end,
+
+      -- open a terminal for the plugin dir
+      ["<localleader>t"] = function(plugin)
+        require("lazy.util").open_cmd({ vim.go.shell }, {
+          cwd = plugin.dir,
+          terminal = true,
+          close_on_exit = true,
+          enter = true,
+        })
+      end,
+    },
+  },
   diff = {
     -- diff command <d> can be one of:
     -- * browser: opens the github compare view. Note that this is always mapped to <K> as well,
