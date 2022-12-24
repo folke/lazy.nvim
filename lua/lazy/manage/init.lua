@@ -9,7 +9,7 @@ local M = {}
 ---@field clear? boolean
 ---@field show? boolean
 ---@field mode? string
----@field plugins? LazyPlugin[]
+---@field plugins? (LazyPlugin|string)[]
 ---@field concurrency? number
 
 ---@param ropts RunnerOpts
@@ -18,6 +18,10 @@ function M.run(ropts, opts)
   opts = opts or {}
 
   if opts.plugins then
+    ---@param plugin string|LazyPlugin
+    opts.plugins = vim.tbl_map(function(plugin)
+      return type(plugin) == "string" and Config.plugins[plugin] or plugin
+    end, vim.tbl_values(opts.plugins))
     ropts.plugins = opts.plugins
   end
 
