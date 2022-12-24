@@ -3,6 +3,8 @@ local Render = require("lazy.view.render")
 local Config = require("lazy.core.config")
 local ViewConfig = require("lazy.view.config")
 local Git = require("lazy.manage.git")
+local Diff = require("lazy.view.diff")
+local Float = require("lazy.view.float")
 
 ---@class LazyViewState
 ---@field mode string
@@ -15,12 +17,9 @@ local default_state = {
   },
 }
 
----@class LazyView
----@field buf number
----@field win number
+---@class LazyView: LazyFloat
 ---@field render LazyRender
 ---@field state LazyViewState
----@field win_opts LazyViewWinOpts
 local M = {}
 
 ---@type LazyView
@@ -32,26 +31,26 @@ function M.show(mode)
     return
   end
 
-  M.view = M.view or M.create({ mode = mode })
-  M.view:update(mode)
+  M.view = (M.view and M.view.win) and M.view or M.create({ mode = mode })
+  if mode then
+    M.view.state.mode = mode
+  end
+  M.view:update()
 end
 
 ---@param opts? {mode?:string}
 function M.create(opts)
+  local self = setmetatable({}, { __index = setmetatable(M, { __index = Float }) })
+  ---@cast self LazyView
+  Float.init(self)
+
   require("lazy.view.colors").setup()
   opts = opts or {}
-  local self = setmetatable({}, { __index = M })
 
   self.state = vim.deepcopy(default_state)
 
-  self:mount()
-
   self.render = Render.new(self)
   self.update = Util.throttle(Config.options.ui.throttle, self.update)
-
-  self:on_key(ViewConfig.keys.close, self.close)
-
-  self:on({ "BufDelete", "BufLeave", "BufHidden" }, self.close, { once = true })
 
   self:on("User LazyRender", function()
     if not (self.buf and vim.api.nvim_buf_is_valid(self.buf)) then
@@ -96,52 +95,21 @@ function M.create(opts)
     end
   end)
 
+  for key, handler in pairs(Config.options.ui.custom_keys) do
+    self:on_key(key, function()
+      local plugin = self.render:get_plugin()
+      if plugin then
+        handler(plugin)
+      end
+    end)
+  end
+
   self:setup_patterns()
   self:setup_modes()
   return self
 end
 
----@param events string|string[]
----@param fn fun(self?):boolean?
----@param opts? table
-function M:on(events, fn, opts)
-  if type(events) == "string" then
-    events = { events }
-  end
-  for _, e in ipairs(events) do
-    local event, pattern = e:match("(%w+) (%w+)")
-    event = event or e
-    vim.api.nvim_create_autocmd(
-      event,
-      vim.tbl_extend("force", {
-        pattern = pattern,
-        buffer = not pattern and self.buf or nil,
-        callback = function()
-          return fn(self)
-        end,
-      }, opts or {})
-    )
-  end
-end
-
----@param key string
----@param fn fun(self?)
----@param desc? string
-function M:on_key(key, fn, desc)
-  vim.keymap.set("n", key, function()
-    fn(self)
-  end, {
-    nowait = true,
-    buffer = self.buf,
-    desc = desc,
-  })
-end
-
----@param mode? string
-function M:update(mode)
-  if mode then
-    self.state.mode = mode
-  end
+function M:update()
   if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
     vim.bo[self.buf].modifiable = true
     self.render:update()
@@ -162,74 +130,10 @@ function M:open_url(path)
   end
 end
 
-function M:close()
-  local buf = self.buf
-  local win = self.win
-  self.win = nil
-  self.buf = nil
-  M.view = nil
-  vim.diagnostic.reset(Config.ns, buf)
-  vim.schedule(function()
-    if win and vim.api.nvim_win_is_valid(win) then
-      vim.api.nvim_win_close(win, true)
-    end
-    if buf and vim.api.nvim_buf_is_valid(buf) then
-      vim.api.nvim_buf_delete(buf, { force = true })
-    end
-  end)
-end
-
-function M:focus()
-  vim.api.nvim_set_current_win(self.win)
-
-  -- it seems that setting the current win doesn't work before VimEnter,
-  -- so do that then
-  if vim.v.vim_did_enter ~= 1 then
-    vim.api.nvim_create_autocmd("VimEnter", {
-      once = true,
-      callback = function()
-        if self.win and vim.api.nvim_win_is_valid(self.win) then
-          pcall(vim.api.nvim_set_current_win, self.win)
-        end
-        return true
-      end,
-    })
-  end
-end
-
-function M:mount()
-  self.buf = vim.api.nvim_create_buf(false, false)
-
-  local function size(max, value)
-    return value > 1 and math.min(value, max) or math.floor(max * value)
-  end
-  ---@class LazyViewWinOpts
-  self.win_opts = {
-    relative = "editor",
-    style = "minimal",
-    border = Config.options.ui.border,
-    width = size(vim.o.columns, Config.options.ui.size.width),
-    height = size(vim.o.lines, Config.options.ui.size.height),
-    noautocmd = true,
-  }
-
-  self.win_opts.row = (vim.o.lines - self.win_opts.height) / 2
-  self.win_opts.col = (vim.o.columns - self.win_opts.width) / 2
-  self.win = vim.api.nvim_open_win(self.buf, true, self.win_opts)
-  self:focus()
-
-  vim.bo[self.buf].buftype = "nofile"
-  vim.bo[self.buf].filetype = "lazy"
-  vim.bo[self.buf].bufhidden = "wipe"
-  vim.wo[self.win].conceallevel = 3
-  vim.wo[self.win].spell = false
-  vim.wo[self.win].wrap = true
-  vim.wo[self.win].winhighlight = "Normal:LazyNormal"
-end
-
 function M:setup_patterns()
+  local commit_pattern = "%f[%w](" .. string.rep("%w", 7) .. ")%f[%W]"
   self:on_pattern(ViewConfig.keys.hover, {
-    ["%f[a-z0-9](" .. string.rep("[a-z0-9]", 7) .. ")%f[^a-z0-9]"] = function(hash)
+    [commit_pattern] = function(hash)
       self:diff({ commit = hash, browser = true })
     end,
     ["#(%d+)"] = function(issue)
@@ -246,14 +150,19 @@ function M:setup_patterns()
       Util.open(url)
     end,
   }, self.hover)
+  self:on_pattern(ViewConfig.keys.diff, {
+    [commit_pattern] = function(hash)
+      self:diff({ commit = hash })
+    end,
+  }, self.diff)
+end
+
 function M:hover()
   if self:diff({ browser = true }) then
     return
   end
   self:open_url("")
 end
-
----@alias LazyDiff string|{from:string, to:string}
 
 ---@param opts? {commit?:string, browser:boolean}
 function M:diff(opts)
@@ -262,9 +171,9 @@ function M:diff(opts)
   if plugin then
     local diff
     if opts.commit then
-      diff = opts.commit
+      diff = { commit = opts.commit }
     elseif plugin._.updated then
-      diff = plugin._.updated
+      diff = vim.deepcopy(plugin._.updated)
     else
       local info = assert(Git.info(plugin.dir))
       local target = assert(Git.get_target(plugin))
@@ -275,17 +184,14 @@ function M:diff(opts)
       return
     end
 
+    for k, v in pairs(diff) do
+      diff[k] = v:sub(1, 7)
+    end
+
     if opts.browser then
-      if plugin.url then
-        local url = plugin.url:gsub("%.git$", "")
-        if type(diff) == "string" then
-          Util.open(url .. "/commit/" .. diff)
-        else
-          Util.open(url .. "/compare/" .. diff.from .. ".." .. diff.to)
-        end
-      else
-        Util.error("No url for " .. plugin.name)
-      end
+      Diff.handlers.browser(plugin, diff)
+    else
+      Diff.handlers[Config.options.diff.cmd](plugin, diff)
     end
   end
 end
@@ -325,7 +231,8 @@ function M:setup_modes()
     if m.key then
       self:on_key(m.key, function()
         if self.state.mode == name and m.toggle then
-          return self:update("home")
+          self.state.mode = "home"
+          return self:update()
         end
         Commands.cmd(name)
       end, m.desc)
