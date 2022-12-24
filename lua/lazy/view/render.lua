@@ -150,8 +150,14 @@ function M:help()
   self:append("Most properties can be hovered with ")
   self:append("<K>", "LazySpecial")
   self:append(" to open links, help files, readmes and git commits."):nl()
-  self:append("When hovering on a plugin anywhere else, a diff will be opened if there are updates"):nl()
-  self:append("or the plugin was just updated. Otherwise the plugin webpage will open."):nl():nl()
+  self
+    :append("When hovering with ")
+    :append("<K>", "LazySpecial")
+    :append(" on a plugin anywhere else, a diff will be opened if there are updates")
+    :nl()
+  self:append("or the plugin was just updated. Otherwise the plugin webpage will open."):nl()
+  self:append("Use "):append("<d>", "LazySpecial"):append(" on a commit or plugin to open the diff view"):nl()
+  self:nl()
 
   self:append("Keyboard Shortcuts", "LazyH2"):nl()
   for _, mode in ipairs(ViewConfig.get_commands()) do
