@@ -5,6 +5,15 @@ function M.file_exists(file)
   return vim.loop.fs_stat(file) ~= nil
 end
 
+---@param opts? LazyViewOptions
+function M.float(opts)
+  opts = vim.tbl_deep_extend("force", {
+    win_opts = { zindex = 60, border = "none" },
+    margin = { top = 3, left = 2, right = 2 },
+  }, opts or {})
+  return require("lazy.view.float")(opts)
+end
+
 function M.open(uri)
   if M.file_exists(uri) then
     vim.cmd.split()
