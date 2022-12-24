@@ -1,5 +1,26 @@
 # Changelog
 
+## [7.1.0](https://github.com/folke/lazy.nvim/compare/v7.0.0...v7.1.0) (2022-12-24)
+
+
+### Features
+
+* **build:** build can now be a list to execute multiple build commands. Fixes [#143](https://github.com/folke/lazy.nvim/issues/143) ([9110371](https://github.com/folke/lazy.nvim/commit/9110371120db2888647123d7dea7c68a574ae310))
+* **manage:** added user events when operations finish. Fixes [#135](https://github.com/folke/lazy.nvim/issues/135) ([a36d506](https://github.com/folke/lazy.nvim/commit/a36d50639358bc00b8ac2d42a8a0a6c0f9c08310))
+* **ui:** added custom commands for lazygit and opening a terminal for a plugin ([be3909c](https://github.com/folke/lazy.nvim/commit/be3909c54420c734e32cb045a387990a6fb51bd4))
+* **ui:** added multiple options for diff command ([7d02da2](https://github.com/folke/lazy.nvim/commit/7d02da2ff0216ef6ba9097d8ae5a48f54ddc7c4a))
+* **ui:** you can now hover over a plugin to open a diff of updates or the plugin homepage ([593d6e4](https://github.com/folke/lazy.nvim/commit/593d6e400b3bb529c507092bf107b6cc4364fb5b))
+* util method to open a float ([7c2eb15](https://github.com/folke/lazy.nvim/commit/7c2eb1544416646db09b410d07492555fcf44778))
+* **util:** open terminal commands in a float ([8ad05fe](https://github.com/folke/lazy.nvim/commit/8ad05feef19d6b8d4c5f686e0269ac10659f511b))
+
+
+### Bug Fixes
+
+* **checker:** update updated after every manage operation. Fixes [#141](https://github.com/folke/lazy.nvim/issues/141) ([86f2c67](https://github.com/folke/lazy.nvim/commit/86f2c67aa80b3c64d131ba47189c42ca5a37ac14))
+* **help:** make sure we always generate lazy helptags ([f360e33](https://github.com/folke/lazy.nvim/commit/f360e336a5e2b57e1ee0232c9c89a4ceb3617798))
+* **manage:** only clear plugins for the op instead of all ([fc182f7](https://github.com/folke/lazy.nvim/commit/fc182f7c5d5df9ba877ab619f6fa545e20ad52f0))
+* plugin list can be string[]. Fixes [#145](https://github.com/folke/lazy.nvim/issues/145) ([74d8b8e](https://github.com/folke/lazy.nvim/commit/74d8b8e4e180c40d2ade750940f3c64761fb7930))
+
 ## [7.0.0](https://github.com/folke/lazy.nvim/compare/v6.0.0...v7.0.0) (2022-12-23)
 
 
