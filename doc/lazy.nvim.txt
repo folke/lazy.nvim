@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 23
+*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 24
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -110,28 +110,28 @@ It is recommended to run `:checkhealth lazy` after installation
 
 PLUGIN SPEC                                            *lazy.nvim-plugin-spec*
 
-│    Property    │                    Type                     │                                                                                           Description                                                                                            │
-│[1]             │string?                                      │Short plugin url. Will be expanded using config.git.url_format                                                                                                                                    │
-│**dir**         │string?                                      │A directory pointing to a local plugin                                                                                                                                                            │
-│**url**         │string?                                      │A custom git url where the plugin is hosted                                                                                                                                                       │
-│**name**        │string?                                      │A custom name for the plugin used for the local plugin directory and as the display name                                                                                                          │
-│**dev**         │boolean?                                     │When true, a local plugin directory will be used instead. See config.dev                                                                                                                          │
-│**lazy**        │boolean?                                     │When true, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their Lua modules are required, or when one of the lazy-loading handlers triggers        │
-│**enabled**     │boolean? or fun():boolean                    │When false, or if the function returns false, then this plugin will not be used                                                                                                                   │
-│**dependencies**│LazySpec[]                                   │A list of plugin specs that should be loaded when the plugin loads. Dependencies are always lazy-loaded unless specified otherwise                                                                │
-│**init**        │fun(LazyPlugin)                              │init functions are always executed during startup                                                                                                                                                 │
-│**config**      │fun(LazyPlugin) or true or table             │config is executed when the plugin loads. You can also set to true or pass a table, that will be passed to require("plugin").setup(opts)                                                          │
-│**build**       │fun(LazyPlugin) or string                    │build is executed when a plugin is installed or updated. If it’s a string it will be ran as a shell command. When prefixed with : it is a Neovim command.                                       │
-│**branch**      │string?                                      │Branch of the repository                                                                                                                                                                          │
-│**tag**         │string?                                      │Tag of the repository                                                                                                                                                                             │
-│**commit**      │string?                                      │Commit of the repository                                                                                                                                                                          │
-│**version**     │string?                                      │Version to use from the repository. Full Semver <https://devhints.io/semver> ranges are supported                                                                                                 │
-│**pin**         │boolean?                                     │When true, this plugin will not be included in updates                                                                                                                                            │
-│**event**       │string? or string[]                          │Lazy-load on event                                                                                                                                                                                │
-│**cmd**         │string? or string[]                          │Lazy-load on command                                                                                                                                                                              │
-│**ft**          │string? or string[]                          │Lazy-load on filetype                                                                                                                                                                             │
-│**keys**        │string? or string[] or LazyKeys[]            │Lazy-load on key mapping                                                                                                                                                                          │
-│**module**      │false?                                       │Do not automatically load this Lua module when it’s required somewhere                                                                                                                          │
+│    Property    │                            Type                             │                                                                                                            Description                                                                                                            │
+│[1]             │string?                                                      │Short plugin url. Will be expanded using config.git.url_format                                                                                                                                                                     │
+│**dir**         │string?                                                      │A directory pointing to a local plugin                                                                                                                                                                                             │
+│**url**         │string?                                                      │A custom git url where the plugin is hosted                                                                                                                                                                                        │
+│**name**        │string?                                                      │A custom name for the plugin used for the local plugin directory and as the display name                                                                                                                                           │
+│**dev**         │boolean?                                                     │When true, a local plugin directory will be used instead. See config.dev                                                                                                                                                           │
+│**lazy**        │boolean?                                                     │When true, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their Lua modules are required, or when one of the lazy-loading handlers triggers                                         │
+│**enabled**     │boolean? or fun():boolean                                    │When false, or if the function returns false, then this plugin will not be used                                                                                                                                                    │
+│**dependencies**│LazySpec[]                                                   │A list of plugin specs that should be loaded when the plugin loads. Dependencies are always lazy-loaded unless specified otherwise                                                                                                 │
+│**init**        │fun(LazyPlugin)                                              │init functions are always executed during startup                                                                                                                                                                                  │
+│**config**      │fun(LazyPlugin) or true or table                             │config is executed when the plugin loads. You can also set to true or pass a table, that will be passed to require("plugin").setup(opts)                                                                                           │
+│**build**       │fun(LazyPlugin) or string or a list of build commands        │build is executed when a plugin is installed or updated. If it’s a string it will be ran as a shell command. When prefixed with : it is a Neovim command. You can also specify a list to executed multiple build commands        │
+│**branch**      │string?                                                      │Branch of the repository                                                                                                                                                                                                           │
+│**tag**         │string?                                                      │Tag of the repository                                                                                                                                                                                                              │
+│**commit**      │string?                                                      │Commit of the repository                                                                                                                                                                                                           │
+│**version**     │string?                                                      │Version to use from the repository. Full Semver <https://devhints.io/semver> ranges are supported                                                                                                                                  │
+│**pin**         │boolean?                                                     │When true, this plugin will not be included in updates                                                                                                                                                                             │
+│**event**       │string? or string[]                                          │Lazy-load on event                                                                                                                                                                                                                 │
+│**cmd**         │string? or string[]                                          │Lazy-load on command                                                                                                                                                                                                               │
+│**ft**          │string? or string[]                                          │Lazy-load on filetype                                                                                                                                                                                                              │
+│**keys**        │string? or string[] or LazyKeys[]                            │Lazy-load on key mapping                                                                                                                                                                                                           │
+│**module**      │false?                                                       │Do not automatically load this Lua module when it’s required somewhere                                                                                                                                                           │
 
 
 LAZY LOADING ~
@@ -364,6 +364,39 @@ CONFIGURATION                                        *lazy.nvim-configuration*
           task = " ",
         },
         throttle = 20, -- how frequently should the ui process render events
+        custom_keys = {
+          -- you can define custom key maps here.
+          -- To disable one of the defaults, set it to false
+    
+          -- open lazygit log
+          ["<localleader>l"] = function(plugin)
+            require("lazy.util").open_cmd({ "lazygit", "log" }, {
+              cwd = plugin.dir,
+              terminal = true,
+              close_on_exit = true,
+              enter = true,
+            })
+          end,
+    
+          -- open a terminal for the plugin dir
+          ["<localleader>t"] = function(plugin)
+            require("lazy.util").open_cmd({ vim.go.shell }, {
+              cwd = plugin.dir,
+              terminal = true,
+              close_on_exit = true,
+              enter = true,
+            })
+          end,
+        },
+      },
+      diff = {
+        -- diff command <d> can be one of:
+        --  browser: opens the github compare view. Note that this is always mapped to <K> as well,
+        --   so you can have a different command for diff <d>
+        --  git: will run git diff and open a buffer with filetype git
+        --  terminal_git: will open a pseudo terminal with git diff
+        --  diffview.nvim: will open Diffview to show the diff
+        cmd = "git",
       },
       checker = {
         -- automatically check for plugin updates
