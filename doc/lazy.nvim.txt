@@ -552,6 +552,20 @@ Example of configuring <a href="https://github.com/nvim-lualine/lualine.nvim">lu
 <
 
 
+USER EVENTS ~
+
+The following user events will be triggered:
+
+
+- **LazyDone**: when lazy has finished starting up and loaded your config
+- **LazySync**: after running sync
+- **LazyInstall**: after an install
+- **LazyUpdate**: after an update
+- **LazyClean**: after a clean
+- **LazyCheck**: after checking for updates
+- **LazyLog**: after running log
+
+
 LOCKFILE `LAZY-LOCK.JSON`                *lazy.nvim-lockfile-`lazy-lock.json`*
 
 After every **update**, the local lockfile is updated with the installed
