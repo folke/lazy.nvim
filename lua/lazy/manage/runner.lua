@@ -139,7 +139,10 @@ end
 ---@param cb? fun()
 function Runner:wait(cb)
   if #self._running == 0 then
-    return cb and cb()
+    if cb then
+      cb()
+    end
+    return self
   end
 
   if cb then
@@ -150,6 +153,7 @@ function Runner:wait(cb)
       vim.wait(10)
     end
   end
+  return self
 end
 
 return Runner

@@ -48,6 +48,10 @@ function M.run(ropts, opts)
     vim.cmd([[do User LazyRender]])
     Plugin.update_state()
     require("lazy.manage.checker").fast_check({ report = false })
+    local mode = opts.mode
+    if mode then
+      vim.cmd("do User Lazy" .. mode:sub(1, 1):upper() .. mode:sub(2))
+    end
   end)
 
   if opts.wait then
@@ -141,14 +145,27 @@ end
 
 ---@param opts? ManagerOpts
 function M.sync(opts)
-  opts = M.opts(opts, { mode = "sync" })
+  opts = M.opts(opts)
   if opts.clear then
     M.clear()
     opts.clear = false
   end
-  M.clean(opts)
-  M.install(opts)
-  M.update(opts)
+  if opts.show ~= false then
+    vim.schedule(function()
+      require("lazy.view").show("sync")
+    end)
+    opts.show = false
+  end
+  local clean = M.clean(opts)
+  local install = M.install(opts)
+  local update = M.update(opts)
+  clean:wait(function()
+    install:wait(function()
+      update:wait(function()
+        vim.cmd([[do User LazySync]])
+      end)
+    end)
+  end)
 end
 
 ---@param opts? ManagerOpts

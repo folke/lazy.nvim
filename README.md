@@ -519,6 +519,18 @@ require("lualine").setup({
 
 </details>
 
+### 📆 User Events
+
+The following user events will be triggered:
+
+- **LazyDone**: when lazy has finished starting up and loaded your config
+- **LazySync**: after running sync
+- **LazyInstall**: after an install
+- **LazyUpdate**: after an update
+- **LazyClean**: after a clean
+- **LazyCheck**: after checking for updates
+- **LazyLog**: after running log
+
 ## 🔒 Lockfile `lazy-lock.json`
 
 After every **update**, the local lockfile is updated with the installed revisions.

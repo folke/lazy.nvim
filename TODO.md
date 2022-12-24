@@ -45,7 +45,7 @@
   - [ ] package meta index (package.lua cache for all packages)
 
 - [ ] document highlight groups
-- [ ] document user events
+- [x] document user events
 - [ ] document API, like lazy.plugins()
 - [ ] icons
 
