@@ -28,7 +28,7 @@ function M.run(ropts, opts)
   ropts.concurrency = ropts.concurrency or opts.concurrency or Config.options.concurrency
 
   if opts.clear then
-    M.clear()
+    M.clear(opts.plugins)
   end
 
   if opts.show ~= false then
@@ -162,8 +162,9 @@ function M.clean(opts)
   end)
 end
 
-function M.clear()
-  for _, plugin in pairs(Config.plugins) do
+---@param plugins? LazyPlugin[]
+function M.clear(plugins)
+  for _, plugin in pairs(plugins or Config.plugins) do
     plugin._.has_updates = nil
     plugin._.updated = nil
     plugin._.cloned = nil
