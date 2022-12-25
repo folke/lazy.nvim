@@ -32,10 +32,12 @@ M.handlers = {
 
   ---@type LazyDiffFun
   git = function(plugin, diff)
-    local cmd = { "git", "diff" }
+    local cmd = { "git" }
     if diff.commit then
+      cmd[#cmd + 1] = "show"
       cmd[#cmd + 1] = diff.commit
     else
+      cmd[#cmd + 1] = "diff"
       cmd[#cmd + 1] = diff.from
       cmd[#cmd + 1] = diff.to
     end
@@ -44,10 +46,12 @@ M.handlers = {
 
   ---@type LazyDiffFun
   terminal_git = function(plugin, diff)
-    local cmd = { "git", "diff" }
+    local cmd = { "git" }
     if diff.commit then
+      cmd[#cmd + 1] = "show"
       cmd[#cmd + 1] = diff.commit
     else
+      cmd[#cmd + 1] = "diff"
       cmd[#cmd + 1] = diff.from
       cmd[#cmd + 1] = diff.to
     end

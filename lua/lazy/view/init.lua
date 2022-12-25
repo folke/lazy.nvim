@@ -38,14 +38,12 @@ function M.show(mode)
   M.view:update()
 end
 
----@param opts? {mode?:string}
-function M.create(opts)
+function M.create()
   local self = setmetatable({}, { __index = setmetatable(M, { __index = Float }) })
   ---@cast self LazyView
   Float.init(self)
 
   require("lazy.view.colors").setup()
-  opts = opts or {}
 
   self.state = vim.deepcopy(default_state)
 
