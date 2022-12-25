@@ -68,9 +68,15 @@ function M:_add(value)
   local opts = M.opts(keys)
   opts.noremap = true
   vim.keymap.set(keys.mode, lhs, function()
-    pcall(vim.keymap.del, keys.mode, lhs)
+    local key = self:key(value)
+    local plugins = self.active[key]
+
+    -- always delete the mapping immediately to prevent recursive mappings
+    self:_del(value)
+    self.active[key] = nil
+
     Util.track({ keys = lhs })
-    Loader.load(self.active[self:key(value)], { keys = lhs })
+    Loader.load(plugins, { keys = lhs })
     M.retrigger(lhs)
     Util.track()
   end, opts)
