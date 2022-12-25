@@ -31,7 +31,7 @@ function M.show(mode)
     return
   end
 
-  M.view = (M.view and M.view.win) and M.view or M.create({ mode = mode })
+  M.view = (M.view and M.view.win) and M.view or M.create()
   if mode then
     M.view.state.mode = mode
   end
