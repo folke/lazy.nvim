@@ -150,7 +150,7 @@ When `[2]` is `nil`, then the real mapping has to be created by the `config()` f
     },
     config = function()
       require("neo-tree").setup()
-      end,
+    end,
 }
 ```
 
