@@ -110,10 +110,20 @@ function M.load(plugins, reason)
   ---@cast plugins (string|LazyPlugin)[]
 
   for _, plugin in pairs(plugins) do
-    plugin = type(plugin) == "string" and Config.plugins[plugin] or plugin
+    local try_load = true
+
+    if type(plugin) == "string" then
+      if not Config.plugins[plugin] then
+        Util.error("Plugin " .. plugin .. " not found")
+        try_load = false
+      else
+        plugin = Config.plugins[plugin]
+      end
+    end
+
     ---@cast plugin LazyPlugin
 
-    if not plugin._.loaded then
+    if try_load and not plugin._.loaded then
       ---@diagnostic disable-next-line: assign-type-mismatch
       plugin._.loaded = {}
       for k, v in pairs(reason) do
@@ -137,7 +147,9 @@ function M.load(plugins, reason)
       end
 
       if plugin.dependencies then
-        M.load(plugin.dependencies, {})
+        Util.try(function()
+          M.load(plugin.dependencies, {})
+        end, "Failed to load deps for " .. plugin.name)
       end
 
       M.packadd(plugin.dir)
