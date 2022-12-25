@@ -325,6 +325,7 @@ return {
       source = " ",
       start = "",
       task = "✔ ",
+      lazy = "鈴 ",
     },
     throttle = 20, -- how frequently should the ui process render events
     custom_keys = {
