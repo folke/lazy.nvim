@@ -8,7 +8,7 @@ local Float = require("lazy.view.float")
 
 ---@class LazyViewState
 ---@field mode string
----@field plugin? string
+---@field plugin? {name:string, kind?: LazyPluginKind}
 local default_state = {
   mode = "home",
   profile = {
@@ -38,6 +38,11 @@ function M.show(mode)
   M.view:update()
 end
 
+---@param plugin LazyPlugin
+function M:is_selected(plugin)
+  return vim.deep_equal(self.state.plugin, { name = plugin.name, kind = plugin._.kind })
+end
+
 function M.create()
   local self = setmetatable({}, { __index = setmetatable(M, { __index = Float }) })
   ---@cast self LazyView
@@ -61,7 +66,11 @@ function M.create()
   self:on_key(ViewConfig.keys.details, function()
     local plugin = self.render:get_plugin()
     if plugin then
-      self.state.plugin = self.state.plugin ~= plugin.name and plugin.name or nil
+      local selected = {
+        name = plugin.name,
+        kind = plugin._.kind,
+      }
+      self.state.plugin = not vim.deep_equal(self.state.plugin, selected) and selected or nil
       self:update()
     end
   end)

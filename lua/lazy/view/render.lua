@@ -15,7 +15,7 @@ local Text = require("lazy.view.text")
 ---@field plugins LazyPlugin[]
 ---@field progress {total:number, done:number}
 ---@field _diagnostics LazyDiagnostic[]
----@field plugin_range table<string, {from: number, to: number}>
+---@field locations {name:string, from: number, to: number, kind?: LazyPluginKind}[]
 local M = {}
 
 ---@return LazyRender
@@ -32,7 +32,7 @@ end
 function M:update()
   self._lines = {}
   self._diagnostics = {}
-  self.plugin_range = {}
+  self.locations = {}
 
   self.plugins = vim.tbl_values(Config.plugins)
   vim.list_extend(self.plugins, vim.tbl_values(Config.to_clean))
@@ -90,9 +90,17 @@ end
 ---@return LazyPlugin?
 function M:get_plugin(row)
   row = row or vim.api.nvim_win_get_cursor(self.view.win)[1]
-  for name, range in pairs(self.plugin_range) do
-    if row >= range.from and row <= range.to then
-      return Config.plugins[name]
+  for _, loc in ipairs(self.locations) do
+    if row >= loc.from and row <= loc.to then
+      if loc.kind == "clean" then
+        for _, plugin in ipairs(Config.to_clean) do
+          if plugin.name == loc.name then
+            return plugin
+          end
+        end
+      else
+        return Config.plugins[loc.name]
+      end
     end
   end
 end
@@ -361,11 +369,12 @@ function M:plugin(plugin)
   self:diagnostics(plugin)
   self:nl()
 
-  if self.view.state.plugin == plugin.name then
+  if self.view:is_selected(plugin) then
     self:details(plugin)
   end
   self:tasks(plugin)
-  self.plugin_range[plugin.name] = { from = plugin_start, to = self:row() - 1 }
+  self.locations[#self.locations + 1] =
+    { name = plugin.name, from = plugin_start, to = self:row() - 1, kind = plugin._.kind }
 end
 
 ---@param plugin LazyPlugin
@@ -378,7 +387,7 @@ function M:tasks(plugin)
     end
     if task.name == "log" and not task.error then
       self:log(task)
-    elseif task.error or self.view.state.plugin == plugin.name then
+    elseif task.error or self.view:is_selected(plugin) then
       if task.error then
         self:append(vim.trim(task.error), "LazyError", { indent = 4, prefix = "│ " })
         self:nl()

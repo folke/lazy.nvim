@@ -5,6 +5,8 @@ local Cache = require("lazy.core.cache")
 
 local M = {}
 
+---@alias LazyPluginKind "normal"|"clean"
+
 ---@class LazyPluginState
 ---@field loaded? {[string]:string}|{time:number}
 ---@field installed boolean
@@ -14,6 +16,7 @@ local M = {}
 ---@field is_local boolean
 ---@field has_updates? boolean
 ---@field cloned? boolean
+---@field kind? LazyPluginKind
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 
 ---@class LazyPluginHooks
@@ -218,6 +221,7 @@ function M.update_state()
       name = pack,
       dir = Config.options.root .. "/" .. pack,
       _ = {
+        kind = "clean",
         installed = true,
         is_symlink = dir_type == "link",
         is_local = dir_type == "link",
