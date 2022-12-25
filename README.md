@@ -384,6 +384,7 @@ return {
       --  * VimEnter: not useful to cache anything else beyond startup
       --  * BufReadPre: this will be triggered early when opening a file from the command line directly
       disable_events = { "VimEnter", "BufReadPre" },
+      ttl = 3600 * 24 * 5, -- keep unused modules for up to 5 days
     },
     reset_packpath = true, -- reset the package path to improve startup time
     rtp = {

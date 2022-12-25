@@ -16,6 +16,7 @@ M.config = {
   --  * VimEnter: not useful to cache anything else beyond startup
   --  * BufReadPre: this will be triggered early when opening a file from the command line directly
   disable_events = { "VimEnter", "BufReadPre" },
+  ttl = 3600 * 24 * 5, -- keep unused modules for up to 5 days
 }
 M.debug = false
 
@@ -27,7 +28,6 @@ local cache_hash
 ---@type table<string,CacheEntry?>
 M.cache = {}
 M.enabled = true
-M.ttl = 3600 * 24 * 5 -- keep unused modules for up to 5 days
 ---@type string[]
 M.rtp = nil
 -- selene:allow(global_usage)
@@ -238,7 +238,7 @@ function M.save_cache()
   uv.fs_write(f, M.VERSION)
   uv.fs_write(f, "\0")
   for modname, entry in pairs(M.cache) do
-    if entry.used > os.time() - M.ttl then
+    if entry.used > os.time() - M.config.ttl then
       entry.modname = modname
       local header = {
         entry.hash.size,
