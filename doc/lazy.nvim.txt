@@ -192,7 +192,7 @@ function.
         },
         config = function()
           require("neo-tree").setup()
-          end,
+        end,
     }
 <
 
