@@ -629,9 +629,9 @@ STRUCTURING YOUR PLUGINS                  *lazy.nvim-structuring-your-plugins*
 
 Some users may want to split their plugin specs in multiple files. Instead of
 passing a spec table to `setup()`, you can use a Lua module. The specs from the
-**module** and any **sub-modules** will be merged together in the final spec,
-so it is not needed to add `require` calls in your main plugin file to the
-other files.
+**module** and any top-level **sub-modules** will be merged together in the
+final spec, so it is not needed to add `require` calls in your main plugin file
+to the other files.
 
 The benefits of using this approach:
 
