@@ -5,8 +5,8 @@ labels: [enhancement]
 body:
   - type: checkboxes
     attributes:
-      label: Did you check docs the docs?
-      description: Make sure you read all the docs before subimtting a feature request
+      label: Did you check the docs?
+      description: Make sure you read all the docs before submitting a feature request
       options:
         - label: I have read all the lazy docs
           required: true
