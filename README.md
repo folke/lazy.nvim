@@ -629,7 +629,8 @@ For a real-life example, you can check my personal dots:
 - `opt` ➡️ `lazy`
 - `run` ➡️ `build`
 - `lock` ➡️ `pin`
-- `disable=true` ➡️ `enabled = false`
+- `disable = true` ➡️ `enabled = false`
+- `cond = fun():boolean` ➡️ `enabled = fun():boolean`
 - `tag='*'` ➡️ `version="*"`
 - `after` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
 - `wants` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
