@@ -707,6 +707,8 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 
 <!-- colors:end -->
 
+</details>
+
 ## 📦 Other Neovim Plugin Managers in Lua
 
 - [packer.nvim](https://github.com/wbthomason/packer.nvim)
