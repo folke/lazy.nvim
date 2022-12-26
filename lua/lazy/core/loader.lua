@@ -63,7 +63,9 @@ function M.startup()
   for _, plugin in pairs(Config.plugins) do
     if plugin.init then
       Util.track({ plugin = plugin.name, init = "init" })
-      Util.try(plugin.init, "Failed to run `init` for **" .. plugin.name .. "**")
+      Util.try(function()
+        plugin.init(plugin)
+      end, "Failed to run `init` for **" .. plugin.name .. "**")
       Util.track()
     end
   end
@@ -176,7 +178,9 @@ end
 function M.config(plugin)
   local fn
   if type(plugin.config) == "function" then
-    fn = plugin.config
+    fn = function()
+      plugin.config(plugin)
+    end
   else
     local normname = Util.normname(plugin.name)
     ---@type table<string, string>

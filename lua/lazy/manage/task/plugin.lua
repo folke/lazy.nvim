@@ -20,7 +20,7 @@ M.build = {
           local cmd = vim.api.nvim_parse_cmd(build:sub(2), {})
           self.output = vim.api.nvim_cmd(cmd, { output = true })
         elseif type(build) == "function" then
-          build()
+          build(self.plugin)
         else
           local shell = vim.env.SHELL or vim.o.shell
           local shell_args = shell:find("cmd.exe", 1, true) and "/c" or "-c"
