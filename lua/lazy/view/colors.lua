@@ -15,6 +15,7 @@ M.colors = {
     fg = "#ff007c",
   },
   ProgressTodo = "LineNr",
+  NoCond = "DiagnosticError",
   Special = "@punctuation.special",
   HandlerRuntime = "@macro",
   HandlerPlugin = "Special",

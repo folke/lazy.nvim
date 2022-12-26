@@ -121,6 +121,11 @@ function M.load(plugins, reason)
       end
     end
 
+    if try_load and plugin.cond then
+      try_load = plugin.cond == true or (type(plugin.cond) == "function" and plugin.cond()) or false
+      plugin._.cond = try_load
+    end
+
     ---@cast plugin LazyPlugin
 
     if try_load and not plugin._.loaded then

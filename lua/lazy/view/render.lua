@@ -359,6 +359,8 @@ end
 function M:plugin(plugin)
   if plugin._.loaded then
     self:append("  ● ", "LazySpecial"):append(plugin.name)
+  elseif plugin._.cond == false then
+    self:append("  ○ ", "LazyNoCond"):append(plugin.name)
   else
     self:append("  ○ ", "LazySpecial"):append(plugin.name)
   end

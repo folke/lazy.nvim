@@ -18,6 +18,7 @@ local M = {}
 ---@field cloned? boolean
 ---@field kind? LazyPluginKind
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
+---@field cond? boolean
 
 ---@class LazyPluginHooks
 ---@field init? fun(LazyPlugin) Will always be run
@@ -44,6 +45,7 @@ local M = {}
 ---@field url string?
 ---@field dir string
 ---@field enabled? boolean|(fun():boolean)
+---@field cond? boolean|(fun():boolean)
 ---@field lazy? boolean
 ---@field dev? boolean If set, then link to the respective folder under your ~/projects
 ---@field dependencies? string[]
