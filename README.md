@@ -209,7 +209,7 @@ return {
     config = true, -- run require("neorg").setup()
   },
 
-  -- or set custom config
+  -- or set a custom config:
   {
     "nvim-neorg/neorg",
     ft = "norg",
