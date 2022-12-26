@@ -659,6 +659,39 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 
 > paths can differ if you changed `XDG` environment variables.
 
+## 🌈 Highlight Groups
+
+<details>
+<summary>Click to see all highlight groups</summary>
+
+<!-- colors:start -->
+
+| Highlight Group        | Default Group              | Description       |
+| ---------------------- | -------------------------- | ----------------- |
+| **LazyButton**         | **_CursorLine_**           |                   |
+| **LazyButtonActive**   | **_Visual_**               |                   |
+| **LazyCommit**         | **_@variable.builtin_**    |                   |
+| **LazyError**          | **_ErrorMsg_**             | task errors       |
+| **LazyH1**             | **_IncSearch_**            |                   |
+| **LazyH2**             | **_Bold_**                 |                   |
+| **LazyHandlerCmd**     | **_Operator_**             |                   |
+| **LazyHandlerEvent**   | **_Constant_**             |                   |
+| **LazyHandlerFt**      | **_Character_**            |                   |
+| **LazyHandlerKeys**    | **_Statement_**            |                   |
+| **LazyHandlerPlugin**  | **_Special_**              |                   |
+| **LazyHandlerRuntime** | **_@macro_**               |                   |
+| **LazyHandlerSource**  | **_Character_**            |                   |
+| **LazyHandlerStart**   | **_@field_**               |                   |
+| **LazyKey**            | **_Conceal_**              |                   |
+| **LazyMuted**          | **_Comment_**              |                   |
+| **LazyNormal**         | **_NormalFloat_**          |                   |
+| **LazyProgressDone**   | **_Constant_**             | progress bar done |
+| **LazyProgressTodo**   | **_LineNr_**               | progress bar todo |
+| **LazySpecial**        | **_@punctuation.special_** |                   |
+| **LazyValue**          | **_@string_**              |                   |
+
+<!-- colors:end -->
+
 ## 📦 Other Neovim Plugin Managers in Lua
 
 - [packer.nvim](https://github.com/wbthomason/packer.nvim)

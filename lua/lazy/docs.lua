@@ -10,26 +10,6 @@ function M.indent(str, indent)
   return table.concat(lines, "\n")
 end
 
-function M.toc(md)
-  local toc = {}
-  local lines = vim.split(md, "\n")
-  local toc_found = false
-  for _, line in ipairs(lines) do
-    local hash, title = line:match("^(#+)%s*(.*)")
-    if hash then
-      if toc_found then
-        local anchor = string.gsub(title:lower(), "[^\32-\126]", "")
-        anchor = string.gsub(anchor, " ", "-")
-        toc[#toc + 1] = string.rep("  ", #hash - 1) .. "- [" .. title .. "](#" .. anchor .. ")"
-      end
-      if title:find("Table of Contents") then
-        toc_found = true
-      end
-    end
-  end
-  return M.fix_indent(table.concat(toc, "\n"))
-end
-
 ---@param str string
 function M.fix_indent(str)
   local lines = vim.split(str, "\n")
@@ -48,7 +28,6 @@ end
 ---@param contents table<string, string>
 function M.save(contents)
   local readme = Util.read_file("README.md")
-  -- contents.toc = M.toc(readme)
   for tag, content in pairs(contents) do
     content = M.fix_indent(content)
     content = content:gsub("%%", "%%%%")
@@ -57,7 +36,7 @@ function M.save(contents)
     if not readme:find(pattern) then
       error("tag " .. tag .. " not found")
     end
-    if tag == "toc" or tag == "commands" then
+    if tag == "commands" or tag == "colors" then
       readme = readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
     else
       readme = readme:gsub(pattern, "%1\n\n```lua\n" .. content .. "\n```\n\n%2")
@@ -104,11 +83,37 @@ function M.commands()
       end
     end
   end)
+  return M.table(lines)
+end
+
+---@param lines string[][]
+function M.table(lines)
+  ---@type string[]
   local ret = {}
   for _, line in ipairs(lines) do
     ret[#ret + 1] = "| " .. table.concat(line, " | ") .. " |"
   end
   return table.concat(ret, "\n")
+end
+
+function M.colors()
+  local str = M.extract("lua/lazy/view/colors.lua", "\nM%.colors = ({.-\n})")
+  ---@type table<string,string>
+  local comments = {}
+  for _, line in ipairs(vim.split(str, "\n")) do
+    local group, desc = line:match("^  (%w+) = .* -- (.*)")
+    if group then
+      comments[group] = desc
+    end
+  end
+  local lines = {
+    { "Highlight Group", "Default Group", "Description" },
+    { "---", "---", "---" },
+  }
+  Util.foreach(require("lazy.view.colors").colors, function(group, link)
+    lines[#lines + 1] = { "**Lazy" .. group .. "**", "***" .. link .. "***", comments[group] or "" }
+  end)
+  return M.table(lines)
 end
 
 function M.update()
@@ -124,6 +129,7 @@ function M.update()
     config = config,
     spec = Util.read_file("lua/lazy/example.lua"),
     commands = M.commands(),
+    colors = M.colors(),
   })
   vim.cmd.checktime()
 end

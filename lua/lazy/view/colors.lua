@@ -1,7 +1,7 @@
 local M = {}
 
 M.colors = {
-  Error = "ErrorMsg",
+  Error = "ErrorMsg", -- task errors
   H1 = "IncSearch",
   H2 = "Bold",
   Muted = "Comment",
@@ -9,13 +9,9 @@ M.colors = {
   Commit = "@variable.builtin",
   Key = "Conceal",
   Value = "@string",
-  ProgressDone = {
-    bold = true,
-    default = true,
-    fg = "#ff007c",
-  },
-  ProgressTodo = "LineNr",
   NoCond = "DiagnosticError",
+  ProgressDone = "Constant", -- progress bar done
+  ProgressTodo = "LineNr", -- progress bar todo
   Special = "@punctuation.special",
   HandlerRuntime = "@macro",
   HandlerPlugin = "Special",
@@ -32,12 +28,11 @@ M.colors = {
 M.did_setup = false
 
 function M.set_hl()
-  for hl_group, opts in pairs(M.colors) do
-    if type(opts) == "string" then
-      opts = { link = opts }
-    end
-    opts.default = true
-    vim.api.nvim_set_hl(0, "Lazy" .. hl_group, opts)
+  for hl_group, link in pairs(M.colors) do
+    vim.api.nvim_set_hl(0, "Lazy" .. hl_group, {
+      link = link,
+      default = true,
+    })
   end
 end
 
