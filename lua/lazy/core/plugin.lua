@@ -280,7 +280,7 @@ end
 -- Finds the plugin that has this path
 ---@param path string
 function M.find(path)
-  local lua = path:find("/lua", 1, true)
+  local lua = path:find("/lua/", 1, true)
   if lua then
     local name = path:sub(1, lua - 1)
     local slash = name:reverse():find("/", 1, true)
