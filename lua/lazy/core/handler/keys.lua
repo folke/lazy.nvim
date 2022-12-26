@@ -16,13 +16,15 @@ local M = {}
 function M.retrigger(keys)
   local pending = ""
   while true do
+    ---@type number|string
     local c = vim.fn.getchar(0)
     if c == 0 then
       break
     end
-    pending = pending .. vim.fn.nr2char(c)
+    c = type(c) == "number" and vim.fn.nr2char(c) or c
+    pending = pending .. c
   end
-  local feed = vim.api.nvim_replace_termcodes(keys .. pending, true, true, true)
+  local feed = vim.api.nvim_replace_termcodes(keys, true, false, true) .. pending
   vim.api.nvim_feedkeys(feed, "m", false)
 end
 
