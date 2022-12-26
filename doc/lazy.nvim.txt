@@ -243,18 +243,18 @@ EXAMPLES ~
         end,
       },
     
-      -- the above could also be written as
+      -- the above could also be written as:
       {
         "nvim-neorg/neorg",
         ft = "norg",
-        config = true, -- run require("norg").setup()
+        config = true, -- run require("neorg").setup()
       },
     
       -- or set custom config
       {
         "nvim-neorg/neorg",
         ft = "norg",
-        config = { foo = "bar" }, -- run require("norg").setup({foo = "bar"})
+        config = { foo = "bar" }, -- run require("neorg").setup({foo = "bar"})
       },
     
       {
@@ -686,7 +686,7 @@ For a real-life example, you can check my personal dots:
 
 - init.lua <https://github.com/folke/dot/blob/master/config/nvim/init.lua> where I require `config.lazy`
 - config.lazy <https://github.com/folke/dot/blob/master/config/nvim/lua/config/lazy.lua> where I bootstrap and setup **lazy.nvim**
-- config.plugins <https://github.com/folke/dot/blob/master/config/nvim/lua/config/plugins.lua> is my main plugin config module
+- config.plugins <https://github.com/folke/dot/blob/master/config/nvim/lua/config/plugins/init.lua> is my main plugin config module
 - Any submodule of config.plugins (submodules) <https://github.com/folke/dot/tree/master/config/nvim/lua/config/plugins> will be automatically loaded as well.
 
 
