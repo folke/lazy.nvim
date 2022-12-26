@@ -202,18 +202,18 @@ return {
     end,
   },
 
-  -- the above could also be written as
+  -- the above could also be written as:
   {
     "nvim-neorg/neorg",
     ft = "norg",
-    config = true, -- run require("norg").setup()
+    config = true, -- run require("neorg").setup()
   },
 
   -- or set custom config
   {
     "nvim-neorg/neorg",
     ft = "norg",
-    config = { foo = "bar" }, -- run require("norg").setup({foo = "bar"})
+    config = { foo = "bar" }, -- run require("neorg").setup({foo = "bar"})
   },
 
   {
