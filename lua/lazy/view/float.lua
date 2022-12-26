@@ -119,6 +119,7 @@ function M:mount()
         config[key] = self.opts.win_opts[key]
       end
       vim.api.nvim_win_set_config(self.win, config)
+      vim.cmd([[do User LazyFloatResized]])
     end,
   })
 end

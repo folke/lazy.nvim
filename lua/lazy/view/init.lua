@@ -55,7 +55,7 @@ function M.create()
   self.render = Render.new(self)
   self.update = Util.throttle(Config.options.ui.throttle, self.update)
 
-  self:on("User LazyRender", function()
+  self:on({ "User LazyRender", "User LazyFloatResized" }, function()
     if not (self.buf and vim.api.nvim_buf_is_valid(self.buf)) then
       return true
     end
