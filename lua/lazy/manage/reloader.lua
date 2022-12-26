@@ -82,6 +82,7 @@ function M.check(start)
       end
       Plugin.load()
       vim.cmd([[do User LazyRender]])
+      vim.cmd([[do User LazyReload]])
     end)
   end
 end
