@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 25
+*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 26
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -17,6 +17,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Structuring Your Plugins              |lazy.nvim-structuring-your-plugins|
   - Migration Guide                                |lazy.nvim-migration-guide|
   - Uninstalling                                      |lazy.nvim-uninstalling|
+  - Highlight Groups                              |lazy.nvim-highlight-groups|
   - Other Neovim Plugin Managers in Lua|lazy.nvim-other-neovim-plugin-managers-in-lua|
 
 ==============================================================================
@@ -117,7 +118,8 @@ PLUGIN SPEC                                            *lazy.nvim-plugin-spec*
 │**name**        │string?                                                      │A custom name for the plugin used for the local plugin directory and as the display name                                                                                                                                           │
 │**dev**         │boolean?                                                     │When true, a local plugin directory will be used instead. See config.dev                                                                                                                                                           │
 │**lazy**        │boolean?                                                     │When true, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their Lua modules are required, or when one of the lazy-loading handlers triggers                                         │
-│**enabled**     │boolean? or fun():boolean                                    │When false, or if the function returns false, then this plugin will not be used                                                                                                                                                    │
+│**enabled**     │boolean? or fun():boolean                                    │When false, or if the function returns false, then this plugin will not be included in the spec                                                                                                                                    │
+│**cond**        │boolean? or fun():boolean                                    │When false, or if the function returns false, then this plugin will not be loaded. Useful to disable some plugins in vscode, or firenvim for example.                                                                              │
 │**dependencies**│LazySpec[]                                                   │A list of plugin specs that should be loaded when the plugin loads. Dependencies are always lazy-loaded unless specified otherwise                                                                                                 │
 │**init**        │fun(LazyPlugin)                                              │init functions are always executed during startup                                                                                                                                                                                  │
 │**config**      │fun(LazyPlugin) or true or table                             │config is executed when the plugin loads. You can also set to true or pass a table, that will be passed to require("plugin").setup(opts)                                                                                           │
@@ -727,6 +729,34 @@ directories:
 
 
   paths can differ if you changed `XDG` environment variables.
+
+
+HIGHLIGHT GROUPS                                  *lazy.nvim-highlight-groups*
+
+Click to see all highlight groups
+
+│   Highlight Group    │   Default Group    │   Description   │
+│**LazyButton**        │**_CursorLine_**    │                 │
+│**LazyButtonActive**  │**_Visual_**        │                 │
+│**LazyCommit**        │_variable.builtin   │                 │
+│**LazyError**         │**_ErrorMsg_**      │taskerrors       │
+│**LazyH1**            │**_IncSearch_**     │                 │
+│**LazyH2**            │**_Bold_**          │                 │
+│**LazyHandlerCmd**    │**_Operator_**      │                 │
+│**LazyHandlerEvent**  │**_Constant_**      │                 │
+│**LazyHandlerFt**     │**_Character_**     │                 │
+│**LazyHandlerKeys**   │**_Statement_**     │                 │
+│**LazyHandlerPlugin** │**_Special_**       │                 │
+│**LazyHandlerRuntime**│_macro              │                 │
+│**LazyHandlerSource** │**_Character_**     │                 │
+│**LazyHandlerStart**  │_field              │                 │
+│**LazyKey**           │**_Conceal_**       │                 │
+│**LazyMuted**         │**_Comment_**       │                 │
+│**LazyNormal**        │**_NormalFloat_**   │                 │
+│**LazyProgressDone**  │**_Constant_**      │progressbar done │
+│**LazyProgressTodo**  │**_LineNr_**        │progress bar todo│
+│**LazySpecial**       │_punctuation.special│                 │
+│**LazyValue**         │_string             │                 │
 
 
 OTHER NEOVIM PLUGIN MANAGERS IN LUA*lazy.nvim-other-neovim-plugin-managers-in-lua*
