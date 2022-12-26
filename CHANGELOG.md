@@ -1,5 +1,25 @@
 # Changelog
 
+## [7.2.0](https://github.com/folke/lazy.nvim/compare/v7.1.0...v7.2.0) (2022-12-26)
+
+
+### Features
+
+* **cache:** make ttl configurable ([4aa362e](https://github.com/folke/lazy.nvim/commit/4aa362e8dc9ddf1e745085dc242c814569fcce37))
+* **plugin:** added `Plugin.cond`. Fixes [#89](https://github.com/folke/lazy.nvim/issues/89), [#168](https://github.com/folke/lazy.nvim/issues/168) ([aed842a](https://github.com/folke/lazy.nvim/commit/aed842ae1e39aa227069a7f46ef0e141efbd021b))
+* **ui:** made all highlight groups and icons configurable ([0ea771b](https://github.com/folke/lazy.nvim/commit/0ea771bd70feaba8002e129ef16f65b1dff7c392))
+* **ui:** make lazy icon configurable ([#163](https://github.com/folke/lazy.nvim/issues/163)) ([8ea9d8b](https://github.com/folke/lazy.nvim/commit/8ea9d8b0241f2b09b65355039ec89446bde94564))
+* **ui:** re-render after resize. Fixes [#174](https://github.com/folke/lazy.nvim/issues/174) ([9a2ecc8](https://github.com/folke/lazy.nvim/commit/9a2ecc875003a4cbcfba2eeaea0fbd794d270449))
+
+
+### Bug Fixes
+
+* **diff:** use git show when only displaying one commit ([#155](https://github.com/folke/lazy.nvim/issues/155)) ([037f242](https://github.com/folke/lazy.nvim/commit/037f2424303118b1a8312ed31081f518735823d5))
+* **keys:** don't escape pendig keys twice and only convert when number ([46280a1](https://github.com/folke/lazy.nvim/commit/46280a191bd1b6b30607f0d97e1c6d1bcbab1a93))
+* **keys:** only delete key handler mappings once ([9837d5b](https://github.com/folke/lazy.nvim/commit/9837d5be7e5fe3aed173401f469d371f26c334c7))
+* **loader:** add proper error message when trying to load a plugin that doesn't exist. Fixes [#160](https://github.com/folke/lazy.nvim/issues/160) ([9095223](https://github.com/folke/lazy.nvim/commit/90952239d24a9c3496bc2ecf7da1624e6e05d37e))
+* **ui:** get plugin details from the correct plugin in case it was deleted ([2f5c1be](https://github.com/folke/lazy.nvim/commit/2f5c1be5255a318d610e0a86abe0a38bf18af4ad))
+
 ## [7.1.0](https://github.com/folke/lazy.nvim/compare/v7.0.0...v7.1.0) (2022-12-24)
 
 
