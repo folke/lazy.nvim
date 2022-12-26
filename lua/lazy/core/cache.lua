@@ -35,6 +35,11 @@ M._loadfile = _G.loadfile
 
 -- checks whether the cached modpath is still valid
 function M.check_path(modname, modpath)
+  -- HACK: never return packer paths
+  if modpath:find("/site/pack/packer/", 1, true) then
+    return false
+  end
+
   -- check rtp excluding plugins. This is a very small list, so should be fast
   for _, path in ipairs(M.get_rtp()) do
     if modpath:find(path, 1, true) == 1 then
