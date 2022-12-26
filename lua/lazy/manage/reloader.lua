@@ -19,7 +19,7 @@ function M.enable()
   end
   if type(Config.spec) == "string" then
     M.timer = vim.loop.new_timer()
-    M.root = vim.fn.stdpath("config") .. "/lua/"
+    M.root = vim.fn.stdpath("config") .. "/lua"
     M.check(true)
     M.timer:start(2000, 2000, M.check)
   end
