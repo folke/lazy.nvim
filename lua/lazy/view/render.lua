@@ -141,10 +141,10 @@ function M:title()
   if self.view.state.mode ~= "help" and self.view.state.mode ~= "profile" and self.view.state.mode ~= "debug" then
     if self.progress.done < self.progress.total then
       self:append("Tasks: ", "LazyH2")
-      self:append(self.progress.done .. "/" .. self.progress.total, "LazyMuted")
+      self:append(self.progress.done .. "/" .. self.progress.total, "LazyComment")
     else
       self:append("Total: ", "LazyH2")
-      self:append(#self.plugins .. " plugins", "LazyMuted")
+      self:append(#self.plugins .. " plugins", "LazyComment")
     end
     self:nl():nl()
   end
@@ -174,7 +174,7 @@ function M:help()
       self:append("- ", "LazySpecial", { indent = 2 })
       self:append(title, "Title")
       if mode.key then
-        self:append(" <" .. mode.key .. ">", "LazyKey")
+        self:append(" <" .. mode.key .. ">", "LazyProp")
       end
       self:append(" " .. (mode.desc or "")):nl()
     end
@@ -187,7 +187,7 @@ function M:help()
       self:append("- ", "LazySpecial", { indent = 2 })
       self:append(title, "Title")
       if mode.key_plugin then
-        self:append(" <" .. mode.key_plugin .. ">", "LazyKey")
+        self:append(" <" .. mode.key_plugin .. ">", "LazyProp")
       end
       self:append(" " .. (mode.desc_plugin or mode.desc)):nl()
     end
@@ -225,7 +225,7 @@ function M:section(section)
 
   local count = #section_plugins
   if count > 0 then
-    self:append(section.title, "LazyH2"):append(" (" .. count .. ")", "LazyMuted"):nl()
+    self:append(section.title, "LazyH2"):append(" (" .. count .. ")", "LazyComment"):nl()
     for _, plugin in ipairs(section_plugins) do
       self:plugin(plugin)
     end
@@ -306,13 +306,13 @@ function M:reason(reason, opts)
       if key == "keys" then
         value = type(value) == "string" and value or value[1]
       end
-      local hl = "LazyHandler" .. key:sub(1, 1):upper() .. key:sub(2)
+      local hl = "LazyReason" .. key:sub(1, 1):upper() .. key:sub(2)
       local icon = Config.options.ui.icons[key]
       if icon then
         self:append(icon .. " ", hl)
         self:append(value, hl)
       else
-        self:append(key .. " ", "@field")
+        self:append(key .. " ", hl)
         self:append(value, hl)
       end
     end
@@ -320,7 +320,6 @@ function M:reason(reason, opts)
   if time and opts.time_right then
     self:append(time, "Bold")
   end
-  -- self:append(")", "Conceal")
 end
 
 ---@param plugin LazyPlugin
@@ -358,11 +357,11 @@ end
 ---@param plugin LazyPlugin
 function M:plugin(plugin)
   if plugin._.loaded then
-    self:append("  ● ", "LazySpecial"):append(plugin.name)
+    self:append("  " .. Config.options.ui.icons.loaded .. " ", "LazySpecial"):append(plugin.name)
   elseif plugin._.cond == false then
-    self:append("  ○ ", "LazyNoCond"):append(plugin.name)
+    self:append("  " .. Config.options.ui.icons.not_loaded .. " ", "LazyNoCond"):append(plugin.name)
   else
-    self:append("  ○ ", "LazySpecial"):append(plugin.name)
+    self:append("  " .. Config.options.ui.icons.not_loaded .. " ", "LazySpecial"):append(plugin.name)
   end
   local plugin_start = self:row()
   if plugin._.loaded then
@@ -382,22 +381,19 @@ end
 ---@param plugin LazyPlugin
 function M:tasks(plugin)
   for _, task in ipairs(plugin._.tasks or {}) do
-    if self.view.state.plugin == plugin.name then
-      self:append("✔ [task] ", "Title", { indent = 4 }):append(task.name)
+    if self.view:is_selected(plugin) then
+      self:append(Config.options.ui.icons.task .. "[task] ", "Title", { indent = 4 }):append(task.name)
       self:append(" " .. math.floor((task:time()) * 100) / 100 .. "ms", "Bold")
       self:nl()
     end
-    if task.name == "log" and not task.error then
+    if task.error then
+      self:append(vim.trim(task.error), "LazyTaskError", { indent = 6 })
+      self:nl()
+    elseif task.name == "log" then
       self:log(task)
-    elseif task.error or self.view:is_selected(plugin) then
-      if task.error then
-        self:append(vim.trim(task.error), "LazyError", { indent = 4, prefix = "│ " })
-        self:nl()
-      end
-      if task.output ~= "" and task.output ~= task.error then
-        self:append(vim.trim(task.output), "MsgArea", { indent = 4, prefix = "│ " })
-        self:nl()
-      end
+    elseif self.view:is_selected(plugin) and task.output ~= "" and task.output ~= task.error then
+      self:append(vim.trim(task.output), "LazyTaskOutput", { indent = 6 })
+      self:nl()
     end
   end
 end
@@ -414,15 +410,15 @@ function M:log(task)
       end
       self:append(ref:sub(1, 7) .. " ", "LazyCommit", { indent = 6 })
       self:append(vim.trim(msg)):highlight({
-        ["#%d+"] = "Number",
-        ["^%S+:"] = "Title",
-        ["^%S+(%(.*%)):"] = "Italic",
+        ["#%d+"] = "LazyCommitIssue",
+        ["^%S+:"] = "LazyCommitType",
+        ["^%S+(%(.*%)):"] = "LazyCommitScope",
         ["`.-`"] = "@text.literal.markdown_inline",
         ["%*.-%*"] = "Italic",
         ["%*%*.-%*%*"] = "Bold",
       })
       -- string.gsub
-      self:append(" " .. time, "Comment")
+      self:append(" " .. time, "LazyComment")
       self:nl()
     end
     self:nl()
@@ -433,9 +429,9 @@ end
 function M:details(plugin)
   ---@type string[][]
   local props = {}
-  table.insert(props, { "dir", plugin.dir, "@text.reference" })
+  table.insert(props, { "dir", plugin.dir, "LazyDir" })
   if plugin.url then
-    table.insert(props, { "url", (plugin.url:gsub("%.git$", "")), "@text.reference" })
+    table.insert(props, { "url", (plugin.url:gsub("%.git$", "")), "LazyUrl" })
   end
   local git = Git.info(plugin.dir, true)
   if git then
@@ -483,7 +479,7 @@ function M:details(plugin)
     width = math.max(width, #prop[1])
   end
   for _, prop in ipairs(props) do
-    self:append(prop[1] .. string.rep(" ", width - #prop[1] + 1), "LazyKey", { indent = 6 })
+    self:append(prop[1] .. string.rep(" ", width - #prop[1] + 1), "LazyProp", { indent = 6 })
     if type(prop[2]) == "function" then
       prop[2]()
     else
@@ -508,12 +504,6 @@ function M:profile()
     :nl()
 
   self:nl()
-  local symbols = {
-    "●",
-    "➜",
-    "★",
-    "‒",
-  }
 
   ---@param a LazyProfile
   ---@param b LazyProfile
@@ -543,7 +533,7 @@ function M:profile()
     end
     local data = type(entry.data) == "string" and { source = entry.data } or entry.data
     data.time = entry.time
-    local symbol = symbols[depth] or symbols[#symbols]
+    local symbol = M.list_icon(depth)
     self:append(("  "):rep(depth)):append(symbol, "LazySpecial"):append(" ")
     self:reason(data, { time_right = true })
     self:nl()
@@ -557,12 +547,17 @@ function M:profile()
   end
 end
 
+function M.list_icon(depth)
+  local symbols = Config.options.ui.icons.list
+  return symbols[(depth - 1) % #symbols + 1]
+end
+
 function M:debug()
   self:append("Active Handlers", "LazyH2"):nl()
   self
     :append(
       "This shows only the lazy handlers that are still active. When a plugin loads, its handlers are removed",
-      "Comment",
+      "LazyComment",
       { indent = 2 }
     )
     :nl()
@@ -571,6 +566,7 @@ function M:debug()
     Util.foreach(handler.active, function(value, plugins)
       value = type(value) == "table" and value[1] or value
       if not vim.tbl_isempty(plugins) then
+        ---@type string[]
         plugins = vim.tbl_values(plugins)
         table.sort(plugins)
         self:append("● ", "LazySpecial", { indent = 2 })
@@ -590,7 +586,7 @@ function M:debug()
     local kb = math.floor(#entry.chunk / 10.24) / 100
     self:append("● ", "LazySpecial", { indent = 2 }):append(modname):append(" " .. kb .. "Kb", "Bold")
     if entry.modpath ~= modname then
-      self:append(" " .. vim.fn.fnamemodify(entry.modpath, ":p:~:."), "Comment")
+      self:append(" " .. vim.fn.fnamemodify(entry.modpath, ":p:~:."), "LazyComment")
     end
     self:nl()
   end)

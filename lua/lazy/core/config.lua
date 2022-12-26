@@ -37,6 +37,8 @@ M.defaults = {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
+      loaded = "●",
+      not_loaded = "○",
       cmd = " ",
       config = "",
       event = "",
@@ -49,6 +51,12 @@ M.defaults = {
       start = "",
       task = "✔ ",
       lazy = "鈴 ",
+      list = {
+        "●",
+        "➜",
+        "★",
+        "‒",
+      },
     },
     throttle = 20, -- how frequently should the ui process render events
     custom_keys = {

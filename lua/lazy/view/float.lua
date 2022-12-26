@@ -77,6 +77,10 @@ function M:mount()
   end
 
   ---@class LazyViewWinOpts
+  ---@field width number
+  ---@field height number
+  ---@field row number
+  ---@field col number
   local win_opts = {
     relative = "editor",
     style = "minimal",
@@ -111,6 +115,7 @@ function M:mount()
       self:layout()
       local config = {}
       for _, key in ipairs({ "relative", "width", "height", "col", "row" }) do
+        ---@diagnostic disable-next-line: no-unknown
         config[key] = self.opts.win_opts[key]
       end
       vim.api.nvim_win_set_config(self.win, config)

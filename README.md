@@ -315,6 +315,8 @@ return {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
+      loaded = "●",
+      not_loaded = "○",
       cmd = " ",
       config = "",
       event = "",
@@ -327,6 +329,12 @@ return {
       start = "",
       task = "✔ ",
       lazy = "鈴 ",
+      list = {
+        "●",
+        "➜",
+        "★",
+        "‒",
+      },
     },
     throttle = 20, -- how frequently should the ui process render events
     custom_keys = {
@@ -666,29 +674,36 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 
 <!-- colors:start -->
 
-| Highlight Group        | Default Group              | Description       |
-| ---------------------- | -------------------------- | ----------------- |
-| **LazyButton**         | **_CursorLine_**           |                   |
-| **LazyButtonActive**   | **_Visual_**               |                   |
-| **LazyCommit**         | **_@variable.builtin_**    |                   |
-| **LazyError**          | **_ErrorMsg_**             | task errors       |
-| **LazyH1**             | **_IncSearch_**            |                   |
-| **LazyH2**             | **_Bold_**                 |                   |
-| **LazyHandlerCmd**     | **_Operator_**             |                   |
-| **LazyHandlerEvent**   | **_Constant_**             |                   |
-| **LazyHandlerFt**      | **_Character_**            |                   |
-| **LazyHandlerKeys**    | **_Statement_**            |                   |
-| **LazyHandlerPlugin**  | **_Special_**              |                   |
-| **LazyHandlerRuntime** | **_@macro_**               |                   |
-| **LazyHandlerSource**  | **_Character_**            |                   |
-| **LazyHandlerStart**   | **_@field_**               |                   |
-| **LazyKey**            | **_Conceal_**              |                   |
-| **LazyMuted**          | **_Comment_**              |                   |
-| **LazyNormal**         | **_NormalFloat_**          |                   |
-| **LazyProgressDone**   | **_Constant_**             | progress bar done |
-| **LazyProgressTodo**   | **_LineNr_**               | progress bar todo |
-| **LazySpecial**        | **_@punctuation.special_** |                   |
-| **LazyValue**          | **_@string_**              |                   |
+| Highlight Group       | Default Group              | Description                                         |
+| --------------------- | -------------------------- | --------------------------------------------------- |
+| **LazyButton**        | **_CursorLine_**           |                                                     |
+| **LazyButtonActive**  | **_Visual_**               |                                                     |
+| **LazyComment**       | **_Comment_**              |                                                     |
+| **LazyCommit**        | **_@variable.builtin_**    | commit ref                                          |
+| **LazyCommitIssue**   | **_Number_**               |                                                     |
+| **LazyCommitScope**   | **_Italic_**               | conventional commit scope                           |
+| **LazyCommitType**    | **_Title_**                | conventional commit type                            |
+| **LazyDir**           | **_@text.reference_**      | directory                                           |
+| **LazyH1**            | **_IncSearch_**            | home button                                         |
+| **LazyH2**            | **_Bold_**                 | titles                                              |
+| **LazyNoCond**        | **_DiagnosticWarn_**       | unloaded icon for a plugin where `cond()` was false |
+| **LazyNormal**        | **_NormalFloat_**          |                                                     |
+| **LazyProgressDone**  | **_Constant_**             | progress bar done                                   |
+| **LazyProgressTodo**  | **_LineNr_**               | progress bar todo                                   |
+| **LazyProp**          | **_Conceal_**              | property                                            |
+| **LazyReasonCmd**     | **_Operator_**             |                                                     |
+| **LazyReasonEvent**   | **_Constant_**             |                                                     |
+| **LazyReasonFt**      | **_Character_**            |                                                     |
+| **LazyReasonKeys**    | **_Statement_**            |                                                     |
+| **LazyReasonPlugin**  | **_Special_**              |                                                     |
+| **LazyReasonRuntime** | **_@macro_**               |                                                     |
+| **LazyReasonSource**  | **_Character_**            |                                                     |
+| **LazyReasonStart**   | **_@field_**               |                                                     |
+| **LazySpecial**       | **_@punctuation.special_** |                                                     |
+| **LazyTaskError**     | **_ErrorMsg_**             | task errors                                         |
+| **LazyTaskOutput**    | **_MsgArea_**              | task output                                         |
+| **LazyUrl**           | **_@text.reference_**      | url                                                 |
+| **LazyValue**         | **_@string_**              | value of a property                                 |
 
 <!-- colors:end -->
 
