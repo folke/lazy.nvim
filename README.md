@@ -541,6 +541,7 @@ The following user events will be triggered:
 - **LazyClean**: after a clean
 - **LazyCheck**: after checking for updates
 - **LazyLog**: after running log
+- **LazyReload**: triggered by change detection after reloading plugin specs
 - **VeryLazy**: triggered after `LazyDone` and processing `VimEnter` auto commands
 
 ## 🔒 Lockfile `lazy-lock.json`
