@@ -1,5 +1,26 @@
 # Changelog
 
+## [7.3.0](https://github.com/folke/lazy.nvim/compare/v7.2.0...v7.3.0) (2022-12-27)
+
+
+### Features
+
+* **plugin:** added `Plugin.priority` for start plugins ([edf8310](https://github.com/folke/lazy.nvim/commit/edf8310288197d4f7c2983a4fa32c09921f00a22))
+* **profile:** added accurate startuptime to ui/stats/docs ([a2fdf36](https://github.com/folke/lazy.nvim/commit/a2fdf369f2d503ebe44b421b821c9430c8d5cbe1))
+* **reloader:** trigger LazyReload when changes were detected and after reload. Fixes [#178](https://github.com/folke/lazy.nvim/issues/178) ([4e4493b](https://github.com/folke/lazy.nvim/commit/4e4493b21d6b55742b00babd166dc1c1acbfa4ba))
+* **ui:** added new section specifically for updates ([3b46160](https://github.com/folke/lazy.nvim/commit/3b46160c01c4b205aa6665096b263663bd433acd))
+* **util:** use treesitter to highlight notify messages when available ([d1739cb](https://github.com/folke/lazy.nvim/commit/d1739cb7e1791e90d015610ef4aad30803babddb))
+
+
+### Bug Fixes
+
+* **cache:** never use packer paths from cache ([bb53b84](https://github.com/folke/lazy.nvim/commit/bb53b8473cd065dc467853222ee3462739ab16fa))
+* **ft:** always trigger FileType when lazy-loading on ft ([5618076](https://github.com/folke/lazy.nvim/commit/5618076a451232184b3ed2572ec85573896f48d4))
+* **plugin:** find plugins with `/lua/` instead of `/lua` ([8a3152d](https://github.com/folke/lazy.nvim/commit/8a3152de9357cf751546da5a17b9fd52868344f1))
+* **plugin:** pass plugin as arg to config/init/build ([b6ebed5](https://github.com/folke/lazy.nvim/commit/b6ebed5888309dd5d9eda145c403627826fd6a35))
+* **reloader:** remove extra trailing separator ([#180](https://github.com/folke/lazy.nvim/issues/180)) ([c4d924a](https://github.com/folke/lazy.nvim/commit/c4d924aceea13cfab5cf23d0765c5d206deff341))
+* **ui:** removed newlines from profile tab ([0d0d11a](https://github.com/folke/lazy.nvim/commit/0d0d11acb2547ea65e0eba4fb6855f0954ed0239))
+
 ## [7.2.0](https://github.com/folke/lazy.nvim/compare/v7.1.0...v7.2.0) (2022-12-26)
 
 
