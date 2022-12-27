@@ -210,7 +210,9 @@ function M.notify(msg, level)
       vim.wo[win].concealcursor = ""
       vim.wo[win].spell = false
       local buf = vim.api.nvim_win_get_buf(win)
-      vim.bo[buf].filetype = "markdown"
+      if not pcall(vim.treesitter.start, buf, "markdown") then
+        vim.bo[buf].filetype = "markdown"
+      end
     end,
     title = "lazy.nvim",
   })
