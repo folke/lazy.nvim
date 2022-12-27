@@ -103,6 +103,7 @@ require("lazy").setup({
 | **ft**           | `string?` or `string[]`                                   | Lazy-load on filetype                                                                                                                                                                                                                  |
 | **keys**         | `string?` or `string[]` or `LazyKeys[]`                   | Lazy-load on key mapping                                                                                                                                                                                                               |
 | **module**       | `false?`                                                  | Do not automatically load this Lua module when it's required somewhere                                                                                                                                                                 |
+| **priority**     | `number?`                                                 | Only useful for **start** plugins (`lazy=false`) to force loading certain plugins first. Default priority is `50`. It's recommended to set this to a high number for colorschemes.                                                     |
 
 ### Lazy Loading
 
@@ -114,9 +115,6 @@ module of plugin `A`, then plugin `A` will be loaded on demand as expected.
 If you don't want this behavior for a certain plugin, you can specify that with `module=false`.
 You can then manually load the plugin with `:Lazy load foobar.nvim`.
 
-Colorscheme plugins can be configured with `lazy=true`. The plugin will automagically load
-when doing `colorscheme foobar`.
-
 You can configure **lazy.nvim** to lazy-load all plugins by default with `config.defaults.lazy = true`.
 
 Additionally, you can also lazy-load on **events**, **commands**,
@@ -127,6 +125,15 @@ Plugins will be lazy-loaded when one of the following is `true`:
 - the plugin only exists as a dependency in your spec
 - it has an `event`, `cmd`, `ft` or `keys` key
 - `config.defaults.lazy == true`
+
+#### 🌈 Colorschemes
+
+Colorscheme plugins can be configured with `lazy=true`. The plugin will automagically load
+when doing `colorscheme foobar`.
+
+> **NOTE:** since **start** plugins can possibly change existing highlight groups,
+> it's important to make sure that your main **colorscheme** is loaded first.
+> To ensure this you can use the `priority=1000` field. **_(see the examples)_**
 
 #### ⌨️ Lazy Key Mappings
 
@@ -186,7 +193,15 @@ version of plugins that support Semver.
 ```lua
 return {
   -- the colorscheme should be available when starting Neovim
-  "folke/tokyonight.nvim",
+  {
+    "folke/tokyonight.nvim",
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      -- load the colorscheme here
+      vim.cmd([[colorscheme tokyonight]])
+    end,
+  },
 
   -- I have a separate config.mappings file where I require which-key.
   -- With lazy the plugin will be automatically loaded when it is required somewhere

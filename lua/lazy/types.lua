@@ -41,6 +41,7 @@
 ---@field enabled? boolean|(fun():boolean)
 ---@field cond? boolean|(fun():boolean)
 ---@field lazy? boolean
+---@field priority? number Only useful for lazy=false plugins to force loading certain plugins first. Default priority is 50
 ---@field dev? boolean If set, then link to the respective folder under your ~/projects
 
 ---@class LazyPlugin: LazyPluginBase,LazyPluginHandlers,LazyPluginHooks,LazyPluginRef

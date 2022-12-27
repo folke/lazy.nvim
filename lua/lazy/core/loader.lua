@@ -4,6 +4,8 @@ local Handler = require("lazy.core.handler")
 
 local M = {}
 
+local DEFAULT_PRIORITY = 50
+
 ---@type LazyPlugin[]
 M.loading = {}
 M.init_done = false
@@ -73,8 +75,9 @@ function M.startup()
 
   -- 2. load start plugin
   Util.track({ start = "start" })
-  for _, plugin in pairs(Config.plugins) do
-    if plugin.lazy == false and not plugin._.loaded then
+  for _, plugin in ipairs(M.get_start_plugins()) do
+    -- plugin may be loaded by another plugin in the meantime
+    if not plugin._.loaded then
       M.load(plugin, { start = "start" })
     end
   end
@@ -101,6 +104,22 @@ function M.startup()
   M.init_done = true
 
   Util.track()
+end
+
+function M.get_start_plugins()
+  ---@type LazyPlugin[]
+  local start = {}
+  for _, plugin in pairs(Config.plugins) do
+    if plugin.lazy == false and not plugin._.loaded then
+      start[#start + 1] = plugin
+    end
+  end
+  table.sort(start, function(a, b)
+    local ap = a.priority or DEFAULT_PRIORITY
+    local bp = b.priority or DEFAULT_PRIORITY
+    return ap > bp
+  end)
+  return start
 end
 
 ---@class Loader
