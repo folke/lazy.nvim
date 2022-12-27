@@ -44,6 +44,7 @@ function M.check()
     "keys",
     "ft",
     "dir",
+    "priority",
     "_",
   }
   for _, plugin in pairs(Config.plugins) do
