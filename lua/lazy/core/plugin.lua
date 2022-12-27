@@ -29,7 +29,7 @@ local M = {}
 ---@field event? string[]
 ---@field cmd? string[]
 ---@field ft? string[]
----@field keys? string[]
+---@field keys? string[]|{mode:string|string[],[number]:string}[]
 ---@field module? false
 
 ---@class LazyPluginRef
