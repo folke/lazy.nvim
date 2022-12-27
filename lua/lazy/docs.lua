@@ -126,6 +126,7 @@ function M.update()
   config = config:gsub("%s*debug = false.\n", "\n")
   M.save({
     bootstrap = M.extract("lua/lazy/init.lua", "function M%.bootstrap%(%)\n(.-)\nend"),
+    stats = M.extract("lua/lazy/stats.lua", "\nM%._stats = ({.-\n})"),
     config = config,
     spec = Util.read_file("lua/lazy/example.lua"),
     commands = M.commands(),

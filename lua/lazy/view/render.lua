@@ -491,6 +491,24 @@ function M:details(plugin)
 end
 
 function M:profile()
+  local stats = require("lazy.stats").stats()
+  local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+  self:append("Startuptime: ", "LazyH2"):append(ms .. "ms", "Number"):nl():nl()
+  if stats.startuptime_cputime then
+    self:append("Based on the actual CPU time of the Neovim process till "):append("UIEnter", "LazySpecial")
+    self:append("."):nl()
+    self:append("This is more accurate than ")
+    self:append("`nvim --startuptime`", "@text.literal.markdown_inline")
+    self:append(".")
+  else
+    self:append("An accurate startuptime based on the actual CPU time of the Neovim process is not available."):nl()
+    self
+      :append("Startuptime is instead based on a delta with a timestamp when lazy started till ")
+      :append("UIEnter", "LazySpecial")
+    self:append(".")
+  end
+  self:nl():nl()
+
   self:append("Profile", "LazyH2"):nl():nl()
   self
     :append("You can press ")
@@ -504,6 +522,8 @@ function M:profile()
     :nl()
 
   self:nl()
+
+  self:nl():nl()
 
   ---@param a LazyProfile
   ---@param b LazyProfile

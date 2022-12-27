@@ -1,9 +1,11 @@
 ---@type LazyCommands
 local M = {}
+M._start = 0
 
 ---@param spec LazySpec Should be a module name to load, or a plugin spec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
+  M._start = M._start == 0 and vim.loop.hrtime() or M._start
   if vim.g.lazy_did_setup then
     return vim.notify(
       "Re-sourcing your config is not supported with lazy.nvim",
@@ -62,14 +64,7 @@ function M.setup(spec, opts)
 end
 
 function M.stats()
-  local ret = { count = 0, loaded = 0 }
-  for _, plugin in pairs(require("lazy.core.config").plugins) do
-    ret.count = ret.count + 1
-    if plugin._.loaded then
-      ret.loaded = ret.loaded + 1
-    end
-  end
-  return ret
+  return require("lazy.stats").stats()
 end
 
 function M.bootstrap()

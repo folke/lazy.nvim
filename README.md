@@ -500,12 +500,24 @@ $ nvim --headless "+Lazy! sync" +qa
 - **plugins**: a list of plugin names to run the operation on
 - **concurrency**: limit the `number` of concurrently running tasks
 
-If you want to display the number of plugins on your dashboard, you can use
-this simple API:
+Stats API (`require("lazy").stats()`):
+
+<!-- stats:start -->
 
 ```lua
-local plugins = require("lazy").stats().count
+{
+  -- startuptime in milliseconds till UIEnter
+  startuptime = 0,
+  -- when true, startuptime is the accurate cputime for the Neovim process. (Linux & Macos)
+  -- this is more accurate than `nvim --startuptime`, and as such will be slightly higher
+  -- when false, startuptime is calculated based on a delta with a timestamp when lazy started.
+  startuptime_cputime = false,
+  count = 0, -- total number of plugins
+  loaded = 0, -- number of loaded plugins
+}
 ```
+
+<!-- stats:end -->
 
 **lazy.nvim** provides a statusline component that you can use to show the number of pending updates.
 Make sure to enable `config.checker.enabled = true` to make this work.
@@ -543,6 +555,8 @@ The following user events will be triggered:
 - **LazyLog**: after running log
 - **LazyReload**: triggered by change detection after reloading plugin specs
 - **VeryLazy**: triggered after `LazyDone` and processing `VimEnter` auto commands
+- **LazyVimStarted**: triggered after `UIEnter` when `require("lazy").stats().startuptime` has been calculated.
+  Useful to update the startuptime on your dashboard.
 
 ## 🔒 Lockfile `lazy-lock.json`
 

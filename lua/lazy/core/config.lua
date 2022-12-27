@@ -200,6 +200,12 @@ function M.setup(spec, opts)
   if M.headless then
     require("lazy.view.commands").setup()
   else
+    vim.api.nvim_create_autocmd("UIEnter", {
+      callback = function()
+        require("lazy.stats").on_ui_enter()
+      end,
+    })
+
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
       once = true,
