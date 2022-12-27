@@ -44,10 +44,10 @@
     - default semver merging strategy: if no version matches all, then use highest version?
   - [ ] package meta index (package.lua cache for all packages)
 
-- [ ] document highlight groups
+- [x] document highlight groups
 - [x] document user events
-- [ ] document API, like lazy.plugins()
-- [ ] icons
+- [x] document API, like lazy.plugins()
+- [x] icons
 
 - [x] check in cache if rtp files match
 - [x] I think the installation section, specifically the loading part, could use an
@@ -57,7 +57,7 @@
       remove most question marks I think.
 - [x] When autoinstalling the plugins the cursor isn't focused on the floating
       window, but on the non-floating window in the background.
-- [ ] Doing `:Lazy clean` doesn't show which plugins were removed.
+- [x] Doing `:Lazy clean` doesn't show which plugins were removed.
 - [x] Shouldn't the "Versioning" section be in the "Lockfile" chapter?
 - [x] Why are personal dotfiles used as examples? Dotfiles change all the time,
       there's no guarantee this will be relevant or even exist in two years.

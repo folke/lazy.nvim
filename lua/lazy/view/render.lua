@@ -523,8 +523,6 @@ function M:profile()
 
   self:nl()
 
-  self:nl():nl()
-
   ---@param a LazyProfile
   ---@param b LazyProfile
   local function sort(a, b)
