@@ -11,6 +11,7 @@ M.trigger_events = {
   BufRead = { "BufReadPre", "BufRead" },
   BufReadPost = { "BufReadPre", "BufRead", "BufReadPost" },
 }
+M.trigger_always = { "FileType" }
 M.group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
 
 ---@param value string
@@ -31,8 +32,12 @@ function M:_add(value)
       local groups = M.get_augroups(event, pattern)
       -- load the plugins
       Loader.load(self.active[value], { [self.type] = value })
-      -- check if any plugin created an event handler for this event and fire the group
-      M.trigger(event, pattern, groups)
+      if vim.tbl_contains(M.trigger_always, event) then
+        vim.cmd("do " .. event)
+      else
+        -- check if any plugin created an event handler for this event and fire the group
+        M.trigger(event, pattern, groups)
+      end
       Util.track()
     end,
   })
