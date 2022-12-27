@@ -61,6 +61,13 @@ return {
     title = "Installed",
   },
   {
+    ---@param plugin LazyPlugin
+    filter = function(plugin)
+      return plugin._.has_updates
+    end,
+    title = "Updates",
+  },
+  {
     filter = function(plugin)
       return has_task(plugin, function(task)
         return task.name == "log" and vim.trim(task.output) ~= ""
