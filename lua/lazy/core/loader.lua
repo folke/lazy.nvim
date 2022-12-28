@@ -217,7 +217,11 @@ function M.config(plugin)
     mods = vim.tbl_values(mods)
     if #mods == 1 then
       fn = function()
-        require(mods[1]).setup(plugin.config == true and {} or plugin.config)
+        local opts = plugin.config
+        if opts == true then
+          opts = nil
+        end
+        require(mods[1]).setup(opts)
       end
     else
       return Util.error(
