@@ -56,7 +56,7 @@ M.commands = {
 }
 
 function M.complete(cmd, prefix)
-  if not ViewConfig.commands[cmd].plugins then
+  if not (ViewConfig.commands[cmd] or {}).plugins then
     return
   end
   ---@type string[]
