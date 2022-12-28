@@ -158,7 +158,9 @@ function M.load(modkey, modpath)
 end
 
 function M.require(modname)
-  return M.loader(modname)()
+  local mod = M.loader(modname)()
+  package.loaded[modname] = mod
+  return mod
 end
 
 ---@param modname string
