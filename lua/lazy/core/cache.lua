@@ -34,10 +34,12 @@ M.stats = {
   find = { total = 0, time = 0, rtp = 0, unloaded = 0, index = 0, stat = 0, not_found = 0 },
   autoload = { total = 0, time = 0 },
 }
+M.me = debug.getinfo(1, "S").source:sub(2)
+M.me = vim.fn.fnamemodify(M.me, ":p:h:h:h:h"):gsub("\\", "/")
 ---@type table<string, table<string,string>>
-M.topmods = {}
+M.topmods = { lazy = { [M.me] = M.me } }
 ---@type table<string, true>
-M.indexed = {}
+M.indexed = { [M.me] = true }
 M.indexed_rtp = false
 M.indexed_unloaded = false
 -- selene:allow(global_usage)
