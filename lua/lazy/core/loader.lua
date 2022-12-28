@@ -141,6 +141,8 @@ function M.load(plugins, reason)
         plugin = Config.plugins[plugin]
       end
     end
+    
+    try_load = try_load and plugin._.installed
 
     if try_load and plugin.cond then
       try_load = plugin.cond == true or (type(plugin.cond) == "function" and plugin.cond()) or false
