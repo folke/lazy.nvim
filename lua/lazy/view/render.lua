@@ -5,6 +5,7 @@ local Handler = require("lazy.core.handler")
 local Git = require("lazy.manage.git")
 local Plugin = require("lazy.core.plugin")
 local ViewConfig = require("lazy.view.config")
+local Cache = require("lazy.core.cache")
 
 local Text = require("lazy.view.text")
 
@@ -240,6 +241,13 @@ function M:diagnostic(diag)
   table.insert(self._diagnostics, diag)
 end
 
+---@param precision? number
+function M:ms(nsec, precision)
+  precision = precision or 2
+  local e = math.pow(10, precision)
+  return math.floor(nsec / 1e6 * e + 0.5) / e .. "ms"
+end
+
 ---@param reason? {[string]:string, time:number}
 ---@param opts? {time_right?:boolean}
 function M:reason(reason, opts)
@@ -275,7 +283,7 @@ function M:reason(reason, opts)
     reason.runtime = reason.runtime:gsub(".*/([^/]+/ftdetect/.*)", "%1")
     reason.runtime = reason.runtime:gsub(".*/(runtime/.*)", "%1")
   end
-  local time = reason.time and (" " .. math.floor(reason.time / 1e6 * 100) / 100 .. "ms")
+  local time = reason.time and (" " .. self:ms(reason.time))
   if time and not opts.time_right then
     self:append(time, "Bold")
     self:append(" ")
@@ -473,21 +481,29 @@ function M:details(plugin)
       })
     end
   end
+  self:props(props, { indent = 6 })
 
+  self:nl()
+end
+
+---@alias LazyProps {[1]:string, [2]:string|fun(), [3]?:string}[]
+---@param props LazyProps
+---@param opts? {indent: number}
+function M:props(props, opts)
+  opts = opts or {}
   local width = 0
   for _, prop in ipairs(props) do
     width = math.max(width, #prop[1])
   end
   for _, prop in ipairs(props) do
-    self:append(prop[1] .. string.rep(" ", width - #prop[1] + 1), "LazyProp", { indent = 6 })
+    self:append(prop[1] .. string.rep(" ", width - #prop[1] + 1), "LazyProp", { indent = opts.indent or 0 })
     if type(prop[2]) == "function" then
       prop[2]()
     else
-      self:append(prop[2], prop[3] or "LazyValue")
+      self:append(tostring(prop[2]), prop[3] or "LazyValue")
     end
     self:nl()
   end
-  self:nl()
 end
 
 function M:profile()
@@ -598,6 +614,26 @@ function M:debug()
     end)
   end)
   self:nl()
+
+  self:append("Cache.find()", "LazyH2"):nl()
+  self:props({
+    { "total", Cache.stats.find.total, "Number" },
+    { "time", self:ms(Cache.stats.find.time, 3), "Bold" },
+    { "avg time", self:ms(Cache.stats.find.time / Cache.stats.find.total, 3), "Bold" },
+    { "index", Cache.stats.find.index, "Number" },
+    { "fs_stat", Cache.stats.find.stat, "Number" },
+    { "not found", Cache.stats.find.not_found, "Number" },
+  }, { indent = 2 })
+  self:nl()
+
+  self:append("Cache.autoload()", "LazyH2"):nl()
+  self:props({
+    { "total", Cache.stats.autoload.total, "Number" },
+    { "time", self:ms(Cache.stats.autoload.time, 3), "Bold" },
+    { "avg time", self:ms(Cache.stats.autoload.time / Cache.stats.autoload.total, 3), "Bold" },
+  }, { indent = 2 })
+  self:nl()
+
   self:append("Cache", "LazyH2"):nl()
   local Cache = require("lazy.core.cache")
   Util.foreach(Cache.cache, function(modname, entry)
