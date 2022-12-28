@@ -212,8 +212,15 @@ function M.load()
   local spec = M.spec()
 
   -- add ourselves
-  spec.plugins["lazy.nvim"] = nil
-  spec:add({ "folke/lazy.nvim", lazy = true, dir = Config.me })
+  spec:add({ "folke/lazy.nvim" })
+  -- override some lazy props
+  local lazy = spec.plugins["lazy.nvim"]
+  lazy.lazy = true
+  lazy.dir = Config.me
+  lazy.config = function()
+    error("lazy config should not be called")
+  end
+  lazy._.loaded = {}
 
   local existing = Config.plugins
   Config.plugins = spec.plugins
@@ -228,6 +235,7 @@ function M.load()
   Util.track("state")
   M.update_state()
   Util.track()
+  require("lazy.core.cache").indexed_unloaded = false
 end
 
 -- Finds the plugin that has this path
