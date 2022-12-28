@@ -131,65 +131,72 @@ function M.load(plugins, reason)
   ---@cast plugins (string|LazyPlugin)[]
 
   for _, plugin in pairs(plugins) do
-    local try_load = true
-
     if type(plugin) == "string" then
-      if not Config.plugins[plugin] then
-        Util.error("Plugin " .. plugin .. " not found")
-        try_load = false
-      else
+      if Config.plugins[plugin] then
         plugin = Config.plugins[plugin]
+      else
+        Util.error("Plugin " .. plugin .. " not found")
+        plugin = nil
       end
     end
-
-    if try_load and plugin.cond then
-      try_load = plugin.cond == true or (type(plugin.cond) == "function" and plugin.cond()) or false
-      plugin._.cond = try_load
-    end
-
-    ---@cast plugin LazyPlugin
-
-    if try_load and not plugin._.loaded then
-      ---@diagnostic disable-next-line: assign-type-mismatch
-      plugin._.loaded = {}
-      for k, v in pairs(reason) do
-        plugin._.loaded[k] = v
-      end
-      if #M.loading > 0 then
-        plugin._.loaded.plugin = M.loading[#M.loading].name
-      elseif reason.require then
-        plugin._.loaded.source = Util.get_source()
-      end
-
-      table.insert(M.loading, plugin)
-
-      Util.track({ plugin = plugin.name, start = reason.start })
-      Handler.disable(plugin)
-
-      vim.opt.runtimepath:prepend(plugin.dir)
-      local after = plugin.dir .. "/after"
-      if vim.loop.fs_stat(after) then
-        vim.opt.runtimepath:append(after)
-      end
-
-      if plugin.dependencies then
-        Util.try(function()
-          M.load(plugin.dependencies, {})
-        end, "Failed to load deps for " .. plugin.name)
-      end
-
-      M.packadd(plugin.dir)
-      if plugin.config then
-        M.config(plugin)
-      end
-
-      plugin._.loaded.time = Util.track().time
-      table.remove(M.loading)
-      vim.schedule(function()
-        vim.cmd("do User LazyRender")
-      end)
+    if plugin and not plugin._.loaded then
+      M._load(plugin, reason)
     end
   end
+end
+
+---@param plugin LazyPlugin
+---@param reason {[string]:string}
+function M._load(plugin, reason)
+  if not plugin._.installed then
+    return Util.error("Plugin " .. plugin.name .. " is not installed")
+  end
+
+  if plugin.cond ~= nil then
+    if plugin.cond == false or (type(plugin.cond) == "function" and not plugin.cond()) then
+      plugin._.cond = false
+      return
+    end
+  end
+
+  ---@diagnostic disable-next-line: assign-type-mismatch
+  plugin._.loaded = {}
+  for k, v in pairs(reason) do
+    plugin._.loaded[k] = v
+  end
+  if #M.loading > 0 then
+    plugin._.loaded.plugin = M.loading[#M.loading].name
+  elseif reason.require then
+    plugin._.loaded.source = Util.get_source()
+  end
+
+  table.insert(M.loading, plugin)
+
+  Util.track({ plugin = plugin.name, start = reason.start })
+  Handler.disable(plugin)
+
+  vim.opt.runtimepath:prepend(plugin.dir)
+  local after = plugin.dir .. "/after"
+  if vim.loop.fs_stat(after) then
+    vim.opt.runtimepath:append(after)
+  end
+
+  if plugin.dependencies then
+    Util.try(function()
+      M.load(plugin.dependencies, {})
+    end, "Failed to load deps for " .. plugin.name)
+  end
+
+  M.packadd(plugin.dir)
+  if plugin.config then
+    M.config(plugin)
+  end
+
+  plugin._.loaded.time = Util.track().time
+  table.remove(M.loading)
+  vim.schedule(function()
+    vim.cmd("do User LazyRender")
+  end)
 end
 
 --- runs plugin config
