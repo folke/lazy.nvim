@@ -30,6 +30,16 @@ M.cache = {}
 M.enabled = true
 ---@type string[]
 M.rtp = nil
+M.stats = {
+  find = { total = 0, time = 0, rtp = 0, unloaded = 0, index = 0, stat = 0, not_found = 0 },
+  autoload = { total = 0, time = 0 },
+}
+---@type table<string, table<string,string>>
+M.topmods = {}
+---@type table<string, true>
+M.indexed = {}
+M.indexed_rtp = false
+M.indexed_unloaded = false
 -- selene:allow(global_usage)
 M._loadfile = _G.loadfile
 
@@ -53,11 +63,21 @@ function M.check_path(modname, modpath)
     return false
   end
 
+  return M.check_autoload(modname, modpath)
+end
+
+function M.check_autoload(modname, modpath)
+  local start = uv.hrtime()
+  M.stats.autoload.total = M.stats.autoload.total + 1
   -- check plugins. Again fast, since we check the plugin name from the path.
   -- only needed when the plugin mod has been loaded
-  if package.loaded["lazy.core.plugin"] then
-    local plugin = require("lazy.core.plugin").find(modpath)
+  ---@type LazyCorePlugin
+  local Plugin = package.loaded["lazy.core.plugin"]
+  if Plugin then
+    local plugin = Plugin.find(modpath)
     if plugin and modpath:find(plugin.dir, 1, true) == 1 then
+      -- we're not interested in loader time, so calculate delta here
+      M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
       if not plugin._.loaded then
         if plugin.module == false then
           error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
@@ -67,6 +87,7 @@ function M.check_path(modname, modpath)
       return true
     end
   end
+  M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
   return false
 end
 
@@ -76,13 +97,6 @@ function M.disable()
   end
   -- selene:allow(global_usage)
   _G.loadfile = M._loadfile
-  ---@diagnostic disable-next-line: no-unknown
-  for i, loader in ipairs(package.loaders) do
-    if loader == M.loader then
-      table.remove(package.loaders, i)
-      break
-    end
-  end
   M.enabled = false
 end
 
@@ -93,6 +107,7 @@ function M.loader(modname)
 
   local chunk, err
   if entry and M.check_path(modname, entry.modpath) then
+    M.stats.find.total = M.stats.find.total + 1
     local mod = package.loaded[modname]
     if type(mod) == "table" then
       return function()
@@ -105,7 +120,12 @@ function M.loader(modname)
     -- find the modpath and load the module
     local modpath = M.find(modname)
     if modpath then
-      chunk, err = M.load(modname, modpath)
+      M.check_autoload(modname, modpath)
+      if M.enabled then
+        chunk, err = M.load(modname, modpath)
+      else
+        chunk, err = M._loadfile(modpath)
+      end
     end
   end
   return chunk or (err and error(err)) or "not found in lazy cache"
@@ -163,12 +183,90 @@ function M.require(modname)
   return mod
 end
 
+-- index the top-level lua modules for this path
+function M._index(path)
+  if not M.indexed[path] and path:sub(-6, -1) ~= "/after" then
+    M.stats.find.index = M.stats.find.index + 1
+    ---@type LazyUtilCore
+    local Util = package.loaded["lazy.core.util"]
+    if not Util then
+      return
+    end
+    M.indexed[path] = true
+    Util.ls(path .. "/lua", function(_, name, t)
+      local topname
+      if t == "directory" then
+        topname = name
+      elseif name:sub(-4) == ".lua" then
+        topname = name:sub(1, -5)
+      end
+      if topname then
+        M.topmods[topname] = M.topmods[topname] or {}
+        M.topmods[topname][path] = path
+      end
+    end)
+  end
+end
+
 ---@param modname string
 ---@return string?
 function M.find(modname)
+  M.stats.find.total = M.stats.find.total + 1
+  local start = uv.hrtime()
   local basename = modname:gsub("%.", "/")
-  local paths = { "lua/" .. basename .. ".lua", "lua/" .. basename .. "/init.lua" }
-  return vim.api.nvim__get_runtime(paths, false, { is_lua = true })[1]
+  local idx = modname:find(".", 1, true)
+  local topmod = idx and modname:sub(1, idx - 1) or modname
+
+  -- search for a directory first when topmod == modname
+  local patterns = topmod == modname and { "/init.lua", ".lua" } or { ".lua", "/init.lua" }
+
+  -- check top-level mods to find the module
+  local function _find()
+    for _, toppath in pairs(M.topmods[topmod] or {}) do
+      for _, pattern in ipairs(patterns) do
+        local path = toppath .. "/lua/" .. basename .. pattern
+        M.stats.find.stat = M.stats.find.stat + 1
+        if uv.fs_stat(path) then
+          return path
+        end
+      end
+    end
+  end
+
+  local modpath = _find()
+  if not modpath then
+    -- update rtp
+    if not M.indexed_rtp then
+      for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
+        M._index(path)
+      end
+      M.indexed_rtp = true
+      modpath = _find()
+    end
+
+    -- update unloaded
+    if not modpath and not M.indexed_unloaded then
+      ---@type LazyCoreConfig
+      local Config = package.loaded["lazy.core.config"]
+      if Config then
+        for _, plugin in pairs(Config.plugins) do
+          if not (M.indexed[plugin.dir] or plugin._.loaded or plugin.module == false) then
+            M._index(plugin.dir)
+          end
+        end
+      end
+      M.indexed_unloaded = true
+      modpath = _find()
+    end
+
+    -- module not found
+    if not modpath then
+      M.stats.find.not_found = M.stats.find.not_found + 1
+    end
+  end
+
+  M.stats.find.time = M.stats.find.time + uv.hrtime() - start
+  return modpath
 end
 
 -- returns the cached RTP excluding plugin dirs
@@ -207,23 +305,30 @@ function M.setup(opts)
     end
   end
   M.debug = opts and opts.debug
-
-  M.load_cache()
-  table.insert(package.loaders, 2, M.loader)
-  -- selene:allow(global_usage)
-  _G.loadfile = M.loadfile
+  M.enabled = M.config.enabled
 
   -- reset rtp when it changes
   vim.api.nvim_create_autocmd("OptionSet", {
     pattern = "runtimepath",
     callback = function()
       M.rtp = nil
+      M.indexed_rtp = false
     end,
   })
 
-  if #M.config.disable_events > 0 then
-    vim.api.nvim_create_autocmd(M.config.disable_events, { once = true, callback = M.disable })
+  if M.enabled then
+    table.insert(package.loaders, 2, M.loader)
+    M.load_cache()
+    -- selene:allow(global_usage)
+    _G.loadfile = M.loadfile
+    if #M.config.disable_events > 0 then
+      vim.api.nvim_create_autocmd(M.config.disable_events, { once = true, callback = M.disable })
+    end
+  else
+    -- we need to always add the loader since this will autoload unloaded modules
+    table.insert(package.loaders, M.loader)
   end
+
   return M
 end
 

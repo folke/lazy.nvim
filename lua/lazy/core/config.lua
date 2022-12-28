@@ -1,5 +1,6 @@
 local Util = require("lazy.core.util")
 
+---@class LazyCoreConfig
 local M = {}
 
 ---@class LazyConfig

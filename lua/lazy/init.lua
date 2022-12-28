@@ -25,10 +25,8 @@ function M.setup(spec, opts)
   end
   local start = vim.loop.hrtime()
 
-  if not (opts and opts.performance and opts.performance.cache and opts.performance.cache.enabled == false) then
-    -- load module cache before anything else
-    require("lazy.core.cache").setup(opts)
-  end
+  -- load module cache before anything else
+  require("lazy.core.cache").setup(opts)
 
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")

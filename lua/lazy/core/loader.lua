@@ -28,9 +28,6 @@ function M.setup()
     end,
   })
 
-  -- autoload opt plugins
-  table.insert(package.loaders, M.autoload)
-
   -- install missing plugins
   if Config.options.install.missing then
     Util.track("install")
@@ -296,34 +293,6 @@ function M.colorscheme(name)
       end
     end
   end
-end
-
--- This loader is added as the very last one.
--- This only hits when the modname is not cached and
--- even then only once per plugin. So pretty much never.
----@param modname string
-function M.autoload(modname)
-  -- check if a lazy plugin should be loaded
-  for _, plugin in pairs(Config.plugins) do
-    if not (plugin._.loaded or plugin.module == false) then
-      for _, pattern in ipairs({ ".lua", "/init.lua" }) do
-        local path = plugin.dir .. "/lua/" .. modname:gsub("%.", "/") .. pattern
-        if vim.loop.fs_stat(path) then
-          M.load(plugin, { require = modname })
-          -- check if the module has been loaded in the meantime
-          if type(package.loaded[modname]) == "table" then
-            local mod = package.loaded[modname]
-            return function()
-              return mod
-            end
-          end
-          local chunk, err = loadfile(path)
-          return chunk or error(err)
-        end
-      end
-    end
-  end
-  return modname .. " not found in lazy plugins"
 end
 
 return M

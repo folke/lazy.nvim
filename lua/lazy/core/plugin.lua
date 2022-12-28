@@ -3,6 +3,7 @@ local Util = require("lazy.core.util")
 local Handler = require("lazy.core.handler")
 local Cache = require("lazy.core.cache")
 
+---@class LazyCorePlugin
 local M = {}
 
 ---@class LazySpecLoader
