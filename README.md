@@ -4,6 +4,34 @@
 
 ![image](https://user-images.githubusercontent.com/292349/208301737-68fb279c-ba70-43ef-a369-8c3e8367d6b1.png)
 
+## Table of Contents
+<!-- vim-markdown-toc GFM -->
+* [✨ Features](#-features)
+* [⚡️ Requirements](#%EF%B8%8F-requirements)
+* [📦 Installation](#-installation)
+* [🔌 Plugin Spec](#-plugin-spec)
+  * [Lazy Loading](#lazy-loading)
+    * [🌈 Colorschemes](#-colorschemes)
+    * [⌨️ Lazy Key Mappings](#%EF%B8%8F-lazy-key-mappings)
+  * [Versioning](#versioning)
+  * [Examples](#examples)
+* [⚙️ Configuration](#%EF%B8%8F-configuration)
+* [🚀 Usage](#-usage)
+  * [📆 User Events](#-user-events)
+* [🔒 Lockfile `lazy-lock.json`](#-lockfile-lazy-lockjson)
+* [⚡ Performance](#-performance)
+* [🪲 Debug](#-debug)
+* [▶️ Startup Sequence](#%EF%B8%8F-startup-sequence)
+* [📂 Structuring Your Plugins](#-structuring-your-plugins)
+* [📦 Migration Guide](#-migration-guide)
+  * [packer.nvim](#packernvim)
+  * [paq-nvim](#paq-nvim)
+* [❌ Uninstalling](#-uninstalling)
+* [🌈 Highlight Groups](#-highlight-groups)
+* [📦 Other Neovim Plugin Managers in Lua](#-other-neovim-plugin-managers-in-lua)
+<!-- vim-markdown-toc -->
+
+
 ## ✨ Features
 
 - 📦 Manage all your Neovim plugins with a powerful UI
