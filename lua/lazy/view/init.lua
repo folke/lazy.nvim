@@ -85,7 +85,7 @@ function M.create()
   self:on_key(ViewConfig.keys.profile_filter, function()
     if self.state.mode == "profile" then
       vim.ui.input({
-        prompt = "Enter time threshold in ms, like 0.5",
+        prompt = "Enter time threshold in ms: ",
         default = tostring(self.state.profile.threshold),
       }, function(input)
         if not input then
