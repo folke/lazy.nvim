@@ -45,6 +45,7 @@ function M.check()
     "ft",
     "dir",
     "priority",
+    "cond",
     "_",
   }
   for _, plugin in pairs(Config.plugins) do
