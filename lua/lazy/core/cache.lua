@@ -30,6 +30,7 @@ M.cache = {}
 M.enabled = true
 ---@type string[]
 M.rtp = nil
+M.rtp_total = 0
 M.stats = {
   find = { total = 0, time = 0, rtp = 0, unloaded = 0, index = 0, stat = 0, not_found = 0 },
   autoload = { total = 0, time = 0 },
@@ -40,8 +41,8 @@ M.me = vim.fn.fnamemodify(M.me, ":p:h:h:h:h"):gsub("\\", "/")
 M.topmods = { lazy = { [M.me] = M.me } }
 ---@type table<string, true>
 M.indexed = { [M.me] = true }
-M.indexed_rtp = false
 M.indexed_unloaded = false
+M.indexed_rtp = 0
 -- selene:allow(global_usage)
 M._loadfile = _G.loadfile
 
@@ -165,7 +166,7 @@ function M.load(modkey, modpath)
   end
   entry.hash = hash
 
-  if M.debug then
+  if M.debug and M.enabled then
     vim.schedule(function()
       vim.notify("[cache:load] " .. modpath)
     end)
@@ -192,7 +193,7 @@ function M._index(path)
     ---@type LazyUtilCore
     local Util = package.loaded["lazy.core.util"]
     if not Util then
-      return
+      return false
     end
     M.indexed[path] = true
     Util.ls(path .. "/lua", function(_, name, t)
@@ -207,7 +208,9 @@ function M._index(path)
         M.topmods[topname][path] = path
       end
     end)
+    return true
   end
+  return false
 end
 
 ---@param modname string
@@ -238,27 +241,34 @@ function M.find(modname)
   local modpath = _find()
   if not modpath then
     -- update rtp
-    if not M.indexed_rtp then
-      for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
-        M._index(path)
+    local rtp = vim.api.nvim_list_runtime_paths()
+    if #rtp ~= M.indexed_rtp then
+      M.indexed_rtp = #rtp
+      local updated = false
+      for _, path in ipairs(rtp) do
+        updated = M._index(path) or updated
       end
-      M.indexed_rtp = true
-      modpath = _find()
+      if updated then
+        modpath = _find()
+      end
     end
 
     -- update unloaded
     if not modpath and not M.indexed_unloaded then
+      M.indexed_unloaded = true
+      local updated = false
       ---@type LazyCoreConfig
       local Config = package.loaded["lazy.core.config"]
       if Config then
         for _, plugin in pairs(Config.plugins) do
           if not (M.indexed[plugin.dir] or plugin._.loaded or plugin.module == false) then
-            M._index(plugin.dir)
+            updated = M._index(plugin.dir) or updated
           end
         end
       end
-      M.indexed_unloaded = true
-      modpath = _find()
+      if updated then
+        modpath = _find()
+      end
     end
 
     -- module not found
@@ -273,13 +283,16 @@ end
 
 -- returns the cached RTP excluding plugin dirs
 function M.get_rtp()
-  if not M.rtp then
+  local rtp = vim.api.nvim_list_runtime_paths()
+  if not M.rtp or #rtp ~= M.rtp_total then
+    M.rtp_total = #rtp
     M.rtp = {}
     ---@type table<string,true>
     local skip = {}
     -- only skip plugins once Config has been setup
-    if package.loaded["lazy.core.config"] then
-      local Config = require("lazy.core.config")
+    ---@type LazyCoreConfig
+    local Config = package.loaded["lazy.core.config"]
+    if Config then
       for _, plugin in pairs(Config.plugins) do
         if plugin.name ~= "lazy.nvim" then
           skip[plugin.dir] = true
@@ -287,6 +300,7 @@ function M.get_rtp()
       end
     end
     for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
+      ---@type string
       path = path:gsub("\\", "/")
       if not skip[path] and not path:find("after/?$") then
         M.rtp[#M.rtp + 1] = path
@@ -308,15 +322,6 @@ function M.setup(opts)
   end
   M.debug = opts and opts.debug
   M.enabled = M.config.enabled
-
-  -- reset rtp when it changes
-  vim.api.nvim_create_autocmd("OptionSet", {
-    pattern = "runtimepath",
-    callback = function()
-      M.rtp = nil
-      M.indexed_rtp = false
-    end,
-  })
 
   if M.enabled then
     table.insert(package.loaders, 2, M.loader)
