@@ -182,8 +182,8 @@ function M.setup(spec, opts)
   M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
   if M.options.performance.rtp.reset then
     vim.opt.rtp = {
-      M.me,
       vim.fn.stdpath("config"),
+      M.me,
       vim.env.VIMRUNTIME,
       vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
       vim.fn.stdpath("config") .. "/after",

@@ -80,7 +80,7 @@ function M.startup()
   end
   Util.track()
 
-  -- 3. load plugins from rtp, excluding after
+  -- 3. load plugins from the original rtp, excluding after
   Util.track({ start = "rtp plugins" })
   for _, path in ipairs(rtp) do
     if not path:find("after/?$") then
@@ -172,11 +172,7 @@ function M._load(plugin, reason)
   Util.track({ plugin = plugin.name, start = reason.start })
   Handler.disable(plugin)
 
-  vim.opt.runtimepath:prepend(plugin.dir)
-  local after = plugin.dir .. "/after"
-  if vim.loop.fs_stat(after) then
-    vim.opt.runtimepath:append(after)
-  end
+  M.add_to_rtp(plugin)
 
   if plugin.dependencies then
     Util.try(function()
@@ -269,6 +265,36 @@ function M.source_runtime(...)
   for _, path in ipairs(files) do
     M.source(path)
   end
+end
+
+-- This does the same as runtime.c:add_pack_dir_to_rtp
+-- * find first after
+-- * find lazy pack path
+-- * insert right after lazy pack path or right before first after or at the end
+-- * insert after dir right before first after or append to the end
+---@param plugin LazyPlugin
+function M.add_to_rtp(plugin)
+  local rtp = vim.api.nvim_get_runtime_file("", true)
+  local idx_dir, idx_after
+
+  for i, path in ipairs(rtp) do
+    if path == Config.me then
+      idx_dir = i + 1
+    elseif not idx_after and path:sub(-6, -1) == "/after" then
+      idx_after = i + 1 -- +1 to offset the insert of the plugin dir
+      idx_dir = idx_dir or i
+      break
+    end
+  end
+
+  table.insert(rtp, idx_dir or (#rtp + 1), plugin.dir)
+
+  local after = plugin.dir .. "/after"
+  if vim.loop.fs_stat(after) then
+    table.insert(rtp, idx_after or (#rtp + 1), after)
+  end
+
+  vim.opt.rtp = rtp
 end
 
 function M.source(path)
