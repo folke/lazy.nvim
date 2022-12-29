@@ -5,7 +5,8 @@ describe("task", function()
   local plugin = { name = "test", _ = {} }
 
   local done = false
-  local error = nil
+  ---@type string?
+  local error
 
   local opts = {
     on_done = function(task)
