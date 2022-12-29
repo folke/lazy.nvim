@@ -4,7 +4,7 @@ local uv = vim.loop
 
 local M = {}
 M.dirty = false
-M.VERSION = "1"
+M.VERSION = "1" .. jit.version
 
 ---@class LazyCacheConfig
 M.config = {
