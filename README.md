@@ -672,6 +672,7 @@ For a real-life example, you can check my personal dots:
 - `tag='*'` ➡️ `version="*"`
 - `after` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
 - `wants` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `config` don't support string type, use `fun(LazyPlugin)` instead.
 - `module` is auto-loaded. No need to specify
 - `keys` spec is [different](#%EF%B8%8F-lazy-key-mappings)
 
