@@ -158,7 +158,10 @@ function M.load(modkey, modpath)
     entry.used = os.time()
     if M.eq(entry.hash, hash) then
       -- found in cache and up to date
-      return loadstring(entry.chunk --[[@as string]], "@" .. entry.modpath)
+      local chunk, err = loadstring(entry.chunk --[[@as string]], "@" .. entry.modpath)
+      if not (err and err:find("cannot load incompatible bytecode", 1, true)) then
+        return chunk, err
+      end
     end
   else
     entry = { hash = hash, modpath = modpath, used = os.time() }
