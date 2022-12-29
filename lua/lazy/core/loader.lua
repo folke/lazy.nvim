@@ -11,6 +11,8 @@ M.loading = {}
 M.init_done = false
 ---@type table<string,true>
 M.disabled_rtp_plugins = { packer_compiled = true }
+---@type table<string,string>
+M.did_ftdetect = {}
 
 function M.setup()
   -- setup handlers
@@ -243,9 +245,12 @@ end
 
 ---@param path string
 function M.ftdetect(path)
-  vim.cmd("augroup filetypedetect")
-  M.source_runtime(path, "ftdetect")
-  vim.cmd("augroup END")
+  if not M.did_ftdetect[path] then
+    M.did_ftdetect[path] = path
+    vim.cmd("augroup filetypedetect")
+    M.source_runtime(path, "ftdetect")
+    vim.cmd("augroup END")
+  end
 end
 
 ---@param ... string
