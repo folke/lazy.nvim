@@ -736,6 +736,7 @@ PACKER.NVIM <HTTPS://GITHUB.COM/WBTHOMASON/PACKER.NVIM> ~
 - `tag=''` `version=""`
 - `after` **_not needed_** for most use-cases. Use `dependencies` otherwise.
 - `wants` **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `config` don’t support string type, use `fun(LazyPlugin)` instead.
 - `module` is auto-loaded. No need to specify
 - `keys` spec is |lazy.nvim-different|
 
