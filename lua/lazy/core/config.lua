@@ -175,7 +175,7 @@ function M.setup(spec, opts)
   M.options.readme.root = Util.norm(M.options.readme.root)
 
   if M.options.performance.reset_packpath then
-    vim.go.packpath = ""
+    vim.go.packpath = vim.env.VIMRUNTIME
   end
 
   M.me = debug.getinfo(1, "S").source:sub(2)
