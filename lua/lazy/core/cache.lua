@@ -116,6 +116,7 @@ end
 ---@param modname string
 ---@return any
 function M.loader(modname)
+  modname = modname:gsub("/", ".")
   local entry = M.cache[modname]
 
   local chunk, err
