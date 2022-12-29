@@ -172,7 +172,7 @@ function M._load(plugin, reason)
   Util.track({ plugin = plugin.name, start = reason.start })
   Handler.disable(plugin)
 
-  vim.opt.runtimepath:append(plugin.dir)
+  vim.opt.runtimepath:prepend(plugin.dir)
   local after = plugin.dir .. "/after"
   if vim.loop.fs_stat(after) then
     vim.opt.runtimepath:append(after)
