@@ -1,5 +1,46 @@
 # Changelog
 
+## [7.4.0](https://github.com/folke/lazy.nvim/compare/v7.3.0...v7.4.0) (2022-12-29)
+
+
+### Features
+
+* **cache:** update package.loaded on require ([021e546](https://github.com/folke/lazy.nvim/commit/021e54655f8ba9c594b2035f044e5a2a1b13a893))
+* **plugin:** allow some `lazy.nvim` spec props to be set by the user ([c8553ca](https://github.com/folke/lazy.nvim/commit/c8553ca44fefb934ebedb1fabba3ca492848fccc))
+* **profile:** nicer threshold prompt ([#210](https://github.com/folke/lazy.nvim/issues/210)) ([ff8f378](https://github.com/folke/lazy.nvim/commit/ff8f3783fa5dabdb086c5731c46d1a4cf79917af))
+* **ui:** added extra cache stats to the debug tab ([c2f7e2d](https://github.com/folke/lazy.nvim/commit/c2f7e2d0981ec5f06a73923296cfbe52c69ab5da))
+
+
+### Bug Fixes
+
+* **cache:** ad jit.verion to cache version string. Fixes [#225](https://github.com/folke/lazy.nvim/issues/225) ([e3ffcff](https://github.com/folke/lazy.nvim/commit/e3ffcff7cce1206a2e41b413b0923a3aafeb9306))
+* **cache:** added support for top level lua linked directories. Fixes [#233](https://github.com/folke/lazy.nvim/issues/233) ([853d4d5](https://github.com/folke/lazy.nvim/commit/853d4d58381870a4804ee7d822d3331d3cc5924d))
+* **cache:** always normalize modname separators ([8544c38](https://github.com/folke/lazy.nvim/commit/8544c389ab54dd21c562b2763829670c71266caa))
+* **cache:** check package.loaded after auto-load and return existing module if present. Fixes [#224](https://github.com/folke/lazy.nvim/issues/224) ([044e28b](https://github.com/folke/lazy.nvim/commit/044e28bf8bb454335c63998ef6f21bc34b3e6124))
+* **cache:** dont update rtp in fast events ([4b75d06](https://github.com/folke/lazy.nvim/commit/4b75d06c076745379fb1688d2bd00eeabeaa4a4b))
+* **cache:** make it work again... #fixup ([370b1b9](https://github.com/folke/lazy.nvim/commit/370b1b982e95c004512604eb87f0facd03340095))
+* **cache:** OptionSet is not triggered during startup, so use #rtp instead to see if it changed ([9997523](https://github.com/folke/lazy.nvim/commit/9997523841bd39c90d785807411b6babc529f366))
+* **cache:** properly get rtp during fast events ([95b9cf7](https://github.com/folke/lazy.nvim/commit/95b9cf743c4d6aab879c2259b79346c6f306dab8))
+* **cache:** reload file if compiled code is incompatible. Fixes [#225](https://github.com/folke/lazy.nvim/issues/225) ([b8c5ab5](https://github.com/folke/lazy.nvim/commit/b8c5ab5dae0b826e576a9a99f92a7e63fb20fb01))
+* **cmd:** fixed signature of cmd._del. Fixes [#229](https://github.com/folke/lazy.nvim/issues/229) ([a2eac68](https://github.com/folke/lazy.nvim/commit/a2eac685754252c903094aefa40ab6d747d103aa))
+* **commands:** E5108 in getcompletions ([#207](https://github.com/folke/lazy.nvim/issues/207)) ([acd6697](https://github.com/folke/lazy.nvim/commit/acd6697d8810e501d3861bba2ac45d5f4555c43a))
+* **config:** reset packpath to include VIMRUNTIME only. Fixes [#214](https://github.com/folke/lazy.nvim/issues/214) ([db043da](https://github.com/folke/lazy.nvim/commit/db043da829899239399ef04e917a95c4ceb9b8e6))
+* **ft:** only trigger filetypepluing and filetypeindent for ft handler. Fixes [#228](https://github.com/folke/lazy.nvim/issues/228) ([7de662d](https://github.com/folke/lazy.nvim/commit/7de662d037a96fccc3e3d784468b01794288a7b6))
+* **git:** add --no-show-signature. Fixes [#218](https://github.com/folke/lazy.nvim/issues/218) ([6c0b803](https://github.com/folke/lazy.nvim/commit/6c0b8039990b08b46b5d0c69392256e9f3a2f8d8))
+* **health:** add `cond` key ([#203](https://github.com/folke/lazy.nvim/issues/203)) ([b813fae](https://github.com/folke/lazy.nvim/commit/b813fae61cebbc5b45e7ea3bfbe214b0d5769696))
+* **health:** add new key `priority` to `:checkhealth lazy` ([#196](https://github.com/folke/lazy.nvim/issues/196)) ([dc03fa1](https://github.com/folke/lazy.nvim/commit/dc03fa1ae57c3949874c9cae50074a83232c4eed))
+* **loader:** implemented correct adding to rtp. fix [#230](https://github.com/folke/lazy.nvim/issues/230), fix [#226](https://github.com/folke/lazy.nvim/issues/226) ([3a1a10c](https://github.com/folke/lazy.nvim/commit/3a1a10cd75b47f2aae1f843286cc17d8a780dff1))
+* **loader:** show proper error message when trying to load a plugin that is not installed. Fixes [#201](https://github.com/folke/lazy.nvim/issues/201). Fixes [#202](https://github.com/folke/lazy.nvim/issues/202) ([956164d](https://github.com/folke/lazy.nvim/commit/956164d27dc02b8d3c21c9ef7cc9028d854b0978))
+* **loader:** temporary fix for Vimtex and others. See [#230](https://github.com/folke/lazy.nvim/issues/230) ([c7122d6](https://github.com/folke/lazy.nvim/commit/c7122d64cdf16766433588486adcee67571de6d0))
+* **loader:** when `config=true`, pass `nil` to `setup()`. Fixes [#208](https://github.com/folke/lazy.nvim/issues/208) ([5f423b2](https://github.com/folke/lazy.nvim/commit/5f423b29c65f536a9c41a34a8328372baa444da5))
+* only show fired ft events in debug obvioulsy. Fixes [#232](https://github.com/folke/lazy.nvim/issues/232) ([c7c1295](https://github.com/folke/lazy.nvim/commit/c7c1295c3e429d4a95e36b5c5b2dfcbeca61f42d))
+* **rtp:** correct order of adding to rtp. Fixes [#226](https://github.com/folke/lazy.nvim/issues/226) ([4e3a973](https://github.com/folke/lazy.nvim/commit/4e3a973f85bd2393009d495ecfd6c058345309d4))
+
+
+### Performance Improvements
+
+* move autoloader to cache and always use lazy's modname path resolver which is much faster ([34977c2](https://github.com/folke/lazy.nvim/commit/34977c2b80db3ce5054f3925057b6b8ccbd7ce7e))
+
 ## [7.3.0](https://github.com/folke/lazy.nvim/compare/v7.2.0...v7.3.0) (2022-12-27)
 
 
