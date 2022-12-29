@@ -60,7 +60,7 @@ jobs:
           release-type: simple
           package-name: lazy.nvim
       - name: tag stable versions
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         run: |
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
