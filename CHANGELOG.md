@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.4.2](https://github.com/folke/lazy.nvim/compare/v7.4.1...v7.4.2) (2022-12-29)
+
+
+### Bug Fixes
+
+* **loader:** normalize rtp paths on windows [#230](https://github.com/folke/lazy.nvim/issues/230) ([a4bd4dc](https://github.com/folke/lazy.nvim/commit/a4bd4dc4a7b688b6f68f483bd04b85bb83a96bd8))
+
 ## [7.4.1](https://github.com/folke/lazy.nvim/compare/v7.4.0...v7.4.1) (2022-12-29)
 
 
