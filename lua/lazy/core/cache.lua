@@ -103,6 +103,16 @@ function M.disable()
   M.enabled = false
 end
 
+function M.check_loaded(modname)
+  ---@diagnostic disable-next-line: no-unknown
+  local mod = package.loaded[modname]
+  if type(mod) == "table" then
+    return function()
+      return mod
+    end
+  end
+end
+
 ---@param modname string
 ---@return any
 function M.loader(modname)
@@ -111,12 +121,6 @@ function M.loader(modname)
   local chunk, err
   if entry and M.check_path(modname, entry.modpath) then
     M.stats.find.total = M.stats.find.total + 1
-    local mod = package.loaded[modname]
-    if type(mod) == "table" then
-      return function()
-        return mod
-      end
-    end
     chunk, err = M.load(modname, entry.modpath)
   end
   if not chunk then
@@ -127,7 +131,10 @@ function M.loader(modname)
       if M.enabled then
         chunk, err = M.load(modname, modpath)
       else
-        chunk, err = M._loadfile(modpath)
+        chunk = M.check_loaded(modname)
+        if not chunk then
+          chunk, err = M._loadfile(modpath)
+        end
       end
     end
   end
@@ -145,6 +152,11 @@ end
 ---@param modpath string
 ---@return function?, string? error_message
 function M.load(modkey, modpath)
+  local chunk, err
+  chunk = M.check_loaded(modkey)
+  if chunk then
+    return chunk
+  end
   modpath = modpath:gsub("\\", "/")
   local hash = M.hash(modpath)
   if not hash then
@@ -158,7 +170,7 @@ function M.load(modkey, modpath)
     entry.used = os.time()
     if M.eq(entry.hash, hash) then
       -- found in cache and up to date
-      local chunk, err = loadstring(entry.chunk --[[@as string]], "@" .. entry.modpath)
+      chunk, err = loadstring(entry.chunk --[[@as string]], "@" .. entry.modpath)
       if not (err and err:find("cannot load incompatible bytecode", 1, true)) then
         return chunk, err
       end
@@ -175,7 +187,7 @@ function M.load(modkey, modpath)
     end)
   end
 
-  local chunk, err = M._loadfile(entry.modpath)
+  chunk, err = M._loadfile(entry.modpath)
   if chunk then
     M.dirty = true
     entry.chunk = string.dump(chunk)
@@ -184,7 +196,9 @@ function M.load(modkey, modpath)
 end
 
 function M.require(modname)
+  ---@diagnostic disable-next-line: no-unknown
   local mod = M.loader(modname)()
+  ---@diagnostic disable-next-line: no-unknown
   package.loaded[modname] = mod
   return mod
 end
