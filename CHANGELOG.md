@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.4.1](https://github.com/folke/lazy.nvim/compare/v7.4.0...v7.4.1) (2022-12-29)
+
+
+### Bug Fixes
+
+* **ftdetect:** source ftdetect files only once. Fixes [#235](https://github.com/folke/lazy.nvim/issues/235) ([9f3fb38](https://github.com/folke/lazy.nvim/commit/9f3fb3840228a4d812197f7c6dbd08a9c60d85af))
+
 ## [7.4.0](https://github.com/folke/lazy.nvim/compare/v7.3.0...v7.4.0) (2022-12-29)
 
 
