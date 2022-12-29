@@ -36,9 +36,8 @@ function M:_add(cmd)
   })
 end
 
----@param _plugin LazyPlugin
 ---@param value string
-function M:_del(_plugin, value)
+function M:_del(value)
   pcall(vim.api.nvim_del_user_command, value)
 end
 
