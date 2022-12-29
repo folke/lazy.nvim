@@ -283,6 +283,9 @@ end
 
 -- returns the cached RTP excluding plugin dirs
 function M.get_rtp()
+  if vim.in_fast_event() then
+    return M.rtp or {}
+  end
   local rtp = vim.api.nvim_list_runtime_paths()
   if not M.rtp or #rtp ~= M.rtp_total then
     M.rtp_total = #rtp
@@ -299,7 +302,7 @@ function M.get_rtp()
         end
       end
     end
-    for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
+    for _, path in ipairs(rtp) do
       ---@type string
       path = path:gsub("\\", "/")
       if not skip[path] and not path:find("after/?$") then
