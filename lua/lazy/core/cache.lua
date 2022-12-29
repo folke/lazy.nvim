@@ -114,7 +114,7 @@ function M.check_loaded(modname)
 end
 
 ---@param modname string
----@return any
+---@return fun()|string
 function M.loader(modname)
   modname = modname:gsub("/", ".")
   local entry = M.cache[modname]
@@ -139,7 +139,7 @@ function M.loader(modname)
       end
     end
   end
-  return chunk or (err and error(err)) or "not found in lazy cache"
+  return chunk or err or ("module " .. modname .. " not found")
 end
 
 ---@param modpath string
@@ -197,8 +197,12 @@ function M.load(modkey, modpath)
 end
 
 function M.require(modname)
+  local chunk = M.loader(modname)
+  if type(chunk) == "string" then
+    error(chunk)
+  end
   ---@diagnostic disable-next-line: no-unknown
-  local mod = M.loader(modname)()
+  local mod = chunk()
   ---@diagnostic disable-next-line: no-unknown
   package.loaded[modname] = mod
   return mod
@@ -216,10 +220,10 @@ function M._index(path)
     M.indexed[path] = true
     Util.ls(path .. "/lua", function(_, name, t)
       local topname
-      if t == "directory" then
-        topname = name
-      elseif name:sub(-4) == ".lua" then
+      if name:sub(-4) == ".lua" then
         topname = name:sub(1, -5)
+      elseif t == "link" or t == "directory" then
+        topname = name
       end
       if topname then
         M.topmods[topname] = M.topmods[topname] or {}
