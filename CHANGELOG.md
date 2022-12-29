@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.5.0](https://github.com/folke/lazy.nvim/compare/v7.4.2...v7.5.0) (2022-12-29)
+
+
+### Features
+
+* **bootstrap:** bootstrap with last lazy stable release ([929198b](https://github.com/folke/lazy.nvim/commit/929198bc4feca8089ff265a977854501e3f25c66))
+
 ## [7.4.2](https://github.com/folke/lazy.nvim/compare/v7.4.1...v7.4.2) (2022-12-29)
 
 
