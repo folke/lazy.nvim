@@ -241,7 +241,7 @@ function M.find(modname)
   local modpath = _find()
   if not modpath then
     -- update rtp
-    local rtp = vim.api.nvim_list_runtime_paths()
+    local rtp = M.list_rtp()
     if #rtp ~= M.indexed_rtp then
       M.indexed_rtp = #rtp
       local updated = false
@@ -283,10 +283,7 @@ end
 
 -- returns the cached RTP excluding plugin dirs
 function M.get_rtp()
-  if vim.in_fast_event() then
-    return M.rtp or {}
-  end
-  local rtp = vim.api.nvim_list_runtime_paths()
+  local rtp = M.list_rtp()
   if not M.rtp or #rtp ~= M.rtp_total then
     M.rtp_total = #rtp
     M.rtp = {}
@@ -311,6 +308,10 @@ function M.get_rtp()
     end
   end
   return M.rtp
+end
+
+function M.list_rtp()
+  return vim.api.nvim_get_runtime_file("", true)
 end
 
 ---@param opts? LazyConfig
