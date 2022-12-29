@@ -11,6 +11,7 @@ local uv = vim.loop
 ---@field on_line? fun(string)
 ---@field on_exit? fun(ok:boolean, output:string)
 ---@field timeout? number
+---@field env? string[]
 
 ---@param opts? ProcessOpts
 function M.spawn(cmd, opts)
@@ -21,6 +22,9 @@ function M.spawn(cmd, opts)
     "GIT_TERMINAL_PROMPT=0",
     "GIT_SSH_COMMAND=ssh -oBatchMode=yes",
   }
+  if opts.env then
+    vim.list_extend(env, opts.env)
+  end
 
   for key, value in
     pairs(uv.os_environ() --[[@as string[] ]])

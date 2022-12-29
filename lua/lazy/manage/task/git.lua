@@ -26,6 +26,7 @@ M.log = {
       "--decorate",
       "--date=short",
       "--color=never",
+      "--no-show-signature",
     }
 
     if opts.updated then
