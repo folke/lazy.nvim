@@ -739,7 +739,13 @@ PACKER.NVIM <HTTPS://GITHUB.COM/WBTHOMASON/PACKER.NVIM> ~
 - `module` is auto-loaded. No need to specify
 - `keys` spec is |lazy.nvim-different|
 - `rtp` can be accomplished with:
-    `lua          config = function(plugin)              vim.opt.rtp:append(plugin.dir .. "/rtpPath")           end`
+
+
+>lua
+    config = function(plugin)
+        vim.opt.rtp:append(plugin.dir .. "/custom-rtp")
+    end
+<
 
 
 With packer `wants`, `requires` and `after` can be used to manage dependencies.
