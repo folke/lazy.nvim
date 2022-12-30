@@ -77,7 +77,7 @@ return {
   },
   {
     filter = function(plugin)
-      return plugin._.installed and not plugin.url
+      return plugin._.kind == "clean" and plugin._.installed
     end,
     title = "Clean",
   },
