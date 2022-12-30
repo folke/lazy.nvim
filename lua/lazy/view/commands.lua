@@ -24,6 +24,9 @@ M.commands = {
     Manage.clear()
     View.show()
   end,
+  health = function()
+    vim.cmd.checkhealth("lazy")
+  end,
   home = function()
     View.show("home")
   end,
