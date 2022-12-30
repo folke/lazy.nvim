@@ -96,8 +96,8 @@ M.commands = {
   },
   restore = {
     button = true,
-    desc = "Updates all plugins to the state in the lockfile",
-    desc_plugin = "Restore a plugin to the state in the lockfile",
+    desc = "Updates all plugins to the state in the lockfile. For a single plugin: restore it to the state in the lockfile or to a given commit under the cursor",
+    desc_plugin = "Restore a plugin to the state in the lockfile or to a given commit under the cursor",
     id = 8,
     key = "R",
     key_plugin = "r",

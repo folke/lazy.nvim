@@ -164,6 +164,25 @@ function M:setup_patterns()
       self:diff({ commit = hash })
     end,
   }, self.diff)
+  self:on_pattern(ViewConfig.commands.restore.key_plugin, {
+    [commit_pattern] = function(hash)
+      self:restore({ commit = hash })
+    end,
+  }, self.restore)
+end
+
+---@param opts? {commit:string}
+function M:restore(opts)
+  opts = opts or {}
+  local Lockfile = require("lazy.manage.lock")
+  local Commands = require("lazy.view.commands")
+  local plugin = self.render:get_plugin()
+  if plugin then
+    if opts.commit then
+      Lockfile.get(plugin).commit = opts.commit
+    end
+    Commands.cmd("restore", { plugins = { plugin } })
+  end
 end
 
 function M:hover()
@@ -246,7 +265,7 @@ function M:setup_modes()
         Commands.cmd(name)
       end, m.desc)
     end
-    if m.key_plugin then
+    if m.key_plugin and name ~= "restore" then
       self:on_key(m.key_plugin, function()
         local plugin = self.render:get_plugin()
         if plugin then
