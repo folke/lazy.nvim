@@ -189,9 +189,11 @@ function M.load(modkey, modpath)
   end
 
   chunk, err = M._loadfile(entry.modpath)
+  M.dirty = true
   if chunk then
-    M.dirty = true
     entry.chunk = string.dump(chunk)
+  else
+    M.cache[modkey] = nil
   end
   return chunk, err
 end
