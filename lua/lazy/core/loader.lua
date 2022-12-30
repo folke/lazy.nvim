@@ -40,7 +40,7 @@ function M.setup()
             break
           end
         end
-        require("lazy.manage").install({ wait = true })
+        require("lazy.manage").install({ wait = true, lockfile = true })
         break
       end
     end

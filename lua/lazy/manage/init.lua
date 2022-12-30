@@ -11,6 +11,7 @@ local M = {}
 ---@field mode? string
 ---@field plugins? (LazyPlugin|string)[]
 ---@field concurrency? number
+---@field lockfile? boolean
 
 ---@param ropts RunnerOpts
 ---@param opts? ManagerOpts
@@ -74,7 +75,7 @@ function M.install(opts)
   return M.run({
     pipeline = {
       "git.clone",
-      "git.checkout",
+      { "git.checkout", lockfile = opts.lockfile },
       "plugin.docs",
       "wait",
       "plugin.build",
@@ -88,7 +89,7 @@ function M.install(opts)
   end)
 end
 
----@param opts? ManagerOpts|{lockfile?:boolean}
+---@param opts? ManagerOpts
 function M.update(opts)
   opts = M.opts(opts, { mode = "update" })
   return M.run({
