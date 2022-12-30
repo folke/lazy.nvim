@@ -529,6 +529,7 @@ function:
 │:Lazy clean [plugins]      │require("lazy").clean(opts?)      │Clean plugins that are no longer needed                                                                                                             │
 │:Lazy clear                │require("lazy").clear()           │Clear finished tasks                                                                                                                                │
 │:Lazy debug                │require("lazy").debug()           │Show debug information                                                                                                                              │
+│:Lazy health               │require("lazy").health()          │Run :checkhealth lazy                                                                                                                               │
 │:Lazy help                 │require("lazy").help()            │Toggle this help page                                                                                                                               │
 │:Lazy home                 │require("lazy").home()            │Go back to plugin list                                                                                                                              │
 │:Lazy install [plugins]    │require("lazy").install(opts?)    │Install missing plugins                                                                                                                             │
