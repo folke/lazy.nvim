@@ -6,6 +6,7 @@ local ViewConfig = require("lazy.view.config")
 ---@field file? string
 ---@field margin? {top?:number, right?:number, bottom?:number, left?:number}
 ---@field win_opts LazyViewWinOpts
+---@field size? {width:number, height:number}
 local defaults = {
   win_opts = {},
 }
@@ -32,6 +33,7 @@ end
 ---@param opts? LazyViewOptions
 function M:init(opts)
   self.opts = vim.tbl_deep_extend("force", defaults, opts or {})
+  self.opts.size = vim.tbl_extend("keep", self.opts.size or {}, Config.options.ui.size)
   self:mount()
   self:on_key(ViewConfig.keys.close, self.close)
   self:on({ "BufDelete", "BufLeave", "BufHidden" }, self.close, { once = true })
@@ -42,8 +44,8 @@ function M:layout()
   local function size(max, value)
     return value > 1 and math.min(value, max) or math.floor(max * value)
   end
-  self.opts.win_opts.width = size(vim.o.columns, Config.options.ui.size.width)
-  self.opts.win_opts.height = size(vim.o.lines, Config.options.ui.size.height)
+  self.opts.win_opts.width = size(vim.o.columns, self.opts.size.width)
+  self.opts.win_opts.height = size(vim.o.lines, self.opts.size.height)
   self.opts.win_opts.row = math.floor((vim.o.lines - self.opts.win_opts.height) / 2)
   self.opts.win_opts.col = math.floor((vim.o.columns - self.opts.win_opts.width) / 2)
 

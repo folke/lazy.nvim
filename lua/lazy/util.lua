@@ -84,10 +84,10 @@ function M.throttle(ms, fn)
 end
 
 ---@param cmd string[]
----@param opts? {cwd:string, filetype:string, terminal?:boolean, close_on_exit?:boolean, enter?:boolean}
+---@param opts? {cwd:string, filetype:string, terminal?:boolean, close_on_exit?:boolean, enter?:boolean, float?:LazyViewOptions}
 function M.open_cmd(cmd, opts)
   opts = opts or {}
-  local float = M.float()
+  local float = M.float(opts.float)
 
   if opts.filetype then
     vim.bo[float.buf].filetype = opts.filetype
