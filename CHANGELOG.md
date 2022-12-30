@@ -1,5 +1,21 @@
 # Changelog
 
+## [7.6.0](https://github.com/folke/lazy.nvim/compare/v7.5.0...v7.6.0) (2022-12-30)
+
+
+### Features
+
+* **api:** allow passing options to float so it can be used outside of lazy ([2a617a7](https://github.com/folke/lazy.nvim/commit/2a617a7024d2ed99ff9b51e36600b9c56d928bfc))
+* **commands:** added health command to run `:checkhealth lazy` ([86dff1b](https://github.com/folke/lazy.nvim/commit/86dff1b59a978c9db8768e88f07c0532f65f3c8d))
+* **health:** added spec parsing errors to `:checkhealth` ([32511a1](https://github.com/folke/lazy.nvim/commit/32511a121407aab44a839c68592860856c691f9f))
+* **restore:** you can now restore a plugin to a certain commit. Fixes [#234](https://github.com/folke/lazy.nvim/issues/234) ([1283c2b](https://github.com/folke/lazy.nvim/commit/1283c2b28826c37cb12e5e28d0988f9b8848293e))
+* **startup:** missing plugins will now install the versions in the lockfile if available. Fixes [#138](https://github.com/folke/lazy.nvim/issues/138) ([81ee02b](https://github.com/folke/lazy.nvim/commit/81ee02b8f69be2eabd670b8bcc423dba590821de))
+
+
+### Bug Fixes
+
+* **cache:** clear cached entry on errors ([def5cc5](https://github.com/folke/lazy.nvim/commit/def5cc58166e914bce0a20ed60e0c8be99e76eb4))
+
 ## [7.5.0](https://github.com/folke/lazy.nvim/compare/v7.4.2...v7.5.0) (2022-12-29)
 
 
