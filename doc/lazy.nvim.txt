@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 29
+*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2022 December 30
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -72,7 +72,6 @@ You can add the following Lua code to your `init.lua` to bootstrap
         "git",
         "clone",
         "--filter=blob:none",
-        "--single-branch",
         "--branch=stable", -- remove this if you want to bootstrap to HEAD
         "https://github.com/folke/lazy.nvim.git",
         lazypath,
