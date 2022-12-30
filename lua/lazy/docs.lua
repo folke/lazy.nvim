@@ -36,7 +36,7 @@ function M.save(contents)
     if not readme:find(pattern) then
       error("tag " .. tag .. " not found")
     end
-    if tag == "commands" or tag == "colors" then
+    if tag == "commands" or tag == "colors" or tag == "plugins" then
       readme = readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
     else
       readme = readme:gsub(pattern, "%1\n\n```lua\n" .. content .. "\n```\n\n%2")
@@ -135,6 +135,15 @@ function M.update()
   vim.cmd.checktime()
 end
 
-M.update()
+function M.plugins()
+  local Config = require("lazy.core.config")
+  local lines = { "## Plugins", "" }
+  Util.foreach(Config.plugins, function(name, plugin)
+    if plugin.url then
+      lines[#lines + 1] = "- [" .. name .. "](" .. plugin.url:gsub("%.git$", "") .. ")"
+    end
+  end)
+  M.save({ plugins = table.concat(lines, "\n") })
+end
 
 return M

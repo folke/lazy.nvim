@@ -209,7 +209,9 @@ end
 function M.foreach(t, fn)
   ---@type string[]
   local keys = vim.tbl_keys(t)
-  pcall(table.sort, keys)
+  pcall(table.sort, keys, function(a, b)
+    return a:lower() < b:lower()
+  end)
   for _, key in ipairs(keys) do
     fn(key, t[key])
   end
