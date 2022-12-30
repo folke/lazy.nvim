@@ -25,6 +25,9 @@ function M.retrigger(keys)
     pending = pending .. c
   end
   local feed = vim.api.nvim_replace_termcodes(keys, true, false, true) .. pending
+  if vim.v.count ~= 0 then
+    feed = vim.v.count .. feed
+  end
   vim.api.nvim_feedkeys(feed, "m", false)
 end
 
