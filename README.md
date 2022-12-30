@@ -675,11 +675,12 @@ For a real-life example, you can check my personal dots:
 - `module` is auto-loaded. No need to specify
 - `keys` spec is [different](#%EF%B8%8F-lazy-key-mappings)
 - `rtp` can be accomplished with:
-     ```lua
-         config = function(plugin)
-             vim.opt.rtp:append(plugin.dir .. "/rtpPath") 
-         end 
-     ```
+
+```lua
+config = function(plugin)
+    vim.opt.rtp:append(plugin.dir .. "/custom-rtp")
+end
+```
 
 With packer `wants`, `requires` and `after` can be used to manage dependencies.
 With lazy, this isn't needed for most of the lua dependencies. They can be installed just like normal plugins
