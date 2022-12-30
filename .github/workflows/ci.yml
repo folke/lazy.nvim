@@ -38,8 +38,7 @@ jobs:
           vimdoc: lazy.nvim
           version: "Neovim >= 0.8.0"
           demojify: true
-      - name: Code Blocks
-        run: sed -i 's/^>$/>lua/' doc/lazy.nvim.txt
+          treesitter: true
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
