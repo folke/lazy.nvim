@@ -48,7 +48,10 @@ function M.norm(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
-function M.try(fn, msg)
+---@param opts? string|{msg:string, on_error:fun(msg)}
+function M.try(fn, opts)
+  opts = type(opts) == "string" and { msg = opts } or opts or {}
+  local msg = opts.msg
   -- error handler
   local error_handler = function(err)
     local Config = require("lazy.core.config")
@@ -77,9 +80,13 @@ function M.try(fn, msg)
     if #trace > 0 then
       msg = msg .. "\n\n# stacktrace:\n" .. table.concat(trace, "\n")
     end
-    vim.schedule(function()
-      M.error(msg)
-    end)
+    if opts.on_error then
+      opts.on_error(msg)
+    else
+      vim.schedule(function()
+        M.error(msg)
+      end)
+    end
     return err
   end
 

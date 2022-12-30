@@ -1,5 +1,6 @@
 local Util = require("lazy.util")
 local Config = require("lazy.core.config")
+local Plugin = require("lazy.core.plugin")
 
 local M = {}
 
@@ -48,12 +49,22 @@ function M.check()
     "cond",
     "_",
   }
-  for _, plugin in pairs(Config.plugins) do
+  local spec = Plugin.spec({ show_errors = false })
+  for _, plugin in pairs(spec.plugins) do
     for key in pairs(plugin) do
       if not vim.tbl_contains(valid, key) then
         if key ~= "module" or type(plugin.module) ~= "boolean" then
           vim.health.report_warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
         end
+      end
+    end
+  end
+  if #spec.errors > 0 then
+    vim.health.report_error("Errors were reported when loading your specs:")
+    for _, error in ipairs(spec.errors) do
+      local lines = vim.split(error, "\n")
+      for _, line in ipairs(lines) do
+        vim.health.report_error(line)
       end
     end
   end

@@ -9,12 +9,17 @@ local M = {}
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
 ---@field errors string[]
+---@field opts LazySpecOptions
 local Spec = {}
 M.Spec = Spec
 
+---@alias LazySpecOptions {show_errors: boolean}
+
 ---@param spec? LazySpec
-function Spec.new(spec)
+---@param opts? LazySpecOptions
+function Spec.new(spec, opts)
   local self = setmetatable({}, { __index = Spec })
+  self.opts = opts or {}
   self.plugins = {}
   self.errors = {}
   if spec then
@@ -78,7 +83,9 @@ end
 
 function Spec:error(error)
   self.errors[#self.errors + 1] = error
-  Util.error(error)
+  if self.opts.show_errors ~= false then
+    Util.error(error)
+  end
 end
 
 ---@param spec LazySpec
@@ -185,8 +192,9 @@ function M.update_state()
   end
 end
 
-function M.spec()
-  local spec = Spec.new()
+---@param opts? LazySpecOptions
+function M.spec(opts)
+  local spec = Spec.new(nil, opts)
 
   if type(Config.spec) == "string" then
     -- spec is a module
@@ -196,7 +204,12 @@ function M.spec()
       package.loaded[modname] = nil
       Util.try(function()
         spec:normalize(Cache.require(modname))
-      end, "Failed to load **" .. modname .. "**")
+      end, {
+        msg = "Failed to load `" .. modname .. "`",
+        on_error = function(msg)
+          spec:error(msg)
+        end,
+      })
     end
     Util.lsmod(Config.spec --[[@as string]], _load)
   else
