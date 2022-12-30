@@ -502,6 +502,7 @@ If you don’t want to use a Nerd Font, you can replace the icons with Unicode s
           source = "",
           start = "",
           task = "",
+          lazy = " ",
         },
       },
     }
