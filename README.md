@@ -460,6 +460,7 @@ return {
       source = "📄",
       start = "🚀",
       task = "📌",
+      lazy = "💤 ",
     },
   },
 }
