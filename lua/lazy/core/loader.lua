@@ -1,6 +1,7 @@
 local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
+local Cache = require("lazy.core.cache")
 
 local M = {}
 
@@ -204,19 +205,17 @@ function M.config(plugin)
     end
   else
     local normname = Util.normname(plugin.name)
-    ---@type table<string, string>
+    ---@type string[]
     local mods = {}
-    Util.ls(plugin.dir .. "/lua", function(_, modname)
-      modname = modname:gsub("%.lua$", "")
-      mods[modname] = modname
+    for _, modname in ipairs(Cache.get_topmods(plugin.dir)) do
+      mods[#mods + 1] = modname
       local modnorm = Util.normname(modname)
       -- if we found an exact match, then use that
       if modnorm == normname then
         mods = { modname }
-        return false
+        break
       end
-    end)
-    mods = vim.tbl_values(mods)
+    end
     if #mods == 1 then
       fn = function()
         local opts = plugin.config

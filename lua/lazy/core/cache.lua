@@ -39,8 +39,8 @@ M.me = debug.getinfo(1, "S").source:sub(2)
 M.me = vim.fn.fnamemodify(M.me, ":p:h:h:h:h"):gsub("\\", "/")
 ---@type table<string, table<string,string>>
 M.topmods = { lazy = { [M.me] = M.me } }
----@type table<string, true>
-M.indexed = { [M.me] = true }
+---@type table<string, string[]>
+M.indexed = { [M.me] = { "lazy" } }
 M.indexed_unloaded = false
 M.indexed_rtp = 0
 -- selene:allow(global_usage)
@@ -219,7 +219,7 @@ function M._index(path)
     if not Util then
       return false
     end
-    M.indexed[path] = true
+    M.indexed[path] = {}
     Util.ls(path .. "/lua", function(_, name, t)
       local topname
       if name:sub(-4) == ".lua" then
@@ -230,11 +230,17 @@ function M._index(path)
       if topname then
         M.topmods[topname] = M.topmods[topname] or {}
         M.topmods[topname][path] = path
+        table.insert(M.indexed[path], topname)
       end
     end)
     return true
   end
   return false
+end
+
+function M.get_topmods(path)
+  M._index(path)
+  return M.indexed[path] or {}
 end
 
 ---@param modname string
