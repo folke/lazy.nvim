@@ -59,6 +59,9 @@ M.defaults = {
         "‒",
       },
     },
+    -- leave nil, to automatically select a browser depending on your OS.
+    -- If you want to use a specific browser, you can define it here
+    browser = nil, ---@type string?
     throttle = 20, -- how frequently should the ui process render events
     custom_keys = {
       -- you can define custom key maps here.

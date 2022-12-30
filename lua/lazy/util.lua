@@ -18,14 +18,20 @@ function M.open(uri)
   if M.file_exists(uri) then
     return M.float({ win_opts = { style = "" }, file = uri })
   end
+  local Config = require("lazy.core.config")
   local cmd
-  if vim.fn.has("win32") == 1 then
+  if Config.options.ui.browser then
+    cmd = { Config.options.ui.browser, uri }
+  elseif vim.fn.has("win32") == 1 then
     cmd = { "explorer", uri }
-    -- cmd = { 'cmd.exe', '/c', 'start', '""', uri }
   elseif vim.fn.has("macunix") == 1 then
     cmd = { "open", uri }
   else
-    cmd = { "xdg-open", uri }
+    if vim.fn.executable("xdg-open") then
+      cmd = { "xdg-open", uri }
+    else
+      cmd = { "open", uri }
+    end
   end
 
   local ret = vim.fn.jobstart(cmd, { detach = true })
