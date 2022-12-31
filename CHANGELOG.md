@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.8.0](https://github.com/folke/lazy.nvim/compare/v7.7.0...v7.8.0) (2022-12-31)
+
+
+### Features
+
+* **ui:** press `&lt;c-c&gt;` to abort any running tasks. Fixes [#258](https://github.com/folke/lazy.nvim/issues/258) ([d6b5d6e](https://github.com/folke/lazy.nvim/commit/d6b5d6e756a596304fd4acbc46f9fa553ea880a2))
+
+
+### Bug Fixes
+
+* **util:** remove double forward slashes ([ed0583e](https://github.com/folke/lazy.nvim/commit/ed0583e82b2797944889aa2c08bb440e6da9f16b))
+
 ## [7.7.0](https://github.com/folke/lazy.nvim/compare/v7.6.0...v7.7.0) (2022-12-31)
 
 
