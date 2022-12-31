@@ -24,8 +24,7 @@ function M.info(repo, details)
       for tag, tag_ref in pairs(M.get_tag_refs(repo)) do
         if tag_ref == ret.commit then
           ret.tag = tag
-          ret.version = Semver.version(tag)
-          break
+          ret.version = ret.version or Semver.version(tag)
         end
       end
     end
