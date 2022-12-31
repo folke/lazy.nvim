@@ -8,7 +8,7 @@
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
 ---@field is_local boolean
----@field has_updates? boolean
+---@field updates? {from:GitInfo, to:GitInfo}
 ---@field cloned? boolean
 ---@field kind? LazyPluginKind
 ---@field dep? boolean True if this plugin is only in the spec as a dependency

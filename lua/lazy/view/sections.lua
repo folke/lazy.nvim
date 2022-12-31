@@ -63,7 +63,7 @@ return {
   {
     ---@param plugin LazyPlugin
     filter = function(plugin)
-      return plugin._.has_updates
+      return plugin._.updates
     end,
     title = "Updates",
   },

@@ -35,7 +35,9 @@ M.log = {
       local info = assert(Git.info(self.plugin.dir))
       local target = assert(Git.get_target(self.plugin))
       assert(target.commit, self.plugin.name .. " " .. target.branch)
-      self.plugin._.has_updates = target.commit ~= info.commit
+      if target.commit ~= info.commit then
+        self.plugin._.updates = { from = info, to = target }
+      end
       table.insert(args, info.commit .. ".." .. target.commit)
     else
       vim.list_extend(args, opts.args or Config.options.git.log)

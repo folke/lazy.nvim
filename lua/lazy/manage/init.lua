@@ -183,7 +183,7 @@ end
 ---@param plugins? LazyPlugin[]
 function M.clear(plugins)
   for _, plugin in pairs(plugins or Config.plugins) do
-    plugin._.has_updates = nil
+    plugin._.updates = nil
     plugin._.updated = nil
     plugin._.cloned = nil
     plugin._.dirty = nil
