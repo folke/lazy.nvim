@@ -44,7 +44,7 @@ function M.norm(path)
     end
     path = home .. path:sub(2)
   end
-  path = path:gsub("\\", "/")
+  path = path:gsub("\\", "/"):gsub("/+", "/")
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
