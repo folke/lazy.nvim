@@ -374,6 +374,22 @@ function M:plugin(plugin)
   local plugin_start = self:row()
   if plugin._.loaded then
     self:reason(plugin._.loaded)
+  else
+    self:append(" ")
+    local reason = {}
+    for handler in pairs(Handler.types) do
+      if plugin[handler] then
+        for _, value in ipairs(plugin[handler]) do
+          reason[handler] = value
+        end
+      end
+    end
+    for _, other in pairs(Config.plugins) do
+      if vim.tbl_contains(other.dependencies or {}, plugin.name) then
+        reason.plugin = other.name
+      end
+    end
+    self:reason(reason)
   end
   self:diagnostics(plugin)
   self:nl()
