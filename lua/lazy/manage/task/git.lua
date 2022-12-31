@@ -115,6 +115,8 @@ M.fetch = {
     local args = {
       "fetch",
       "--recurse-submodules",
+      "--tags", -- also fetch remote tags
+      "--force", -- overwrite existing tags if needed
       "--progress",
     }
 
