@@ -58,7 +58,6 @@ M.clone = {
       self.plugin.url,
       "--filter=blob:none",
       "--recurse-submodules",
-      "--single-branch",
       "--progress",
     }
 

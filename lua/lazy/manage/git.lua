@@ -11,13 +11,13 @@ local M = {}
 ---@param details? boolean Fetching details is slow! Don't loop over a plugin to fetch all details!
 ---@return GitInfo?
 function M.info(repo, details)
-  local line = Util.head(repo .. "/.git/HEAD")
+  local line = M.head(repo)
   if line then
     ---@type string, string
-    local ref, branch = line:match("ref: (refs/heads/(.*))")
+    local ref, branch = line:match("ref: refs/(heads/(.*))")
     local ret = ref and {
       branch = branch,
-      commit = Util.head(repo .. "/.git/" .. ref),
+      commit = M.ref(repo, ref),
     } or { commit = line }
 
     if details then
@@ -33,6 +33,10 @@ function M.info(repo, details)
   end
 end
 
+function M.head(repo)
+  return Util.head(repo .. "/.git/HEAD")
+end
+
 ---@class TaggedSemver: Semver
 ---@field tag string
 
@@ -41,15 +45,30 @@ function M.get_versions(repo, spec)
   local range = Semver.range(spec or "*")
   ---@type TaggedSemver[]
   local versions = {}
-  Util.ls(repo .. "/.git/refs/tags", function(_, name)
-    local v = Semver.version(name)
+  for _, tag in ipairs(M.get_tags(repo)) do
+    local v = Semver.version(tag)
     ---@cast v TaggedSemver
     if v and range:matches(v) then
-      v.tag = name
+      v.tag = tag
       table.insert(versions, v)
     end
-  end)
+  end
   return versions
+end
+
+function M.get_tags(repo)
+  ---@type string[]
+  local ret = {}
+  Util.ls(repo .. "/.git/refs/tags", function(_, name)
+    ret[#ret + 1] = name
+  end)
+  for name in pairs(M.packed_refs(repo)) do
+    local tag = name:match("^tags/(.*)")
+    if tag then
+      ret[#ret + 1] = tag
+    end
+  end
+  return ret
 end
 
 ---@param plugin LazyPlugin
@@ -69,7 +88,7 @@ function M.get_branch(plugin)
     end
 
     -- fallback to local HEAD
-    main = assert(Util.head(plugin.dir .. "/.git/HEAD"))
+    main = assert(M.head(plugin.dir))
     return main and main:match("ref: refs/heads/(.*)")
   end
 end
@@ -133,7 +152,22 @@ function M.ref(repo, ...)
   end
 
   -- otherwise just get the ref
-  return Util.head(repo .. "/.git/refs/" .. ref)
+  return Util.head(repo .. "/.git/refs/" .. ref) or M.packed_refs(repo)[ref]
+end
+
+function M.packed_refs(repo)
+  local ok, refs = pcall(Util.read_file, repo .. "/.git/packed-refs")
+  ---@type table<string,string>
+  local ret = {}
+  if ok then
+    for _, line in ipairs(vim.split(refs, "\n")) do
+      local ref, name = line:match("^(.*) refs/(.*)$")
+      if ref then
+        ret[name] = ref
+      end
+    end
+  end
+  return ret
 end
 
 -- this is slow, so don't use on a loop over all plugins!
