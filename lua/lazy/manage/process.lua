@@ -2,6 +2,44 @@ local Config = require("lazy.core.config")
 
 local M = {}
 
+---@type table<vim.loop.Process, true>
+M.running = {}
+
+M.signals = {
+  "HUP",
+  "INT",
+  "QUIT",
+  "ILL",
+  "TRAP",
+  "ABRT",
+  "BUS",
+  "FPE",
+  "KILL",
+  "USR1",
+  "SEGV",
+  "USR2",
+  "PIPE",
+  "ALRM",
+  "TERM",
+  "CHLD",
+  "CONT",
+  "STOP",
+  "TSTP",
+  "TTIN",
+  "TTOU",
+  "URG",
+  "XCPU",
+  "XFSZ",
+  "VTALRM",
+  "PROF",
+  "WINCH",
+  "IO",
+  "PWR",
+  "EMT",
+  "SYS",
+  "INFO",
+}
+
 ---@diagnostic disable-next-line: no-unknown
 local uv = vim.loop
 
@@ -14,6 +52,7 @@ local uv = vim.loop
 ---@field env? string[]
 
 ---@param opts? ProcessOpts
+---@param cmd string
 function M.spawn(cmd, opts)
   opts = opts or {}
   opts.timeout = opts.timeout or (Config.options.git and Config.options.git.timeout * 1000)
@@ -44,9 +83,8 @@ function M.spawn(cmd, opts)
   if opts.timeout then
     timeout = uv.new_timer()
     timeout:start(opts.timeout, 0, function()
-      if handle and not handle:is_closing() then
+      if M.kill(handle) then
         killed = true
-        uv.process_kill(handle, "sigint")
       end
     end)
   end
@@ -57,6 +95,7 @@ function M.spawn(cmd, opts)
     cwd = opts.cwd,
     env = env,
   }, function(exit_code, signal)
+    M.running[handle] = nil
     if timeout then
       timeout:stop()
       timeout:close()
@@ -74,6 +113,8 @@ function M.spawn(cmd, opts)
         output = output:gsub("[^\r\n]+\r", "")
         if killed then
           output = output .. "\n" .. "Process was killed because it reached the timeout"
+        elseif signal ~= 0 then
+          output = output .. "\n" .. "Process was killed with SIG" .. M.signals[signal]
         end
 
         vim.schedule(function()
@@ -89,6 +130,7 @@ function M.spawn(cmd, opts)
     end
     return
   end
+  M.running[handle] = true
 
   ---@param data? string
   local function on_output(err, data)
@@ -110,6 +152,20 @@ function M.spawn(cmd, opts)
   uv.read_start(stderr, on_output)
 
   return handle
+end
+
+function M.kill(handle)
+  if handle and not handle:is_closing() then
+    M.running[handle] = nil
+    uv.process_kill(handle, "sigint")
+    return true
+  end
+end
+
+function M.abort()
+  for handle in pairs(M.running) do
+    M.kill(handle)
+  end
 end
 
 ---@param cmd string[]

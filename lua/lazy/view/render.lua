@@ -154,7 +154,9 @@ end
 function M:help()
   self:append("Help", "LazyH2"):nl():nl()
 
-  self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl()
+  self:append("Use "):append("<C-c>", "LazySpecial"):append(" to abort all running tasks."):nl():nl()
+
+  self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl():nl()
 
   self:append("Most properties can be hovered with ")
   self:append("<K>", "LazySpecial")
@@ -164,7 +166,8 @@ function M:help()
     :append("<K>", "LazySpecial")
     :append(" on a plugin anywhere else, a diff will be opened if there are updates")
     :nl()
-  self:append("or the plugin was just updated. Otherwise the plugin webpage will open."):nl()
+  self:append("or the plugin was just updated. Otherwise the plugin webpage will open."):nl():nl()
+
   self:append("Use "):append("<d>", "LazySpecial"):append(" on a commit or plugin to open the diff view"):nl()
   self:nl()
 

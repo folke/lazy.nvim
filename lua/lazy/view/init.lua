@@ -62,6 +62,11 @@ function M.create()
     self:update()
   end)
 
+  vim.keymap.set("n", ViewConfig.keys.abort, function()
+    require("lazy.manage.process").abort()
+    return "<c-c>"
+  end, { silent = true, buffer = self.buf, expr = true })
+
   -- plugin details
   self:on_key(ViewConfig.keys.details, function()
     local plugin = self.render:get_plugin()
