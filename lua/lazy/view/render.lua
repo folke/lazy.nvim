@@ -341,9 +341,16 @@ function M:diagnostics(plugin)
         message = "already up to date",
       })
     else
-      self:diagnostic({
-        message = "updated from " .. plugin._.updated.from:sub(1, 7) .. " to " .. plugin._.updated.to:sub(1, 7),
-      })
+      local version = Git.info(plugin.dir, true).version
+      if version then
+        self:diagnostic({
+          message = "updated to " .. tostring(version),
+        })
+      else
+        self:diagnostic({
+          message = "updated from " .. plugin._.updated.from:sub(1, 7) .. " to " .. plugin._.updated.to:sub(1, 7),
+        })
+      end
     end
   elseif plugin._.updates then
     local version = plugin._.updates.to.version
