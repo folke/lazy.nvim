@@ -37,8 +37,8 @@ M.stats = {
 }
 M.me = debug.getinfo(1, "S").source:sub(2)
 M.me = vim.fn.fnamemodify(M.me, ":p:h:h:h:h"):gsub("\\", "/")
----@type table<string, table<string,string>>
-M.topmods = { lazy = { [M.me] = M.me } }
+---@type table<string, string[]>
+M.topmods = { lazy = { M.me } }
 ---@type table<string, string[]>
 M.indexed = { [M.me] = { "lazy" } }
 M.indexed_unloaded = false
@@ -229,7 +229,9 @@ function M._index(path)
       end
       if topname then
         M.topmods[topname] = M.topmods[topname] or {}
-        M.topmods[topname][path] = path
+        if not vim.tbl_contains(M.topmods[topname], path) then
+          table.insert(M.topmods[topname], path)
+        end
         table.insert(M.indexed[path], topname)
       end
     end)
@@ -257,7 +259,7 @@ function M.find(modname)
 
   -- check top-level mods to find the module
   local function _find()
-    for _, toppath in pairs(M.topmods[topmod] or {}) do
+    for _, toppath in ipairs(M.topmods[topmod] or {}) do
       for _, pattern in ipairs(patterns) do
         local path = toppath .. "/lua/" .. basename .. pattern
         M.stats.find.stat = M.stats.find.stat + 1
