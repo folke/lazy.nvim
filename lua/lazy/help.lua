@@ -18,6 +18,7 @@ function M.index(plugin)
         if title then
           local tag = plugin.name .. "-" .. title:lower():gsub("%W+", "-")
           tag = tag:gsub("%-+", "-"):gsub("%-$", "")
+          line = line:gsub("([%[%]/])", "\\%1")
           tags[tag] = { tag = tag, line = line, file = plugin.name .. ".md" }
         end
       end
