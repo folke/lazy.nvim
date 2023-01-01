@@ -139,6 +139,13 @@ M.commands = {
     desc = "Run `:checkhealth lazy`",
     id = 14,
   },
+  build = {
+    desc = "Rebuild a plugin",
+    id = 13,
+    plugins = true,
+    plugins_required = true,
+    key_plugin = "b",
+  },
 }
 
 return M

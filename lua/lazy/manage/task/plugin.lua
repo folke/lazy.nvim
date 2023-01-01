@@ -5,7 +5,11 @@ local Loader = require("lazy.core.loader")
 local M = {}
 
 M.build = {
-  skip = function(plugin)
+  ---@param opts? {force:boolean}
+  skip = function(plugin, opts)
+    if opts and opts.force then
+      return false
+    end
     return not (plugin._.dirty and plugin.build)
   end,
   run = function(self)

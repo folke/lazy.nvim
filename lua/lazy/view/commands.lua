@@ -13,6 +13,12 @@ function M.cmd(cmd, opts)
   local command = M.commands[cmd] --[[@as fun(opts)]]
   if command == nil then
     Util.error("Invalid lazy command '" .. cmd .. "'")
+  elseif
+    ViewConfig.commands[cmd]
+    and ViewConfig.commands[cmd].plugins_required
+    and not (opts and vim.tbl_count(opts.plugins or {}) > 0)
+  then
+    return Util.error("`Lazy " .. cmd .. "` requires at least one plugin")
   else
     command(opts)
   end
@@ -44,12 +50,10 @@ M.commands = {
   end,
   ---@param opts ManagerOpts
   load = function(opts)
-    if not (opts and opts.plugins and #opts.plugins > 0) then
-      return Util.error("`Lazy load` requires at least one plugin name to load")
-    end
     require("lazy.core.loader").load(opts.plugins, { cmd = "LazyLoad" })
   end,
   log = Manage.log,
+  build = Manage.build,
   clean = Manage.clean,
   install = Manage.install,
   sync = Manage.sync,

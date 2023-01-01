@@ -145,6 +145,17 @@ function M.log(opts)
 end
 
 ---@param opts? ManagerOpts
+function M.build(opts)
+  opts = M.opts(opts, { mode = "build" })
+  return M.run({
+    pipeline = { { "plugin.build", force = true } },
+    plugins = function()
+      return false
+    end,
+  }, opts)
+end
+
+---@param opts? ManagerOpts
 function M.sync(opts)
   opts = M.opts(opts)
   if opts.clear then
