@@ -144,8 +144,11 @@ M.defaults = {
 
 M.ns = vim.api.nvim_create_namespace("lazy")
 
----@type string|LazySpec Should be either a string pointing to a module, or a spec
+---@type LazySpec
 M.spec = nil
+
+---@type LazySpecLoader
+M.parsed = nil
 
 ---@type table<string, LazyPlugin>
 M.plugins = {}
@@ -167,7 +170,7 @@ M.headless = #vim.api.nvim_list_uis() == 0
 ---@param spec LazySpec
 ---@param opts? LazyConfig
 function M.setup(spec, opts)
-  M.spec = spec
+  M.spec = type(spec) == "string" and { import = spec } or spec
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
   M.options.performance.cache = require("lazy.core.cache")
   table.insert(M.options.install.colorscheme, "habamax")

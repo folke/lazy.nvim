@@ -58,4 +58,8 @@
 ---@class LazyPluginSpec: LazyPluginBase,LazyPluginSpecHandlers,LazyPluginHooks,LazyPluginRef
 ---@field dependencies? string|string[]|LazyPluginSpec[]
 
----@alias LazySpec string|string[]|LazyPluginSpec[]|LazyPluginSpec[][]
+---@alias LazySpec string|LazyPluginSpec|LazySpecImport|LazySpec[]
+
+---@class LazySpecImport
+---@field import string spec module to import
+---@field enabled? boolean|(fun():boolean)

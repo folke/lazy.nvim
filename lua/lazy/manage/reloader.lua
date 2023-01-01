@@ -17,7 +17,7 @@ function M.enable()
   if M.timer then
     M.timer:stop()
   end
-  if type(Config.spec) == "string" then
+  if #Config.parsed.modules > 0 then
     M.timer = vim.loop.new_timer()
     M.root = vim.fn.stdpath("config") .. "/lua"
     M.check(true)
@@ -55,7 +55,9 @@ function M.check(start)
     end
   end
 
-  Util.lsmod(Config.spec --[[@as string]], check)
+  for _, modname in ipairs(Config.parsed.modules) do
+    Util.lsmod(modname, check)
+  end
 
   for file in pairs(M.files) do
     if not checked[file] then

@@ -8,6 +8,7 @@ local M = {}
 
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
+---@field modules string[]
 ---@field errors string[]
 ---@field opts LazySpecOptions
 local Spec = {}
@@ -21,6 +22,7 @@ function Spec.new(spec, opts)
   local self = setmetatable({}, { __index = Spec })
   self.opts = opts or {}
   self.plugins = {}
+  self.modules = {}
   self.errors = {}
   if spec then
     self:normalize(spec)
@@ -88,7 +90,7 @@ function Spec:error(error)
   end
 end
 
----@param spec LazySpec
+---@param spec LazySpec|LazySpecImport
 ---@param results? string[]
 ---@param is_dep? boolean
 function Spec:normalize(spec, results, is_dep)
@@ -105,20 +107,47 @@ function Spec:normalize(spec, results, is_dep)
     for _, s in ipairs(spec) do
       self:normalize(s, results, is_dep)
     end
-  elseif spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
-    local plugin
-    -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
-    -- see https://github.com/folke/lazy.nvim/issues/45
-    if spec._ then
-      plugin = spec
-    else
-      ---@cast spec LazyPlugin
-      plugin = self:add(spec, is_dep)
-      plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+  elseif spec.import then
+    ---@cast spec LazySpecImport
+    self:import(spec)
+  else
+    ---@cast spec LazyPluginSpec
+    if spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
+      local plugin
+      -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
+      -- see https://github.com/folke/lazy.nvim/issues/45
+      if spec._ then
+        plugin = spec
+      else
+        ---@cast spec LazyPlugin
+        plugin = self:add(spec, is_dep)
+        plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+      end
+      table.insert(results, plugin.name)
     end
-    table.insert(results, plugin.name)
   end
   return results
+end
+
+---@param spec LazySpecImport
+function Spec:import(spec)
+  if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
+    return
+  end
+  Util.lsmod(spec.import, function(modname)
+    -- unload the module so we get a clean slate
+    ---@diagnostic disable-next-line: no-unknown
+    package.loaded[modname] = nil
+    Util.try(function()
+      self:normalize(Cache.require(modname))
+      self.modules[#self.modules + 1] = modname
+    end, {
+      msg = "Failed to load `" .. modname .. "`",
+      on_error = function(msg)
+        self:error(msg)
+      end,
+    })
+  end)
 end
 
 ---@param old LazyPlugin
@@ -194,35 +223,14 @@ end
 
 ---@param opts? LazySpecOptions
 function M.spec(opts)
-  local spec = Spec.new(nil, opts)
-
-  if type(Config.spec) == "string" then
-    -- spec is a module
-    local function _load(modname)
-      -- unload the module so we get a clean slate
-      ---@diagnostic disable-next-line: no-unknown
-      package.loaded[modname] = nil
-      Util.try(function()
-        spec:normalize(Cache.require(modname))
-      end, {
-        msg = "Failed to load `" .. modname .. "`",
-        on_error = function(msg)
-          spec:error(msg)
-        end,
-      })
-    end
-    Util.lsmod(Config.spec --[[@as string]], _load)
-  else
-    -- spec is a spec
-    spec:normalize(vim.deepcopy(Config.spec))
-  end
-  return spec
+  return Spec.new(vim.deepcopy(Config.spec), opts)
 end
 
 function M.load()
   -- load specs
   Util.track("spec")
   local spec = M.spec()
+  Config.parsed = spec
 
   -- add ourselves
   spec:add({ "folke/lazy.nvim" })
