@@ -463,7 +463,7 @@ return {
       source = "📄",
       start = "🚀",
       task = "📌",
-      lazy = "💤 ",
+      lazy = "💤",
     },
   },
 }
