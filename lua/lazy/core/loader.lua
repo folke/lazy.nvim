@@ -16,11 +16,6 @@ M.disabled_rtp_plugins = { packer_compiled = true }
 M.did_ftdetect = {}
 
 function M.setup()
-  -- setup handlers
-  Util.track("handlers")
-  Handler.setup()
-  Util.track()
-
   for _, file in ipairs(Config.options.performance.rtp.disabled_plugins) do
     M.disabled_rtp_plugins[file] = true
   end
@@ -47,6 +42,11 @@ function M.setup()
     end
     Util.track()
   end
+
+  -- setup handlers
+  Util.track("handlers")
+  Handler.setup()
+  Util.track()
 end
 
 -- Startup sequence
