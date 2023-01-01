@@ -7,16 +7,19 @@ function M.index(plugin)
   if Config.options.readme.skip_if_doc_exists and vim.loop.fs_stat(plugin.dir .. "/doc") then
     return {}
   end
+
+  ---@param file string
   local files = vim.tbl_flatten(vim.tbl_map(function(file)
     return vim.fn.expand(plugin.dir .. "/" .. file, false, true)
   end, Config.options.readme.files))
+
   ---@type table<string,{file:string, tag:string, line:string}>
   local tags = {}
   for _, file in ipairs(files) do
     file = Util.norm(file)
     if vim.loop.fs_stat(file) then
       local rel_file = file:sub(#plugin.dir + 1)
-      local tag_filename = string.gsub(plugin.name .. vim.fn.fnamemodify(rel_file, ":h:gs?/?-?"), "-$", "")
+      local tag_filename = plugin.name .. vim.fn.fnamemodify(rel_file, ":h"):gsub("%W+", "-"):gsub("^%-$", "")
       local lines = vim.split(Util.read_file(file), "\n")
       for _, line in ipairs(lines) do
         local title = line:match("^#+%s*(.*)")
