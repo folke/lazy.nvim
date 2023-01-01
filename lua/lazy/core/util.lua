@@ -176,25 +176,21 @@ function M.walk(path, fn)
 end
 
 ---@param modname string
----@param root string
 ---@param fn fun(modname:string, modpath:string)
----@overload fun(modname:string, fn: fun(modname:string, modpath:string))
-function M.lsmod(modname, root, fn)
-  if type(root) == "function" then
-    fn = root
-    root = vim.fn.stdpath("config") .. "/lua"
+function M.lsmod(modname, fn)
+  local Cache = require("lazy.core.cache")
+  local root, modpath = Cache.find_dir(modname)
+  if not root then
+    return
   end
-  root = root .. "/" .. modname:gsub("%.", "/")
-  if vim.loop.fs_stat(root .. ".lua") then
-    fn(modname, root .. ".lua")
+
+  if modpath and vim.loop.fs_stat(modpath) then
+    fn(modname, modpath)
   end
+
   M.ls(root, function(path, name, type)
-    if (type == "file" or type == "link") and name:sub(-4) == ".lua" then
-      if name == "init.lua" then
-        fn(modname, path)
-      else
-        fn(modname .. "." .. name:sub(1, -5), path)
-      end
+    if name ~= "init.lua" and (type == "file" or type == "link") and name:sub(-4) == ".lua" then
+      fn(modname .. "." .. name:sub(1, -5), path)
     elseif type == "directory" and vim.loop.fs_stat(path .. "/init.lua") then
       fn(modname .. "." .. name, path .. "/init.lua")
     end

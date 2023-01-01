@@ -55,7 +55,7 @@ function M.check(start)
     end
   end
 
-  Util.lsmod(Config.spec --[[@as string]], M.root, check)
+  Util.lsmod(Config.spec --[[@as string]], check)
 
   for file in pairs(M.files) do
     if not checked[file] then

@@ -62,11 +62,11 @@ function M.check_path(modname, modpath)
 
   -- the correct lazy path should be part of rtp.
   -- so if we get here, this is folke using the local dev instance ;)
-  if modname:sub(1, 4) == "lazy" then
+  if modname and modname:sub(1, 4) == "lazy" then
     return false
   end
 
-  return M.check_autoload(modname, modpath)
+  return modname and M.check_autoload(modname, modpath)
 end
 
 function M.check_autoload(modname, modpath)
@@ -246,8 +246,43 @@ function M.get_topmods(path)
 end
 
 ---@param modname string
+---@return string?, string?
+function M.find_dir(modname)
+  if M.cache[modname] then
+    -- check if modname is in cache
+    local modpath = M.cache[modname].modpath
+    if M.check_path(modname, modpath) then
+      local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+      return root, modpath
+    end
+  else
+    -- in case modname is just a directory and not a real mod,
+    -- check for any children in the cache
+    for child, entry in pairs(M.cache) do
+      if child:find(modname, 1, true) == 1 and M.check_path(nil, entry.modpath) then
+        local basename = modname:gsub("%.", "/")
+        local childbase = child:gsub("%.", "/")
+        local ret = entry.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+        local idx = assert(ret:find(childbase, 1, true))
+        return ret:sub(1, idx - 1) .. basename
+      end
+    end
+  end
+
+  -- not found in cache, so find the root with the special pattern
+  local modpath = M.find(modname, { patterns = { "" } })
+  if modpath then
+    local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+    return root, root ~= modpath and modpath or nil
+  end
+end
+
+---@param modname string
+---@param opts? {patterns?:string[]}
 ---@return string?
-function M.find(modname)
+function M.find(modname, opts)
+  opts = opts or {}
+
   M.stats.find.total = M.stats.find.total + 1
   local start = uv.hrtime()
   local basename = modname:gsub("%.", "/")
@@ -256,6 +291,10 @@ function M.find(modname)
 
   -- search for a directory first when topmod == modname
   local patterns = topmod == modname and { "/init.lua", ".lua" } or { ".lua", "/init.lua" }
+
+  if opts.patterns then
+    vim.list_extend(patterns, opts.patterns)
+  end
 
   -- check top-level mods to find the module
   local function _find()
