@@ -436,7 +436,7 @@ return {
   -- when the readme opens with :help it will be correctly displayed as markdown
   readme = {
     root = vim.fn.stdpath("state") .. "/lazy/readme",
-    files = { "README.md" },
+    files = { "README.md", "lua/**/README.md" },
     -- only generate markdown helptags for plugins that dont have docs
     skip_if_doc_exists = true,
   },
