@@ -1,6 +1,5 @@
 local Util = require("lazy.util")
 local Config = require("lazy.core.config")
-local Plugin = require("lazy.core.plugin")
 
 local M = {}
 
@@ -49,7 +48,7 @@ function M.check()
     "cond",
     "_",
   }
-  local spec = Plugin.spec({ show_errors = false })
+  local spec = Config.parsed
   for _, plugin in pairs(spec.plugins) do
     for key in pairs(plugin) do
       if not vim.tbl_contains(valid, key) then
