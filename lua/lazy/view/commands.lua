@@ -72,7 +72,7 @@ function M.complete(cmd, prefix)
   table.sort(plugins)
   ---@param key string
   return vim.tbl_filter(function(key)
-    return key:find(prefix) == 1
+    return key:find(prefix, 1, true) == 1
   end, plugins)
 end
 
