@@ -271,7 +271,7 @@ function M.find_dir(modname)
   local modpath = M.find(modname, { patterns = { "" } })
   if modpath then
     local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-    return root, root ~= modpath and modpath or nil
+    return root, (root ~= modpath and modpath or nil)
   end
 end
 
