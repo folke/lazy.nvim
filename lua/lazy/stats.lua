@@ -1,3 +1,5 @@
+local ffi = require("ffi")
+
 local M = {}
 
 ---@class LazyStats
@@ -10,35 +12,48 @@ M._stats = {
   startuptime_cputime = false,
   count = 0, -- total number of plugins
   loaded = 0, -- number of loaded plugins
+  ---@type table<string, number>
+  times = {},
 }
 
-function M.on_ui_enter()
-  if not M.C then
-    pcall(function() end)
-  end
+---@type ffi.namespace*|boolean
+M.C = nil
 
-  local ok = pcall(function()
-    local ffi = require("ffi")
-    ffi.cdef([[
+function M.on_ui_enter()
+  M._stats.startuptime = M.track("UIEnter")
+  M._stats.startuptime_cputime = M.C ~= false
+  vim.cmd([[do User LazyVimStarted]])
+end
+
+function M.track(event)
+  local time = M.cputime()
+  M._stats.times[event] = time
+  return time
+end
+
+function M.cputime()
+  if M.C == nil then
+    local ok = pcall(function()
+      ffi.cdef([[
         typedef long time_t;
         typedef int clockid_t;
-
         typedef struct timespec {
           time_t   tv_sec;        /* seconds */
           long     tv_nsec;       /* nanoseconds */
         } nanotime;
         int clock_gettime(clockid_t clk_id, struct timespec *tp);
       ]])
+    end)
+    M.C = ok and ffi.C or false
+  end
+  if M.C then
     local pnano = assert(ffi.new("nanotime[?]", 1))
     local CLOCK_PROCESS_CPUTIME_ID = jit.os == "OSX" and 12 or 2
     ffi.C.clock_gettime(CLOCK_PROCESS_CPUTIME_ID, pnano)
-    M._stats.startuptime = tonumber(pnano[0].tv_sec) / 1e6 + tonumber(pnano[0].tv_nsec) / 1e6
-    M._stats.startuptime_cputime = true
-  end)
-  if not ok then
-    M._stats.startuptime = (vim.loop.hrtime() - require("lazy")._start) / 1e6
+    return tonumber(pnano[0].tv_sec) / 1e6 + tonumber(pnano[0].tv_nsec) / 1e6
+  else
+    return (vim.loop.hrtime() - require("lazy")._start) / 1e6
   end
-  vim.cmd([[do User LazyVimStarted]])
 end
 
 function M.stats()

@@ -556,7 +556,23 @@ function M:profile()
       :append("UIEnter", "LazySpecial")
     self:append(".")
   end
-  self:nl():nl()
+  self:nl()
+
+  local times = {}
+  for event, time in pairs(require("lazy.stats").stats().times) do
+    times[#times + 1] = { event, self:ms(time * 1e6), "Bold", time = time }
+  end
+  table.sort(times, function(a, b)
+    return a.time < b.time
+  end)
+  for p, prop in ipairs(times) do
+    if p > 1 then
+      prop[2] = prop[2] .. " (+" .. self:ms((prop.time - times[p - 1].time) * 1e6) .. ")"
+    end
+  end
+  self:props(times, { indent = 2 })
+
+  self:nl()
 
   self:append("Profile", "LazyH2"):nl():nl()
   self
