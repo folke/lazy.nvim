@@ -292,6 +292,9 @@ end
 -- Finds the plugin that has this path
 ---@param path string
 function M.find(path)
+  if not Config.spec then
+    return
+  end
   local lua = path:find("/lua/", 1, true)
   if lua then
     local name = path:sub(1, lua - 1)

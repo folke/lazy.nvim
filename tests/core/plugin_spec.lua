@@ -26,7 +26,7 @@ describe("plugin spec url/name", function()
       end
       local spec = Plugin.Spec.new(test[1])
       local plugins = vim.tbl_values(spec.plugins)
-      assert(#spec.errors == 0)
+      assert(#spec.notifs == 0)
       assert.equal(1, #plugins)
       assert.same(test[2], plugins[1])
     end)
@@ -43,7 +43,7 @@ describe("plugin spec opt", function()
     }
     for _, test in ipairs(tests) do
       local spec = Plugin.Spec.new(vim.deepcopy(test))
-      assert(#spec.errors == 0)
+      assert(#spec.notifs == 0)
       Config.plugins = spec.plugins
       Plugin.update_state()
       assert(vim.tbl_count(spec.plugins) == 3)
@@ -95,7 +95,7 @@ describe("plugin spec opt", function()
       }
       for _, test in ipairs(tests) do
         local spec = Plugin.Spec.new(vim.deepcopy(test))
-        assert(#spec.errors == 0)
+        assert(#spec.notifs == 0)
         Config.plugins = spec.plugins
         Plugin.update_state()
         spec = Plugin.Spec.new(test)
@@ -131,7 +131,7 @@ describe("plugin spec opt", function()
     it("handles opt from dep", function()
       Config.options.defaults.lazy = false
       local spec = Plugin.Spec.new({ "foo/dep1", { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } } })
-      assert(#spec.errors == 0)
+      assert(#spec.notifs == 0)
       Config.plugins = spec.plugins
       Plugin.update_state()
       assert.same(3, vim.tbl_count(spec.plugins))
@@ -147,7 +147,7 @@ describe("plugin spec opt", function()
       do
         Config.options.defaults.lazy = true
         local spec = Plugin.Spec.new({ "foo/bar" })
-        assert(#spec.errors == 0)
+        assert(#spec.notifs == 0)
         Config.plugins = spec.plugins
         Plugin.update_state()
         assert(spec.plugins.bar.lazy == true)
@@ -164,7 +164,7 @@ describe("plugin spec opt", function()
     it("handles opt from dep", function()
       Config.options.defaults.lazy = false
       local spec = Plugin.Spec.new({ "foo/bar", event = "foo" })
-      assert(#spec.errors == 0)
+      assert(#spec.notifs == 0)
       Config.plugins = spec.plugins
       Plugin.update_state()
       assert.same(1, vim.tbl_count(spec.plugins))
@@ -180,7 +180,7 @@ describe("plugin spec opt", function()
       }
       for _, test in ipairs(tests) do
         local spec = Plugin.Spec.new(test)
-        assert(#spec.errors == 0)
+        assert(#spec.notifs == 0)
         assert(vim.tbl_count(spec.plugins) == 1)
         assert(type(spec.plugins.bar.event) == "table")
         assert(#spec.plugins.bar.event == 2)
@@ -188,34 +188,12 @@ describe("plugin spec opt", function()
         assert(vim.tbl_contains(spec.plugins.bar.event, "mod2"))
       end
     end)
-
-    it("refuses to merge", function()
-      local spec = Plugin.Spec.new({
-        { "foo/dep1", config = 1 },
-        {
-          "foo/bar",
-          dependencies = { { "foo/dep1", config = 2 }, "foo/dep2" },
-        },
-      })
-      assert(#spec.errors > 0)
-    end)
-
-    -- it("recursive deps", function()
-    --   local spec = Plugin.Spec.new({
-    --     "nvim-telescope/telescope.nvim",
-    --     dependencies = {
-    --       "nvim-lua/plenary.nvim",
-    --       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-    --       { "nvim-telescope/telescope-frecency.nvim", dependencies = "kkharji/sqlite.lua" },
-    --     },
-    --   })
-    -- end)
   end)
 
   it("handles opt from dep", function()
     Config.options.defaults.lazy = false
     local spec = Plugin.Spec.new({ "foo/dep1", { "foo/bar", dependencies = { "foo/dep1", "foo/dep2" } } })
-    assert(#spec.errors == 0)
+    assert(#spec.notifs == 0)
     Config.plugins = spec.plugins
     Plugin.update_state()
     assert.same(3, vim.tbl_count(spec.plugins))
@@ -231,7 +209,7 @@ describe("plugin spec opt", function()
     do
       Config.options.defaults.lazy = true
       local spec = Plugin.Spec.new({ "foo/bar" })
-      assert(#spec.errors == 0)
+      assert(#spec.notifs == 0)
       Config.plugins = spec.plugins
       Plugin.update_state()
       assert(spec.plugins.bar.lazy == true)
@@ -248,7 +226,7 @@ describe("plugin spec opt", function()
   it("handles opt from dep", function()
     Config.options.defaults.lazy = false
     local spec = Plugin.Spec.new({ "foo/bar", event = "foo" })
-    assert(#spec.errors == 0)
+    assert(#spec.notifs == 0)
     Config.plugins = spec.plugins
     Plugin.update_state()
     assert.same(1, vim.tbl_count(spec.plugins))
@@ -264,7 +242,7 @@ describe("plugin spec opt", function()
     }
     for _, test in ipairs(tests) do
       local spec = Plugin.Spec.new(test)
-      assert(#spec.errors == 0)
+      assert(#spec.notifs == 0)
       assert(vim.tbl_count(spec.plugins) == 1)
       assert(type(spec.plugins.bar.event) == "table")
       assert(#spec.plugins.bar.event == 2)
@@ -272,26 +250,4 @@ describe("plugin spec opt", function()
       assert(vim.tbl_contains(spec.plugins.bar.event, "mod2"))
     end
   end)
-
-  it("refuses to merge", function()
-    local spec = Plugin.Spec.new({
-      { "foo/dep1", config = 1 },
-      {
-        "foo/bar",
-        dependencies = { { "foo/dep1", config = 2 }, "foo/dep2" },
-      },
-    })
-    assert(#spec.errors > 0)
-  end)
-
-  -- it("recursive deps", function()
-  --   local spec = Plugin.Spec.new({
-  --     "nvim-telescope/telescope.nvim",
-  --     dependencies = {
-  --       "nvim-lua/plenary.nvim",
-  --       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-  --       { "nvim-telescope/telescope-frecency.nvim", dependencies = "kkharji/sqlite.lua" },
-  --     },
-  --   })
-  -- end)
 end)
