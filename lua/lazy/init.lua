@@ -49,9 +49,6 @@ function M.setup(spec, opts)
   Config.setup(opts)
   Util.track()
 
-  -- load the plugins
-  Plugin.load()
-
   -- setup loader and handlers
   Loader.setup()
 

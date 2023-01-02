@@ -80,18 +80,23 @@ function Spec:add(plugin, is_dep)
 end
 
 function Spec:error(msg)
-  self:notify(msg, vim.log.levels.ERROR)
+  self:log(msg, vim.log.levels.ERROR)
 end
 
 function Spec:warn(msg)
-  self:notify(msg, vim.log.levels.WARN)
+  self:log(msg, vim.log.levels.WARN)
 end
 
 ---@param msg string
 ---@param level number
-function Spec:notify(msg, level)
+function Spec:log(msg, level)
   self.notifs[#self.notifs + 1] = { msg = msg, level = level, file = self.importing }
-  Util.notify(msg, level)
+end
+
+function Spec:report()
+  for _, notif in ipairs(self.notifs) do
+    Util.notify(notif.msg, notif.level)
+  end
 end
 
 ---@param spec LazySpec|LazySpecImport

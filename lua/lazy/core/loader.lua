@@ -2,6 +2,7 @@ local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
 local Cache = require("lazy.core.cache")
+local Plugin = require("lazy.core.plugin")
 
 local M = {}
 
@@ -26,27 +27,50 @@ function M.setup()
     end,
   })
 
+  -- load the plugins
+  Plugin.load()
+
   -- install missing plugins
   if Config.options.install.missing then
     Util.track("install")
-    for _, plugin in pairs(Config.plugins) do
-      if not plugin._.installed then
-        for _, colorscheme in ipairs(Config.options.install.colorscheme) do
-          if pcall(vim.cmd.colorscheme, colorscheme) then
-            break
-          end
-        end
-        require("lazy.manage").install({ wait = true, lockfile = true })
-        break
-      end
+    while M.install_missing() do
     end
     Util.track()
   end
+
+  -- report any warnings & errors
+  Config.spec:report()
 
   -- setup handlers
   Util.track("handlers")
   Handler.setup()
   Util.track()
+end
+
+-- this will incrementally install missing plugins
+-- multiple rounds can happen when importing a spec from a missing plugin
+function M.install_missing()
+  for _, plugin in pairs(Config.plugins) do
+    if not plugin._.installed then
+      for _, colorscheme in ipairs(Config.options.install.colorscheme) do
+        if pcall(vim.cmd.colorscheme, colorscheme) then
+          break
+        end
+      end
+      require("lazy.manage").install({ wait = true, lockfile = true })
+      -- remove and installed plugins from indexed, so cache will index again
+      for _, p in pairs(Config.plugins) do
+        if p._.installed then
+          Cache.indexed[p.dir] = nil
+        end
+      end
+      -- clear plugins. no need to merge in this stage
+      Config.plugins = {}
+      -- reload plugins
+      Plugin.load()
+      return true
+    end
+  end
 end
 
 -- Startup sequence
