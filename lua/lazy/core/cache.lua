@@ -82,7 +82,7 @@ function M.check_autoload(modname, modpath)
       -- we're not interested in loader time, so calculate delta here
       M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
       -- only autoload when plugins have been loaded
-      if #require("lazy.core.config").plugins > 0 then
+      if not vim.tbl_isempty(require("lazy.core.config").plugins) then
         if not plugin._.loaded then
           if plugin.module == false then
             error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
