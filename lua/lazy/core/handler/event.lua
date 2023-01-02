@@ -75,8 +75,10 @@ function M:trigger(event, pattern, groups)
             pattern and ("  - **pattern:** " .. pattern),
           })
         end
+        Util.track({ event = autocmd.group_name })
         Util.try(function()
           vim.api.nvim_exec_autocmds(autocmd.event, { group = autocmd.group, modeline = false })
+          Util.track()
         end)
       end
     end
