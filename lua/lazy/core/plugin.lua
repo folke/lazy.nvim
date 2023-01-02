@@ -120,8 +120,8 @@ function Spec:normalize(spec, results, is_dep)
         plugin = spec
       else
         ---@cast spec LazyPlugin
+        spec.dependencies = spec.dependencies and self:normalize(spec.dependencies, {}, true) or nil
         plugin = self:add(spec, is_dep)
-        plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
       end
       table.insert(results, plugin.name)
     end
