@@ -62,7 +62,7 @@ function M.check_path(modname, modpath)
 
   -- the correct lazy path should be part of rtp.
   -- so if we get here, this is folke using the local dev instance ;)
-  if modname and modname:sub(1, 4) == "lazy" then
+  if modname and (modname == "lazy" or modname:sub(1, 5) == "lazy.") then
     return false
   end
 
