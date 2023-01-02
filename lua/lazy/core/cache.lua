@@ -101,6 +101,11 @@ function M.disable()
   if not M.enabled then
     return
   end
+  if M.debug and vim.tbl_count(M.topmods) > 1 then
+    vim.schedule(function()
+      vim.notify("topmods:\n" .. vim.inspect(M.topmods), vim.log.levels.WARN, { title = "lazy.nvim" })
+    end)
+  end
   -- selene:allow(global_usage)
   _G.loadfile = M._loadfile
   M.enabled = false
@@ -201,18 +206,6 @@ function M.load(modkey, modpath)
   return chunk, err
 end
 
-function M.require(modname)
-  local chunk = M.loader(modname)
-  if type(chunk) == "string" then
-    error(chunk)
-  end
-  ---@diagnostic disable-next-line: no-unknown
-  local mod = chunk()
-  ---@diagnostic disable-next-line: no-unknown
-  package.loaded[modname] = mod
-  return mod
-end
-
 -- index the top-level lua modules for this path
 function M._index(path)
   if not M.indexed[path] and path:sub(-6, -1) ~= "/after" then
@@ -262,12 +255,14 @@ function M.find_dir(modname)
     -- in case modname is just a directory and not a real mod,
     -- check for any children in the cache
     for child, entry in pairs(M.cache) do
-      if child:find(modname, 1, true) == 1 and M.check_path(nil, entry.modpath) then
-        local basename = modname:gsub("%.", "/")
-        local childbase = child:gsub("%.", "/")
-        local ret = entry.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-        local idx = assert(ret:find(childbase, 1, true))
-        return ret:sub(1, idx - 1) .. basename
+      if child:find(modname, 1, true) == 1 then
+        if M.check_path(child, entry.modpath) then
+          local basename = modname:gsub("%.", "/")
+          local childbase = child:gsub("%.", "/")
+          local ret = entry.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+          local idx = assert(ret:find(childbase, 1, true))
+          return ret:sub(1, idx - 1) .. basename
+        end
       end
     end
   end
