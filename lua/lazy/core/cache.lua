@@ -81,11 +81,14 @@ function M.check_autoload(modname, modpath)
     if plugin and modpath:find(plugin.dir, 1, true) == 1 then
       -- we're not interested in loader time, so calculate delta here
       M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
-      if not plugin._.loaded then
-        if plugin.module == false then
-          error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
+      -- only autoload when plugins have been loaded
+      if #require("lazy.core.config").plugins > 0 then
+        if not plugin._.loaded then
+          if plugin.module == false then
+            error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
+          end
+          require("lazy.core.loader").load(plugin, { require = modname })
         end
-        require("lazy.core.loader").load(plugin, { require = modname })
       end
       return true
     end
