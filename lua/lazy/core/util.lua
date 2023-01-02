@@ -28,6 +28,22 @@ function M.track(data, time)
   end
 end
 
+---@generic F: fun()
+---@param data (string|{[string]:string})?
+---@param fn F
+---@return F
+function M.trackfn(data, fn)
+  return function(...)
+    M.track(data)
+    local ok, ret = pcall(fn, ...)
+    M.track()
+    if not ok then
+      error(ret)
+    end
+    return ret
+  end
+end
+
 ---@param name string
 ---@return string
 function M.normname(name)
@@ -127,7 +143,7 @@ function M.very_lazy()
   local function _load()
     vim.defer_fn(function()
       vim.cmd("do User VeryLazy")
-    end, 100)
+    end, 50)
   end
 
   vim.api.nvim_create_autocmd("User", {
