@@ -21,7 +21,7 @@ M.C = nil
 
 function M.on_ui_enter()
   M._stats.startuptime = M.track("UIEnter")
-  M._stats.startuptime_cputime = M.C.clock_gettime ~= nil
+  M._stats.startuptime_cputime = M.C ~= false
   vim.cmd([[do User LazyVimStarted]])
 end
 
@@ -33,6 +33,7 @@ end
 
 function M.cputime()
   if M.C == nil then
+    M.C = false
     pcall(function()
       ffi.cdef([[
         typedef long time_t;
@@ -43,10 +44,12 @@ function M.cputime()
         } nanotime;
         int clock_gettime(clockid_t clk_id, struct timespec *tp);
       ]])
+      if M.C.clock_gettime then
+        M.C = ffi.C
+      end
     end)
-    M.C = ffi.C
   end
-  if M.C.clock_gettime then
+  if M.C then
     local pnano = assert(ffi.new("nanotime[?]", 1))
     local CLOCK_PROCESS_CPUTIME_ID = jit.os == "OSX" and 12 or 2
     ffi.C.clock_gettime(CLOCK_PROCESS_CPUTIME_ID, pnano)
