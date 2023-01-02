@@ -301,7 +301,7 @@ function M.find(path)
     local slash = name:reverse():find("/", 1, true)
     if slash then
       name = name:sub(#name - slash + 2)
-      return name and Config.spec.plugins[name] or nil
+      return name and Config.plugins[name] or Config.spec.plugins[name] or nil
     end
   end
 end
