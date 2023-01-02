@@ -165,7 +165,16 @@ function Spec:merge(old, new)
         vim.list_extend(values, type(old[k]) == "string" and { old[k] } or old[k])
         ---@diagnostic disable-next-line: no-unknown
         old[k] = values
+      elseif k == "config" or k == "priority" then
+        old[k] = v
+      elseif k == "dependencies" then
+        for _, dep in ipairs(v) do
+          if not vim.tbl_contains(old[k], dep) then
+            table.insert(old[k], dep)
+          end
+        end
       else
+        old[k] = v
         self:error("Merging plugins is not supported for key `" .. k .. "`\n" .. vim.inspect({ old = old, new = new }))
       end
     else
