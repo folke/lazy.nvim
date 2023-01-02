@@ -331,7 +331,7 @@ function M.find(modname, opts)
       ---@type LazyCoreConfig
       local Config = package.loaded["lazy.core.config"]
       if Config then
-        for _, plugin in pairs(Config.plugins) do
+        for _, plugin in pairs(Config.spec.plugins) do
           if not (M.indexed[plugin.dir] or plugin._.loaded or plugin.module == false) then
             updated = M._index(plugin.dir) or updated
           end

@@ -48,7 +48,7 @@ function M.check()
     "cond",
     "_",
   }
-  local spec = Config.parsed
+  local spec = Config.spec
   for _, plugin in pairs(spec.plugins) do
     for key in pairs(plugin) do
       if not vim.tbl_contains(valid, key) then
@@ -58,12 +58,16 @@ function M.check()
       end
     end
   end
-  if #spec.errors > 0 then
-    vim.health.report_error("Errors were reported when loading your specs:")
-    for _, error in ipairs(spec.errors) do
-      local lines = vim.split(error, "\n")
+  if #spec.notifs > 0 then
+    vim.health.report_error("Issues were reported when loading your specs:")
+    for _, notif in ipairs(spec.notifs) do
+      local lines = vim.split(notif.msg, "\n")
       for _, line in ipairs(lines) do
-        vim.health.report_error(line)
+        if notif.level == vim.log.levels.ERROR then
+          vim.health.report_error(line)
+        else
+          vim.health.report_warn(line)
+        end
       end
     end
   end

@@ -11,6 +11,8 @@ M.defaults = {
     version = nil,
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
+  -- leave nil when passing the spec as the first argument to setup()
+  spec = nil, ---@type LazySpec
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
   concurrency = nil, ---@type number limit the maximum amount of concurrent tasks
   git = {
@@ -38,20 +40,21 @@ M.defaults = {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
-      loaded = "●",
-      not_loaded = "○",
       cmd = " ",
       config = "",
       event = "",
       ft = " ",
       init = " ",
+      import = " ",
       keys = " ",
+      lazy = "鈴 ",
+      loaded = "●",
+      not_loaded = "○",
       plugin = " ",
       runtime = " ",
       source = " ",
       start = "",
       task = "✔ ",
-      lazy = "鈴 ",
       list = {
         "●",
         "➜",
@@ -144,11 +147,8 @@ M.defaults = {
 
 M.ns = vim.api.nvim_create_namespace("lazy")
 
----@type LazySpec
-M.spec = nil
-
 ---@type LazySpecLoader
-M.parsed = nil
+M.spec = nil
 
 ---@type table<string, LazyPlugin>
 M.plugins = {}
@@ -167,12 +167,14 @@ M.mapleader = nil
 
 M.headless = #vim.api.nvim_list_uis() == 0
 
----@param spec LazySpec
 ---@param opts? LazyConfig
-function M.setup(spec, opts)
-  M.spec = type(spec) == "string" and { import = spec } or spec
+function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
-  M.options.performance.cache = require("lazy.core.cache")
+
+  if type(M.options.spec) == "string" then
+    M.options.spec = { import = M.options.spec }
+  end
+  M.options.performance.cache = require("lazy.core.cache").config
   table.insert(M.options.install.colorscheme, "habamax")
 
   M.options.root = Util.norm(M.options.root)

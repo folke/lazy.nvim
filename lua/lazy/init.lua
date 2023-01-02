@@ -2,9 +2,17 @@
 local M = {}
 M._start = 0
 
----@param spec LazySpec Should be a module name to load, or a plugin spec
----@param opts? LazyConfig
+---@overload fun(opts: LazyConfig)
+---@overload fun(spec:LazySpec, opts: LazyConfig)
 function M.setup(spec, opts)
+  if type(spec) == "table" and spec.spec then
+    ---@cast spec LazyConfig
+    opts = spec
+  else
+    opts = opts or {}
+    opts.spec = spec
+  end
+
   M._start = M._start == 0 and vim.loop.hrtime() or M._start
   if vim.g.lazy_did_setup then
     return vim.notify(
@@ -38,7 +46,7 @@ function M.setup(spec, opts)
 
   -- load config
   Util.track("config")
-  Config.setup(spec, opts)
+  Config.setup(opts)
   Util.track()
 
   -- load the plugins

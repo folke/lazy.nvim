@@ -23,6 +23,7 @@ M.colors = {
   ReasonSource = "Character",
   ReasonFt = "Character",
   ReasonCmd = "Operator",
+  ReasonImport = "Identifier",
   Button = "CursorLine",
   ButtonActive = "Visual",
   TaskOutput = "MsgArea", -- task output

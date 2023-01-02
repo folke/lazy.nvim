@@ -17,7 +17,7 @@ function M.enable()
   if M.timer then
     M.timer:stop()
   end
-  if #Config.parsed.modules > 0 then
+  if #Config.spec.modules > 0 then
     M.timer = vim.loop.new_timer()
     M.root = vim.fn.stdpath("config") .. "/lua"
     M.check(true)
@@ -55,7 +55,7 @@ function M.check(start)
     end
   end
 
-  for _, modname in ipairs(Config.parsed.modules) do
+  for _, modname in ipairs(Config.spec.modules) do
     Util.lsmod(modname, check)
   end
 

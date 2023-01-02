@@ -9,21 +9,17 @@ local M = {}
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
 ---@field modules string[]
----@field errors string[]
----@field opts LazySpecOptions
+---@field notifs {msg:string, level:number, file?:string}[]
+---@field importing? string
 local Spec = {}
 M.Spec = Spec
 
----@alias LazySpecOptions {show_errors: boolean}
-
 ---@param spec? LazySpec
----@param opts? LazySpecOptions
-function Spec.new(spec, opts)
+function Spec.new(spec)
   local self = setmetatable({}, { __index = Spec })
-  self.opts = opts or {}
   self.plugins = {}
   self.modules = {}
-  self.errors = {}
+  self.notifs = {}
   if spec then
     self:normalize(spec)
   end
@@ -83,11 +79,19 @@ function Spec:add(plugin, is_dep)
   return self.plugins[plugin.name]
 end
 
-function Spec:error(error)
-  self.errors[#self.errors + 1] = error
-  if self.opts.show_errors ~= false then
-    Util.error(error)
-  end
+function Spec:error(msg)
+  self:notify(msg, vim.log.levels.ERROR)
+end
+
+function Spec:warn(msg)
+  self:notify(msg, vim.log.levels.WARN)
+end
+
+---@param msg string
+---@param level number
+function Spec:notify(msg, level)
+  self.notifs[#self.notifs + 1] = { msg = msg, level = level, file = self.importing }
+  Util.notify(msg, level)
 end
 
 ---@param spec LazySpec|LazySpecImport
@@ -134,20 +138,34 @@ function Spec:import(spec)
   if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
     return
   end
+
+  Cache.indexed_unloaded = false
+
+  local imported = 0
   Util.lsmod(spec.import, function(modname)
+    imported = imported + 1
+    Util.track({ import = modname })
+    self.importing = modname
     -- unload the module so we get a clean slate
     ---@diagnostic disable-next-line: no-unknown
     package.loaded[modname] = nil
     Util.try(function()
       self:normalize(Cache.require(modname))
       self.modules[#self.modules + 1] = modname
+      self.importing = nil
+      Util.track()
     end, {
       msg = "Failed to load `" .. modname .. "`",
       on_error = function(msg)
         self:error(msg)
+        self.importing = nil
+        Util.track()
       end,
     })
   end)
+  if imported == 0 then
+    self:error("No specs found for module " .. spec.import)
+  end
 end
 
 ---@param old LazyPlugin
@@ -230,21 +248,16 @@ function M.update_state()
   end
 end
 
----@param opts? LazySpecOptions
-function M.spec(opts)
-  return Spec.new(vim.deepcopy(Config.spec), opts)
-end
-
 function M.load()
   -- load specs
   Util.track("spec")
-  local spec = M.spec()
-  Config.parsed = spec
+  Config.spec = Spec.new()
+  Config.spec:normalize(vim.deepcopy(Config.options.spec))
 
   -- add ourselves
-  spec:add({ "folke/lazy.nvim" })
+  Config.spec:add({ "folke/lazy.nvim" })
   -- override some lazy props
-  local lazy = spec.plugins["lazy.nvim"]
+  local lazy = Config.spec.plugins["lazy.nvim"]
   lazy.lazy = true
   lazy.dir = Config.me
   lazy.config = function()
@@ -253,7 +266,7 @@ function M.load()
   lazy._.loaded = {}
 
   local existing = Config.plugins
-  Config.plugins = spec.plugins
+  Config.plugins = Config.spec.plugins
   -- copy state. This wont do anything during startup
   for name, plugin in pairs(existing) do
     if Config.plugins[name] then
