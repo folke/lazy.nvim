@@ -34,6 +34,12 @@ M.log = {
     elseif opts.check then
       local info = assert(Git.info(self.plugin.dir))
       local target = assert(Git.get_target(self.plugin))
+      if not target.commit then
+        for k, v in pairs(target) do
+          error(k .. " '" .. v .. "' not found")
+        end
+        error("no target commit found")
+      end
       assert(target.commit, self.plugin.name .. " " .. target.branch)
       if target.commit ~= info.commit then
         self.plugin._.updates = { from = info, to = target }
