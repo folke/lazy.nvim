@@ -200,12 +200,14 @@ function M.lsmod(modname, fn)
     return
   end
 
-  if modpath and vim.loop.fs_stat(modpath) then
+  if modpath and not modpath:find("/init%.lua$") and vim.loop.fs_stat(modpath) then
     fn(modname, modpath)
   end
 
   M.ls(root, function(path, name, type)
-    if name ~= "init.lua" and (type == "file" or type == "link") and name:sub(-4) == ".lua" then
+    if name == "init.lua" then
+      fn(modname, path)
+    elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
       fn(modname .. "." .. name:sub(1, -5), path)
     elseif type == "directory" and vim.loop.fs_stat(path .. "/init.lua") then
       fn(modname .. "." .. name, path .. "/init.lua")
