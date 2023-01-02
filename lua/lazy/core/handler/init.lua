@@ -1,3 +1,4 @@
+local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 
 ---@class LazyHandler
@@ -23,7 +24,9 @@ function M.setup()
     M.handlers[type] = M.new(type)
   end
   for _, plugin in pairs(Config.plugins) do
-    M.enable(plugin)
+    Util.try(function()
+      M.enable(plugin)
+    end, "Failed to setup handlers for " .. plugin.name)
   end
 end
 
