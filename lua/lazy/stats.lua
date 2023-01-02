@@ -44,7 +44,7 @@ function M.cputime()
         } nanotime;
         int clock_gettime(clockid_t clk_id, struct timespec *tp);
       ]])
-      if M.C.clock_gettime then
+      if ffi.C.clock_gettime then
         M.C = ffi.C
       end
     end)
