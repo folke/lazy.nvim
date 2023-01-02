@@ -93,9 +93,12 @@ function Spec:log(msg, level)
   self.notifs[#self.notifs + 1] = { msg = msg, level = level, file = self.importing }
 end
 
-function Spec:report()
+function Spec:report(level)
+  level = level or vim.log.levels.ERROR
   for _, notif in ipairs(self.notifs) do
-    Util.notify(notif.msg, notif.level)
+    if notif.level >= level then
+      Util.notify(notif.msg, notif.level)
+    end
   end
 end
 
@@ -145,6 +148,7 @@ function Spec:import(spec)
   end
 
   Cache.indexed_unloaded = false
+  self.modules[#self.modules + 1] = spec.import
 
   local imported = 0
   Util.lsmod(spec.import, function(modname)
@@ -155,8 +159,7 @@ function Spec:import(spec)
     ---@diagnostic disable-next-line: no-unknown
     package.loaded[modname] = nil
     Util.try(function()
-      self:normalize(Cache.require(modname))
-      self.modules[#self.modules + 1] = modname
+      self:normalize(require(modname))
       self.importing = nil
       Util.track()
     end, {
@@ -198,7 +201,7 @@ function Spec:merge(old, new)
         end
       else
         old[k] = v
-        self:error("Merging plugins is not supported for key `" .. k .. "`\n" .. vim.inspect({ old = old, new = new }))
+        self:warn("Overwriting key `" .. k .. "`\n" .. vim.inspect({ old = old, new = new }))
       end
     else
       ---@diagnostic disable-next-line: no-unknown
@@ -295,7 +298,7 @@ function M.find(path)
     local slash = name:reverse():find("/", 1, true)
     if slash then
       name = name:sub(#name - slash + 2)
-      return name and Config.plugins[name] or nil
+      return name and Config.spec.plugins[name] or nil
     end
   end
 end
