@@ -131,7 +131,7 @@ function M.get_target(plugin)
       commit = M.ref(plugin.dir, "tags/" .. plugin.tag),
     }
   end
-  local version = plugin.version or Config.options.defaults.version
+  local version = plugin.version == nil and Config.options.defaults.version or plugin.version
   if version then
     local last = Semver.last(M.get_versions(plugin.dir, version))
     if last then
