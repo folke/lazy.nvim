@@ -326,4 +326,14 @@ function M.find(path)
   end
 end
 
+---@param plugin LazyPlugin
+function M.has_errors(plugin)
+  for _, task in ipairs(plugin._.tasks or {}) do
+    if task.error then
+      return true
+    end
+  end
+  return false
+end
+
 return M

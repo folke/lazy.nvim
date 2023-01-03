@@ -33,7 +33,12 @@ function M.setup()
   -- install missing plugins
   if Config.options.install.missing then
     Util.track("install")
+    local count = 0
     while M.install_missing() do
+      count = count + 1
+      if count > 5 then
+        break
+      end
     end
     Util.track()
   end
@@ -51,7 +56,7 @@ end
 -- multiple rounds can happen when importing a spec from a missing plugin
 function M.install_missing()
   for _, plugin in pairs(Config.plugins) do
-    if not plugin._.installed then
+    if not (plugin._.installed or Plugin.has_errors(plugin)) then
       for _, colorscheme in ipairs(Config.options.install.colorscheme) do
         if pcall(vim.cmd.colorscheme, colorscheme) then
           break
@@ -64,8 +69,6 @@ function M.install_missing()
           Cache.indexed[p.dir] = nil
         end
       end
-      -- clear plugins. no need to merge in this stage
-      Config.plugins = {}
       -- reload plugins
       Plugin.load()
       return true

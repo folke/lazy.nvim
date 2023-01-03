@@ -1,6 +1,7 @@
 local Config = require("lazy.core.config")
 local Manage = require("lazy.manage")
 local Util = require("lazy.util")
+local Plugin = require("lazy.core.plugin")
 local Git = require("lazy.manage.git")
 
 local M = {}
@@ -31,13 +32,24 @@ function M.fast_check(opts)
 end
 
 function M.check()
-  Manage.check({
-    show = false,
-    concurrency = Config.options.checker.concurrency,
-  }):wait(function()
-    M.report()
+  local errors = false
+  for _, plugin in pairs(Config.plugins) do
+    if Plugin.has_errors(plugin) then
+      errors = true
+      break
+    end
+  end
+  if errors then
     vim.defer_fn(M.check, Config.options.checker.frequency * 1000)
-  end)
+  else
+    Manage.check({
+      show = false,
+      concurrency = Config.options.checker.concurrency,
+    }):wait(function()
+      M.report()
+      vim.defer_fn(M.check, Config.options.checker.frequency * 1000)
+    end)
+  end
 end
 
 ---@param notify? boolean
