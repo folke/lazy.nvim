@@ -257,14 +257,14 @@ function M.get_topmods(path)
 end
 
 ---@param modname string
----@return string?, string?
-function M.find_dir(modname)
+---@return string?
+function M.find_root(modname)
   if M.cache[modname] then
     -- check if modname is in cache
     local modpath = M.cache[modname].modpath
     if M.check_path(modname, modpath) then
       local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-      return root, modpath
+      return root
     end
   else
     -- in case modname is just a directory and not a real mod,
@@ -286,7 +286,7 @@ function M.find_dir(modname)
   local modpath = M.find(modname, { patterns = { "" } })
   if modpath then
     local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-    return root, (modpath ~= root and modpath or nil)
+    return root
   end
 end
 

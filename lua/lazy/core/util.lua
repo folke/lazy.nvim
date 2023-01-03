@@ -195,13 +195,13 @@ end
 ---@param fn fun(modname:string, modpath:string)
 function M.lsmod(modname, fn)
   local Cache = require("lazy.core.cache")
-  local root, modpath = Cache.find_dir(modname)
+  local root = Cache.find_root(modname)
   if not root then
     return
   end
 
-  if modpath and not modpath:find("/init%.lua$") and vim.loop.fs_stat(modpath) then
-    fn(modname, modpath)
+  if vim.loop.fs_stat(root .. ".lua") then
+    fn(modname, root .. ".lua")
   end
 
   M.ls(root, function(path, name, type)
