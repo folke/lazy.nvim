@@ -101,14 +101,31 @@ function M.disable()
   if not M.enabled then
     return
   end
-  if M.debug and vim.tbl_count(M.topmods) > 1 then
-    vim.schedule(function()
-      vim.notify("topmods:\n" .. vim.inspect(M.topmods), vim.log.levels.WARN, { title = "lazy.nvim" })
-    end)
-  end
   -- selene:allow(global_usage)
   _G.loadfile = M._loadfile
   M.enabled = false
+  if M.debug and vim.tbl_count(M.topmods) > 1 then
+    M.log(M.topmods, vim.log.levels.WARN, { title = "topmods" })
+  end
+  if M.debug then
+    local stats = vim.deepcopy(M.stats)
+    stats.time = (stats.time or 0) / 1e6
+    stats.find.time = (stats.find.time or 0) / 1e6
+    stats.autoload.time = (stats.autoload.time or 0) / 1e6
+    M.log(stats, nil, { title = "stats" })
+  end
+end
+
+---@param msg string|table
+---@param level? number
+---@param opts? {lang?:string, title?:string}
+function M.log(msg, level, opts)
+  if M.debug then
+    msg = vim.deepcopy(msg)
+    vim.schedule(function()
+      require("lazy.core.util").debug(msg, level, opts)
+    end)
+  end
 end
 
 function M.check_loaded(modname)
@@ -191,9 +208,7 @@ function M.load(modkey, modpath)
   entry.hash = hash
 
   if M.debug then
-    vim.schedule(function()
-      vim.notify("[cache:load] " .. modpath)
-    end)
+    M.log("`" .. modpath .. "`", nil, { title = "Cache.load" })
   end
 
   chunk, err = M._loadfile(entry.modpath)

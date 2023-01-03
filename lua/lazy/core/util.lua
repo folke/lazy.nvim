@@ -216,7 +216,16 @@ function M.lsmod(modname, fn)
 end
 
 ---@param msg string|string[]
-function M.notify(msg, level)
+---@param opts? {lang?:string, title?:string}
+function M.notify(msg, level, opts)
+  if vim.in_fast_event() then
+    vim.schedule(function()
+      M.notify(msg, level, opts)
+    end)
+    return
+  end
+
+  opts = opts or {}
   if type(msg) == "table" then
     msg = table.concat(
       vim.tbl_filter(function(line)
@@ -225,17 +234,20 @@ function M.notify(msg, level)
       "\n"
     )
   end
+  local lang = opts.lang or "markdown"
   vim.notify(msg, level, {
     on_open = function(win)
+      pcall(require, "nvim-treesitter")
       vim.wo[win].conceallevel = 3
       vim.wo[win].concealcursor = ""
       vim.wo[win].spell = false
       local buf = vim.api.nvim_win_get_buf(win)
-      if not pcall(vim.treesitter.start, buf, "markdown") then
-        vim.bo[buf].filetype = "markdown"
+      if not pcall(vim.treesitter.start, buf, lang) then
+        vim.bo[buf].filetype = lang
+        vim.bo[buf].syntax = lang
       end
     end,
-    title = "lazy.nvim",
+    title = "lazy.nvim" .. (opts.title and ": " .. opts.title or ""),
   })
 end
 
@@ -252,6 +264,22 @@ end
 ---@param msg string|string[]
 function M.warn(msg)
   M.notify(msg, vim.log.levels.WARN)
+end
+
+---@param msg string|table
+---@param level? number
+---@param opts? {lang?:string, title?:string}
+function M.debug(msg, level, opts)
+  if not require("lazy.core.config").options.debug then
+    return
+  end
+  opts = opts or {}
+  if type(msg) == "string" then
+    M.notify(msg, level)
+  else
+    opts.lang = "lua"
+    M.notify(vim.inspect(msg), level, opts)
+  end
 end
 
 return M

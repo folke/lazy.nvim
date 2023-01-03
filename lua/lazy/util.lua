@@ -110,6 +110,7 @@ function M.open_cmd(cmd, opts)
         buffer = float.buf,
         callback = function()
           float:close()
+          vim.cmd.checktime()
         end,
       })
     end
