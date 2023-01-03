@@ -41,7 +41,7 @@ M.log = {
         error("no target commit found")
       end
       assert(target.commit, self.plugin.name .. " " .. target.branch)
-      if target.commit ~= info.commit then
+      if not Git.eq(info, target) then
         self.plugin._.updates = { from = info, to = target }
       end
       table.insert(args, info.commit .. ".." .. target.commit)
@@ -165,7 +165,7 @@ M.checkout = {
 
     -- dont run checkout if target is already reached.
     -- unless we just cloned, since then we won't have any data yet
-    if info.commit == target.commit and info.branch == target.branch then
+    if Git.eq(info, target) and info.branch == target.branch then
       self.plugin._.updated = {
         from = info.commit,
         to = info.commit,

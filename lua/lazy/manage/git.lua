@@ -32,6 +32,14 @@ function M.info(repo, details)
   end
 end
 
+---@param a GitInfo
+---@param b GitInfo
+function M.eq(a, b)
+  local ra = a.commit and a.commit:sub(1, 7)
+  local rb = b.commit and b.commit:sub(1, 7)
+  return ra == rb
+end
+
 function M.head(repo)
   return Util.head(repo .. "/.git/HEAD")
 end

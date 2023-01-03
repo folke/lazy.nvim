@@ -22,7 +22,7 @@ function M.fast_check(opts)
       plugin._.updates = nil
       local info = Git.info(plugin.dir)
       local ok, target = pcall(Git.get_target, plugin)
-      if ok and info and target and info.commit ~= target.commit then
+      if ok and info and target and not Git.eq(info, target) then
         plugin._.updates = { from = info, to = target }
       end
     end
