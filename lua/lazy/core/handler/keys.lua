@@ -25,14 +25,14 @@ function M.retrigger(keys)
     pending = pending .. c
   end
   local op = vim.v.operator
-  if op and op ~= "" then
+  if op and op ~= "" and vim.api.nvim_get_mode().mode:find("o") then
     keys = "<esc>" .. op .. keys
   end
-  local feed = vim.api.nvim_replace_termcodes(keys, true, false, true) .. pending
+  local feed = vim.api.nvim_replace_termcodes(keys, true, true, true) .. pending
   if vim.v.count ~= 0 then
     feed = vim.v.count .. feed
   end
-  vim.api.nvim_feedkeys(feed, "m", false)
+  vim.api.nvim_input(feed)
 end
 
 ---@param value string|LazyKeys
@@ -75,7 +75,6 @@ function M:_add(value)
   local keys = M.parse(value)
   local lhs = keys[1]
   local opts = M.opts(keys)
-  opts.noremap = true
   vim.keymap.set(keys.mode, lhs, function()
     local key = self:key(value)
     local plugins = self.active[key]
