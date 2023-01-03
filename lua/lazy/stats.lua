@@ -9,19 +9,18 @@ M._stats = {
   -- when true, startuptime is the accurate cputime for the Neovim process. (Linux & Macos)
   -- this is more accurate than `nvim --startuptime`, and as such will be slightly higher
   -- when false, startuptime is calculated based on a delta with a timestamp when lazy started.
-  startuptime_cputime = false,
+  real_cputime = false,
   count = 0, -- total number of plugins
   loaded = 0, -- number of loaded plugins
   ---@type table<string, number>
   times = {},
 }
 
----@type ffi.namespace*|boolean
+---@type ffi.namespace*
 M.C = nil
 
 function M.on_ui_enter()
   M._stats.startuptime = M.track("UIEnter")
-  M._stats.startuptime_cputime = M.C ~= false
   vim.cmd([[do User LazyVimStarted]])
 end
 
@@ -33,7 +32,6 @@ end
 
 function M.cputime()
   if M.C == nil then
-    M.C = false
     pcall(function()
       ffi.cdef([[
         typedef long time_t;
@@ -44,18 +42,29 @@ function M.cputime()
         } nanotime;
         int clock_gettime(clockid_t clk_id, struct timespec *tp);
       ]])
-      if ffi.C.clock_gettime then
-        M.C = ffi.C
-      end
+      M.C = ffi.C
     end)
   end
-  if M.C then
+
+  local function real()
     local pnano = assert(ffi.new("nanotime[?]", 1))
     local CLOCK_PROCESS_CPUTIME_ID = jit.os == "OSX" and 12 or 2
     ffi.C.clock_gettime(CLOCK_PROCESS_CPUTIME_ID, pnano)
     return tonumber(pnano[0].tv_sec) / 1e6 + tonumber(pnano[0].tv_nsec) / 1e6
-  else
+  end
+
+  local function fallback()
     return (vim.loop.hrtime() - require("lazy")._start) / 1e6
+  end
+
+  local ok, ret = pcall(real)
+  if ok then
+    M.cputime = real
+    M._stats.real_cputime = true
+    return ret
+  else
+    M.cputime = fallback
+    return fallback()
   end
 end
 

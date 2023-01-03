@@ -543,7 +543,7 @@ function M:profile()
   local stats = require("lazy.stats").stats()
   local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
   self:append("Startuptime: ", "LazyH2"):append(ms .. "ms", "Number"):nl():nl()
-  if stats.startuptime_cputime then
+  if stats.real_cputime then
     self:append("Based on the actual CPU time of the Neovim process till "):append("UIEnter", "LazySpecial")
     self:append("."):nl()
     self:append("This is more accurate than ")
