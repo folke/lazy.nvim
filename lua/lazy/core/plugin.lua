@@ -158,6 +158,9 @@ end
 
 ---@param spec LazySpecImport
 function Spec:import(spec)
+  if spec.import == "lazy" then
+    return self:error("You can't name your plugins module `lazy`.")
+  end
   if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
     return
   end
