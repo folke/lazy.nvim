@@ -216,7 +216,7 @@ function M.lsmod(modname, fn)
 end
 
 ---@param msg string|string[]
----@param opts? {lang?:string, title?:string}
+---@param opts? {lang:string, title:string}
 function M.notify(msg, level, opts)
   if vim.in_fast_event() then
     vim.schedule(function()
@@ -268,14 +268,14 @@ end
 
 ---@param msg string|table
 ---@param level? number
----@param opts? {lang?:string, title?:string}
+---@param opts? {lang:string, title:string}
 function M.debug(msg, level, opts)
   if not require("lazy.core.config").options.debug then
     return
   end
   opts = opts or {}
   if type(msg) == "string" then
-    M.notify(msg, level)
+    M.notify(msg, level, opts)
   else
     opts.lang = "lua"
     M.notify(vim.inspect(msg), level, opts)

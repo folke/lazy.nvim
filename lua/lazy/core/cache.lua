@@ -118,7 +118,7 @@ end
 
 ---@param msg string|table
 ---@param level? number
----@param opts? {lang?:string, title?:string}
+---@param opts? {lang:string, title:string}
 function M.log(msg, level, opts)
   if M.debug then
     msg = vim.deepcopy(msg)
@@ -208,7 +208,7 @@ function M.load(modkey, modpath)
   entry.hash = hash
 
   if M.debug then
-    M.log("`" .. modpath .. "`", nil, { title = "Cache.load" })
+    M.log("`" .. modpath .. "`", vim.log.levels.WARN, { title = "Cache.load" })
   end
 
   chunk, err = M._loadfile(entry.modpath)
