@@ -8,6 +8,7 @@ local M = {}
 
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
+---@field disabled table<string, LazyPlugin>
 ---@field modules string[]
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
@@ -18,6 +19,7 @@ M.Spec = Spec
 function Spec.new(spec)
   local self = setmetatable({}, { __index = Spec })
   self.plugins = {}
+  self.disabled = {}
   self.modules = {}
   self.notifs = {}
   if spec then
@@ -34,8 +36,15 @@ function Spec.get_name(pkg)
 end
 
 ---@param plugin LazyPlugin
+---@param results? string[]
 ---@param is_dep? boolean
-function Spec:add(plugin, is_dep)
+function Spec:add(plugin, results, is_dep)
+  -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
+  -- see https://github.com/folke/lazy.nvim/issues/45
+  if plugin._ then
+    return results and table.insert(results, plugin.name)
+  end
+
   if not plugin.url and plugin[1] then
     plugin.url = Config.options.git.url_format:format(plugin[1])
   end
@@ -74,9 +83,25 @@ function Spec:add(plugin, is_dep)
   plugin._ = {}
   plugin._.dep = is_dep
 
-  local other = self.plugins[plugin.name]
-  self.plugins[plugin.name] = other and self:merge(other, plugin) or plugin
-  return self.plugins[plugin.name]
+  local enabled = plugin.enabled
+  if enabled == nil then
+    enabled = self.disabled[plugin.name] == nil
+  else
+    enabled = plugin.enabled == true or (type(plugin.enabled) == "function" and plugin.enabled())
+  end
+
+  if enabled then
+    plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+    self.disabled[plugin.name] = nil
+    if self.plugins[plugin.name] then
+      plugin = self:merge(self.plugins[plugin.name], plugin)
+    end
+    self.plugins[plugin.name] = plugin
+    return results and table.insert(results, plugin.name)
+  else
+    self.disabled[plugin.name] = plugin
+    self.plugins[plugin.name] = nil
+  end
 end
 
 function Spec:error(msg)
@@ -106,13 +131,14 @@ end
 ---@param results? string[]
 ---@param is_dep? boolean
 function Spec:normalize(spec, results, is_dep)
-  results = results or {}
   if type(spec) == "string" then
     if is_dep and not spec:find("/", 1, true) then
       -- spec is a plugin name
-      table.insert(results, spec)
+      if results then
+        table.insert(results, spec)
+      end
     else
-      table.insert(results, self:add({ spec }, is_dep).name)
+      self:add({ spec }, results, is_dep)
     end
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
@@ -123,20 +149,8 @@ function Spec:normalize(spec, results, is_dep)
     ---@cast spec LazySpecImport
     self:import(spec)
   else
-    ---@cast spec LazyPluginSpec
-    if spec.enabled == nil or spec.enabled == true or (type(spec.enabled) == "function" and spec.enabled()) then
-      local plugin
-      -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
-      -- see https://github.com/folke/lazy.nvim/issues/45
-      if spec._ then
-        plugin = spec
-      else
-        ---@cast spec LazyPlugin
-        spec.dependencies = spec.dependencies and self:normalize(spec.dependencies, {}, true) or nil
-        plugin = self:add(spec, is_dep)
-      end
-      table.insert(results, plugin.name)
-    end
+    ---@cast spec LazyPlugin
+    self:add(spec, results, is_dep)
   end
   return results
 end
@@ -266,12 +280,14 @@ function M.load()
   Config.spec:add({ "folke/lazy.nvim" })
   -- override some lazy props
   local lazy = Config.spec.plugins["lazy.nvim"]
-  lazy.lazy = true
-  lazy.dir = Config.me
-  lazy.config = function()
-    error("lazy config should not be called")
+  if lazy then
+    lazy.lazy = true
+    lazy.dir = Config.me
+    lazy.config = function()
+      error("lazy config should not be called")
+    end
+    lazy._.loaded = {}
   end
-  lazy._.loaded = {}
 
   local existing = Config.plugins
   Config.plugins = Config.spec.plugins

@@ -250,4 +250,24 @@ describe("plugin spec opt", function()
       assert(vim.tbl_contains(spec.plugins.bar.event, "mod2"))
     end
   end)
+
+  it("handles disabled", function()
+    local tests = {
+      [{ { "foo/bar" }, { "foo/bar", enabled = false } }] = false,
+      [{ { "foo/bar", enabled = false }, { "foo/bar" } }] = false,
+      [{ { "foo/bar", enabled = false }, { "foo/bar", enabled = true } }] = true,
+      [{ { "foo/bar" }, { "foo/bar", enabled = true } }] = true,
+    }
+    for test, ret in pairs(tests) do
+      local spec = Plugin.Spec.new(test)
+      assert(#spec.notifs == 0)
+      if ret then
+        assert(spec.plugins.bar)
+        assert(not spec.disabled.bar)
+      else
+        assert(not spec.plugins.bar)
+        assert(spec.disabled.bar)
+      end
+    end
+  end)
 end)
