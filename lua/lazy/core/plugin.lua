@@ -99,6 +99,7 @@ function Spec:add(plugin, results, is_dep)
     self.plugins[plugin.name] = plugin
     return results and table.insert(results, plugin.name)
   else
+    plugin._.kind = "disabled"
     self.disabled[plugin.name] = plugin
     self.plugins[plugin.name] = nil
   end

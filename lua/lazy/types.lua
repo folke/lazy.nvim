@@ -1,5 +1,5 @@
 
----@alias LazyPluginKind "normal"|"clean"
+---@alias LazyPluginKind "normal"|"clean"|"disabled"
 
 ---@class LazyPluginState
 ---@field loaded? {[string]:string}|{time:number}

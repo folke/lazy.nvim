@@ -83,7 +83,7 @@ return {
   },
   {
     filter = function(plugin)
-      return not plugin._.installed
+      return not plugin._.installed and plugin._.kind ~= "disabled"
     end,
     title = "Not Installed",
   },
@@ -98,5 +98,11 @@ return {
       return plugin._.installed
     end,
     title = "Not Loaded",
+  },
+  {
+    filter = function(plugin)
+      return plugin._.kind == "disabled"
+    end,
+    title = "Disabled",
   },
 }

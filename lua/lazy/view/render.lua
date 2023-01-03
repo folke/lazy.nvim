@@ -37,6 +37,7 @@ function M:update()
 
   self.plugins = vim.tbl_values(Config.plugins)
   vim.list_extend(self.plugins, vim.tbl_values(Config.to_clean))
+  vim.list_extend(self.plugins, vim.tbl_values(Config.spec.disabled))
   table.sort(self.plugins, function(a, b)
     return a.name < b.name
   end)
@@ -99,6 +100,8 @@ function M:get_plugin(row)
             return plugin
           end
         end
+      elseif loc.kind == "disabled" then
+        return Config.spec.disabled[loc.name]
       else
         return Config.plugins[loc.name]
       end
