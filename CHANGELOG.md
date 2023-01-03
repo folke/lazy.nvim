@@ -1,5 +1,32 @@
 # Changelog
 
+## [7.10.0](https://github.com/folke/lazy.nvim/compare/v7.9.0...v7.10.0) (2023-01-03)
+
+
+### Features
+
+* **spec:** allow overriding `Plugin.enabled` ([05aec48](https://github.com/folke/lazy.nvim/commit/05aec48968f91803a53704c04f3fad3c64033256))
+* **ui:** added section with disabled plugins ([299ffdf](https://github.com/folke/lazy.nvim/commit/299ffdfd538938e3241998de65d0a175fcf73f48))
+* **version:** allow version=false to override default version ([f36c7cb](https://github.com/folke/lazy.nvim/commit/f36c7cb0dc39d1bc3d0ae56d096afd9012a25607))
+
+
+### Bug Fixes
+
+* **git:** better errors when a branch/tag/version could not be found. Fixes [#276](https://github.com/folke/lazy.nvim/issues/276) ([277a2ab](https://github.com/folke/lazy.nvim/commit/277a2ab10baeebf64548a6b5a606d7b82f8e3165))
+* **git:** properly compare git commits with short refs ([dc9c92a](https://github.com/folke/lazy.nvim/commit/dc9c92a9b37352eab36d5c4ff4542b7b3c927b6f))
+* **health:** check for all packages on the rtp, excluding `dist` packs ([1c854d7](https://github.com/folke/lazy.nvim/commit/1c854d7a6d37d7b2ab6926605e7341696c77fd6c))
+* **install:** dont try re-installing failed missing plugins during startup. Fixes [#303](https://github.com/folke/lazy.nvim/issues/303) ([c85f929](https://github.com/folke/lazy.nvim/commit/c85f929bd98032b35e09fbc5a510884caaa8a5c3))
+* **keys:** make operator pending mode work. Fixes [#286](https://github.com/folke/lazy.nvim/issues/286) ([cdb998c](https://github.com/folke/lazy.nvim/commit/cdb998c6fec617b76063ff64e6e44eac7d0b6b7e))
+* **keys:** operator ([2e3e65b](https://github.com/folke/lazy.nvim/commit/2e3e65b0f7b16773f5f83ee4eea09fe6bca653cd))
+* **keys:** operator pending mode ([e93f50f](https://github.com/folke/lazy.nvim/commit/e93f50fd1b49f09725ecd310a3cce2cd860ff5a0))
+* **spec:** show error when users load a plugins module called `lazy` ([1fd8015](https://github.com/folke/lazy.nvim/commit/1fd80159d074e5c22b946d9b87f274a243ecf213))
+* **stats:** fixed cputime on linux ([06db1ec](https://github.com/folke/lazy.nvim/commit/06db1ec3c6baa9460e42ef8ed4d2cc2613b194cb))
+* **stats:** more robust checks for native cputime ([b5f4106](https://github.com/folke/lazy.nvim/commit/b5f4106892254c748c49a42e07acd80964cb0bce))
+* **stats:** use fallback for cputime on windows. Fixes [#280](https://github.com/folke/lazy.nvim/issues/280) ([ddcdc5e](https://github.com/folke/lazy.nvim/commit/ddcdc5e4472a5f9e0ead8afd38e4fed2ec882617))
+* **stats:** windows ([85173dc](https://github.com/folke/lazy.nvim/commit/85173dcc4d7a39e67370571316a6290f31a0de4a))
+* **ui:** check if win is still valid ([e749e68](https://github.com/folke/lazy.nvim/commit/e749e68b68b66d7f1c8284941b8cca9fd3cd9482))
+* **util:** made `Util.lsmod` more robust. See [#298](https://github.com/folke/lazy.nvim/issues/298) ([953c279](https://github.com/folke/lazy.nvim/commit/953c2791d8c391bf720ae68e734078bb558329f6))
+
 ## [7.9.0](https://github.com/folke/lazy.nvim/compare/v7.8.0...v7.9.0) (2023-01-02)
 
 
