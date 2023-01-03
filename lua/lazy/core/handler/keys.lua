@@ -24,6 +24,9 @@ function M.retrigger(keys)
     c = type(c) == "number" and vim.fn.nr2char(c) or c
     pending = pending .. c
   end
+  if op and op ~= "" then
+    keys = "<esc>" .. op .. keys
+  end
   local feed = vim.api.nvim_replace_termcodes(keys, true, false, true) .. pending
   if vim.v.count ~= 0 then
     feed = vim.v.count .. feed
