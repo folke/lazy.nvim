@@ -31,7 +31,7 @@ function M.show(mode)
     return
   end
 
-  M.view = (M.view and M.view.win) and M.view or M.create()
+  M.view = (M.view and M.view.win and vim.api.nvim_win_is_valid(M.view.win)) and M.view or M.create()
   if mode then
     M.view.state.mode = mode
   end
