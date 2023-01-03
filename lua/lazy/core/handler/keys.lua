@@ -24,6 +24,7 @@ function M.retrigger(keys)
     c = type(c) == "number" and vim.fn.nr2char(c) or c
     pending = pending .. c
   end
+  local op = vim.v.operator
   if op and op ~= "" then
     keys = "<esc>" .. op .. keys
   end
