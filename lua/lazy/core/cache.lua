@@ -190,7 +190,7 @@ function M.load(modkey, modpath)
   end
   entry.hash = hash
 
-  if M.debug and M.enabled then
+  if M.debug then
     vim.schedule(function()
       vim.notify("[cache:load] " .. modpath)
     end)
