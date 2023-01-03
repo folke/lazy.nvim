@@ -1,4 +1,3 @@
-local Util = require("lazy.util")
 local Config = require("lazy.core.config")
 
 local M = {}
@@ -6,11 +5,21 @@ local M = {}
 function M.check()
   vim.health.report_start("lazy.nvim")
 
+  local sites = vim.opt.packpath:get()
+  local default_site = vim.fn.stdpath("data") .. "/site"
+  if not vim.tbl_contains(sites, default_site) then
+    sites[#sites + 1] = default_site
+  end
+
   local existing = false
-  Util.ls(vim.fn.stdpath("data") .. "/site/pack/", function(path)
-    existing = true
-    vim.health.report_warn("found existing packages at `" .. path .. "`")
-  end)
+  for _, site in pairs(sites) do
+    for _, packs in ipairs(vim.fn.expand(site .. "/pack/*", false, true)) do
+      if not packs:find("/dist$") and vim.loop.fs_stat(packs) then
+        existing = true
+        vim.health.report_warn("found existing packages at `" .. packs .. "`")
+      end
+    end
+  end
   if not existing then
     vim.health.report_ok("no existing packages found by other package managers")
   end
