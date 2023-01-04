@@ -657,12 +657,12 @@ return {
 
 - any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec
 
-For a real-life example, you can check my personal dots:
+For a real-life example, you can check a starter template:
 
-- [init.lua](https://github.com/folke/dot/blob/master/config/nvim/init.lua) where I require `config.lazy`
-- [config.lazy](https://github.com/folke/dot/blob/master/config/nvim/lua/config/lazy.lua) where I bootstrap and setup **lazy.nvim**
-- [config.plugins](https://github.com/folke/dot/blob/master/config/nvim/lua/plugins/init.lua) is my main plugin config module
-- Any submodule of [config.plugins (submodules)](https://github.com/folke/dot/tree/master/config/nvim/lua/plugins) will be automatically loaded as well.
+- [init.lua](https://github.com/folke/LazyVim/blob/main/init.lua) where I require `config.lazy`
+- [config.lazy](https://github.com/folke/LazyVim/blob/main/lua/lazyvim/config/lazy.lua) where I bootstrap and setup **lazy.nvim**
+- [config.plugins](https://github.com/folke/LazyVim/blob/main/lua/lazyvim/plugins/ui.lua) is my UI part plugin config module
+- Any submodule of [config.plugins (submodules)](https://github.com/folke/LazyVim/tree/main/lua/lazyvim/plugins) will be automatically loaded as well.
 
 ## 📦 Migration Guide
 
