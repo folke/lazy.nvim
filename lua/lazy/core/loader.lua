@@ -16,9 +16,13 @@ M.disabled_rtp_plugins = { packer_compiled = true }
 ---@type table<string,string>
 M.did_ftdetect = {}
 
+function M.disable_rtp_plugin(plugin)
+  M.disabled_rtp_plugins[plugin] = true
+end
+
 function M.setup()
   for _, file in ipairs(Config.options.performance.rtp.disabled_plugins) do
-    M.disabled_rtp_plugins[file] = true
+    M.disable_rtp_plugin(file)
   end
 
   vim.api.nvim_create_autocmd("ColorSchemePre", {
