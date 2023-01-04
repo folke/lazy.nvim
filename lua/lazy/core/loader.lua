@@ -162,6 +162,8 @@ function M.load(plugins, reason)
     if type(plugin) == "string" then
       if Config.plugins[plugin] then
         plugin = Config.plugins[plugin]
+      elseif Config.spec.disabled[plugin] then
+        plugin = nil
       else
         Util.error("Plugin " .. plugin .. " not found")
         plugin = nil
