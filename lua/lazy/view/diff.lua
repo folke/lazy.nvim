@@ -23,11 +23,13 @@ M.handlers = {
 
   ---@type LazyDiffFun
   ["diffview.nvim"] = function(plugin, diff)
+    local args
     if diff.commit then
-      vim.cmd.DiffviewOpen(("-C=%s"):format(plugin.dir) .. " " .. diff.commit)
+      args = ("-C=%s"):format(plugin.dir) .. " " .. diff.commit
     else
-      vim.cmd.DiffviewOpen(("-C=%s"):format(plugin.dir) .. " " .. diff.from .. ".." .. diff.to)
+      args = ("-C=%s"):format(plugin.dir) .. " " .. diff.from .. ".." .. diff.to
     end
+    vim.cmd("DiffviewOpen " .. args)
   end,
 
   ---@type LazyDiffFun
