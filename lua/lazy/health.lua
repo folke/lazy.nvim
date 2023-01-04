@@ -31,41 +31,10 @@ function M.check()
     vim.health.report_ok("packer_compiled.lua not found")
   end
 
-  local valid = {
-    1,
-    "name",
-    "url",
-    "enabled",
-    "lazy",
-    "dev",
-    "dependencies",
-    "init",
-    "config",
-    "build",
-    "branch",
-    "tag",
-    "commit",
-    "version",
-    "module",
-    "pin",
-    "cmd",
-    "event",
-    "keys",
-    "ft",
-    "dir",
-    "priority",
-    "cond",
-    "_",
-  }
   local spec = Config.spec
   for _, plugin in pairs(spec.plugins) do
-    for key in pairs(plugin) do
-      if not vim.tbl_contains(valid, key) then
-        if key ~= "module" or type(plugin.module) ~= "boolean" then
-          vim.health.report_warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
-        end
-      end
-    end
+    M.check_valid(plugin)
+    M.check_override(plugin)
   end
   if #spec.notifs > 0 then
     vim.health.report_error("Issues were reported when loading your specs:")
@@ -81,5 +50,56 @@ function M.check()
     end
   end
 end
+
+---@param plugin LazyPlugin
+function M.check_valid(plugin)
+  for key in pairs(plugin) do
+    if not vim.tbl_contains(M.valid, key) then
+      if key ~= "module" or type(plugin.module) ~= "boolean" then
+        vim.health.report_warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
+      end
+    end
+  end
+end
+
+---@param plugin LazyPlugin
+function M.check_override(plugin)
+  if not plugin._.super then
+    return
+  end
+
+  for key, value in pairs(plugin._.super) do
+    if key ~= "_" and plugin[key] and plugin[key] ~= value then
+      vim.health.report_warn("{" .. plugin.name .. "}: overriding <" .. key .. ">")
+    end
+  end
+end
+
+M.valid = {
+  1,
+  "name",
+  "url",
+  "enabled",
+  "lazy",
+  "dev",
+  "dependencies",
+  "init",
+  "config",
+  "build",
+  "branch",
+  "tag",
+  "commit",
+  "version",
+  "module",
+  "pin",
+  "cmd",
+  "event",
+  "keys",
+  "ft",
+  "dir",
+  "priority",
+  "cond",
+  "_",
+}
 
 return M

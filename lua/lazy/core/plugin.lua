@@ -6,6 +6,9 @@ local Cache = require("lazy.core.cache")
 ---@class LazyCorePlugin
 local M = {}
 
+local list_merge = { "dependencies" }
+vim.list_extend(list_merge, vim.tbl_values(Handler.types))
+
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
 ---@field disabled table<string, LazyPlugin>
@@ -99,6 +102,7 @@ function Spec:add(plugin, results, is_dep)
     self.plugins[plugin.name] = plugin
     return results and table.insert(results, plugin.name)
   else
+    -- FIXME: we should somehow merge when needed
     plugin._.kind = "disabled"
     self.disabled[plugin.name] = plugin
     self.plugins[plugin.name] = nil
@@ -198,36 +202,29 @@ end
 ---@param new LazyPlugin
 ---@return LazyPlugin
 function Spec:merge(old, new)
-  local is_dep = old._.dep and new._.dep
+  new._.dep = old._.dep and new._.dep
 
-  ---@diagnostic disable-next-line: no-unknown
-  for k, v in pairs(new) do
-    if k == "_" then
-    elseif old[k] ~= nil and old[k] ~= v then
-      if Handler.types[k] then
-        local values = type(v) == "string" and { v } or v
-        vim.list_extend(values, type(old[k]) == "string" and { old[k] } or old[k])
-        ---@diagnostic disable-next-line: no-unknown
-        old[k] = values
-      elseif k == "config" or k == "priority" then
-        old[k] = v
-      elseif k == "dependencies" then
-        for _, dep in ipairs(v) do
-          if not vim.tbl_contains(old[k], dep) then
-            table.insert(old[k], dep)
-          end
-        end
-      else
-        old[k] = v
-        self:warn("Overwriting key `" .. k .. "`\n" .. vim.inspect({ old = old, new = new }))
-      end
-    else
+  for _, prop in ipairs(list_merge) do
+    if new[prop] and old[prop] then
+      ---@type any[]
+      local props = {}
       ---@diagnostic disable-next-line: no-unknown
-      old[k] = v
+      for _, value in ipairs(old[prop]) do
+        props[#props + 1] = value
+      end
+      ---@diagnostic disable-next-line: no-unknown
+      for _, value in ipairs(new[prop]) do
+        if not vim.tbl_contains(props, value) then
+          props[#props + 1] = value
+        end
+      end
+      ---@diagnostic disable-next-line: no-unknown
+      new[prop] = props
     end
   end
-  old._.dep = is_dep
-  return old
+  new._.super = old
+  setmetatable(new, { __index = old })
+  return new
 end
 
 function M.update_state()

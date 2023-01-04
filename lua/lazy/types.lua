@@ -13,6 +13,7 @@
 ---@field kind? LazyPluginKind
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 ---@field cond? boolean
+---@field super? LazyPlugin
 
 ---@class LazyPluginHooks
 ---@field init? fun(LazyPlugin) Will always be run
