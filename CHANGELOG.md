@@ -1,5 +1,27 @@
 # Changelog
 
+## [7.11.0](https://github.com/folke/lazy.nvim/compare/v7.10.0...v7.11.0) (2023-01-04)
+
+
+### Features
+
+* **loader:** disable plugins ([a7ac2ad](https://github.com/folke/lazy.nvim/commit/a7ac2ad0204d63ece6ebca76ae906db53346c8a4))
+* **spec:** spec merging now properly works with `Plugin.enabled` ([81cb352](https://github.com/folke/lazy.nvim/commit/81cb352fe6150570b7dd7266e3053869ce40babc))
+
+
+### Bug Fixes
+
+* **diff:** make diffview work again. Fixes [#304](https://github.com/folke/lazy.nvim/issues/304) ([e61b334](https://github.com/folke/lazy.nvim/commit/e61b334cee143ebb136125d6faa0f18dc35eb6c0))
+* **keys:** only replace localleader and maplocalleader. Fixes [#307](https://github.com/folke/lazy.nvim/issues/307), fixes [#308](https://github.com/folke/lazy.nvim/issues/308) ([507b695](https://github.com/folke/lazy.nvim/commit/507b695753b4a7e1eff75f578b7a04b6307e4bc6))
+* **loader:** dont show error of missing plugins if they are disabled ([09fd8fa](https://github.com/folke/lazy.nvim/commit/09fd8fabd29eb6da82c3eb2be4b270f9de9b4d8c))
+* **loader:** move mapleader check to loader, so it can be set by spec files ([b4d4e6b](https://github.com/folke/lazy.nvim/commit/b4d4e6b41b0b5110019dc247db994ae294f23b77))
+* **util:** assume type is file when no type is returned by scandir. Fixes [#306](https://github.com/folke/lazy.nvim/issues/306) ([2e87520](https://github.com/folke/lazy.nvim/commit/2e875208268f0bbc9927bb9b245b00031b6c07d9))
+
+
+### Performance Improvements
+
+* **spec:** more efficient merging of specs and added `Plugin._.super` ([bce0c6e](https://github.com/folke/lazy.nvim/commit/bce0c6e327c953c644c20c043303826340596e8e))
+
 ## [7.10.0](https://github.com/folke/lazy.nvim/compare/v7.9.0...v7.10.0) (2023-01-03)
 
 
