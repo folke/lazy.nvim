@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.12.0](https://github.com/folke/lazy.nvim/compare/v7.11.0...v7.12.0) (2023-01-04)
+
+
+### Features
+
+* **spec:** allow import property on a plugin spec ([dea43af](https://github.com/folke/lazy.nvim/commit/dea43afc4adff21a6d5864a378459a140a702c0c))
+
+
+### Bug Fixes
+
+* **keys:** Use vim's default value for an unset g:mapleader ([#316](https://github.com/folke/lazy.nvim/issues/316)) ([3bde7b5](https://github.com/folke/lazy.nvim/commit/3bde7b5ba8b99941b314a75d8650a0a6c8552144))
+
 ## [7.11.0](https://github.com/folke/lazy.nvim/compare/v7.10.0...v7.11.0) (2023-01-04)
 
 
