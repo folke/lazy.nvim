@@ -12,11 +12,11 @@ body:
       label: Did you check docs and existing issues?
       description: Make sure you checked all of the below before submitting an issue
       options:
-        - label: I have read all the lazy docs
+        - label: I have read all the lazy.nvim docs
           required: true
-        - label: I have searched the existing issues of lazy
+        - label: I have searched the existing issues of lazy.nvim
           required: true
-        - label: I have searched the exsiting issues of the plugin I have a problem with
+        - label: I have searched the exsiting issues of plugins related to this issue
           required: true
   - type: input
     attributes:
@@ -68,14 +68,7 @@ body:
         -- bootstrap lazy
         local lazypath = root .. "/plugins/lazy.nvim"
         if not vim.loop.fs_stat(lazypath) then
-          vim.fn.system({
-            "git",
-            "clone",
-            "--filter=blob:none",
-            "--single-branch",
-            "https://github.com/folke/lazy.nvim.git",
-            lazypath,
-          })
+          vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", lazypath, })
         end
         vim.opt.runtimepath:prepend(lazypath)
 

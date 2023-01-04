@@ -15,17 +15,13 @@ jobs:
       - name: Install Neovim
         shell: bash
         run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
             wget -q https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb -O /tmp/nvim.deb
             sudo dpkg -i /tmp/nvim.deb
-          else
-            choco install neovim --pre
-            echo "C:/tools/neovim/nvim-win64/bin" >> $GITHUB_PATH
-          fi
       - name: Run Tests
         run: |
           nvim --version
-          nvim --headless -u tests/init.lua -c "PlenaryBustedDirectory tests// {minimal_init = 'tests//init.lua', sequential = true}"
+          [ ! -d tests ] && exit 0
+          nvim --headless -u tests/init.lua -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/init.lua', sequential = true}"
   docs:
     runs-on: ubuntu-latest
     needs: tests
