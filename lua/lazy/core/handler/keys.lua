@@ -46,7 +46,6 @@ function M.retrigger(keys)
   if vim.v.count ~= 0 then
     feed = vim.v.count .. feed
   end
-  vim.notify(feed)
   vim.api.nvim_input(feed)
 end
 
