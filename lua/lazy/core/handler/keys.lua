@@ -15,7 +15,7 @@ local M = {}
 
 ---@param feed string
 function M.replace_special(feed)
-  for special, key in pairs({ leader = vim.g.mapleader, localleader = vim.g.maplocalleader }) do
+  for special, key in pairs({ leader = vim.g.mapleader or "\\", localleader = vim.g.maplocalleader or "\\" }) do
     local pattern = "<"
     for i = 1, #special do
       pattern = pattern .. "[" .. special:sub(i, i) .. special:upper():sub(i, i) .. "]"
