@@ -42,6 +42,7 @@ function M.setup()
     end
     Util.track()
   end
+  Config.mapleader = vim.g.mapleader
 
   -- report any warnings & errors
   Config.spec:report()
