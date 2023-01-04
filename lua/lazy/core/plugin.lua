@@ -45,7 +45,10 @@ function Spec:add(plugin, results, is_dep)
   -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
   -- see https://github.com/folke/lazy.nvim/issues/45
   if plugin._ then
-    return results and table.insert(results, plugin.name)
+    if results then
+      table.insert(results, plugin.name)
+    end
+    return plugin
   end
 
   if not plugin.url and plugin[1] then
@@ -76,6 +79,7 @@ function Spec:add(plugin, results, is_dep)
     end
   else
     self:error("Invalid plugin spec " .. vim.inspect(plugin))
+    return
   end
 
   plugin.event = type(plugin.event) == "string" and { plugin.event } or plugin.event
@@ -91,7 +95,10 @@ function Spec:add(plugin, results, is_dep)
     plugin = self:merge(self.plugins[plugin.name], plugin)
   end
   self.plugins[plugin.name] = plugin
-  return results and table.insert(results, plugin.name)
+  if results then
+    table.insert(results, plugin.name)
+  end
+  return plugin
 end
 
 function Spec:error(msg)
@@ -182,12 +189,19 @@ function Spec:normalize(spec, results, is_dep)
     for _, s in ipairs(spec) do
       self:normalize(s, results, is_dep)
     end
+  elseif spec[1] or spec.dir or spec.url then
+    ---@cast spec LazyPlugin
+    local plugin = self:add(spec, results, is_dep)
+    ---@diagnostic disable-next-line: cast-type-mismatch
+    ---@cast plugin LazySpecImport
+    if plugin and plugin.import then
+      self:import(plugin)
+    end
   elseif spec.import then
     ---@cast spec LazySpecImport
     self:import(spec)
   else
-    ---@cast spec LazyPlugin
-    self:add(spec, results, is_dep)
+    self:error("Invalid plugin spec " .. vim.inspect(spec))
   end
   return results
 end
