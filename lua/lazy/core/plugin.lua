@@ -86,27 +86,12 @@ function Spec:add(plugin, results, is_dep)
   plugin._ = {}
   plugin._.dep = is_dep
 
-  local enabled = plugin.enabled
-  if enabled == nil then
-    enabled = self.disabled[plugin.name] == nil
-  else
-    enabled = plugin.enabled == true or (type(plugin.enabled) == "function" and plugin.enabled())
+  plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+  if self.plugins[plugin.name] then
+    plugin = self:merge(self.plugins[plugin.name], plugin)
   end
-
-  if enabled then
-    plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
-    self.disabled[plugin.name] = nil
-    if self.plugins[plugin.name] then
-      plugin = self:merge(self.plugins[plugin.name], plugin)
-    end
-    self.plugins[plugin.name] = plugin
-    return results and table.insert(results, plugin.name)
-  else
-    -- FIXME: we should somehow merge when needed
-    plugin._.kind = "disabled"
-    self.disabled[plugin.name] = plugin
-    self.plugins[plugin.name] = nil
-  end
+  self.plugins[plugin.name] = plugin
+  return results and table.insert(results, plugin.name)
 end
 
 function Spec:error(msg)
@@ -115,6 +100,53 @@ end
 
 function Spec:warn(msg)
   self:log(msg, vim.log.levels.WARN)
+end
+
+function Spec:fix_disabled()
+  ---@type table<string,string[]> plugin to parent plugin
+  local dep_of = {}
+
+  ---@type string[] dependencies of disabled plugins
+  local disabled_deps = {}
+
+  for _, plugin in pairs(self.plugins) do
+    local enabled = not (plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()))
+    if enabled then
+      for _, dep in ipairs(plugin.dependencies or {}) do
+        dep_of[dep] = dep_of[dep] or {}
+        table.insert(dep_of[dep], plugin.name)
+      end
+    else
+      plugin._.kind = "disabled"
+      self.plugins[plugin.name] = nil
+      self.disabled[plugin.name] = plugin
+      if plugin.dependencies then
+        vim.list_extend(disabled_deps, plugin.dependencies)
+      end
+    end
+  end
+
+  -- check deps of disabled plugins
+  for _, dep in ipairs(disabled_deps) do
+    -- only check if the plugin is still enabled and it is a dep
+    if self.plugins[dep] and self.plugins[dep]._.dep then
+      -- check if the dep is still used by another plugin
+      local keep = false
+      for _, parent in ipairs(dep_of[dep] or {}) do
+        if self.plugins[parent] then
+          keep = true
+          break
+        end
+      end
+      -- disable the dep when no longer needed
+      if not keep then
+        local plugin = self.plugins[dep]
+        plugin._.kind = "disabled"
+        self.plugins[plugin.name] = nil
+        self.disabled[plugin.name] = plugin
+      end
+    end
+  end
 end
 
 ---@param msg string
@@ -289,6 +321,7 @@ function M.load()
     end
     lazy._.loaded = {}
   end
+  Config.spec:fix_disabled()
 
   local existing = Config.plugins
   Config.plugins = Config.spec.plugins
