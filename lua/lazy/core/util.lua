@@ -171,6 +171,9 @@ function M.ls(path, fn)
   local handle = vim.loop.fs_scandir(path)
   while handle do
     local name, t = vim.loop.fs_scandir_next(handle)
+    -- HACK: assume type is a file if no type returned
+    -- see https://github.com/folke/lazy.nvim/issues/306
+    t = t or "file"
     if not name then
       break
     end
