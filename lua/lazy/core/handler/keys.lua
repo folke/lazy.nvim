@@ -13,6 +13,19 @@ local Loader = require("lazy.core.loader")
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
 
+---@param feed string
+function M.replace_special(feed)
+  for special, key in pairs({ leader = vim.g.mapleader, localleader = vim.g.maplocalleader }) do
+    local pattern = "<"
+    for i = 1, #special do
+      pattern = pattern .. "[" .. special:sub(i, i) .. special:upper():sub(i, i) .. "]"
+    end
+    pattern = pattern .. ">"
+    feed = feed:gsub(pattern, key)
+  end
+  return feed
+end
+
 function M.retrigger(keys)
   local pending = ""
   while true do
@@ -28,10 +41,12 @@ function M.retrigger(keys)
   if op and op ~= "" and vim.api.nvim_get_mode().mode:find("o") then
     keys = "<esc>" .. op .. keys
   end
-  local feed = vim.api.nvim_replace_termcodes(keys, true, true, true) .. pending
+  local feed = keys .. pending
+  feed = M.replace_special(feed)
   if vim.v.count ~= 0 then
     feed = vim.v.count .. feed
   end
+  vim.notify(feed)
   vim.api.nvim_input(feed)
 end
 
