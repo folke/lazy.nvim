@@ -217,10 +217,10 @@ function M._load(plugin, reason)
     end, "Failed to load deps for " .. plugin.name)
   end
 
+  M.packadd(plugin.dir)
   if plugin.config then
     M.config(plugin)
   end
-  M.packadd(plugin.dir)
 
   plugin._.loaded.time = Util.track().time
   table.remove(M.loading)
