@@ -1,5 +1,14 @@
 # Changelog
 
+## [7.12.1](https://github.com/folke/lazy.nvim/compare/v7.12.0...v7.12.1) (2023-01-05)
+
+
+### Bug Fixes
+
+* **cache:** check full paths of cached modpaths. Fixes [#324](https://github.com/folke/lazy.nvim/issues/324) ([b2dec14](https://github.com/folke/lazy.nvim/commit/b2dec14824383137440040da0d9d107f3a29c656))
+* **loader:** run plugin config before sourcing runtime ([c59c05c](https://github.com/folke/lazy.nvim/commit/c59c05c7a80693fda369ccab572f8eaca50a1b4f))
+* **util:** Util.try can now work without an error message ([e4f79a4](https://github.com/folke/lazy.nvim/commit/e4f79a42d650c926ea12edb7dbe2efbe1031b723))
+
 ## [7.12.0](https://github.com/folke/lazy.nvim/compare/v7.11.0...v7.12.0) (2023-01-04)
 
 
