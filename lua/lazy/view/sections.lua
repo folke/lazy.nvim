@@ -49,6 +49,13 @@ return {
   {
     ---@param plugin LazyPlugin
     filter = function(plugin)
+      return plugin._.updates
+    end,
+    title = "Updates",
+  },
+  {
+    ---@param plugin LazyPlugin
+    filter = function(plugin)
       return plugin._.updated and plugin._.updated.from ~= plugin._.updated.to
     end,
     title = "Updated",
@@ -59,13 +66,6 @@ return {
       return plugin._.cloned
     end,
     title = "Installed",
-  },
-  {
-    ---@param plugin LazyPlugin
-    filter = function(plugin)
-      return plugin._.updates
-    end,
-    title = "Updates",
   },
   {
     filter = function(plugin)
