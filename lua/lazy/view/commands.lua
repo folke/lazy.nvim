@@ -52,6 +52,9 @@ M.commands = {
   load = function(opts)
     require("lazy.core.loader").load(opts.plugins, { cmd = "LazyLoad" })
   end,
+  ["load!"] = function(opts)
+    require("lazy.core.loader").load(opts.plugins, { cmd = "LazyLoad!" })
+  end,
   log = Manage.log,
   build = Manage.build,
   clean = Manage.clean,

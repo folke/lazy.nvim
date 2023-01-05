@@ -187,7 +187,8 @@ function M._load(plugin, reason)
   end
 
   if plugin.cond ~= nil then
-    if plugin.cond == false or (type(plugin.cond) == "function" and not plugin.cond()) then
+    local force = reason.cmd and reason.cmd:sub(-1) == "!"
+    if not force and (plugin.cond == false or (type(plugin.cond) == "function" and not plugin.cond())) then
       plugin._.cond = false
       return
     end
