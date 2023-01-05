@@ -107,7 +107,7 @@ function M.disable()
   if M.debug and vim.tbl_count(M.topmods) > 1 then
     M.log(M.topmods, vim.log.levels.WARN, { title = "topmods" })
   end
-  if M.debug then
+  if M.debug and false then
     local stats = vim.deepcopy(M.stats)
     stats.time = (stats.time or 0) / 1e6
     stats.find.time = (stats.find.time or 0) / 1e6
