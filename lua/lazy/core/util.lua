@@ -92,7 +92,7 @@ function M.try(fn, opts)
       end
       level = level + 1
     end
-    msg = msg .. "\n\n" .. err
+    msg = (msg and (msg .. "\n\n") or "") .. err
     if #trace > 0 then
       msg = msg .. "\n\n# stacktrace:\n" .. table.concat(trace, "\n")
     end
