@@ -72,21 +72,15 @@ M.defaults = {
 
       -- open lazygit log
       ["<localleader>l"] = function(plugin)
-        require("lazy.util").open_cmd({ "lazygit", "log" }, {
+        require("lazy.util").float_term({ "lazygit", "log" }, {
           cwd = plugin.dir,
-          terminal = true,
-          close_on_exit = true,
-          enter = true,
         })
       end,
 
       -- open a terminal for the plugin dir
       ["<localleader>t"] = function(plugin)
-        require("lazy.util").open_cmd({ vim.go.shell }, {
+        require("lazy.util").float_term(nil, {
           cwd = plugin.dir,
-          terminal = true,
-          close_on_exit = true,
-          enter = true,
         })
       end,
     },

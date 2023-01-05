@@ -43,7 +43,7 @@ M.handlers = {
       cmd[#cmd + 1] = diff.from
       cmd[#cmd + 1] = diff.to
     end
-    Util.open_cmd(cmd, { cwd = plugin.dir, filetype = "git" })
+    Util.float_cmd(cmd, { cwd = plugin.dir, filetype = "git" })
   end,
 
   ---@type LazyDiffFun
@@ -57,7 +57,7 @@ M.handlers = {
       cmd[#cmd + 1] = diff.from
       cmd[#cmd + 1] = diff.to
     end
-    Util.open_cmd(cmd, { cwd = plugin.dir, terminal = true, env = { PAGER = "cat" } })
+    Util.float_term(cmd, { cwd = plugin.dir, interactive = false, env = { PAGER = "cat" } })
   end,
 }
 

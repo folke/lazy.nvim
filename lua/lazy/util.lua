@@ -93,42 +93,53 @@ function M.throttle(ms, fn)
   end
 end
 
----@class LazyCmdOpts
+---@class LazyCmdOptions: LazyFloatOptions
 ---@field cwd? string
 ---@field env? table<string,string>
 ---@field float? LazyFloatOptions
 
----@param cmd string[]
----@param opts? {cwd:string, filetype:string, terminal?:boolean, close_on_exit?:boolean, enter?:boolean, float?:LazyFloatOptions}
-function M.open_cmd(cmd, opts)
+-- Opens a floating terminal (interactive by default)
+---@param cmd? string[]|string
+---@param opts? LazyCmdOptions|{interactive?:boolean}
+function M.float_term(cmd, opts)
+  cmd = cmd or {}
+  if type(cmd) == "string" then
+    cmd = { cmd }
+  end
+  if #cmd == 0 then
+    cmd = { vim.env.SHELL or vim.o.shell }
+  end
   opts = opts or {}
-  local float = M.float(opts.float)
+  local float = M.float(opts)
+  vim.fn.termopen(cmd, vim.tbl_isempty(opts) and vim.empty_dict() or opts)
+  if opts.interactive ~= false then
+    vim.cmd.startinsert()
+    vim.api.nvim_create_autocmd("TermClose", {
+      once = true,
+      buffer = float.buf,
+      callback = function()
+        float:close()
+        vim.cmd.checktime()
+      end,
+    })
+  end
+  return float
+end
 
+--- Runs the command and shows it in a floating window
+---@param cmd string[]
+---@param opts? LazyCmdOptions|{filetype?:string}
+function M.float_cmd(cmd, opts)
+  opts = opts or {}
+  local float = M.float(opts)
   if opts.filetype then
     vim.bo[float.buf].filetype = opts.filetype
   end
-  if opts.terminal then
-    opts.terminal = nil
-    vim.fn.termopen(cmd, opts)
-    if opts.enter then
-      vim.cmd.startinsert()
-    end
-    if opts.close_on_exit then
-      vim.api.nvim_create_autocmd("TermClose", {
-        once = true,
-        buffer = float.buf,
-        callback = function()
-          float:close()
-          vim.cmd.checktime()
-        end,
-      })
-    end
-  else
-    local Process = require("lazy.manage.process")
-    local lines = Process.exec(cmd, { cwd = opts.cwd })
-    vim.api.nvim_buf_set_lines(float.buf, 0, -1, false, lines)
-    vim.bo[float.buf].modifiable = false
-  end
+  local Process = require("lazy.manage.process")
+  local lines = Process.exec(cmd, { cwd = opts.cwd })
+  vim.api.nvim_buf_set_lines(float.buf, 0, -1, false, lines)
+  vim.bo[float.buf].modifiable = false
+  return float
 end
 
 ---@return string?
