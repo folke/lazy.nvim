@@ -55,7 +55,7 @@ function M.check_path(modname, modpath)
 
   -- check rtp excluding plugins. This is a very small list, so should be fast
   for _, path in ipairs(M.get_rtp()) do
-    if modpath:find(path, 1, true) == 1 then
+    if modpath:find(path .. "/", 1, true) == 1 then
       return true
     end
   end
