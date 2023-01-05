@@ -26,7 +26,7 @@ function M.new(view)
   local self = setmetatable({}, { __index = setmetatable(M, { __index = Text }) })
   self.view = view
   self.padding = 2
-  self.wrap = view.opts.win_opts.width
+  self.wrap = view.win_opts.width
   return self
 end
 

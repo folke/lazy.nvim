@@ -5,18 +5,22 @@ function M.file_exists(file)
   return vim.loop.fs_stat(file) ~= nil
 end
 
----@param opts? LazyViewOptions
+---@param opts? LazyFloatOptions
 function M.float(opts)
-  opts = vim.tbl_deep_extend("force", {
-    win_opts = { zindex = 60, border = "none" },
-    margin = { top = 3, left = 2, right = 2 },
-  }, opts or {})
+  opts = opts or {}
+  if require("lazy.view").visible() then
+    opts = vim.tbl_deep_extend("force", {
+      zindex = 60,
+      border = "none",
+      margin = { top = 3, left = 2, right = 2 },
+    }, opts)
+  end
   return require("lazy.view.float")(opts)
 end
 
 function M.open(uri)
   if M.file_exists(uri) then
-    return M.float({ win_opts = { style = "" }, file = uri })
+    return M.float({ style = "", file = uri })
   end
   local Config = require("lazy.core.config")
   local cmd
@@ -89,8 +93,13 @@ function M.throttle(ms, fn)
   end
 end
 
+---@class LazyCmdOpts
+---@field cwd? string
+---@field env? table<string,string>
+---@field float? LazyFloatOptions
+
 ---@param cmd string[]
----@param opts? {cwd:string, filetype:string, terminal?:boolean, close_on_exit?:boolean, enter?:boolean, float?:LazyViewOptions}
+---@param opts? {cwd:string, filetype:string, terminal?:boolean, close_on_exit?:boolean, enter?:boolean, float?:LazyFloatOptions}
 function M.open_cmd(cmd, opts)
   opts = opts or {}
   local float = M.float(opts.float)

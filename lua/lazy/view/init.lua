@@ -25,13 +25,17 @@ local M = {}
 ---@type LazyView
 M.view = nil
 
+function M.visible()
+  return M.view and M.view.win and vim.api.nvim_win_is_valid(M.view.win)
+end
+
 ---@param mode? string
 function M.show(mode)
   if Config.headless then
     return
   end
 
-  M.view = (M.view and M.view.win and vim.api.nvim_win_is_valid(M.view.win)) and M.view or M.create()
+  M.view = M.visible() and M.view or M.create()
   if mode then
     M.view.state.mode = mode
   end

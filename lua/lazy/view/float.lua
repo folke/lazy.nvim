@@ -1,21 +1,21 @@
 local Config = require("lazy.core.config")
 local ViewConfig = require("lazy.view.config")
 
----@class LazyViewOptions
+---@class LazyFloatOptions
 ---@field buf? number
 ---@field file? string
 ---@field margin? {top?:number, right?:number, bottom?:number, left?:number}
----@field win_opts LazyViewWinOpts
 ---@field size? {width:number, height:number}
-local defaults = {
-  win_opts = {},
-}
+---@field zindex? number
+---@field style? "" | "minimal"
+---@field border? "none" | "single" | "double" | "rounded" | "solid" | "shadow"
 
 ---@class LazyFloat
 ---@field buf number
 ---@field win number
----@field opts LazyViewOptions
----@overload fun(opts?:LazyViewOptions):LazyFloat
+---@field opts LazyFloatOptions
+---@field win_opts LazyWinOpts
+---@overload fun(opts?:LazyFloatOptions):LazyFloat
 local M = {}
 
 setmetatable(M, {
@@ -24,16 +24,33 @@ setmetatable(M, {
   end,
 })
 
----@param opts? LazyViewOptions
+---@param opts? LazyFloatOptions
 function M.new(opts)
   local self = setmetatable({}, { __index = M })
   return self:init(opts)
 end
 
----@param opts? LazyViewOptions
+---@param opts? LazyFloatOptions
 function M:init(opts)
-  self.opts = vim.tbl_deep_extend("force", defaults, opts or {})
-  self.opts.size = vim.tbl_extend("keep", self.opts.size or {}, Config.options.ui.size)
+  self.opts = vim.tbl_deep_extend("force", {
+    size = Config.options.ui.size,
+    style = "minimal",
+    border = Config.options.ui.border,
+    zindex = 50,
+  }, opts or {})
+
+  ---@class LazyWinOpts
+  ---@field width number
+  ---@field height number
+  ---@field row number
+  ---@field col number
+  self.win_opts = {
+    relative = "editor",
+    style = self.opts.style ~= "" and self.opts.style or nil,
+    border = self.opts.border,
+    zindex = self.opts.zindex,
+    noautocmd = true,
+  }
   self:mount()
   self:on_key(ViewConfig.keys.close, self.close)
   self:on({ "BufDelete", "BufLeave", "BufHidden" }, self.close, { once = true })
@@ -44,25 +61,25 @@ function M:layout()
   local function size(max, value)
     return value > 1 and math.min(value, max) or math.floor(max * value)
   end
-  self.opts.win_opts.width = size(vim.o.columns, self.opts.size.width)
-  self.opts.win_opts.height = size(vim.o.lines, self.opts.size.height)
-  self.opts.win_opts.row = math.floor((vim.o.lines - self.opts.win_opts.height) / 2)
-  self.opts.win_opts.col = math.floor((vim.o.columns - self.opts.win_opts.width) / 2)
+  self.win_opts.width = size(vim.o.columns, self.opts.size.width)
+  self.win_opts.height = size(vim.o.lines, self.opts.size.height)
+  self.win_opts.row = math.floor((vim.o.lines - self.win_opts.height) / 2)
+  self.win_opts.col = math.floor((vim.o.columns - self.win_opts.width) / 2)
 
   if self.opts.margin then
     if self.opts.margin.top then
-      self.opts.win_opts.height = self.opts.win_opts.height - self.opts.margin.top
-      self.opts.win_opts.row = self.opts.win_opts.row + self.opts.margin.top
+      self.win_opts.height = self.win_opts.height - self.opts.margin.top
+      self.win_opts.row = self.win_opts.row + self.opts.margin.top
     end
     if self.opts.margin.right then
-      self.opts.win_opts.width = self.opts.win_opts.width - self.opts.margin.right
+      self.win_opts.width = self.win_opts.width - self.opts.margin.right
     end
     if self.opts.margin.bottom then
-      self.opts.win_opts.height = self.opts.win_opts.height - self.opts.margin.bottom
+      self.win_opts.height = self.win_opts.height - self.opts.margin.bottom
     end
     if self.opts.margin.left then
-      self.opts.win_opts.width = self.opts.win_opts.width - self.opts.margin.left
-      self.opts.win_opts.col = self.opts.win_opts.col + self.opts.margin.left
+      self.win_opts.width = self.win_opts.width - self.opts.margin.left
+      self.win_opts.col = self.win_opts.col + self.opts.margin.left
     end
   end
 end
@@ -78,25 +95,8 @@ function M:mount()
     self.buf = vim.api.nvim_create_buf(false, false)
   end
 
-  ---@class LazyViewWinOpts
-  ---@field width number
-  ---@field height number
-  ---@field row number
-  ---@field col number
-  local win_opts = {
-    relative = "editor",
-    style = "minimal",
-    border = Config.options.ui.border,
-    noautocmd = true,
-    zindex = 50,
-  }
-  self.opts.win_opts = vim.tbl_extend("force", win_opts, self.opts.win_opts)
-  if self.opts.win_opts.style == "" then
-    self.opts.win_opts.style = nil
-  end
-
   self:layout()
-  self.win = vim.api.nvim_open_win(self.buf, true, self.opts.win_opts)
+  self.win = vim.api.nvim_open_win(self.buf, true, self.win_opts)
   self:focus()
 
   vim.bo[self.buf].buftype = "nofile"
@@ -118,7 +118,7 @@ function M:mount()
       local config = {}
       for _, key in ipairs({ "relative", "width", "height", "col", "row" }) do
         ---@diagnostic disable-next-line: no-unknown
-        config[key] = self.opts.win_opts[key]
+        config[key] = self.win_opts[key]
       end
       vim.api.nvim_win_set_config(self.win, config)
       vim.cmd([[do User LazyFloatResized]])
