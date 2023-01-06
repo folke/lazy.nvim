@@ -142,6 +142,11 @@ function M.float_cmd(cmd, opts)
   return float
 end
 
+---@deprecated use float_term or float_cmd instead
+function M.open_cmd()
+  M.warn([[`require("lazy.util").open_cmd()` is deprecated. Please use `float_term` instead. Check the docs]])
+end
+
 ---@return string?
 function M.head(file)
   local f = io.open(file)
