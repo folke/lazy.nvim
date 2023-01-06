@@ -345,7 +345,7 @@ end
 function M.source(path)
   Util.track({ runtime = path })
   Util.try(function()
-    vim.cmd("silent source " .. path)
+    vim.cmd("source " .. path)
   end, "Failed to source `" .. path .. "`")
   Util.track()
 end
