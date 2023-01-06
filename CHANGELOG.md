@@ -1,5 +1,27 @@
 # Changelog
 
+## [8.0.0](https://github.com/folke/lazy.nvim/compare/v7.12.1...v8.0.0) (2023-01-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **util:** `require("lazy.util").open_cmd()` is deprecated. See the docs
+
+### Features
+
+* **commands:** `:Lazy! load` now skips `cond` checks when loading plugins. Fixes [#330](https://github.com/folke/lazy.nvim/issues/330) ([eed1ef3](https://github.com/folke/lazy.nvim/commit/eed1ef3c2d13b374def716ed7e9997595c466b3f))
+
+
+### Bug Fixes
+
+* **loader:** revert change that loaded /plugin after config. Fixes [#328](https://github.com/folke/lazy.nvim/issues/328) ([2ef44e2](https://github.com/folke/lazy.nvim/commit/2ef44e2dee112ba7b83bdfca98f6c07967d65484))
+* **loader:** source runtime files without `silent`. Fixes [#336](https://github.com/folke/lazy.nvim/issues/336) ([102bc27](https://github.com/folke/lazy.nvim/commit/102bc2722e73d0dcebd6c90b45a41cb33e0660cb))
+
+
+### Code Refactoring
+
+* **util:** `require("lazy.util").open_cmd()` is deprecated. See the docs ([4f76b43](https://github.com/folke/lazy.nvim/commit/4f76b431f73c912a7021bc17384533fbad96fba7))
+
 ## [7.12.1](https://github.com/folke/lazy.nvim/compare/v7.12.0...v7.12.1) (2023-01-05)
 
 
