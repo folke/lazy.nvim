@@ -130,7 +130,7 @@ M.commands = {
     id = 12,
   },
   load = {
-    desc = "Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`",
+    desc = "Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`. Use `:Lazy! load` to skip `cond` checks.",
     id = 13,
     plugins = true,
     plugins_required = true,

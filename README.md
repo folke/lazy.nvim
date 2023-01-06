@@ -303,6 +303,8 @@ return {
     version = nil,
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
+  -- leave nil when passing the spec as the first argument to setup()
+  spec = nil, ---@type LazySpec
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
   concurrency = nil, ---@type number limit the maximum amount of concurrent tasks
   git = {
@@ -330,20 +332,21 @@ return {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
-      loaded = "●",
-      not_loaded = "○",
       cmd = " ",
       config = "",
       event = "",
       ft = " ",
       init = " ",
+      import = " ",
       keys = " ",
+      lazy = "鈴 ",
+      loaded = "●",
+      not_loaded = "○",
       plugin = " ",
       runtime = " ",
       source = " ",
       start = "",
       task = "✔ ",
-      lazy = "鈴 ",
       list = {
         "●",
         "➜",
@@ -361,21 +364,15 @@ return {
 
       -- open lazygit log
       ["<localleader>l"] = function(plugin)
-        require("lazy.util").open_cmd({ "lazygit", "log" }, {
+        require("lazy.util").float_term({ "lazygit", "log" }, {
           cwd = plugin.dir,
-          terminal = true,
-          close_on_exit = true,
-          enter = true,
         })
       end,
 
       -- open a terminal for the plugin dir
       ["<localleader>t"] = function(plugin)
-        require("lazy.util").open_cmd({ vim.go.shell }, {
+        require("lazy.util").float_term(nil, {
           cwd = plugin.dir,
-          terminal = true,
-          close_on_exit = true,
-          enter = true,
         })
       end,
     },
@@ -410,7 +407,7 @@ return {
       -- The default is to disable on:
       --  * VimEnter: not useful to cache anything else beyond startup
       --  * BufReadPre: this will be triggered early when opening a file from the command line directly
-      disable_events = { "VimEnter", "BufReadPre" },
+      disable_events = { "UIEnter", "BufReadPre" },
       ttl = 3600 * 24 * 5, -- keep unused modules for up to 5 days
     },
     reset_packpath = true, -- reset the package path to improve startup time
@@ -498,7 +495,7 @@ Any operation can be started from the UI, with a sub command or an API function:
 | `:Lazy help`              | `require("lazy").help()`         | Toggle this help page                                                                                                                                |
 | `:Lazy home`              | `require("lazy").home()`         | Go back to plugin list                                                                                                                               |
 | `:Lazy install [plugins]` | `require("lazy").install(opts?)` | Install missing plugins                                                                                                                              |
-| `:Lazy load {plugins}`    | `require("lazy").load(opts)`     | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`                                                        |
+| `:Lazy load {plugins}`    | `require("lazy").load(opts)`     | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`. Use `:Lazy! load` to skip `cond` checks.              |
 | `:Lazy log [plugins]`     | `require("lazy").log(opts?)`     | Show recent updates                                                                                                                                  |
 | `:Lazy profile`           | `require("lazy").profile()`      | Show detailed profiling                                                                                                                              |
 | `:Lazy restore [plugins]` | `require("lazy").restore(opts?)` | Updates all plugins to the state in the lockfile. For a single plugin: restore it to the state in the lockfile or to a given commit under the cursor |
@@ -532,9 +529,11 @@ Stats API (`require("lazy").stats()`):
   -- when true, startuptime is the accurate cputime for the Neovim process. (Linux & Macos)
   -- this is more accurate than `nvim --startuptime`, and as such will be slightly higher
   -- when false, startuptime is calculated based on a delta with a timestamp when lazy started.
-  startuptime_cputime = false,
+  real_cputime = false,
   count = 0, -- total number of plugins
   loaded = 0, -- number of loaded plugins
+  ---@type table<string, number>
+  times = {},
 }
 ```
 
@@ -738,6 +737,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 | **LazyReasonCmd**     | **_Operator_**             |                                                     |
 | **LazyReasonEvent**   | **_Constant_**             |                                                     |
 | **LazyReasonFt**      | **_Character_**            |                                                     |
+| **LazyReasonImport**  | **_Identifier_**           |                                                     |
 | **LazyReasonKeys**    | **_Statement_**            |                                                     |
 | **LazyReasonPlugin**  | **_Special_**              |                                                     |
 | **LazyReasonRuntime** | **_@macro_**               |                                                     |

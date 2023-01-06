@@ -157,7 +157,8 @@ end
 ---@class Loader
 ---@param plugins string|LazyPlugin|string[]|LazyPlugin[]
 ---@param reason {[string]:string}
-function M.load(plugins, reason)
+---@param opts? {force:boolean} when force is true, we skip the cond check
+function M.load(plugins, reason, opts)
   ---@diagnostic disable-next-line: cast-local-type
   plugins = (type(plugins) == "string" or plugins.name) and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
@@ -174,19 +175,20 @@ function M.load(plugins, reason)
       end
     end
     if plugin and not plugin._.loaded then
-      M._load(plugin, reason)
+      M._load(plugin, reason, opts)
     end
   end
 end
 
 ---@param plugin LazyPlugin
 ---@param reason {[string]:string}
-function M._load(plugin, reason)
+---@param opts? {force:boolean} when force is true, we skip the cond check
+function M._load(plugin, reason, opts)
   if not plugin._.installed then
     return Util.error("Plugin " .. plugin.name .. " is not installed")
   end
 
-  if plugin.cond ~= nil then
+  if plugin.cond ~= nil and not (opts and opts.force) then
     if plugin.cond == false or (type(plugin.cond) == "function" and not plugin.cond()) then
       plugin._.cond = false
       return

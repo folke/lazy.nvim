@@ -50,7 +50,8 @@ M.commands = {
   end,
   ---@param opts ManagerOpts
   load = function(opts)
-    require("lazy.core.loader").load(opts.plugins, { cmd = "LazyLoad" })
+    -- when a command is executed with a bang, wait will be set
+    require("lazy.core.loader").load(opts.plugins, { cmd = "Lazy load" }, { force = opts.wait })
   end,
   log = Manage.log,
   build = Manage.build,
