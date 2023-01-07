@@ -656,8 +656,7 @@ return {
 
 - any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec
 
-For a real-life example, you can check [LazyVim](https://github.com/LazyVim/LazyVim),
-a starter template for lazy Neovim users.
+For a real-life example, you can check [LazyVim](https://github.com/LazyVim/LazyVim) and more specifically:
 
 - [lazyvim.plugins](https://github.com/LazyVim/LazyVim/tree/main/lua/lazyvim/plugins) contains all the plugin specs that will be loaded
 
