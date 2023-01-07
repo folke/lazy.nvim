@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.1.0](https://github.com/folke/lazy.nvim/compare/v8.0.0...v8.1.0) (2023-01-07)
+
+
+### Features
+
+* **spec:** show error when loading two specs with the same name and a different url. Fixes [#337](https://github.com/folke/lazy.nvim/issues/337) ([c313249](https://github.com/folke/lazy.nvim/commit/c3132492714661121f70daf77d716053ab39bd0b))
+
+
+### Bug Fixes
+
+* **cache:** check that modpaths still exist when finding mod root ([d34c85d](https://github.com/folke/lazy.nvim/commit/d34c85d58007f37f9eb60fe0c1075950a5ce615e))
+* **config:** Don't cache check for attached UIs ([#340](https://github.com/folke/lazy.nvim/issues/340)) ([05b55de](https://github.com/folke/lazy.nvim/commit/05b55deb16f074f2a44b81927c2e5feb63fba651))
+* **config:** properly handle uis connecting after startup ([5ed89b5](https://github.com/folke/lazy.nvim/commit/5ed89b5a0d6be65ec9fd0f6526c8c27a922f50a1))
+
 ## [8.0.0](https://github.com/folke/lazy.nvim/compare/v7.12.1...v8.0.0) (2023-01-06)
 
 
