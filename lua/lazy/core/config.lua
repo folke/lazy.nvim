@@ -159,7 +159,9 @@ M.me = nil
 ---@type string
 M.mapleader = nil
 
-M.headless = #vim.api.nvim_list_uis() == 0
+function M.headless()
+    return #vim.api.nvim_list_uis() == 0
+end
 
 ---@param opts? LazyConfig
 function M.setup(opts)
@@ -200,7 +202,7 @@ function M.setup(opts)
   vim.go.loadplugins = false
   M.mapleader = vim.g.mapleader
 
-  if M.headless then
+  if M.headless() then
     require("lazy.view.commands").setup()
   else
     vim.api.nvim_create_autocmd("UIEnter", {
