@@ -12,6 +12,7 @@ describe("util", function()
       end
     end
     Helpers.fs_rm("")
+    assert(not vim.loop.fs_stat(Helpers.path("")), "fs root should be deleted")
   end)
 
   it("lsmod lists all mods in dir", function()
@@ -88,12 +89,13 @@ describe("util", function()
     Cache.indexed_rtp = false
     vim.opt.rtp:append(Helpers.path("old"))
     Helpers.fs_create({ "old/lua/foobar/init.lua" })
-    require("foobar")
+    Cache.cache["foobar"] = { modpath = Helpers.path("old/lua/foobar/init.lua") }
     local root = Cache.find_root("foobar")
     assert(root, "foobar root not found")
     assert.same(Helpers.path("old/lua/foobar"), root)
 
-    Helpers.fs_rm("old/")
+    Helpers.fs_rm("old")
+    assert(not vim.loop.fs_stat(Helpers.path("old/lua/foobar")), "old/lua/foobar should not exist")
 
     -- vim.opt.rtp = rtp
     Cache.indexed = {}
@@ -109,7 +111,6 @@ describe("util", function()
     Cache.cache = {}
     Cache.indexed = {}
     Cache.indexed_rtp = false
-    Cache.topmods = {}
     Cache.enabled = true
     vim.opt.rtp:append(Helpers.path("old"))
     Helpers.fs_create({ "old/lua/foobar/test.lua" })
@@ -120,7 +121,7 @@ describe("util", function()
     assert(not Cache.cache["foobar"], "foobar should not be in cache")
     assert(Cache.cache["foobar.test"], "foobar.test not found in cache")
 
-    Helpers.fs_rm("old/")
+    Helpers.fs_rm("old")
 
     -- vim.opt.rtp = rtp
     Cache.indexed = {}

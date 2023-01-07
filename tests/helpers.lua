@@ -23,7 +23,7 @@ function M.fs_create(files)
 end
 
 function M.fs_rm(dir)
-  dir = Util.norm(M.fs_root .. dir)
+  dir = Util.norm(M.fs_root .. "/" .. dir)
   Util.walk(dir, function(path, _, type)
     if type == "directory" then
       vim.loop.fs_rmdir(path)
