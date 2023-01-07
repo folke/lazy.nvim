@@ -262,7 +262,7 @@ function M.find_root(modname)
   if M.cache[modname] then
     -- check if modname is in cache
     local modpath = M.cache[modname].modpath
-    if M.check_path(modname, modpath) then
+    if M.check_path(modname, modpath) and vim.loop.fs_stat(modpath) then
       local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
       return root
     end
@@ -271,7 +271,7 @@ function M.find_root(modname)
     -- check for any children in the cache
     for child, entry in pairs(M.cache) do
       if child:find(modname, 1, true) == 1 then
-        if M.check_path(child, entry.modpath) then
+        if M.check_path(child, entry.modpath) and vim.loop.fs_stat(entry.modpath) then
           local basename = modname:gsub("%.", "/")
           local childbase = child:gsub("%.", "/")
           local ret = entry.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
