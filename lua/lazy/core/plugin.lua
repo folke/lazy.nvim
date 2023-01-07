@@ -250,6 +250,10 @@ end
 function Spec:merge(old, new)
   new._.dep = old._.dep and new._.dep
 
+  if new.url and old.url and new.url ~= old.url then
+    self:error("Two plugins with the same name and different url:\n" .. vim.inspect({ old = old, new = new }))
+  end
+
   for _, prop in ipairs(list_merge) do
     if new[prop] and old[prop] then
       ---@type any[]
