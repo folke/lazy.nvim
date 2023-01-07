@@ -160,7 +160,7 @@ M.me = nil
 M.mapleader = nil
 
 function M.headless()
-    return #vim.api.nvim_list_uis() == 0
+  return #vim.api.nvim_list_uis() == 0
 end
 
 ---@param opts? LazyConfig
@@ -204,30 +204,31 @@ function M.setup(opts)
 
   if M.headless() then
     require("lazy.view.commands").setup()
-  else
-    vim.api.nvim_create_autocmd("UIEnter", {
-      callback = function()
-        require("lazy.stats").on_ui_enter()
-      end,
-    })
-
-    vim.api.nvim_create_autocmd("User", {
-      pattern = "VeryLazy",
-      once = true,
-      callback = function()
-        require("lazy.core.cache").autosave()
-        require("lazy.view.commands").setup()
-        if M.options.change_detection.enabled then
-          require("lazy.manage.reloader").enable()
-        end
-        if M.options.checker.enabled then
-          vim.defer_fn(function()
-            require("lazy.manage.checker").start()
-          end, 10)
-        end
-      end,
-    })
   end
+
+  vim.api.nvim_create_autocmd("UIEnter", {
+    once = true,
+    callback = function()
+      require("lazy.stats").on_ui_enter()
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "VeryLazy",
+    once = true,
+    callback = function()
+      require("lazy.core.cache").autosave()
+      require("lazy.view.commands").setup()
+      if M.options.change_detection.enabled then
+        require("lazy.manage.reloader").enable()
+      end
+      if M.options.checker.enabled then
+        vim.defer_fn(function()
+          require("lazy.manage.checker").start()
+        end, 10)
+      end
+    end,
+  })
 
   Util.very_lazy()
 end

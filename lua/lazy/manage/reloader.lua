@@ -75,7 +75,7 @@ function M.check(start)
 
   if not (start or #changes == 0) then
     vim.schedule(function()
-      if Config.options.change_detection.notify then
+      if Config.options.change_detection.notify and not Config.headless() then
         local lines = { "# Config Change Detected. Reloading...", "" }
         for _, change in ipairs(changes) do
           table.insert(lines, "- **" .. change.what .. "**: `" .. vim.fn.fnamemodify(change.file, ":p:~:.") .. "`")

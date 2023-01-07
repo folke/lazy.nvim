@@ -65,7 +65,7 @@ function M.report(notify)
       end
     end
   end
-  if #lines > 0 and notify and Config.options.checker.notify then
+  if #lines > 0 and notify and Config.options.checker.notify and not Config.headless() then
     table.insert(lines, 1, "# Plugin Updates")
     Util.info(lines)
   end

@@ -142,6 +142,7 @@ end
 function M.very_lazy()
   local function _load()
     vim.defer_fn(function()
+      vim.g.did_very_lazy = true
       vim.cmd("do User VeryLazy")
     end, 50)
   end
