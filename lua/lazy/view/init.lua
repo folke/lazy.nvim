@@ -31,7 +31,7 @@ end
 
 ---@param mode? string
 function M.show(mode)
-  if Config.headless then
+  if Config.headless() then
     return
   end
 
