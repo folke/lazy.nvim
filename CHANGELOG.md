@@ -1,5 +1,19 @@
 # Changelog
 
+## [9.0.0](https://github.com/folke/lazy.nvim/compare/v8.1.0...v9.0.0) (2023-01-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **spec:** setting a table to `Plugin.config` is now deprecated. Please use `Plugin.opts` instead. (backward compatible for now)
+
+### Features
+
+* **git:** added fast `Git.get_origin` and `Git.get_config` ([a39fa0f](https://github.com/folke/lazy.nvim/commit/a39fa0f0ced7324800eff0a4eb0ed68bf13452d1))
+* **git:** lazy now detects origin changes and will fix it on update. Fixes [#346](https://github.com/folke/lazy.nvim/issues/346). Fixes [#331](https://github.com/folke/lazy.nvim/issues/331) ([615781a](https://github.com/folke/lazy.nvim/commit/615781aebfc0230669a2e5750cba3c65f0b8a90e))
+* **spec:** setting a table to `Plugin.config` is now deprecated. Please use `Plugin.opts` instead. (backward compatible for now) ([7260a2b](https://github.com/folke/lazy.nvim/commit/7260a2b28be807c4bdc1caf23fa35c2aa33aa6ac))
+* **util:** better deep merging with `Util.merge` ([6a31b97](https://github.com/folke/lazy.nvim/commit/6a31b97e3729af3710207642968e1492071a7dbc))
+
 ## [8.1.0](https://github.com/folke/lazy.nvim/compare/v8.0.0...v8.1.0) (2023-01-07)
 
 
