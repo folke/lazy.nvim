@@ -15,10 +15,13 @@
 ---@field cond? boolean
 ---@field super? LazyPlugin
 
+---@alias PluginOpts table|fun(self:LazyPlugin, opts:table):table?
+
 ---@class LazyPluginHooks
----@field init? fun(LazyPlugin) Will always be run
----@field config? fun(LazyPlugin)|true|table Will be executed when loading the plugin
----@field build? string|fun(LazyPlugin)|(string|fun(LazyPlugin))[]
+---@field init? fun(self:LazyPlugin) Will always be run
+---@field config? fun(self:LazyPlugin, opts:table)|true Will be executed when loading the plugin
+---@field build? string|fun(self:LazyPlugin)|(string|fun(self:LazyPlugin))[]
+---@field opts? PluginOpts
 
 ---@class LazyPluginHandlers
 ---@field event? string[]

@@ -220,7 +220,7 @@ function M._load(plugin, reason, opts)
   end
 
   M.packadd(plugin.dir)
-  if plugin.config then
+  if plugin.config or plugin.opts then
     M.config(plugin)
   end
 
@@ -231,13 +231,32 @@ function M._load(plugin, reason, opts)
   end)
 end
 
+-- Merges super opts or runs the opts function to override opts or return new ones
+---@param plugin LazyPlugin
+function M.opts(plugin)
+  local opts = plugin._.super and M.opts(plugin._.super) or {}
+  ---@type PluginOpts?
+  local plugin_opts = rawget(plugin, "opts")
+
+  if type(plugin_opts) == "table" then
+    opts = Util.merge(opts, plugin_opts)
+  elseif type(plugin_opts) == "function" then
+    local new_opts = plugin_opts(plugin, opts)
+    if new_opts then
+      opts = new_opts
+    end
+  end
+
+  return opts
+end
+
 --- runs plugin config
 ---@param plugin LazyPlugin
 function M.config(plugin)
   local fn
   if type(plugin.config) == "function" then
     fn = function()
-      plugin.config(plugin)
+      plugin.config(plugin, M.opts(plugin))
     end
   else
     local normname = Util.normname(plugin.name)
@@ -254,8 +273,8 @@ function M.config(plugin)
     end
     if #mods == 1 then
       fn = function()
-        local opts = plugin.config
-        if opts == true then
+        local opts = M.opts(plugin)
+        if next(opts) == nil then
           opts = nil
         end
         require(mods[1]).setup(opts)

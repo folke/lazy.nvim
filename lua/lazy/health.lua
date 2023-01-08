@@ -68,8 +68,12 @@ function M.check_override(plugin)
     return
   end
 
+  local Handler = require("lazy.core.handler")
+  local skip = { "dependencies", "_", "opts" }
+  vim.list_extend(skip, vim.tbl_values(Handler.types))
+
   for key, value in pairs(plugin._.super) do
-    if key ~= "_" and plugin[key] and plugin[key] ~= value then
+    if not vim.tbl_contains(skip, key) and plugin[key] and plugin[key] ~= value then
       vim.health.report_warn("{" .. plugin.name .. "}: overriding <" .. key .. ">")
     end
   end
@@ -77,29 +81,31 @@ end
 
 M.valid = {
   1,
-  "name",
-  "url",
-  "enabled",
-  "lazy",
-  "dev",
-  "dependencies",
-  "init",
-  "config",
-  "build",
-  "branch",
-  "tag",
-  "commit",
-  "version",
-  "module",
-  "pin",
-  "cmd",
-  "event",
-  "keys",
-  "ft",
-  "dir",
-  "priority",
-  "cond",
   "_",
+  "branch",
+  "build",
+  "cmd",
+  "commit",
+  "cond",
+  "config",
+  "dependencies",
+  "dev",
+  "dir",
+  "enabled",
+  "event",
+  "ft",
+  "import",
+  "init",
+  "keys",
+  "lazy",
+  "module",
+  "name",
+  "opts",
+  "pin",
+  "priority",
+  "tag",
+  "url",
+  "version",
 }
 
 return M

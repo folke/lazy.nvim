@@ -31,11 +31,11 @@ return {
     config = true, -- run require("neorg").setup()
   },
 
-  -- or set a custom config:
+  -- or set custom options:
   {
     "nvim-neorg/neorg",
     ft = "norg",
-    config = { foo = "bar" }, -- run require("neorg").setup({foo = "bar"})
+    opts = { foo = "bar" }, -- run require("neorg").setup({foo = "bar"})
   },
 
   {

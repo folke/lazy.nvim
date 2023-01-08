@@ -1,5 +1,6 @@
 local Config = require("lazy.core.config")
 local Plugin = require("lazy.core.plugin")
+local Loader = require("lazy.core.loader")
 
 local assert = require("luassert")
 
@@ -269,6 +270,40 @@ describe("plugin spec opt", function()
         assert(not spec.plugins.bar)
         assert(spec.disabled.bar)
       end
+    end
+  end)
+end)
+
+describe("plugin opts", function()
+  it("correctly parses opts", function()
+    ---@type {spec:LazySpec, opts:table}[]
+    local tests = {
+      {
+        spec = { { "foo/foo", opts = { a = 1, b = 1 } }, { "foo/foo", opts = { a = 2 } } },
+        opts = { a = 2, b = 1 },
+      },
+      {
+        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", opts = { a = 2 } } },
+        opts = { a = 2, b = 1 },
+      },
+      {
+        spec = { { "foo/foo", opts = { a = 1, b = 1 } }, { "foo/foo", config = { a = 2 } } },
+        opts = { a = 2, b = 1 },
+      },
+      {
+        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", config = { a = 2 } } },
+        opts = { a = 2, b = 1 },
+      },
+      {
+        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", config = { a = vim.NIL } } },
+        opts = { b = 1 },
+      },
+    }
+
+    for _, test in ipairs(tests) do
+      local spec = Plugin.Spec.new(test.spec)
+      assert(spec.plugins.foo)
+      assert.same(test.opts, Loader.opts(spec.plugins.foo))
     end
   end)
 end)

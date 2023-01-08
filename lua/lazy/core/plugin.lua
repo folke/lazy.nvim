@@ -87,6 +87,15 @@ function Spec:add(plugin, results, is_dep)
   plugin.cmd = type(plugin.cmd) == "string" and { plugin.cmd } or plugin.cmd
   plugin.ft = type(plugin.ft) == "string" and { plugin.ft } or plugin.ft
 
+  if type(plugin.config) == "table" then
+    self:warn(
+      "{" .. plugin.name .. "}: setting a table to `Plugin.config` is deprecated. Please use `Plugin.opts` instead"
+    )
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    plugin.opts = plugin.config
+    plugin.config = nil
+  end
+
   plugin._ = {}
   plugin._.dep = is_dep
 
