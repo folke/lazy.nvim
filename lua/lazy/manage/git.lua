@@ -193,4 +193,36 @@ function M.get_tag_refs(repo, tagref)
   return tags
 end
 
+---@param repo string
+function M.get_origin(repo)
+  return M.get_config(repo)["remote.origin.url"]
+end
+
+---@param repo string
+function M.get_config(repo)
+  local ok, config = pcall(Util.read_file, repo .. "/.git/config")
+  if not ok then
+    return {}
+  end
+  ---@type table<string, string>
+  local ret = {}
+  ---@type string
+  local current_section = nil
+  for line in config:gmatch("[^\n]+") do
+    -- Check if the line is a section header
+    local section = line:match("^%s*%[(.+)%]%s*$")
+    if section then
+      ---@type string
+      current_section = section:gsub('%s+"', "."):gsub('"+%s*$', "")
+    else
+      -- Ignore comments and blank lines
+      if not line:match("^%s*#") and line:match("%S") then
+        local key, value = line:match("^%s*(%S+)%s*=%s*(.+)%s*$")
+        ret[current_section .. "." .. key] = value
+      end
+    end
+  end
+  return ret
+end
+
 return M

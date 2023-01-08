@@ -1,3 +1,5 @@
+local Git = require("lazy.manage.git")
+
 describe("lazy", function()
   before_each(function()
     vim.g.lazy_did_setup = false
@@ -31,5 +33,7 @@ describe("lazy", function()
     assert(not neodev)
     assert(Config.plugins["neodev.nvim"]._.installed)
     assert(not Config.plugins["neodev.nvim"]._.is_local)
+    assert.equal("https://github.com/folke/neodev.nvim.git", Git.get_origin(Config.plugins["neodev.nvim"].dir))
+    assert.equal("https://github.com/folke/paint.nvim.git", Git.get_origin(Config.plugins["paint.nvim"].dir))
   end)
 end)
