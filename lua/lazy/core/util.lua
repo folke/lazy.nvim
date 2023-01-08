@@ -295,6 +295,9 @@ end
 --- Values will me merged in-place in the first left-most table. If you want the result to be in
 --- a new table, then simply pass an empty table as the first argument `vim.merge({}, ...)`
 --- Supports clearing values by setting a key to `vim.NIL`
+---@generic T
+---@param ... T
+---@return T
 function M.merge(...)
   local values = { ... }
   local ret = values[1]

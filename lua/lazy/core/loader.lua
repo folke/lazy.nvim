@@ -234,6 +234,7 @@ end
 -- Merges super opts or runs the opts function to override opts or return new ones
 ---@param plugin LazyPlugin
 function M.opts(plugin)
+  ---@type table
   local opts = plugin._.super and M.opts(plugin._.super) or {}
   ---@type PluginOpts?
   local plugin_opts = rawget(plugin, "opts")
@@ -273,11 +274,7 @@ function M.config(plugin)
     end
     if #mods == 1 then
       fn = function()
-        local opts = M.opts(plugin)
-        if next(opts) == nil then
-          opts = nil
-        end
-        require(mods[1]).setup(opts)
+        require(mods[1]).setup(M.opts(plugin))
       end
     else
       return Util.error(

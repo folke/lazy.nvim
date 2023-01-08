@@ -298,6 +298,14 @@ describe("plugin opts", function()
         spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", config = { a = vim.NIL } } },
         opts = { b = 1 },
       },
+      {
+        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo" } },
+        opts = { a = 1, b = 1 },
+      },
+      {
+        spec = { { "foo/foo" }, { "foo/foo" } },
+        opts = {},
+      },
     }
 
     for _, test in ipairs(tests) do
