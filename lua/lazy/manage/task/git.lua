@@ -113,6 +113,30 @@ M.branch = {
   end,
 }
 
+-- check and switch origin
+M.origin = {
+  skip = function(plugin)
+    if not plugin._.installed or plugin._.is_local then
+      return true
+    end
+    local origin = Git.get_origin(plugin.dir)
+    return origin == plugin.url
+  end,
+  ---@param opts {check?:boolean}
+  run = function(self, opts)
+    if opts.check then
+      local origin = Git.get_origin(self.plugin.dir)
+      self.error = "Origin has changed:\n"
+      self.error = self.error .. "  * old: " .. origin .. "\n"
+      self.error = self.error .. "  * new: " .. self.plugin.url .. "\n"
+      self.error = self.error .. "Please run update to fix"
+      return
+    end
+    require("lazy.manage.task.fs").clean.run(self, opts)
+    M.clone.run(self, opts)
+  end,
+}
+
 -- fetches all needed origin branches
 M.fetch = {
   skip = function(plugin)

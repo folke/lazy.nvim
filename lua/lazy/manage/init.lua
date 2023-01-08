@@ -94,6 +94,7 @@ function M.update(opts)
   opts = M.opts(opts, { mode = "update" })
   return M.run({
     pipeline = {
+      "git.origin",
       "git.branch",
       "git.fetch",
       { "git.checkout", lockfile = opts.lockfile },
@@ -123,6 +124,7 @@ function M.check(opts)
   opts = opts or {}
   return M.run({
     pipeline = {
+      { "git.origin", check = true },
       "git.fetch",
       "wait",
       { "git.log", check = true },
@@ -137,7 +139,10 @@ end
 function M.log(opts)
   opts = M.opts(opts, { mode = "log" })
   return M.run({
-    pipeline = { "git.log" },
+    pipeline = {
+      { "git.origin", check = true },
+      "git.log",
+    },
     plugins = function(plugin)
       return plugin.url and plugin._.installed
     end,
