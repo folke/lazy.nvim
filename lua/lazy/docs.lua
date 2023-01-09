@@ -36,7 +36,7 @@ function M.save(contents)
     if not readme:find(pattern) then
       error("tag " .. tag .. " not found")
     end
-    if tag == "commands" or tag == "colors" or tag == "plugins" then
+    if tag == "commands" or tag == "colors" or tag == "plugins" or tag == "keymaps" then
       readme = readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
     else
       readme = readme:gsub(pattern, "%1\n\n```lua\n" .. content .. "\n```\n\n%2")
@@ -137,7 +137,7 @@ end
 
 function M.plugins()
   local Config = require("lazy.core.config")
-  local lines = { "## Plugins", "" }
+  local lines = {}
   Util.foreach(Config.plugins, function(name, plugin)
     if plugin.url then
       lines[#lines + 1] = "- [" .. name .. "](" .. plugin.url:gsub("%.git$", "") .. ")"
