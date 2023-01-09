@@ -11,6 +11,7 @@ describe("plugin spec url/name", function()
     { { dir = "~/foo" }, { name = "foo", dir = vim.fn.fnamemodify("~/foo", ":p") } },
     { { dir = "/tmp/foo" }, { dir = "/tmp/foo", name = "foo" } },
     { { "foo/bar" }, { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
+    { { "https://foo.bar" }, { [1] = "https://foo.bar", name = "foo.bar", url = "https://foo.bar" } },
     { { "foo/bar", name = "foobar" }, { [1] = "foo/bar", name = "foobar", url = "https://github.com/foo/bar.git" } },
     { { "foo/bar", url = "123" }, { [1] = "foo/bar", name = "123", url = "123" } },
     { { url = "https://foobar" }, { name = "foobar", url = "https://foobar" } },

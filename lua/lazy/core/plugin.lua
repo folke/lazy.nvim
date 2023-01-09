@@ -52,7 +52,12 @@ function Spec:add(plugin, results, is_dep)
   end
 
   if not plugin.url and plugin[1] then
-    plugin.url = Config.options.git.url_format:format(plugin[1])
+    local prefix = plugin[1]:sub(1, 4)
+    if prefix == "http" or prefix == "git@" then
+      plugin.url = plugin[1]
+    else
+      plugin.url = Config.options.git.url_format:format(plugin[1])
+    end
   end
 
   if plugin.dir then
