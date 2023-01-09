@@ -144,7 +144,7 @@ M.commands = {
     id = 13,
     plugins = true,
     plugins_required = true,
-    key_plugin = "b",
+    key_plugin = "gb",
   },
 }
 
