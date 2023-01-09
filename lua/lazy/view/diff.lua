@@ -25,7 +25,7 @@ M.handlers = {
   ["diffview.nvim"] = function(plugin, diff)
     local args
     if diff.commit then
-      args = ("-C=%s"):format(plugin.dir) .. " " .. diff.commit
+      args = ("-C=%s"):format(plugin.dir) .. " " .. diff.commit .. "^!"
     else
       args = ("-C=%s"):format(plugin.dir) .. " " .. diff.from .. ".." .. diff.to
     end
