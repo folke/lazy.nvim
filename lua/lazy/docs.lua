@@ -25,25 +25,31 @@ function M.fix_indent(str)
   return table.concat(lines, "\n")
 end
 
----@param contents table<string, string>
+---@alias ReadmeBlock {content:string, lang?:string}
+---@param contents table<string, ReadmeBlock|string>
 function M.save(contents)
   local readme = Util.read_file("README.md")
-  for tag, content in pairs(contents) do
-    content = M.fix_indent(content)
+  for tag, block in pairs(contents) do
+    if type(block) == "string" then
+      block = { content = block, lang = "lua" }
+    end
+    ---@cast block ReadmeBlock
+    local content = M.fix_indent(block.content)
     content = content:gsub("%%", "%%%%")
     content = vim.trim(content)
     local pattern = "(<%!%-%- " .. tag .. ":start %-%->).*(<%!%-%- " .. tag .. ":end %-%->)"
     if not readme:find(pattern) then
       error("tag " .. tag .. " not found")
     end
-    if tag == "commands" or tag == "colors" or tag == "plugins" or tag == "keymaps" then
-      readme = readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
+    if block.lang then
+      readme = readme:gsub(pattern, "%1\n\n```" .. block.lang .. "\n" .. content .. "\n```\n\n%2")
     else
-      readme = readme:gsub(pattern, "%1\n\n```lua\n" .. content .. "\n```\n\n%2")
+      readme = readme:gsub(pattern, "%1\n\n" .. content .. "\n\n%2")
     end
   end
 
   Util.write_file("README.md", readme)
+  vim.cmd.checktime()
 end
 
 ---@return string
@@ -52,6 +58,7 @@ function M.extract(file, pattern)
   return assert(init:match(pattern))
 end
 
+---@return ReadmeBlock
 function M.commands()
   local commands = require("lazy.view.commands").commands
   local modes = require("lazy.view.config").commands
@@ -83,7 +90,7 @@ function M.commands()
       end
     end
   end)
-  return M.table(lines)
+  return { content = M.table(lines) }
 end
 
 ---@param lines string[][]
@@ -96,6 +103,7 @@ function M.table(lines)
   return table.concat(ret, "\n")
 end
 
+---@return ReadmeBlock
 function M.colors()
   local str = M.extract("lua/lazy/view/colors.lua", "\nM%.colors = ({.-\n})")
   ---@type table<string,string>
@@ -113,7 +121,7 @@ function M.colors()
   Util.foreach(require("lazy.view.colors").colors, function(group, link)
     lines[#lines + 1] = { "**Lazy" .. group .. "**", "***" .. link .. "***", comments[group] or "" }
   end)
-  return M.table(lines)
+  return { content = M.table(lines) }
 end
 
 function M.update()
@@ -132,18 +140,20 @@ function M.update()
     commands = M.commands(),
     colors = M.colors(),
   })
-  vim.cmd.checktime()
 end
 
-function M.plugins()
-  local Config = require("lazy.core.config")
+---@param plugins? LazyPlugin[]
+---@return ReadmeBlock
+function M.plugins(plugins)
+  plugins = plugins or require("lazy.core.config").plugins
+  ---@type string[]
   local lines = {}
-  Util.foreach(Config.plugins, function(name, plugin)
+  Util.foreach(plugins, function(name, plugin)
     if plugin.url then
       lines[#lines + 1] = "- [" .. name .. "](" .. plugin.url:gsub("%.git$", "") .. ")"
     end
   end)
-  M.save({ plugins = table.concat(lines, "\n") })
+  return { content = table.concat(lines, "\n") }
 end
 
 return M
