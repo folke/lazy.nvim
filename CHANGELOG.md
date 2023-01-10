@@ -1,5 +1,23 @@
 # Changelog
 
+## [9.1.0](https://github.com/folke/lazy.nvim/compare/v9.0.0...v9.1.0) (2023-01-10)
+
+
+### Features
+
+* **spec:** allow git@ and http urls in `Plugin[1]` without `url=`. Fixes [#357](https://github.com/folke/lazy.nvim/issues/357) ([4304035](https://github.com/folke/lazy.nvim/commit/4304035ef4eae2d9dfac4fc082a1b391e6cd928e))
+* **util:** `Util.merge` now support advanced merging strategies. Docs coming soon ([b28c6b9](https://github.com/folke/lazy.nvim/commit/b28c6b900030556e4e72f2ce68abae0e7292a3bf))
+
+
+### Bug Fixes
+
+* **cache:** dont keep invalid entries in the cache (cleanup) ([9fa62ea](https://github.com/folke/lazy.nvim/commit/9fa62ea8ea935dec7078587c3664047db2065bf2))
+* **diffview:** fixed parameter for showing single commit with DiffView. Fixes [#304](https://github.com/folke/lazy.nvim/issues/304) ([a32e307](https://github.com/folke/lazy.nvim/commit/a32e307981519a25dd3f05a33a6b7eea709f0fdc))
+* **docs:** auto-gen of readme stuff ([3a216d0](https://github.com/folke/lazy.nvim/commit/3a216d008def355813ede7deb5392276b7e3c10c))
+* **spec:** `Plugin.opts` is now always a table. Fixes [#351](https://github.com/folke/lazy.nvim/issues/351) ([e77be3c](https://github.com/folke/lazy.nvim/commit/e77be3cf3b01402b86464e1734fb5ead448ce12e))
+* **spec:** don't import specs more than once ([ad7aafb](https://github.com/folke/lazy.nvim/commit/ad7aafb257516cefff85aceb5d36041090b40559))
+* **ui:** keymap for building a single plugin changed from `b` to `gb`. Fixes [#358](https://github.com/folke/lazy.nvim/issues/358) ([e6ee0fa](https://github.com/folke/lazy.nvim/commit/e6ee0fa6103e9514e85a96fc16902ad7f777b53f))
+
 ## [9.0.0](https://github.com/folke/lazy.nvim/compare/v8.1.0...v9.0.0) (2023-01-08)
 
 
