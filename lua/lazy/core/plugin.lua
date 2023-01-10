@@ -225,6 +225,9 @@ function Spec:import(spec)
   if spec.import == "lazy" then
     return self:error("You can't name your plugins module `lazy`.")
   end
+  if vim.tbl_contains(self.modules, spec.import) then
+    return
+  end
   if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
     return
   end
@@ -278,6 +281,7 @@ function Spec:merge(old, new)
   end
   new._.super = old
   setmetatable(new, { __index = old })
+
   return new
 end
 
