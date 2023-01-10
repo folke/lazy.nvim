@@ -8,14 +8,28 @@ end
 ---@param opts? LazyFloatOptions
 function M.float(opts)
   opts = opts or {}
-  if require("lazy.view").visible() then
+  local cursor
+  local View = require("lazy.view")
+  if View.visible() then
+    -- set cursor to the top of the ui, so the tabs are visible
+    cursor = vim.api.nvim_win_get_cursor(View.view.win)
+    vim.api.nvim_win_set_cursor(View.view.win, { 1, 0 })
     opts = vim.tbl_deep_extend("force", {
       zindex = 60,
       border = "none",
       margin = { top = 3, left = 2, right = 2 },
     }, opts)
   end
-  return require("lazy.view.float")(opts)
+  local ret = require("lazy.view.float")(opts)
+  -- restore the cursor
+  if cursor then
+    ret:on("BufLeave", function()
+      if View.visible() then
+        vim.api.nvim_win_set_cursor(View.view.win, cursor)
+      end
+    end, { once = true })
+  end
+  return ret
 end
 
 function M.open(uri)
