@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.1.2](https://github.com/folke/lazy.nvim/compare/v9.1.1...v9.1.2) (2023-01-10)
+
+
+### Bug Fixes
+
+* **ui:** properly position Lazy tabs when opening another cmd. Fixes [#361](https://github.com/folke/lazy.nvim/issues/361) ([8756c09](https://github.com/folke/lazy.nvim/commit/8756c0950ca9053713262abd1092f6d100adc9a5))
+
 ## [9.1.1](https://github.com/folke/lazy.nvim/compare/v9.1.0...v9.1.1) (2023-01-10)
 
 
