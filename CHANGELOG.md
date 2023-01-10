@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.1.1](https://github.com/folke/lazy.nvim/compare/v9.1.0...v9.1.1) (2023-01-10)
+
+
+### Bug Fixes
+
+* **ui:** get_plugin should return when ui is not showing ([5faadf6](https://github.com/folke/lazy.nvim/commit/5faadf6398f99f781a212d2a7cbd39a688d32300))
+
 ## [9.1.0](https://github.com/folke/lazy.nvim/compare/v9.0.0...v9.1.0) (2023-01-10)
 
 
