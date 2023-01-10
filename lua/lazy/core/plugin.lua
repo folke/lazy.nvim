@@ -270,20 +270,10 @@ function Spec:merge(old, new)
 
   for _, prop in ipairs(list_merge) do
     if new[prop] and old[prop] then
-      ---@type any[]
-      local props = {}
-      ---@diagnostic disable-next-line: no-unknown
-      for _, value in ipairs(old[prop]) do
-        props[#props + 1] = value
+      if new[prop].__merge == nil then
+        new[prop].__merge = true
       end
-      ---@diagnostic disable-next-line: no-unknown
-      for _, value in ipairs(new[prop]) do
-        if not vim.tbl_contains(props, value) then
-          props[#props + 1] = value
-        end
-      end
-      ---@diagnostic disable-next-line: no-unknown
-      new[prop] = props
+      new[prop] = Util.merge(old[prop], new[prop])
     end
   end
   new._.super = old

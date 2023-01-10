@@ -132,4 +132,45 @@ describe("util", function()
     assert(root, "foobar root not found")
     assert.same(Helpers.path("new/lua/foobar"), root)
   end)
+
+  it("merges correctly", function()
+    local tests = {
+      {
+        input = { { a = 1 }, { b = 2 } },
+        output = { a = 1, b = 2 },
+      },
+      {
+        input = { { a = 1 }, { a = 2 } },
+        output = { a = 2 },
+      },
+      {
+        input = { { a = { 1, 2 } }, { a = { 3 } } },
+        output = { a = { 3 } },
+      },
+      {
+        input = { { b = { 1, 2 } }, { a = { 3 }, __merge = false } },
+        output = { a = { 3 } },
+      },
+      {
+        input = { { a = 1 }, { b = 2, __merge = false } },
+        output = { b = 2 },
+      },
+      {
+        input = { { a = { 1, 2 } }, { a = { 3, __merge = true } } },
+        output = { a = { 1, 2, 3 } },
+      },
+      {
+        input = { { a = { 1, 2, __merge = true } }, { a = { 3 } } },
+        output = { a = { 1, 2, 3 } },
+      },
+      {
+        input = { { a = { 1, 2, __merge = true } }, { a = { 3, __merge = false } } },
+        output = { a = { 3 } },
+      },
+    }
+
+    for _, test in ipairs(tests) do
+      assert.same(test.output, Util.merge(unpack(test.input)))
+    end
+  end)
 end)

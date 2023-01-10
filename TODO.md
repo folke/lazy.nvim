@@ -1,5 +1,10 @@
 # ✅ TODO
 
+- [ ] better merging options?
+- [ ] especially what to do with merging of handlers?
+- [ ] overwriting keymaps probably doesn't work
+- [ ] disabled deps?
+
 - [x] fancy UI to manage all your Neovim plugins
 - [x] auto lazy-loading of lua modules
 - [x] lazy-loading on events, commands, filetypes and key mappings
