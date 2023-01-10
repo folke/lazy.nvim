@@ -105,25 +105,24 @@ function M.disable()
   _G.loadfile = M._loadfile
   M.enabled = false
   if M.debug and vim.tbl_count(M.topmods) > 1 then
-    M.log(M.topmods, vim.log.levels.WARN, { title = "topmods" })
+    M.log(M.topmods, { level = vim.log.levels.WARN, title = "topmods" })
   end
   if M.debug and false then
     local stats = vim.deepcopy(M.stats)
     stats.time = (stats.time or 0) / 1e6
     stats.find.time = (stats.find.time or 0) / 1e6
     stats.autoload.time = (stats.autoload.time or 0) / 1e6
-    M.log(stats, nil, { title = "stats" })
+    M.log(stats, { title = "stats" })
   end
 end
 
 ---@param msg string|table
----@param level? number
----@param opts? {lang:string, title:string}
-function M.log(msg, level, opts)
+---@param opts? LazyNotifyOpts
+function M.log(msg, opts)
   if M.debug then
     msg = vim.deepcopy(msg)
     vim.schedule(function()
-      require("lazy.core.util").debug(msg, level, opts)
+      require("lazy.core.util").debug(msg, opts)
     end)
   end
 end
@@ -208,7 +207,7 @@ function M.load(modkey, modpath)
   entry.hash = hash
 
   if M.debug then
-    M.log("`" .. modpath .. "`", vim.log.levels.WARN, { title = "Cache.load" })
+    M.log("`" .. modpath .. "`", { level = vim.log.levels.WARN, title = "Cache.load" })
   end
 
   chunk, err = M._loadfile(entry.modpath)

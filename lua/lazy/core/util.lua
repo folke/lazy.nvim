@@ -219,14 +219,15 @@ function M.lsmod(modname, fn)
   end)
 end
 
+---@alias LazyNotifyOpts {lang?:string, title?:string, level?:number}
+
 ---@param msg string|string[]
----@param opts? {lang:string, title:string}
-function M.notify(msg, level, opts)
+---@param opts? LazyNotifyOpts
+function M.notify(msg, opts)
   if vim.in_fast_event() then
-    vim.schedule(function()
-      M.notify(msg, level, opts)
+    return vim.schedule(function()
+      M.notify(msg, opts)
     end)
-    return
   end
 
   opts = opts or {}
@@ -239,7 +240,7 @@ function M.notify(msg, level, opts)
     )
   end
   local lang = opts.lang or "markdown"
-  vim.notify(msg, level, {
+  vim.notify(msg, opts.level or vim.log.levels.INFO, {
     on_open = function(win)
       pcall(require, "nvim-treesitter")
       vim.wo[win].conceallevel = 3
@@ -251,38 +252,49 @@ function M.notify(msg, level, opts)
         vim.bo[buf].syntax = lang
       end
     end,
-    title = "lazy.nvim" .. (opts.title and ": " .. opts.title or ""),
+    title = opts.title or "lazy.nvim",
   })
 end
 
 ---@param msg string|string[]
-function M.error(msg)
-  M.notify(msg, vim.log.levels.ERROR)
+---@param opts? LazyNotifyOpts
+function M.error(msg, opts)
+  opts = opts or {}
+  opts.level = vim.log.levels.ERROR
+  M.notify(msg, opts)
 end
 
 ---@param msg string|string[]
-function M.info(msg)
-  M.notify(msg, vim.log.levels.INFO)
+---@param opts? LazyNotifyOpts
+function M.info(msg, opts)
+  opts = opts or {}
+  opts.level = vim.log.levels.INFO
+  M.notify(msg, opts)
 end
 
 ---@param msg string|string[]
-function M.warn(msg)
-  M.notify(msg, vim.log.levels.WARN)
+---@param opts? LazyNotifyOpts
+function M.warn(msg, opts)
+  opts = opts or {}
+  opts.level = vim.log.levels.WARN
+  M.notify(msg, opts)
 end
 
 ---@param msg string|table
----@param level? number
----@param opts? {lang:string, title:string}
-function M.debug(msg, level, opts)
+---@param opts? LazyNotifyOpts
+function M.debug(msg, opts)
   if not require("lazy.core.config").options.debug then
     return
   end
   opts = opts or {}
+  if opts.title then
+    opts.title = "lazy.nvim: " .. opts.title
+  end
   if type(msg) == "string" then
-    M.notify(msg, level, opts)
+    M.notify(msg, opts)
   else
     opts.lang = "lua"
-    M.notify(vim.inspect(msg), level, opts)
+    M.notify(vim.inspect(msg), opts)
   end
 end
 

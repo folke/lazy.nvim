@@ -180,7 +180,7 @@ function Spec:report(level)
   level = level or vim.log.levels.ERROR
   for _, notif in ipairs(self.notifs) do
     if notif.level >= level then
-      Util.notify(notif.msg, notif.level)
+      Util.notify(notif.msg, { level = notif.level })
     end
   end
 end
