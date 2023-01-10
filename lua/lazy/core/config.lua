@@ -139,6 +139,8 @@ M.defaults = {
   debug = false,
 }
 
+M.version = "9.0.0" -- x-release-please-version
+
 M.ns = vim.api.nvim_create_namespace("lazy")
 
 ---@type LazySpecLoader
