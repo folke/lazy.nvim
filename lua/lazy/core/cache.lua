@@ -144,9 +144,14 @@ function M.loader(modname)
   local entry = M.cache[modname]
 
   local chunk, err
-  if entry and M.check_path(modname, entry.modpath) then
-    M.stats.find.total = M.stats.find.total + 1
-    chunk, err = M.load(modname, entry.modpath)
+  if entry then
+    if M.check_path(modname, entry.modpath) then
+      M.stats.find.total = M.stats.find.total + 1
+      chunk, err = M.load(modname, entry.modpath)
+    else
+      M.cache[modname] = nil
+      M.dirty = true
+    end
   end
   if not chunk then
     -- find the modpath and load the module
