@@ -91,6 +91,9 @@ end
 ---@param row? number
 ---@return LazyPlugin?
 function M:get_plugin(row)
+  if not (self.view.win and vim.api.nvim_win_is_valid(self.view.win)) then
+    return
+  end
   row = row or vim.api.nvim_win_get_cursor(self.view.win)[1]
   for _, loc in ipairs(self.locations) do
     if row >= loc.from and row <= loc.to then
