@@ -141,10 +141,10 @@ end
 
 function M.very_lazy()
   local function _load()
-    vim.defer_fn(function()
+    vim.schedule(function()
       vim.g.did_very_lazy = true
       vim.cmd("do User VeryLazy")
-    end, 50)
+    end)
   end
 
   vim.api.nvim_create_autocmd("User", {
@@ -154,7 +154,7 @@ function M.very_lazy()
       if vim.v.vim_did_enter == 1 then
         _load()
       else
-        vim.api.nvim_create_autocmd("VimEnter", {
+        vim.api.nvim_create_autocmd("UIEnter", {
           once = true,
           callback = function()
             _load()
