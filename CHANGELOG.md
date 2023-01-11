@@ -1,5 +1,20 @@
 # Changelog
 
+## [9.1.2](https://github.com/folke/lazy.nvim/compare/v9.1.1...v9.1.2) (2023-01-11)
+
+
+### Bug Fixes
+
+* **handlers:** allow overriding handler values ([74bc61a](https://github.com/folke/lazy.nvim/commit/74bc61ab97c3bc2e73e19d269f23076d50c3285f))
+* **ui:** possible error during initial install ([a646238](https://github.com/folke/lazy.nvim/commit/a64623899db9fe1a41c8bf86562feed6d4757ba0))
+* **ui:** properly position Lazy tabs when opening another cmd. Fixes [#361](https://github.com/folke/lazy.nvim/issues/361) ([8756c09](https://github.com/folke/lazy.nvim/commit/8756c0950ca9053713262abd1092f6d100adc9a5))
+* **ui:** reset buf and win options on resize ([3b44c3c](https://github.com/folke/lazy.nvim/commit/3b44c3c14ad69e7a26ae6408816f332af58202c3))
+
+
+### Performance Improvements
+
+* **util:** execute VeryLazy right after UIEnter ([5aca928](https://github.com/folke/lazy.nvim/commit/5aca9280df4245df8bf8e33fe9bc4ce85507dc31))
+
 ## [9.1.1](https://github.com/folke/lazy.nvim/compare/v9.1.0...v9.1.1) (2023-01-10)
 
 
