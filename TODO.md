@@ -1,5 +1,10 @@
 # ✅ TODO
 
+- [x] progress bar?
+- [x] options when opening file
+- [x] lazy notify? not ideal when installing missing stuff
+- [x] topmods?
+
 - [ ] better merging options?
 - [ ] especially what to do with merging of handlers?
 - [ ] overwriting keymaps probably doesn't work

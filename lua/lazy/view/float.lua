@@ -115,7 +115,7 @@ function M:mount()
 
   vim.api.nvim_create_autocmd("VimResized", {
     callback = function()
-      if not self.win then
+      if not (self.win and vim.api.nvim_win_is_valid(self.win)) then
         return true
       end
       self:layout()
