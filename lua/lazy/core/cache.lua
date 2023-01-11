@@ -77,12 +77,13 @@ function M.check_autoload(modname, modpath)
   -- only needed when the plugin mod has been loaded
   ---@type LazyCorePlugin
   local Plugin = package.loaded["lazy.core.plugin"]
-  if Plugin and not Plugin.loading then
+  if Plugin then
     local plugin = Plugin.find(modpath)
     if plugin and modpath:find(plugin.dir, 1, true) == 1 then
       -- we're not interested in loader time, so calculate delta here
       M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
-      if not plugin._.loaded then
+      -- don't load if we're loading specs or if the plugin is already loaded
+      if not (Plugin.loading or plugin._.loaded) then
         if plugin.module == false then
           error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
         end
