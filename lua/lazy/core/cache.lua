@@ -72,23 +72,21 @@ end
 function M.check_autoload(modname, modpath)
   local start = uv.hrtime()
   M.stats.autoload.total = M.stats.autoload.total + 1
+
   -- check plugins. Again fast, since we check the plugin name from the path.
   -- only needed when the plugin mod has been loaded
   ---@type LazyCorePlugin
   local Plugin = package.loaded["lazy.core.plugin"]
-  if Plugin then
+  if Plugin and not Plugin.loading then
     local plugin = Plugin.find(modpath)
     if plugin and modpath:find(plugin.dir, 1, true) == 1 then
       -- we're not interested in loader time, so calculate delta here
       M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
-      -- only autoload when plugins have been loaded
-      if not vim.tbl_isempty(require("lazy.core.config").plugins) then
-        if not plugin._.loaded then
-          if plugin.module == false then
-            error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
-          end
-          require("lazy.core.loader").load(plugin, { require = modname })
+      if not plugin._.loaded then
+        if plugin.module == false then
+          error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
         end
+        require("lazy.core.loader").load(plugin, { require = modname })
       end
       return true
     end

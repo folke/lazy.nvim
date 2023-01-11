@@ -5,6 +5,7 @@ local Cache = require("lazy.core.cache")
 
 ---@class LazyCorePlugin
 local M = {}
+M.loading = false
 
 local list_merge = { "dependencies" }
 vim.list_extend(list_merge, vim.tbl_values(Handler.types))
@@ -330,6 +331,7 @@ function M.update_state()
 end
 
 function M.load()
+  M.loading = true
   -- load specs
   Util.track("spec")
   Config.spec = Spec.new()
@@ -363,6 +365,7 @@ function M.load()
   M.update_state()
   Util.track()
   require("lazy.core.cache").indexed_unloaded = false
+  M.loading = false
 end
 
 -- Finds the plugin that has this path
