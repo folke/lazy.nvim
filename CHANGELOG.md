@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.1.3](https://github.com/folke/lazy.nvim/compare/v9.1.2...v9.1.3) (2023-01-11)
+
+
+### Bug Fixes
+
+* **cache:** use cached chunk when specs are loading for valid plugins ([07fd7ad](https://github.com/folke/lazy.nvim/commit/07fd7adb3427ac510c33de308cd5dfcc6ba701b6))
+* **loader:** prevent loading plugins when loading specs ([e1cd9cd](https://github.com/folke/lazy.nvim/commit/e1cd9cd0adfb04432ffaf3d8bd54a5b409eb4273))
+
 ## [9.1.2](https://github.com/folke/lazy.nvim/compare/v9.1.1...v9.1.2) (2023-01-11)
 
 
