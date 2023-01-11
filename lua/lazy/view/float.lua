@@ -103,11 +103,15 @@ function M:mount()
   if vim.bo[self.buf].filetype == "" then
     vim.bo[self.buf].filetype = "lazy"
   end
-  vim.bo[self.buf].bufhidden = "wipe"
-  vim.wo[self.win].conceallevel = 3
-  vim.wo[self.win].spell = false
-  vim.wo[self.win].wrap = true
-  vim.wo[self.win].winhighlight = "Normal:LazyNormal"
+
+  local function opts()
+    vim.bo[self.buf].bufhidden = "wipe"
+    vim.wo[self.win].conceallevel = 3
+    vim.wo[self.win].spell = false
+    vim.wo[self.win].wrap = true
+    vim.wo[self.win].winhighlight = "Normal:LazyNormal"
+  end
+  opts()
 
   vim.api.nvim_create_autocmd("VimResized", {
     callback = function()
@@ -120,7 +124,9 @@ function M:mount()
         ---@diagnostic disable-next-line: no-unknown
         config[key] = self.win_opts[key]
       end
+      config.style = self.opts.style ~= "" and self.opts.style or nil
       vim.api.nvim_win_set_config(self.win, config)
+      opts()
       vim.cmd([[do User LazyFloatResized]])
     end,
   })
