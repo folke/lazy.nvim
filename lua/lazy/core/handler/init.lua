@@ -77,8 +77,13 @@ end
 
 ---@param plugin LazyPlugin
 function M:add(plugin)
+  local values = {}
   for _, value in ipairs(plugin[self.type] or {}) do
     local key = self:key(value)
+    values[key] = value
+  end
+
+  for key, value in pairs(values) do
     if not self.active[key] then
       self.active[key] = {}
       self:_add(value)
@@ -89,7 +94,13 @@ end
 
 ---@param plugin LazyPlugin
 function M:del(plugin)
+  local values = {}
   for _, value in ipairs(plugin[self.type] or {}) do
+    local key = self:key(value)
+    values[key] = value
+  end
+
+  for key, value in pairs(values) do
     local key = self:key(value)
     if self.active[key] and self.active[key][plugin.name] then
       self.active[key][plugin.name] = nil
