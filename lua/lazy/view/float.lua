@@ -94,6 +94,7 @@ function M:mount()
   else
     self.buf = vim.api.nvim_create_buf(false, false)
   end
+  vim.api.nvim_buf_set_name(self.buf, "LazyFloat")
 
   self:layout()
   self.win = vim.api.nvim_open_win(self.buf, true, self.win_opts)
