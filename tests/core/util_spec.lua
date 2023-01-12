@@ -145,7 +145,11 @@ describe("util", function()
       },
       {
         input = { { a = { 1, 2 } }, { a = { 3 } } },
-        output = { a = { 3 } },
+        output = { a = { 1, 2, 3 } },
+      },
+      {
+        input = { { a = { 1, 2 } }, { a = { 1, 3 } } },
+        output = { a = { 1, 2, 3 } },
       },
       {
         input = { { b = { 1, 2 } }, { a = { 3 }, b = vim.NIL } },

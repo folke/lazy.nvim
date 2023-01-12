@@ -302,6 +302,10 @@ local function can_merge(v)
   return type(v) == "table" and (vim.tbl_isempty(v) or not M.is_list(v))
 end
 
+local function can_merge_list(v)
+  return type(v) == "table" and M.is_list(v)
+end
+
 --- Merges the values similar to vim.tbl_deep_extend with the **force** behavior,
 --- but the values can be any type, in which case they override the values on the left.
 --- Values will me merged in-place in the first left-most table. If you want the result to be in
@@ -323,6 +327,12 @@ function M.merge(...)
     if can_merge(ret) and can_merge(value) then
       for k, v in pairs(value) do
         ret[k] = M.merge(ret[k], v)
+      end
+    elseif can_merge_list(ret) and can_merge_list(value) then
+      for _, v in ipairs(value) do
+        if not vim.tbl_contains(ret, v) then
+        ret[#ret+1] = v
+        end
       end
     elseif value == vim.NIL then
       ret = nil
