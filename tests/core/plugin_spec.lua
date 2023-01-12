@@ -262,7 +262,6 @@ describe("plugin spec opt", function()
     }
     for test, ret in pairs(tests) do
       local spec = Plugin.Spec.new(test)
-      spec:fix_disabled()
       assert(#spec.notifs == 0)
       if ret then
         assert(spec.plugins.bar)

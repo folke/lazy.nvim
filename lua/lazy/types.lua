@@ -27,7 +27,7 @@
 ---@field event? string[]
 ---@field cmd? string[]
 ---@field ft? string[]
----@field keys? string[]
+---@field keys? (string|LazyKeys)[]
 ---@field module? false
 
 ---@class LazyPluginRef
@@ -53,10 +53,10 @@
 ---@field _ LazyPluginState
 
 ---@class LazyPluginSpecHandlers
----@field event? string[]|string
----@field cmd? string[]|string
----@field ft? string[]|string
----@field keys? string|string[]|LazyKeys[]
+---@field event? string[]|string|fun(self:LazyPlugin, event:string[]):string[]
+---@field cmd? string[]|string|fun(self:LazyPlugin, cmd:string[]):string[]
+---@field ft? string[]|string|fun(self:LazyPlugin, ft:string[]):string[]
+---@field keys? string|string[]|LazyKeys[]|fun(self:LazyPlugin, keys:string[]):(string|LazyKeys)[]
 ---@field module? false
 
 ---@class LazyPluginSpec: LazyPluginBase,LazyPluginSpecHandlers,LazyPluginHooks,LazyPluginRef

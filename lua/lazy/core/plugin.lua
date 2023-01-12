@@ -7,9 +7,6 @@ local Cache = require("lazy.core.cache")
 local M = {}
 M.loading = false
 
-local list_merge = { "dependencies" }
-vim.list_extend(list_merge, vim.tbl_values(Handler.types))
-
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
 ---@field disabled table<string, LazyPlugin>
@@ -27,9 +24,24 @@ function Spec.new(spec)
   self.modules = {}
   self.notifs = {}
   if spec then
-    self:normalize(spec)
+    self:parse(spec)
   end
   return self
+end
+
+function Spec:parse(spec)
+  self:normalize(spec)
+
+  -- calculate handlers
+  for _, plugin in pairs(self.plugins) do
+    for _, handler in pairs(Handler.types) do
+      if plugin[handler] then
+        plugin[handler] = M.values(plugin, handler, true)
+      end
+    end
+  end
+
+  self:fix_disabled()
 end
 
 -- PERF: optimized code to get package name without using lua patterns
@@ -87,11 +99,6 @@ function Spec:add(plugin, results, is_dep)
     self:error("Invalid plugin spec " .. vim.inspect(plugin))
     return
   end
-
-  plugin.event = type(plugin.event) == "string" and { plugin.event } or plugin.event
-  plugin.keys = type(plugin.keys) == "string" and { plugin.keys } or plugin.keys
-  plugin.cmd = type(plugin.cmd) == "string" and { plugin.cmd } or plugin.cmd
-  plugin.ft = type(plugin.ft) == "string" and { plugin.ft } or plugin.ft
 
   if type(plugin.config) == "table" then
     self:warn(
@@ -272,14 +279,10 @@ function Spec:merge(old, new)
     self:error("Two plugins with the same name and different url:\n" .. vim.inspect({ old = old, new = new }))
   end
 
-  for _, prop in ipairs(list_merge) do
-    if new[prop] and old[prop] then
-      if new[prop].__merge == nil then
-        new[prop].__merge = true
-      end
-      new[prop] = Util.merge(old[prop], new[prop])
-    end
+  if new.dependencies and old.dependencies then
+    vim.list_extend(new.dependencies, old.dependencies)
   end
+
   new._.super = old
   setmetatable(new, { __index = old })
 
@@ -335,10 +338,8 @@ function M.load()
   -- load specs
   Util.track("spec")
   Config.spec = Spec.new()
-  Config.spec:normalize(vim.deepcopy(Config.options.spec))
+  Config.spec:parse({ vim.deepcopy(Config.options.spec), "folke/lazy.nvim" })
 
-  -- add ourselves
-  Config.spec:add({ "folke/lazy.nvim" })
   -- override some lazy props
   local lazy = Config.spec.plugins["lazy.nvim"]
   if lazy then
@@ -349,7 +350,6 @@ function M.load()
     end
     lazy._.loaded = {}
   end
-  Config.spec:fix_disabled()
 
   local existing = Config.plugins
   Config.plugins = Config.spec.plugins
@@ -393,6 +393,27 @@ function M.has_errors(plugin)
     end
   end
   return false
+end
+
+-- Merges super values or runs the values function to override values or return new ones
+-- Used for opts, cmd, event, ft and keys
+---@param plugin LazyPlugin
+---@param prop string
+---@param is_list? boolean
+function M.values(plugin, prop, is_list)
+  ---@type table
+  local ret = plugin._.super and M.values(plugin._.super, prop) or {}
+  local values = rawget(plugin, prop)
+
+  if not values then
+    return ret
+  elseif type(values) == "function" then
+    ret = values(plugin, ret) or ret
+    return type(ret) == "table" and ret or { ret }
+  end
+
+  values = type(values) == "table" and values or { values }
+  return is_list and vim.list_extend(ret, values) or Util.merge(ret, values)
 end
 
 return M
