@@ -148,24 +148,12 @@ describe("util", function()
         output = { a = { 3 } },
       },
       {
-        input = { { b = { 1, 2 } }, { a = { 3 }, __merge = false } },
+        input = { { b = { 1, 2 } }, { a = { 3 }, b = vim.NIL } },
         output = { a = { 3 } },
       },
       {
-        input = { { a = 1 }, { b = 2, __merge = false } },
+        input = { { a = 1 }, { b = 2, a = vim.NIL } },
         output = { b = 2 },
-      },
-      {
-        input = { { a = { 1, 2 } }, { a = { 3, __merge = true } } },
-        output = { a = { 1, 2, 3 } },
-      },
-      {
-        input = { { a = { 1, 2, __merge = true } }, { a = { 3 } } },
-        output = { a = { 1, 2, 3 } },
-      },
-      {
-        input = { { a = { 1, 2, __merge = true } }, { a = { 3, __merge = false } } },
-        output = { a = { 3 } },
       },
     }
 
