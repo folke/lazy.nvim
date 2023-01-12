@@ -298,25 +298,8 @@ function M.debug(msg, opts)
   end
 end
 
-local MERGE = "__merge"
-
 local function can_merge(v)
   return type(v) == "table" and (vim.tbl_isempty(v) or not M.is_list(v))
-end
-
-local function can_extend(v)
-  return type(v) == "table" and (vim.tbl_isempty(v) or M.is_list(v))
-end
-
----@param v any|{__merge:boolean}
----@param merge? boolean
----@return boolean?
-local function check_merge(v, merge)
-  if type(v) == "table" and v[MERGE] ~= nil then
-    merge = v[MERGE]
-    v[MERGE] = nil
-  end
-  return merge
 end
 
 --- Merges the values similar to vim.tbl_deep_extend with the **force** behavior,
@@ -335,18 +318,11 @@ function M.merge(...)
     ret = nil
   end
 
-  local merge = check_merge(ret)
-
   for i = 2, #values, 1 do
     local value = values[i]
-    merge = check_merge(value, merge)
-    if can_merge(ret) and can_merge(value) and merge ~= false then
+    if can_merge(ret) and can_merge(value) then
       for k, v in pairs(value) do
         ret[k] = M.merge(ret[k], v)
-      end
-    elseif can_extend(ret) and can_extend(value) and merge then
-      for _, v in ipairs(value) do
-        ret[#ret + 1] = v
       end
     elseif value == vim.NIL then
       ret = nil
