@@ -311,7 +311,7 @@ describe("plugin opts", function()
     for _, test in ipairs(tests) do
       local spec = Plugin.Spec.new(test.spec)
       assert(spec.plugins.foo)
-      assert.same(test.opts, Loader.opts(spec.plugins.foo))
+      assert.same(test.opts, Plugin.values(spec.plugins.foo, "opts"))
     end
   end)
 end)
