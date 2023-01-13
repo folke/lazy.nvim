@@ -83,8 +83,8 @@ function M.check(start)
         Util.warn(lines)
       end
       Plugin.load()
-      vim.cmd([[do User LazyRender]])
-      vim.cmd([[do User LazyReload]])
+      vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+      vim.api.nvim_exec_autocmds("User", { pattern = "LazyReload", modeline = false })
     end)
   end
 end

@@ -143,7 +143,7 @@ function M.very_lazy()
   local function _load()
     vim.schedule(function()
       vim.g.did_very_lazy = true
-      vim.cmd("do User VeryLazy")
+      vim.api.nvim_exec_autocmds("User", { pattern = "VeryLazy", modeline = false })
     end)
   end
 

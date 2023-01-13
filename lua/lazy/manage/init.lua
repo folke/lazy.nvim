@@ -42,16 +42,17 @@ function M.run(ropts, opts)
   local runner = Runner.new(ropts)
   runner:start()
 
-  vim.cmd([[do User LazyRender]])
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
 
   -- wait for post-install to finish
   runner:wait(function()
-    vim.cmd([[do User LazyRender]])
+    vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
     Plugin.update_state()
     require("lazy.manage.checker").fast_check({ report = false })
     local mode = opts.mode
     if mode then
-      vim.cmd("do User Lazy" .. mode:sub(1, 1):upper() .. mode:sub(2))
+      local event = "Lazy" .. mode:sub(1, 1):upper() .. mode:sub(2)
+      vim.api.nvim_exec_autocmds("User", { pattern = event, modeline = false })
     end
   end)
 
@@ -179,7 +180,7 @@ function M.sync(opts)
   clean:wait(function()
     install:wait(function()
       update:wait(function()
-        vim.cmd([[do User LazySync]])
+        vim.api.nvim_exec_autocmds("User", { pattern = "LazySync", modeline = false })
       end)
     end)
   end)
@@ -211,7 +212,7 @@ function M.clear(plugins)
       end, plugin._.tasks)
     end
   end
-  vim.cmd([[do User LazyRender]])
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
 end
 
 return M

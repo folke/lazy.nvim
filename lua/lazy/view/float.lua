@@ -127,7 +127,7 @@ function M:mount()
       config.style = self.opts.style ~= "" and self.opts.style or nil
       vim.api.nvim_win_set_config(self.win, config)
       opts()
-      vim.cmd([[do User LazyFloatResized]])
+      vim.api.nvim_exec_autocmds("User", { pattern = "LazyFloatResized", modeline = false })
     end,
   })
 end

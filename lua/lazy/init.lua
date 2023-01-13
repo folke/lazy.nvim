@@ -64,7 +64,7 @@ function M.setup(spec, opts)
   Loader.startup()
 
   -- all done!
-  vim.cmd("do User LazyDone")
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyDone", modeline = false })
   require("lazy.stats").track("LazyDone")
 end
 

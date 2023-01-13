@@ -21,7 +21,7 @@ M.C = nil
 
 function M.on_ui_enter()
   M._stats.startuptime = M.track("UIEnter")
-  vim.cmd([[do User LazyVimStarted]])
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyVimStarted", modeline = false })
 end
 
 function M.track(event)

@@ -85,7 +85,7 @@ function Task:_check()
   if self._opts.on_done then
     self._opts.on_done(self)
   end
-  vim.cmd("do User LazyRender")
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
   vim.api.nvim_exec_autocmds("User", {
     pattern = "LazyPlugin" .. self.name:sub(1, 1):upper() .. self.name:sub(2),
     data = { plugin = self.plugin.name },
@@ -131,7 +131,7 @@ function Task:spawn(cmd, opts)
     if on_line then
       pcall(on_line, line)
     end
-    vim.cmd("do User LazyRender")
+    vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
   end
 
   ---@param output string
