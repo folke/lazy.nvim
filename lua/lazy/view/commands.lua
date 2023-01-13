@@ -94,6 +94,7 @@ function M.setup()
     end
     M.cmd(prefix, opts)
   end, {
+    bar = true,
     bang = true,
     nargs = "?",
     desc = "Lazy",
