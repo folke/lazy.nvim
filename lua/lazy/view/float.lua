@@ -173,12 +173,12 @@ function M:close()
   local win = self.win
   self.win = nil
   self.buf = nil
-  vim.diagnostic.reset(Config.ns, buf)
   vim.schedule(function()
     if win and vim.api.nvim_win_is_valid(win) then
       vim.api.nvim_win_close(win, true)
     end
     if buf and vim.api.nvim_buf_is_valid(buf) then
+      vim.diagnostic.reset(Config.ns, buf)
       vim.api.nvim_buf_delete(buf, { force = true })
     end
   end)
