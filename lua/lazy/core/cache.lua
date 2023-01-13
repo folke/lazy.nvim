@@ -246,7 +246,9 @@ function M._index(path)
         if not vim.tbl_contains(M.topmods[topname], path) then
           table.insert(M.topmods[topname], path)
         end
-        table.insert(M.indexed[path], topname)
+        if not vim.tbl_contains(M.indexed[path], topname) then
+          table.insert(M.indexed[path], topname)
+        end
       end
     end)
     return true
