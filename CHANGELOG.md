@@ -1,5 +1,21 @@
 # Changelog
 
+## [9.2.0](https://github.com/folke/lazy.nvim/compare/v9.1.3...v9.2.0) (2023-01-13)
+
+
+### Features
+
+* **commands:** allow commands like `Lazy ... | ...` ([#377](https://github.com/folke/lazy.nvim/issues/377)) ([7b78ce3](https://github.com/folke/lazy.nvim/commit/7b78ce33327c3caee9a0933792b432bce5c6c885))
+* **spec:** event, keys, ft and cmd can now also be a function that returns the values to be used ([2128ca9](https://github.com/folke/lazy.nvim/commit/2128ca90fb67928e5e23590142de9c94fc0a0d31))
+
+
+### Bug Fixes
+
+* **cache:** de-duplicate topmods. Fixes [#349](https://github.com/folke/lazy.nvim/issues/349) ([81017b9](https://github.com/folke/lazy.nvim/commit/81017b99e799d08ea5297b0f620e4404ef41e51f))
+* **float:** only clear diagnostics for valid buffers ([7b0d1a7](https://github.com/folke/lazy.nvim/commit/7b0d1a786664a707accfde09ecf54315e91f9a2b))
+* **ui:** open diff and others over the ui. Don't try to be smart about it. Fixes [#361](https://github.com/folke/lazy.nvim/issues/361) ([3fbe4fe](https://github.com/folke/lazy.nvim/commit/3fbe4fe27ab6b58e5dafd45c5316ec62791907d4))
+* use `vim.api.nvim_exec_autocmds` instead of `vim.cmd[[do]]` to prevent weird `vim.notify` behavior ([b73312a](https://github.com/folke/lazy.nvim/commit/b73312aa32c685ff68771a31d209a43866e4d4b2))
+
 ## [9.1.3](https://github.com/folke/lazy.nvim/compare/v9.1.2...v9.1.3) (2023-01-11)
 
 
