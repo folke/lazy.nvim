@@ -13,6 +13,8 @@ M.build = {
     return not (plugin._.dirty and plugin.build)
   end,
   run = function(self)
+    vim.cmd([[silent! runtime plugin/rplugin.vim]])
+
     Loader.load(self.plugin, { task = "build" })
 
     local builders = self.plugin.build
