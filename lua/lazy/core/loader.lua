@@ -234,10 +234,10 @@ end
 --- runs plugin config
 ---@param plugin LazyPlugin
 function M.config(plugin)
-  local opts = Plugin.values(plugin, "opts", false)
   local fn
   if type(plugin.config) == "function" then
     fn = function()
+      local opts = Plugin.values(plugin, "opts", false)
       plugin.config(plugin, opts)
     end
   else
@@ -255,6 +255,7 @@ function M.config(plugin)
     end
     if #mods == 1 then
       fn = function()
+        local opts = Plugin.values(plugin, "opts", false)
         require(mods[1]).setup(opts)
       end
     else
