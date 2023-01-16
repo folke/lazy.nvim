@@ -225,4 +225,14 @@ function M.get_config(repo)
   return ret
 end
 
+function M.count(repo, commit1, commit2)
+  local lines = Process.exec({ "git", "rev-list", "--count", commit1 .. ".." .. commit2 }, { cwd = repo })
+  return tonumber(lines[1] or "0") or 0
+end
+
+function M.age(repo, commit)
+  local lines = Process.exec({ "git", "show", "-s", "--format=%cr", "--date=short", commit }, { cwd = repo })
+  return lines[1] or ""
+end
+
 return M
