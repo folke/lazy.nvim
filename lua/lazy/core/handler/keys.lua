@@ -76,7 +76,7 @@ function M:values(plugin)
   ---@diagnostic disable-next-line: no-unknown
   for _, value in ipairs(plugin[self.type] or {}) do
     local keys = M.parse(value)
-    if keys[2] == vim.NIL then
+    if keys[2] == vim.NIL or keys[2] == false then
       values[keys.id] = nil
     else
       values[keys.id] = keys
