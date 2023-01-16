@@ -1,5 +1,28 @@
 # Changelog
 
+## [9.3.0](https://github.com/folke/lazy.nvim/compare/v9.2.0...v9.3.0) (2023-01-16)
+
+
+### Features
+
+* **git:** some debugging tools for git ([208f91b](https://github.com/folke/lazy.nvim/commit/208f91b52fff5f7b6120b19b80e529821d70d009))
+* **keys:** allow overriding a keys value to `vim.NIL` to not add the key ([fdf0332](https://github.com/folke/lazy.nvim/commit/fdf0332fe17d9c01f92a8464c04213123a025a07))
+* **spec:** overriding keys with an rhs of `false` will remove the key instead ([870af80](https://github.com/folke/lazy.nvim/commit/870af80c68f3834ffcbced1528cce6197ec2b4ae))
+* **spec:** you can now override specs using only the plugin name instead of the short url ([0cbd91d](https://github.com/folke/lazy.nvim/commit/0cbd91d2cd942cc448b4648dbc7ba57515a2867c))
+
+
+### Bug Fixes
+
+* **build:** make sure `rplugin.vim` is loaded when doing a build. Fixes [#382](https://github.com/folke/lazy.nvim/issues/382) ([666ed7b](https://github.com/folke/lazy.nvim/commit/666ed7bf73eb5895253c1155bd29270b066cbdac))
+* **loader:** load plugin opts inside a `try` clause to report errors ([7160ca4](https://github.com/folke/lazy.nvim/commit/7160ca419e7be36536dd8fe90ad0bf26cdd773ae))
+* **util:** rever ([e8cb863](https://github.com/folke/lazy.nvim/commit/e8cb863703276c579d781b7e4e0b27052df8fc68))
+
+
+### Performance Improvements
+
+* **util:** dont trigger VeryLazy autocmds when exiting ([1e67dc0](https://github.com/folke/lazy.nvim/commit/1e67dc0d56b8e7cf6befdc7176a4a54e17afc244))
+* **util:** properly check that Neovim is exiting. Dont run VeryLazy when that's the case ([efe72d9](https://github.com/folke/lazy.nvim/commit/efe72d98e6fb71252bd9a904c00a40ccd54ebf05))
+
 ## [9.2.0](https://github.com/folke/lazy.nvim/compare/v9.1.3...v9.2.0) (2023-01-13)
 
 
