@@ -62,28 +62,28 @@ function M.new(type)
   return self
 end
 
----@param value string
+---@param _value string
 ---@protected
-function M:_add(value) end
+function M:_add(_value) end
 
----@param value string
+---@param _value string
 ---@protected
-function M:_del(value) end
+function M:_del(_value) end
 
----@return string
-function M:key(value)
-  return value
+---@param plugin LazyPlugin
+function M:values(plugin)
+  ---@type table<string,any>
+  local values = {}
+  ---@diagnostic disable-next-line: no-unknown
+  for _, value in ipairs(plugin[self.type] or {}) do
+    values[value] = value
+  end
+  return values
 end
 
 ---@param plugin LazyPlugin
 function M:add(plugin)
-  local values = {}
-  for _, value in ipairs(plugin[self.type] or {}) do
-    local key = self:key(value)
-    values[key] = value
-  end
-
-  for key, value in pairs(values) do
+  for key, value in pairs(self:values(plugin)) do
     if not self.active[key] then
       self.active[key] = {}
       self:_add(value)
@@ -94,14 +94,7 @@ end
 
 ---@param plugin LazyPlugin
 function M:del(plugin)
-  local values = {}
-  for _, value in ipairs(plugin[self.type] or {}) do
-    local key = self:key(value)
-    values[key] = value
-  end
-
-  for key, value in pairs(values) do
-    local key = self:key(value)
+  for key, value in pairs(self:values(plugin)) do
     if self.active[key] and self.active[key][plugin.name] then
       self.active[key][plugin.name] = nil
       if vim.tbl_isempty(self.active[key]) then
