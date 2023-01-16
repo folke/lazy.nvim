@@ -64,7 +64,9 @@ function Spec:add(plugin, results, is_dep)
     return plugin
   end
 
-  if not plugin.url and plugin[1] then
+  local is_ref = plugin[1] and not plugin[1]:find("/", 1, true)
+
+  if not plugin.url and not is_ref and plugin[1] then
     local prefix = plugin[1]:sub(1, 4)
     if prefix == "http" or prefix == "git@" then
       plugin.url = plugin[1]
@@ -95,6 +97,8 @@ function Spec:add(plugin, results, is_dep)
       -- remote plugin
       plugin.dir = Config.options.root .. "/" .. plugin.name
     end
+  elseif is_ref then
+    plugin.name = plugin[1]
   else
     self:error("Invalid plugin spec " .. vim.inspect(plugin))
     return
