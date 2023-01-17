@@ -583,12 +583,12 @@ function M:profile()
   self:append("Profile", "LazyH2"):nl():nl()
   self
     :append("You can press ")
-    :append("<C-s>", "LazySpecial")
+    :append(ViewConfig.keys.profile_sort, "LazySpecial")
     :append(" to change sorting between chronological order & time taken.")
     :nl()
   self
     :append("Press ")
-    :append("<C-f>", "LazySpecial")
+    :append(ViewConfig.keys.profile_filter, "LazySpecial")
     :append(" to filter profiling entries that took more time than a given threshold")
     :nl()
 
