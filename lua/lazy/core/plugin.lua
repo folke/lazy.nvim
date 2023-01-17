@@ -57,7 +57,7 @@ end
 function Spec:add(plugin, results, is_dep)
   -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
   -- see https://github.com/folke/lazy.nvim/issues/45
-  if plugin._ then
+  if rawget(plugin, "_") then
     if results then
       table.insert(results, plugin.name)
     end
@@ -119,6 +119,9 @@ function Spec:add(plugin, results, is_dep)
   plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
   if self.plugins[plugin.name] then
     plugin = self:merge(self.plugins[plugin.name], plugin)
+  elseif is_ref then
+    self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
+    return
   end
   self.plugins[plugin.name] = plugin
   if results then
