@@ -1,5 +1,20 @@
 # Changelog
 
+## [9.3.1](https://github.com/folke/lazy.nvim/compare/v9.3.0...v9.3.1) (2023-01-17)
+
+
+### Bug Fixes
+
+* **git:** when a `Plugin.branch` is set, don't use `config.defaults.version`. Fixes [#409](https://github.com/folke/lazy.nvim/issues/409) ([bd37afc](https://github.com/folke/lazy.nvim/commit/bd37afc96e4d64a41744298f24772dddb5286fd5))
+* **spec:** dont copy dep and super state from existing plugins ([da4e8cc](https://github.com/folke/lazy.nvim/commit/da4e8cc2450ec428d370032b5b3790b01889c4a4))
+* **spec:** when overriding a spec by name that has not been imported yet, show an error when needed ([baaf8dd](https://github.com/folke/lazy.nvim/commit/baaf8ddfff6cf0c2b8729c2b76b2b140cb40d382))
+* work-around for libuv issue where fs_scandir_next sometimes fails to return a file type ([c791c0e](https://github.com/folke/lazy.nvim/commit/c791c0ed7d7bbcdc06a58b79eb4625682c60964c))
+
+
+### Performance Improvements
+
+* **plugin:** de-duplicate dependencies, keys, ft, event and cmd ([1b2a6f6](https://github.com/folke/lazy.nvim/commit/1b2a6f631c9b2ef98005acec8369c7298fe7a751))
+
 ## [9.3.0](https://github.com/folke/lazy.nvim/compare/v9.2.0...v9.3.0) (2023-01-16)
 
 
