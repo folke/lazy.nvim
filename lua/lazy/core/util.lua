@@ -222,6 +222,23 @@ function M.lsmod(modname, fn)
   end)
 end
 
+---@generic T
+---@param list T[]
+---@param add T[]
+---@return T[]
+function M.extend(list, add)
+  local idx = {}
+  for _, v in ipairs(list) do
+    idx[v] = v
+  end
+  for _, a in ipairs(add) do
+    if not idx[a] then
+      table.insert(list, a)
+    end
+  end
+  return list
+end
+
 ---@alias LazyNotifyOpts {lang?:string, title?:string, level?:number}
 
 ---@param msg string|string[]

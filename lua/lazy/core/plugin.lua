@@ -287,7 +287,7 @@ function Spec:merge(old, new)
   end
 
   if new.dependencies and old.dependencies then
-    vim.list_extend(new.dependencies, old.dependencies)
+    Util.extend(new.dependencies, old.dependencies)
   end
 
   new._.super = old
@@ -424,7 +424,7 @@ function M.values(plugin, prop, is_list)
   end
 
   values = type(values) == "table" and values or { values }
-  return is_list and vim.list_extend(ret, values) or Util.merge(ret, values)
+  return is_list and Util.extend(ret, values) or Util.merge(ret, values)
 end
 
 return M
