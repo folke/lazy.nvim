@@ -363,7 +363,11 @@ function M.load()
   -- copy state. This wont do anything during startup
   for name, plugin in pairs(existing) do
     if Config.plugins[name] then
+      local dep = Config.plugins[name]._.dep
+      local super = Config.plugins[name]._.super
       Config.plugins[name]._ = plugin._
+      Config.plugins[name]._.dep = dep
+      Config.plugins[name]._.super = super
     end
   end
   Util.track()
