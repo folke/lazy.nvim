@@ -136,6 +136,7 @@ M.defaults = {
     -- only generate markdown helptags for plugins that dont have docs
     skip_if_doc_exists = true,
   },
+  state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
   debug = false,
 }
 
