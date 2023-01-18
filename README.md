@@ -650,8 +650,8 @@ require("lazy").setup("plugins")
 ```lua
 return {
   "folke/neodev.nvim",
-    "folke/which-key.nvim",
-    { "folke/neoconf.nvim", cmd = "Neoconf" },
+  "folke/which-key.nvim",
+  { "folke/neoconf.nvim", cmd = "Neoconf" },
 }
 ```
 
