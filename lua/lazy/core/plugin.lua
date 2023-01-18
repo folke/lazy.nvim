@@ -119,7 +119,7 @@ function Spec:add(plugin, results, is_dep)
   plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
   if self.plugins[plugin.name] then
     plugin = self:merge(self.plugins[plugin.name], plugin)
-  elseif is_ref then
+  elseif is_ref and not plugin.url then
     self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
     return
   end
