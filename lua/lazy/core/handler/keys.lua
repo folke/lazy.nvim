@@ -38,8 +38,10 @@ function M.retrigger(keys)
     c = type(c) == "number" and vim.fn.nr2char(c) or c
     pending = pending .. c
   end
+
   local op = vim.v.operator
   if op and op ~= "" and vim.api.nvim_get_mode().mode:find("o") then
+    -- we have to "<esc>" to ensure we're in normal mode
     keys = "<esc>" .. op .. keys
   end
   local feed = keys .. pending
@@ -47,7 +49,16 @@ function M.retrigger(keys)
   if vim.v.count ~= 0 then
     feed = vim.v.count .. feed
   end
-  vim.api.nvim_input(feed)
+
+  vim.schedule(function()
+    if op == "c" then
+      -- offset col + 1 due to "<esc>" from insert mode
+      local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+      vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+    end
+
+    vim.api.nvim_input(feed)
+  end)
 end
 
 ---@param value string|LazyKeys
