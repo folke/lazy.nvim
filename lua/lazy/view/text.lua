@@ -21,7 +21,7 @@ end
 
 ---@param str string
 ---@param hl? string|Extmark
----@param opts? {indent?: number, prefix?: string}
+---@param opts? {indent?: number, prefix?: string, wrap?: boolean}
 function Text:append(str, hl, opts)
   opts = opts or {}
   if #self._lines == 0 then
@@ -39,7 +39,13 @@ function Text:append(str, hl, opts)
     if l > 1 then
       self:nl()
     end
-    if str ~= "" and self:col() > 0 and self:col() + vim.fn.strwidth(line) + self.padding > self.wrap then
+    if
+      Config.options.ui.wrap
+      and opts.wrap
+      and str ~= ""
+      and self:col() > 0
+      and self:col() + vim.fn.strwidth(line) + self.padding > self.wrap
+    then
       self:nl()
     end
     table.insert(self._lines[#self._lines], {

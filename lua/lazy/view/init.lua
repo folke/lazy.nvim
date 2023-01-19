@@ -52,6 +52,15 @@ function M.create()
   ---@cast self LazyView
   Float.init(self)
 
+  if Config.options.ui.wrap then
+    vim.wo[self.win].wrap = true
+    vim.wo[self.win].linebreak = true
+    vim.wo[self.win].breakindent = true
+    -- vim.wo[self.win].breakindentopt = "shift:8"
+  else
+    vim.wo[self.win].wrap = false
+  end
+
   require("lazy.view.colors").setup()
 
   self.state = vim.deepcopy(default_state)
