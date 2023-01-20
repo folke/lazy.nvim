@@ -27,40 +27,6 @@ function M.replace_special(feed)
   return feed
 end
 
-function M.retrigger(keys)
-  local pending = ""
-  while true do
-    ---@type number|string
-    local c = vim.fn.getchar(0)
-    if c == 0 then
-      break
-    end
-    c = type(c) == "number" and vim.fn.nr2char(c) or c
-    pending = pending .. c
-  end
-
-  local op = vim.v.operator
-  if op and op ~= "" and vim.api.nvim_get_mode().mode:find("o") then
-    -- we have to "<esc>" to ensure we're in normal mode
-    keys = "<esc>" .. op .. keys
-  end
-  local feed = keys .. pending
-  feed = M.replace_special(feed)
-  if vim.v.count ~= 0 then
-    feed = vim.v.count .. feed
-  end
-
-  vim.schedule(function()
-    if op == "c" then
-      -- offset col + 1 due to "<esc>" from insert mode
-      local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-      vim.api.nvim_win_set_cursor(0, { row, col + 1 })
-    end
-
-    vim.api.nvim_input(feed)
-  end)
-end
-
 ---@param value string|LazyKeys
 function M.parse(value)
   local ret = vim.deepcopy(value)
@@ -110,6 +76,8 @@ end
 function M:_add(keys)
   local lhs = keys[1]
   local opts = M.opts(keys)
+  opts.remap = true
+  opts.expr = true
   vim.keymap.set(keys.mode, lhs, function()
     local plugins = self.active[keys.id]
 
@@ -119,8 +87,9 @@ function M:_add(keys)
 
     Util.track({ keys = lhs })
     Loader.load(plugins, { keys = lhs })
-    M.retrigger(lhs)
     Util.track()
+
+    return "<Ignore>" .. lhs
   end, opts)
 end
 
