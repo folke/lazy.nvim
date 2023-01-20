@@ -416,7 +416,7 @@ return {
     rtp = {
       reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
       ---@type string[]
-      paths = {}, -- add any custom paths here that you want to indluce in the rtp
+      paths = {}, -- add any custom paths here that you want to include in the rtp
       ---@type string[] list any plugins you want to disable here
       disabled_plugins = {
         -- "gzip",
@@ -622,7 +622,7 @@ In practice this means that step 10 of [Neovim Initialization](https://neovim.io
 1. all the plugins' `init()` functions are executed
 2. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
 3. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
-4. all `/after/plugin` files are sourced (this inludes `/after` from plugins)
+4. all `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 Files from runtime directories are always sourced in alphabetical order.
 
