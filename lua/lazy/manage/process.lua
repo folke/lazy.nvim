@@ -68,7 +68,9 @@ function M.spawn(cmd, opts)
   for key, value in
     pairs(uv.os_environ() --[[@as string[] ]])
   do
-    table.insert(env, key .. "=" .. value)
+    if key ~= "GIT_DIR" then
+      table.insert(env, key .. "=" .. value)
+    end
   end
 
   local stdout = uv.new_pipe()
