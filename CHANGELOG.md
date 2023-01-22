@@ -1,5 +1,21 @@
 # Changelog
 
+## [9.4.0](https://github.com/folke/lazy.nvim/compare/v9.3.1...v9.4.0) (2023-01-22)
+
+
+### Features
+
+* added `config.ui.wrap` and improved wrapping when wrap=true. Fixes [#422](https://github.com/folke/lazy.nvim/issues/422) ([d6fc848](https://github.com/folke/lazy.nvim/commit/d6fc848067d603800b9e63a7b22b7e5853c6bd7a))
+* **checker:** checker will now save last check time and only check at configured frequency even after restarting Neovim ([813fc94](https://github.com/folke/lazy.nvim/commit/813fc944d797fe1b43abe12866a9ef7af403c35c))
+
+
+### Bug Fixes
+
+* **checker:** make sure we show logs when only doing a fast check ([4008b57](https://github.com/folke/lazy.nvim/commit/4008b57d882065814ce27a0f32609d5ea437a6e9))
+* **git:** unset GIT_DIR when spawning a process. Fixes [#434](https://github.com/folke/lazy.nvim/issues/434) ([9858001](https://github.com/folke/lazy.nvim/commit/9858001c3cdb5713e8d1aeb0f47c23038084fd7c))
+* **render:** get profile_{sort,filter} key bindings from ViewConfig ([#416](https://github.com/folke/lazy.nvim/issues/416)) ([27ca918](https://github.com/folke/lazy.nvim/commit/27ca918bc3d02ea20b3fd901c8919e9925555444))
+* **spec:** dont complain about an invalid short url, when a full url is set. Fixes [#421](https://github.com/folke/lazy.nvim/issues/421) ([c389ad5](https://github.com/folke/lazy.nvim/commit/c389ad552bd5c2050783ac6cd6e54f5fbba3c7bc))
+
 ## [9.3.1](https://github.com/folke/lazy.nvim/compare/v9.3.0...v9.3.1) (2023-01-17)
 
 
