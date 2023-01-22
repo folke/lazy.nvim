@@ -13,7 +13,13 @@ M.reported = {}
 
 function M.start()
   M.fast_check()
-  M.schedule()
+  if M.schedule() > 0 then
+    Manage.log({
+      show = false,
+      check = true,
+      concurrency = Config.options.checker.concurrency,
+    })
+  end
 end
 
 function M.schedule()
@@ -21,6 +27,7 @@ function M.schedule()
   local next_check = State.checker.last_check + Config.options.checker.frequency - os.time()
   next_check = math.max(next_check, 0)
   vim.defer_fn(M.check, next_check * 1000)
+  return next_check
 end
 
 ---@param opts? {report:boolean} report defaults to true

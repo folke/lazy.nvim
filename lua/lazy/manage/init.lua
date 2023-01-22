@@ -136,13 +136,13 @@ function M.check(opts)
   }, opts)
 end
 
----@param opts? ManagerOpts
+---@param opts? ManagerOpts | {check?:boolean}
 function M.log(opts)
   opts = M.opts(opts, { mode = "log" })
   return M.run({
     pipeline = {
       { "git.origin", check = true },
-      "git.log",
+      { "git.log", check = opts.check },
     },
     plugins = function(plugin)
       return plugin.url and plugin._.installed
