@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 January 20
+*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 January 22
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
