@@ -15,6 +15,7 @@ function M.start()
   M.fast_check()
   if M.schedule() > 0 then
     Manage.log({
+      clear = false,
       show = false,
       check = true,
       concurrency = Config.options.checker.concurrency,
@@ -60,6 +61,7 @@ function M.check()
     M.schedule()
   else
     Manage.check({
+      clear = false,
       show = false,
       concurrency = Config.options.checker.concurrency,
     }):wait(function()
