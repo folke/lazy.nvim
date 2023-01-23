@@ -13,7 +13,7 @@ M.reported = {}
 
 function M.start()
   M.fast_check()
-  if M.schedule() > 0 then
+  if M.schedule() > 0 and not M.has_errors() then
     Manage.log({
       clear = false,
       show = false,
@@ -47,17 +47,19 @@ function M.fast_check(opts)
   M.report(opts.report ~= false)
 end
 
+function M.has_errors()
+  for _, plugin in pairs(Config.plugins) do
+    if Plugin.has_errors(plugin) then
+      return true
+    end
+  end
+  return false
+end
+
 function M.check()
   State.checker.last_check = os.time()
   State.write() -- update state
-  local errors = false
-  for _, plugin in pairs(Config.plugins) do
-    if Plugin.has_errors(plugin) then
-      errors = true
-      break
-    end
-  end
-  if errors then
+  if M.has_errors() then
     M.schedule()
   else
     Manage.check({
