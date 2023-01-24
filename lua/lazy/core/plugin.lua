@@ -91,7 +91,7 @@ function Spec:add(plugin, results, is_dep)
       end
     end
     -- dev plugins
-    if plugin.dev then
+    if plugin.dev and vim.fn.isdirectory(Config.options.dev.path .. "/" .. plugin.name) == 1 then
       plugin.dir = Config.options.dev.path .. "/" .. plugin.name
     else
       -- remote plugin
