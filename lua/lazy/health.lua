@@ -5,6 +5,12 @@ local M = {}
 function M.check()
   vim.health.report_start("lazy.nvim")
 
+  if vim.fn.executable("git") == 1 then
+    vim.health.report_ok("Git installed")
+  else
+    vim.health.report_error("Git not installd?")
+  end
+
   local sites = vim.opt.packpath:get()
   local default_site = vim.fn.stdpath("data") .. "/site"
   if not vim.tbl_contains(sites, default_site) then
