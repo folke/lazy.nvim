@@ -1,5 +1,21 @@
 # Changelog
 
+## [9.5.0](https://github.com/folke/lazy.nvim/compare/v9.4.0...v9.5.0) (2023-01-24)
+
+
+### Features
+
+* **config:** added option to disable git filter. NOT recommended. Fixes [#442](https://github.com/folke/lazy.nvim/issues/442) ([26a67e3](https://github.com/folke/lazy.nvim/commit/26a67e3c48951ca3ce47d208c3216143749b0768))
+* **dev:** optionally fallback to git when local plugin doesn't exist ([#446](https://github.com/folke/lazy.nvim/issues/446)) ([772d888](https://github.com/folke/lazy.nvim/commit/772d8888cc6f8e4371c31001197431b24311af48))
+* **health:** check for git in health checks ([9b5cc1b](https://github.com/folke/lazy.nvim/commit/9b5cc1bf53f344c8ad829f33c3ac77f5e3ea8da1))
+* **util:** utility method to walk over all modules in a directory ([5d9d354](https://github.com/folke/lazy.nvim/commit/5d9d35404f39de5d7c9365cbc2aa39858929cbfc))
+
+
+### Bug Fixes
+
+* **checker:** dont check for updates when there's tasks with errors ([c32a618](https://github.com/folke/lazy.nvim/commit/c32a6185ace7cb04572db1637a3010b729a7601e))
+* **checker:** dont clear tasks when running update check ([ed21070](https://github.com/folke/lazy.nvim/commit/ed210702f5dc8c24ec6531c0f2484881d9ebe6b6))
+
 ## [9.4.0](https://github.com/folke/lazy.nvim/compare/v9.3.1...v9.4.0) (2023-01-22)
 
 
