@@ -12,7 +12,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Usage                                                    |lazy.nvim-usage|
   - Lockfile `lazy-lock.json`            |lazy.nvim-lockfile-`lazy-lock.json`|
   - Performance                                        |lazy.nvim-performance|
-  - 🪲 Debug                                          |lazy.nvim-🪲-debug|
+  - Debug                                                    |lazy.nvim-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
   - Structuring Your Plugins              |lazy.nvim-structuring-your-plugins|
   - Migration Guide                                |lazy.nvim-migration-guide|
@@ -654,7 +654,7 @@ load your plugins.
 <p class="caption">image</p>
 </div>
 
-🪲 DEBUG                                              *lazy.nvim-🪲-debug*
+DEBUG                                                        *lazy.nvim-debug*
 
 See an overview of active lazy-loading handlers and what’s in the module
 cache
