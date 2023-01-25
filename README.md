@@ -610,7 +610,7 @@ The profiling view shows you why and how long it took to load your plugins.
 
 ![image](https://user-images.githubusercontent.com/292349/208301766-5c400561-83c3-4811-9667-1ec4bb3c43b8.png)
 
-## 🪲 Debug
+## 🐛 Debug
 
 See an overview of active lazy-loading handlers and what's in the module cache
 
