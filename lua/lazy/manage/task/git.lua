@@ -15,7 +15,7 @@ M.log = {
       return true
     end
     local stat = vim.loop.fs_stat(plugin.dir .. "/.git")
-    return stat and stat.type ~= "directory"
+    return not (stat and stat.type == "directory")
   end,
   ---@param opts {args?: string[], updated?:boolean, check?:boolean}
   run = function(self, opts)
