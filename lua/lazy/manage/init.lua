@@ -174,7 +174,10 @@ function M.sync(opts)
     end)
     opts.show = false
   end
-  local clean = M.clean(opts)
+
+  local clean_opts = vim.deepcopy(opts)
+  clean_opts.plugins = nil
+  local clean = M.clean(clean_opts)
   local install = M.install(opts)
   local update = M.update(opts)
   clean:wait(function()
