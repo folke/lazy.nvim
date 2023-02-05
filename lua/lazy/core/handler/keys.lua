@@ -14,19 +14,6 @@ local Loader = require("lazy.core.loader")
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
 
----@param feed string
-function M.replace_special(feed)
-  for special, key in pairs({ leader = vim.g.mapleader or "\\", localleader = vim.g.maplocalleader or "\\" }) do
-    local pattern = "<"
-    for i = 1, #special do
-      pattern = pattern .. "[" .. special:sub(i, i) .. special:upper():sub(i, i) .. "]"
-    end
-    pattern = pattern .. ">"
-    feed = feed:gsub(pattern, key)
-  end
-  return feed
-end
-
 ---@param value string|LazyKeys
 function M.parse(value)
   local ret = vim.deepcopy(value)
