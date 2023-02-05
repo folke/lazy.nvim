@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 January 19
+*lazy.nvim.txt*        For Neovim >= 0.8.0       Last change: 2023 February 01
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -12,7 +12,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Usage                                                    |lazy.nvim-usage|
   - Lockfile `lazy-lock.json`            |lazy.nvim-lockfile-`lazy-lock.json`|
   - Performance                                        |lazy.nvim-performance|
-  - 🪲 Debug                                          |lazy.nvim-🪲-debug|
+  - Debug                                                    |lazy.nvim-debug|
   - Startup Sequence                              |lazy.nvim-startup-sequence|
   - Structuring Your Plugins              |lazy.nvim-structuring-your-plugins|
   - Migration Guide                                |lazy.nvim-migration-guide|
@@ -358,12 +358,17 @@ CONFIGURATION                                        *lazy.nvim-configuration*
         log = { "--since=3 days ago" }, -- show commits from the last 3 days
         timeout = 120, -- kill processes that take more than 2 minutes
         url_format = "https://github.com/%s.git",
+        -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
+        -- then set the below to false. This is should work, but is NOT supported and will
+        -- increase downloads a lot.
+        filter = true,
       },
       dev = {
         -- directory where you store your local plugin projects
         path = "~/projects",
         ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
         patterns = {}, -- For example {"folke"}
+        fallback = false, -- Fallback to git when local plugin doesn't exist
       },
       install = {
         -- install missing plugins on startup. This doesn't increase startup time.
@@ -374,6 +379,7 @@ CONFIGURATION                                        *lazy.nvim-configuration*
       ui = {
         -- a number <1 is a percentage., >1 is a fixed size
         size = { width = 0.8, height = 0.8 },
+        wrap = true, -- wrap the lines in the ui
         -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
         border = "none",
         icons = {
@@ -459,7 +465,7 @@ CONFIGURATION                                        *lazy.nvim-configuration*
         rtp = {
           reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
           ---@type string[]
-          paths = {}, -- add any custom paths here that you want to indluce in the rtp
+          paths = {}, -- add any custom paths here that you want to includes in the rtp
           ---@type string[] list any plugins you want to disable here
           disabled_plugins = {
             -- "gzip",
@@ -482,6 +488,7 @@ CONFIGURATION                                        *lazy.nvim-configuration*
         -- only generate markdown helptags for plugins that dont have docs
         skip_if_doc_exists = true,
       },
+      state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
     }
 <
 
@@ -647,7 +654,7 @@ load your plugins.
 <p class="caption">image</p>
 </div>
 
-🪲 DEBUG                                              *lazy.nvim-🪲-debug*
+DEBUG                                                        *lazy.nvim-debug*
 
 See an overview of active lazy-loading handlers and what’s in the module
 cache
@@ -669,7 +676,7 @@ In practice this means that step 10 of |Neovim Initialization| is done by Lazy:
 1. all the plugins’ `init()` functions are executed
 2. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
 3. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
-4. all `/after/plugin` files are sourced (this inludes `/after` from plugins)
+4. all `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 
 Files from runtime directories are always sourced in alphabetical order.

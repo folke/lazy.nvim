@@ -15,7 +15,7 @@ M.log = {
       return true
     end
     local stat = vim.loop.fs_stat(plugin.dir .. "/.git")
-    return stat and stat.type ~= "directory"
+    return not (stat and stat.type == "directory")
   end,
   ---@param opts {args?: string[], updated?:boolean, check?:boolean}
   run = function(self, opts)
@@ -64,10 +64,16 @@ M.clone = {
     local args = {
       "clone",
       self.plugin.url,
-      "--filter=blob:none",
+    }
+
+    if Config.options.git.filter then
+      args[#args + 1] = "--filter=blob:none"
+    end
+
+    vim.list_extend(args, {
       "--recurse-submodules",
       "--progress",
-    }
+    })
 
     if self.plugin.branch then
       vim.list_extend(args, { "-b", self.plugin.branch })

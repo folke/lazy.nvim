@@ -201,6 +201,22 @@ function M.walk(path, fn)
   end)
 end
 
+---@param root string
+---@param fn fun(modname:string, modpath:string)
+---@param modname? string
+function M.walkmods(root, fn, modname)
+  modname = modname and (modname:gsub("%.$", "") .. ".") or ""
+  M.ls(root, function(path, name, type)
+    if name == "init.lua" then
+      fn(modname:gsub("%.$", ""), path)
+    elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
+      fn(modname .. name:sub(1, -5), path)
+    elseif type == "directory" then
+      M.walkmods(path, fn, modname .. name .. ".")
+    end
+  end)
+end
+
 ---@param modname string
 ---@param fn fun(modname:string, modpath:string)
 function M.lsmod(modname, fn)
