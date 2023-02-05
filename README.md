@@ -76,6 +76,7 @@ require("lazy").setup({
 ```
 
 ℹ️ It is recommended to run `:checkhealth lazy` after installation
+ℹ️ It is recommended to config the env-arg `GIT_SSH_COMMAND`, or related [git config](https://git-scm.com/docs/git-config#Documentation/git-config.txt-coresshCommand) `core.sshCommand` with the corresponding non-interactive setting, `OpenSSH = -BatchMode=yes`, `plink.exe = -batch`
 
 ## 🔌 Plugin Spec
 

@@ -59,7 +59,6 @@ function M.spawn(cmd, opts)
 
   local env = {
     "GIT_TERMINAL_PROMPT=0",
-    "GIT_SSH_COMMAND=ssh -oBatchMode=yes",
   }
   if opts.env then
     vim.list_extend(env, opts.env)
