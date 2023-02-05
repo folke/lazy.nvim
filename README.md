@@ -53,7 +53,7 @@ vim.opt.rtp:prepend(lazypath)
 
 <!-- bootstrap:end -->
 
-Next step is to add **lazy.nvim** to the top of your `init.lua`
+Next step is to add **lazy.nvim** below the code added in the last step in `init.lua`
 
 ```lua
 require("lazy").setup(plugins, opts)
