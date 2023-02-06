@@ -49,7 +49,7 @@ local uv = vim.loop
 ---@field on_line? fun(string)
 ---@field on_exit? fun(ok:boolean, output:string)
 ---@field timeout? number
----@field env? string[]
+---@field env? table<string,string>
 
 ---@param opts? ProcessOpts
 ---@param cmd string
@@ -57,20 +57,15 @@ function M.spawn(cmd, opts)
   opts = opts or {}
   opts.timeout = opts.timeout or (Config.options.git and Config.options.git.timeout * 1000)
 
-  local env = {
-    "GIT_TERMINAL_PROMPT=0",
-    "GIT_SSH_COMMAND=ssh -oBatchMode=yes",
-  }
-  if opts.env then
-    vim.list_extend(env, opts.env)
-  end
+  local env = vim.tbl_extend("force", {
+    GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
+  }, uv.os_environ(), opts.env or {})
+  env.GIT_DIR = nil
+  env.GIT_TERMINAL_PROMPT = "0"
 
-  for key, value in
-    pairs(uv.os_environ() --[[@as string[] ]])
-  do
-    if key ~= "GIT_DIR" then
-      table.insert(env, key .. "=" .. value)
-    end
+  local env_flat = {}
+  for k, v in pairs(env) do
+    env_flat[#env_flat + 1] = k .. "=" .. v
   end
 
   local stdout = uv.new_pipe()
@@ -95,7 +90,7 @@ function M.spawn(cmd, opts)
     stdio = { nil, stdout, stderr },
     args = opts.args,
     cwd = opts.cwd,
-    env = env,
+    env = env_flat,
   }, function(exit_code, signal)
     M.running[handle] = nil
     if timeout then
