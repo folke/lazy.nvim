@@ -1,5 +1,15 @@
 # Changelog
 
+## [9.5.1](https://github.com/folke/lazy.nvim/compare/v9.5.0...v9.5.1) (2023-02-06)
+
+
+### Bug Fixes
+
+* **commands:** sync with plugins list should not delete those plugins. Fixes [#475](https://github.com/folke/lazy.nvim/issues/475) ([0c98031](https://github.com/folke/lazy.nvim/commit/0c980312fd6bce744db499acfa5af47871287151))
+* **health:** existing packages on windows. Fixes [#474](https://github.com/folke/lazy.nvim/issues/474) ([527f83c](https://github.com/folke/lazy.nvim/commit/527f83cae50b99d16327447eb813b4f73e09ec0d))
+* **log:** properly check if plugin dir is a git repo before running git log ([3d2dcb2](https://github.com/folke/lazy.nvim/commit/3d2dcb2d5ef99106c5ff412da88c6f59a9f8a693))
+* **process:** allow overriding GIT_SSH_COMMAND. Fixes [#491](https://github.com/folke/lazy.nvim/issues/491). Fixes [#492](https://github.com/folke/lazy.nvim/issues/492) ([452d4eb](https://github.com/folke/lazy.nvim/commit/452d4eb719c5067f0bae497dc870554cd300758f))
+
 ## [9.5.0](https://github.com/folke/lazy.nvim/compare/v9.4.0...v9.5.0) (2023-01-24)
 
 
