@@ -182,6 +182,78 @@ function M.load(plugins, reason, opts)
 end
 
 ---@param plugin LazyPlugin
+function M.deactivate(plugin)
+  local main = M.get_main(plugin)
+
+  if main then
+    Util.try(function()
+      local mod = require(main)
+      if mod.deactivate then
+        mod.deactivate(plugin)
+      end
+    end, "Failed to deactivate plugin " .. plugin.name)
+  end
+
+  -- execute deactivate when needed
+  if plugin._.loaded and plugin.deactivate then
+    Util.try(function()
+      plugin.deactivate(plugin)
+    end, "Failed to deactivate plugin " .. plugin.name)
+  end
+
+  -- disable handlers
+  Handler.disable(plugin)
+
+  -- remove loaded lua modules
+  Util.walkmods(plugin.dir .. "/lua", function(modname)
+    package.loaded[modname] = nil
+    package.preload[modname] = nil
+  end)
+
+  -- clear vim.g.loaded_ for plugins
+  Util.ls(plugin.dir .. "/plugin", function(_, name, type)
+    if type == "file" then
+      vim.g["loaded_" .. name:gsub("%..*", "")] = nil
+    end
+  end)
+  -- set as not loaded
+  plugin._.loaded = nil
+end
+
+--- reload a plugin
+---@param plugin LazyPlugin
+function M.reload(plugin)
+  M.deactivate(plugin)
+  local load = false -- plugin._.loaded ~= nil
+
+  -- enable handlers
+  Handler.enable(plugin)
+
+  -- run init
+  if plugin.init then
+    Util.try(function()
+      plugin.init(plugin)
+    end, "Failed to run `init` for **" .. plugin.name .. "**")
+  end
+
+  -- if this is a start plugin, load it now
+  if plugin.lazy == false then
+    load = true
+  end
+
+  for _, event in ipairs(plugin.event or {}) do
+    if event == "VimEnter" or event == "UIEnter" or event:find("VeryLazy") then
+      load = true
+      break
+    end
+  end
+
+  if load then
+    M.load(plugin, { start = "reload" })
+  end
+end
+
+---@param plugin LazyPlugin
 ---@param reason {[string]:string}
 ---@param opts? {force:boolean} when force is true, we skip the cond check
 function M._load(plugin, reason, opts)
@@ -242,22 +314,11 @@ function M.config(plugin)
       plugin.config(plugin, opts)
     end
   else
-    local normname = Util.normname(plugin.name)
-    ---@type string[]
-    local mods = {}
-    for _, modname in ipairs(Cache.get_topmods(plugin.dir)) do
-      mods[#mods + 1] = modname
-      local modnorm = Util.normname(modname)
-      -- if we found an exact match, then use that
-      if modnorm == normname then
-        mods = { modname }
-        break
-      end
-    end
-    if #mods == 1 then
+    local main = M.get_main(plugin)
+    if main then
       fn = function()
         local opts = Plugin.values(plugin, "opts", false)
-        require(mods[1]).setup(opts)
+        require(main).setup(opts)
       end
     else
       return Util.error(
@@ -266,6 +327,26 @@ function M.config(plugin)
     end
   end
   Util.try(fn, "Failed to run `config` for " .. plugin.name)
+end
+
+---@param plugin LazyPlugin
+function M.get_main(plugin)
+  if plugin.main then
+    return plugin.main
+  end
+  local normname = Util.normname(plugin.name)
+  ---@type string[]
+  local mods = {}
+  for _, modname in ipairs(Cache.get_topmods(plugin.dir)) do
+    mods[#mods + 1] = modname
+    local modnorm = Util.normname(modname)
+    -- if we found an exact match, then use that
+    if modnorm == normname then
+      mods = { modname }
+      break
+    end
+  end
+  return #mods == 1 and mods[1] or nil
 end
 
 ---@param path string
