@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.6.0](https://github.com/folke/lazy.nvim/compare/v9.5.1...v9.6.0) (2023-02-07)
+
+
+### Features
+
+* **cmd:** use cmd table instead of trying to create the cmd string. Fixes [#472](https://github.com/folke/lazy.nvim/issues/472) ([3c29f19](https://github.com/folke/lazy.nvim/commit/3c29f196f4b0f083f2b94c3337599a189f4eef84))
+
 ## [9.5.1](https://github.com/folke/lazy.nvim/compare/v9.5.0...v9.5.1) (2023-02-06)
 
 
