@@ -63,9 +63,6 @@ end
 function M:_add(keys)
   local lhs = keys[1]
   local opts = M.opts(keys)
-  opts.remap = true
-  opts.expr = true
-  opts.replace_keycodes = false
   vim.keymap.set(keys.mode, lhs, function()
     local plugins = self.active[keys.id]
 
@@ -76,8 +73,15 @@ function M:_add(keys)
     Util.track({ keys = lhs })
     Loader.load(plugins, { keys = lhs })
     Util.track()
-    return vim.api.nvim_replace_termcodes("<Ignore>" .. lhs, false, true, true)
-  end, opts)
+
+    local feed = vim.api.nvim_replace_termcodes("<Ignore>" .. lhs, true, true, true)
+    -- insert instead of append the lhs
+    vim.api.nvim_feedkeys(feed, "i", false)
+  end, {
+    desc = opts.desc,
+    -- we do not return anything, but this is still needed to make operator pending mappings work
+    expr = true,
+  })
 end
 
 ---@param keys LazyKeys
