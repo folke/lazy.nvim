@@ -1,5 +1,21 @@
 # Changelog
 
+## [9.7.0](https://github.com/folke/lazy.nvim/compare/v9.6.0...v9.7.0) (2023-02-08)
+
+
+### Features
+
+* deactivate WIP ([57a3960](https://github.com/folke/lazy.nvim/commit/57a3960fafc210f240a07439d1adfaba09d6ff59))
+* use "wslview" instead of "xsl-open" if it exsits ([#509](https://github.com/folke/lazy.nvim/issues/509)) ([2451ea4](https://github.com/folke/lazy.nvim/commit/2451ea4e655bc60ef639ad284e69c6fca15da352))
+
+
+### Bug Fixes
+
+* **install:** dont load the colorscheme again if a `config()` of the colorscheme also loads it. Fixes [#488](https://github.com/folke/lazy.nvim/issues/488) ([49b43de](https://github.com/folke/lazy.nvim/commit/49b43def14f7e130cc27c7041ca2942142a881ed))
+* **keys:** feed keys instead of returning expr for Neovim 0.8.x. Fixes [#511](https://github.com/folke/lazy.nvim/issues/511) ([c734d94](https://github.com/folke/lazy.nvim/commit/c734d941b47312baafe3e0429a5fecd25da95f5f))
+* **keys:** refactor retrigger mechanism ([#428](https://github.com/folke/lazy.nvim/issues/428)) ([4272d21](https://github.com/folke/lazy.nvim/commit/4272d2100af2384f4b8aba08aef4a7b9a296bce6))
+* **keys:** replace keycodes manually ([ddaffa0](https://github.com/folke/lazy.nvim/commit/ddaffa07156a090383bd32ef88669eea1b22c11a))
+
 ## [9.6.0](https://github.com/folke/lazy.nvim/compare/v9.5.1...v9.6.0) (2023-02-07)
 
 
