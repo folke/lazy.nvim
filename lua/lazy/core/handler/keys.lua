@@ -65,6 +65,7 @@ function M:_add(keys)
   local opts = M.opts(keys)
   opts.remap = true
   opts.expr = true
+  opts.replace_keycodes = false
   vim.keymap.set(keys.mode, lhs, function()
     local plugins = self.active[keys.id]
 
@@ -75,8 +76,7 @@ function M:_add(keys)
     Util.track({ keys = lhs })
     Loader.load(plugins, { keys = lhs })
     Util.track()
-
-    return "<Ignore>" .. lhs
+    return vim.api.nvim_replace_termcodes("<Ignore>" .. lhs, false, true, true)
   end, opts)
 end
 
