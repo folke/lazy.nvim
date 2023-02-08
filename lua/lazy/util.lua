@@ -25,6 +25,8 @@ function M.open(uri)
   else
     if vim.fn.executable("xdg-open") then
       cmd = { "xdg-open", uri }
+    elseif vim.fn.executable("wslview") then
+      cmd = { "wslview", uri }
     else
       cmd = { "open", uri }
     end
