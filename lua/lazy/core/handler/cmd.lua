@@ -19,7 +19,7 @@ function M:_add(cmd)
       bang = event.bang or nil,
       mods = event.smods,
       args = event.fargs,
-      count = event.count >= 0 and event.count or nil,
+      count = event.count >= 0 and event.range == 0 and event.count or nil,
     }
 
     if event.range == 1 then
