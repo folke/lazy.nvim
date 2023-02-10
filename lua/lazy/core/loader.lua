@@ -183,6 +183,10 @@ end
 
 ---@param plugin LazyPlugin
 function M.deactivate(plugin)
+  if not plugin._.loaded then
+    return
+  end
+
   local main = M.get_main(plugin)
 
   if main then
@@ -195,7 +199,7 @@ function M.deactivate(plugin)
   end
 
   -- execute deactivate when needed
-  if plugin._.loaded and plugin.deactivate then
+  if plugin.deactivate then
     Util.try(function()
       plugin.deactivate(plugin)
     end, "Failed to deactivate plugin " .. plugin.name)
