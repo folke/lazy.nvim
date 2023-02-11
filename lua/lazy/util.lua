@@ -23,9 +23,9 @@ function M.open(uri)
   elseif vim.fn.has("macunix") == 1 then
     cmd = { "open", uri }
   else
-    if vim.fn.executable("xdg-open") then
+    if vim.fn.executable("xdg-open") == 1 then
       cmd = { "xdg-open", uri }
-    elseif vim.fn.executable("wslview") then
+    elseif vim.fn.executable("wslview") == 1 then
       cmd = { "wslview", uri }
     else
       cmd = { "open", uri }
