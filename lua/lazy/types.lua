@@ -37,6 +37,7 @@
 ---@field commit? string
 ---@field version? string
 ---@field pin? boolean
+---@field submodules? boolean Defaults to true
 
 ---@class LazyPluginBase
 ---@field [1] string?
