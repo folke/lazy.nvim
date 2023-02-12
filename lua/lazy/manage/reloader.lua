@@ -41,7 +41,7 @@ function M.check(start)
   -- spec is a module
   local function check(_, modpath)
     checked[modpath] = true
-    local hash = Cache.hash(modpath)
+    local hash = vim.loop.fs_stat(modpath)
     if hash then
       if M.files[modpath] then
         if not Cache.eq(M.files[modpath], hash) then

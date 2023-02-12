@@ -218,10 +218,43 @@ function M.walkmods(root, fn, modname)
 end
 
 ---@param modname string
+function M.get_unloaded_rtp(modname)
+  modname = modname:gsub("/", ".")
+  local idx = modname:find(".", 1, true)
+  local topmod = idx and modname:sub(1, idx - 1) or modname
+  topmod = M.normname(topmod)
+
+  local rtp = {}
+  local Config = require("lazy.core.config")
+  if Config.spec then
+    for _, plugin in pairs(Config.spec.plugins) do
+      if not (plugin._.loaded or plugin.module == false) then
+        if topmod == M.normname(plugin.name) then
+          table.insert(rtp, 1, plugin.dir)
+        else
+          table.insert(rtp, plugin.dir)
+        end
+      end
+    end
+  end
+  return rtp
+end
+
+function M.find_root(modname)
+  local Cache = require("lazy.core.cache")
+  local rtp = vim.deepcopy(Cache.get_rtp())
+  vim.list_extend(rtp, M.get_unloaded_rtp(modname))
+  local modpath = Cache.find(modname, { rtp = rtp, patterns = { "", ".lua" } })
+  if modpath then
+    local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+    return root
+  end
+end
+
+---@param modname string
 ---@param fn fun(modname:string, modpath:string)
 function M.lsmod(modname, fn)
-  local Cache = require("lazy.core.cache")
-  local root = Cache.find_root(modname)
+  local root = M.find_root(modname)
   if not root then
     return
   end

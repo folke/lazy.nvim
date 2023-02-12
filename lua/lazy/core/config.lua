@@ -226,7 +226,6 @@ function M.setup(opts)
     pattern = "VeryLazy",
     once = true,
     callback = function()
-      require("lazy.core.cache").autosave()
       require("lazy.view.commands").setup()
       if M.options.change_detection.enabled then
         require("lazy.manage.reloader").enable()

@@ -72,7 +72,7 @@ function M.install_missing()
       -- remove and installed plugins from indexed, so cache will index again
       for _, p in pairs(Config.plugins) do
         if p._.installed then
-          Cache.indexed[p.dir] = nil
+          Cache.reset(p.dir)
         end
       end
       -- reload plugins
@@ -341,7 +341,7 @@ function M.get_main(plugin)
   local normname = Util.normname(plugin.name)
   ---@type string[]
   local mods = {}
-  for _, modname in ipairs(Cache.get_topmods(plugin.dir)) do
+  for modname, _ in pairs(Cache.get_topmods(plugin.dir)) do
     mods[#mods + 1] = modname
     local modnorm = Util.normname(modname)
     -- if we found an exact match, then use that
@@ -446,6 +446,24 @@ function M.colorscheme(name)
           return M.load(plugin, { colorscheme = name })
         end
       end
+    end
+  end
+end
+
+---@param modname string
+function M.loader(modname)
+  local modpath = Cache.find(modname, { rtp = Util.get_unloaded_rtp(modname) })
+  if modpath then
+    local plugin = Plugin.find(modpath)
+    if plugin and modpath:find(plugin.dir, 1, true) == 1 then
+      -- don't load if we're loading specs or if the plugin is already loaded
+      if not (Plugin.loading or plugin._.loaded) then
+        if plugin.module == false then
+          error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
+        end
+        M.load(plugin, { require = modname })
+      end
+      return Cache._load(modname, modpath)
     end
   end
 end

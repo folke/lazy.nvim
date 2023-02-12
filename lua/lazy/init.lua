@@ -34,13 +34,14 @@ function M.setup(spec, opts)
   local start = vim.loop.hrtime()
 
   -- load module cache before anything else
-  require("lazy.core.cache").setup(opts)
+  require("lazy.core.cache").setup()
 
   require("lazy.stats").track("LazyStart")
 
   local Util = require("lazy.core.util")
   local Config = require("lazy.core.config")
   local Loader = require("lazy.core.loader")
+  table.insert(package.loaders, 3, Loader.loader)
 
   Util.track({ plugin = "lazy.nvim" }) -- setup start
   Util.track("module", vim.loop.hrtime() - start)
