@@ -672,12 +672,12 @@ function M:debug()
 
   self:append("Cache.find()", "LazyH2"):nl()
   self:props({
-    { "total", Cache.stats.total, "Number" },
-    { "time", self:ms(Cache.stats.time, 3), "Bold" },
-    { "avg time", self:ms(Cache.stats.time / Cache.stats.total, 3), "Bold" },
-    { "index", Cache.stats.index, "Number" },
-    { "fs_stat", Cache.stats.stat, "Number" },
-    { "not found", Cache.stats.not_found, "Number" },
+    { "total", Cache.stats.find.total, "Number" },
+    { "time", self:ms(Cache.stats.find.time, 3), "Bold" },
+    { "avg time", self:ms(Cache.stats.find.time / Cache.stats.find.total, 3), "Bold" },
+    { "index", Cache.stats.find.index, "Number" },
+    { "fs_stat", Cache.stats.find.stat, "Number" },
+    { "not found", Cache.stats.find.not_found, "Number" },
   }, { indent = 2 })
   self:nl()
 end

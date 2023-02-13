@@ -14,7 +14,7 @@ local M = {}
 M.VERSION = 1
 M.path = vim.fn.stdpath("cache") .. "/lazy/luac"
 M.enabled = false
-M.stats = { total = 0, time = 0, index = 0, stat = 0, not_found = 0 }
+M.stats = { find = { total = 0, time = 0, index = 0, stat = 0, not_found = 0 } }
 
 ---@class ModuleCache
 ---@field _rtp string[]
@@ -176,7 +176,7 @@ end
 function Cache.find(modname, opts)
   opts = opts or {}
   local start = uv.hrtime()
-  M.stats.total = M.stats.total + 1
+  M.stats.find.total = M.stats.find.total + 1
   modname = modname:gsub("/", ".")
   local basename = modname:gsub("%.", "/")
   local idx = modname:find(".", 1, true)
@@ -199,10 +199,10 @@ function Cache.find(modname, opts)
     if M.lsmod(path)[topmod] then
       for _, pattern in ipairs(patterns) do
         local modpath = path .. pattern
-        M.stats.stat = M.stats.stat + 1
+        M.stats.find.stat = M.stats.find.stat + 1
         local hash = uv.fs_stat(modpath)
         if hash then
-          M.stats.time = M.stats.time + uv.hrtime() - start
+          M.stats.find.time = M.stats.find.time + uv.hrtime() - start
           return modpath, hash
         end
       end
@@ -210,8 +210,8 @@ function Cache.find(modname, opts)
   end
 
   -- module not found
-  M.stats.not_found = M.stats.not_found + 1
-  M.stats.time = M.stats.time + uv.hrtime() - start
+  M.stats.find.not_found = M.stats.find.not_found + 1
+  M.stats.find.time = M.stats.find.time + uv.hrtime() - start
 end
 
 --- Resets the topmods cache for the path
@@ -250,7 +250,7 @@ end
 ---@return string[]
 function M.lsmod(path)
   if not Cache._topmods[path] then
-    M.stats.index = M.stats.index + 1
+    M.stats.find.index = M.stats.find.index + 1
     Cache._topmods[path] = {}
     local handle = vim.loop.fs_scandir(path .. "/lua")
     while handle do
@@ -288,12 +288,12 @@ function M.inspect()
     return math.floor(nsec / 1e6 * 1000 + 0.5) / 1000 .. "ms"
   end
   local props = {
-    { "total", M.stats.total, "Number" },
-    { "time", ms(M.stats.time), "Bold" },
-    { "avg time", ms(M.stats.time / M.stats.total), "Bold" },
-    { "index", M.stats.index, "Number" },
-    { "fs_stat", M.stats.stat, "Number" },
-    { "not found", M.stats.not_found, "Number" },
+    { "total", M.stats.find.total, "Number" },
+    { "time", ms(M.stats.find.time), "Bold" },
+    { "avg time", ms(M.stats.find.time / M.stats.find.total), "Bold" },
+    { "index", M.stats.find.index, "Number" },
+    { "fs_stat", M.stats.find.stat, "Number" },
+    { "not found", M.stats.find.not_found, "Number" },
   }
   local chunks = {} ---@type string[][]
   for _, prop in ipairs(props) do
