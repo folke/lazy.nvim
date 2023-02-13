@@ -113,8 +113,10 @@ end
 function Cache.loader(modname)
   modname = modname:gsub("/", ".")
   local modpath, hash = Cache.find(modname)
+  local modpath, hash
+  modpath, hash = Cache.find(modname)
   if modpath then
-    return Cache.load(modpath, { hash = hash })
+    return Cache.load(modname, modpath, { hash = hash })
   end
   return "module " .. modname .. " not found"
 end
@@ -126,7 +128,7 @@ end
 ---@private
 function Cache.loadfile(filename, mode, env)
   filename = Cache.normalize(filename)
-  return Cache.load(filename, { mode = mode, env = env })
+  return Cache.load(filename, filename, { mode = mode, env = env })
 end
 
 ---@param h1 CacheHash
@@ -137,10 +139,10 @@ function Cache.eq(h1, h2)
 end
 
 ---@param modpath string
----@param opts? {hash?: CacheHash, mode?: "b"|"t"|"bt", env?:table}
+---@param opts? {hash?: CacheHash, mode?: "b"|"t"|"bt", env?:table, entry?: CacheEntry}
 ---@return function?, string? error_message
 ---@private
-function Cache.load(modpath, opts)
+function Cache.load(modkey, modpath, opts)
   opts = opts or {}
   local hash = opts.hash or uv.fs_stat(modpath)
   if not hash then
@@ -150,10 +152,10 @@ function Cache.load(modpath, opts)
 
   ---@type function?, string?
   local chunk, err
-  local entry = Cache.read(modpath)
+  local entry = opts.entry or Cache.read(modkey)
   if entry and Cache.eq(entry.hash, hash) then
     -- found in cache and up to date
-    chunk, err = loadstring(entry.chunk --[[@as string]], "@" .. entry.modpath)
+    chunk, err = load(entry.chunk --[[@as string]], "@" .. entry.modpath)
     if not (err and err:find("cannot load incompatible bytecode", 1, true)) then
       return chunk, err
     end
@@ -163,7 +165,7 @@ function Cache.load(modpath, opts)
   chunk, err = Cache._loadfile(entry.modpath)
   if chunk then
     entry.chunk = string.dump(chunk)
-    Cache.write(modpath, entry)
+    Cache.write(modkey, entry)
   end
   return chunk, err
 end
