@@ -1,5 +1,25 @@
 # Changelog
 
+## [9.8.0](https://github.com/folke/lazy.nvim/compare/v9.7.0...v9.8.0) (2023-02-13)
+
+
+### Features
+
+* **git:** `Plugin.submodules = false` will now skip fetching git submodules ([0d3f2c4](https://github.com/folke/lazy.nvim/commit/0d3f2c40421f4774c70f631d7b7023f57cba66cd))
+
+
+### Bug Fixes
+
+* **cmd:** fix Error when trigger on range defined command that doesn't support count  ([#519](https://github.com/folke/lazy.nvim/issues/519)) ([a147110](https://github.com/folke/lazy.nvim/commit/a1471103902a9836d88732eeeeabd11d00a2cb3e))
+* **icons:** replace an obsolete Nerd icon ([#529](https://github.com/folke/lazy.nvim/issues/529)) ([bc978ca](https://github.com/folke/lazy.nvim/commit/bc978ca9be96b75330336a0427771addaa1ccd50))
+* **loader:** don't deactivate when not loaded ([c83d2ae](https://github.com/folke/lazy.nvim/commit/c83d2aeb27fce9cf9f14e779e77a85c63fc3d2c9))
+* **util:** executable checks for `Util.open` ([#528](https://github.com/folke/lazy.nvim/issues/528)) ([4917222](https://github.com/folke/lazy.nvim/commit/4917222c7e5c924bf7471b72a5e2d3e661530b40))
+
+
+### Performance Improvements
+
+* new file-based cache that ensures correct rtp order ([#532](https://github.com/folke/lazy.nvim/issues/532)) ([462633b](https://github.com/folke/lazy.nvim/commit/462633bae11255133f099163dda17180b3a6dc27))
+
 ## [9.7.0](https://github.com/folke/lazy.nvim/compare/v9.6.0...v9.7.0) (2023-02-08)
 
 
