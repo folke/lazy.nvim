@@ -242,9 +242,11 @@ end
 
 function M.find_root(modname)
   local Cache = require("lazy.core.cache")
-  local rtp = vim.deepcopy(Cache.get_rtp())
-  vim.list_extend(rtp, M.get_unloaded_rtp(modname))
-  local modpath = Cache.find(modname, { rtp = rtp, patterns = { "", ".lua" } })
+  local modpath = Cache.find(modname, {
+    rtp = true,
+    paths = M.get_unloaded_rtp(modname),
+    patterns = { "", ".lua" },
+  })
   if modpath then
     local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
     return root

@@ -34,7 +34,7 @@ function M.setup(spec, opts)
   local start = vim.loop.hrtime()
 
   -- load module cache before anything else
-  require("lazy.core.cache").setup()
+  require("lazy.core.cache").enable()
 
   require("lazy.stats").track("LazyStart")
 

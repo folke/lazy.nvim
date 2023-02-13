@@ -1,4 +1,3 @@
-local Cache = require("lazy.core.cache")
 local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 local Plugin = require("lazy.core.plugin")
@@ -6,12 +5,11 @@ local Loader = require("lazy.core.loader")
 
 local M = {}
 
----@type table<string, CacheHash>
+---@type table<string, vim.loop.Stat>
 M.files = {}
 
 ---@type vim.loop.Timer
 M.timer = nil
-M.root = nil
 
 function M.enable()
   if M.timer then
@@ -19,7 +17,6 @@ function M.enable()
   end
   if #Config.spec.modules > 0 then
     M.timer = vim.loop.new_timer()
-    M.root = vim.fn.stdpath("config") .. "/lua"
     M.check(true)
     M.timer:start(2000, 2000, M.check)
   end
@@ -30,6 +27,12 @@ function M.disable()
     M.timer:stop()
     M.timer = nil
   end
+end
+
+---@param h1 vim.loop.Stat
+---@param h2 vim.loop.Stat
+function M.eq(h1, h2)
+  return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
 end
 
 function M.check(start)
@@ -44,7 +47,7 @@ function M.check(start)
     local hash = vim.loop.fs_stat(modpath)
     if hash then
       if M.files[modpath] then
-        if not Cache.eq(M.files[modpath], hash) then
+        if not M.eq(M.files[modpath], hash) then
           M.files[modpath] = hash
           table.insert(changes, { file = modpath, what = "changed" })
         end

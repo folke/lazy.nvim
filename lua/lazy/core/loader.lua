@@ -341,7 +341,7 @@ function M.get_main(plugin)
   local normname = Util.normname(plugin.name)
   ---@type string[]
   local mods = {}
-  for modname, _ in pairs(Cache.get_topmods(plugin.dir)) do
+  for modname, _ in pairs(Cache.lsmod(plugin.dir)) do
     mods[#mods + 1] = modname
     local modnorm = Util.normname(modname)
     -- if we found an exact match, then use that
@@ -452,7 +452,7 @@ end
 
 ---@param modname string
 function M.loader(modname)
-  local modpath = Cache.find(modname, { rtp = Util.get_unloaded_rtp(modname) })
+  local modpath = Cache.find(modname, { rtp = false, paths = Util.get_unloaded_rtp(modname) })
   if modpath then
     local plugin = Plugin.find(modpath)
     if plugin and modpath:find(plugin.dir, 1, true) == 1 then
@@ -463,7 +463,13 @@ function M.loader(modname)
         end
         M.load(plugin, { require = modname })
       end
-      return Cache._load(modname, modpath)
+      local mod = package.loaded[modname]
+      if type(mod) == "table" then
+        return function()
+          return mod
+        end
+      end
+      return loadfile(modpath)
     end
   end
 end
