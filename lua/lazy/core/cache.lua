@@ -63,7 +63,7 @@ end
 ---@param name string can be a module name, or a file name
 ---@private
 function Cache.cache_file(name)
-  return M.path .. "/" .. name:gsub("[/\\]", "%%") .. ".luac"
+  return M.path .. "/" .. name:gsub("[/\\:]", "%%") .. "c"
 end
 
 ---@param entry CacheEntry
