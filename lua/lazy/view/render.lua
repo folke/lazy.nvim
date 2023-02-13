@@ -672,33 +672,14 @@ function M:debug()
 
   self:append("Cache.find()", "LazyH2"):nl()
   self:props({
-    { "total", Cache.stats.find.total, "Number" },
-    { "time", self:ms(Cache.stats.find.time, 3), "Bold" },
-    { "avg time", self:ms(Cache.stats.find.time / Cache.stats.find.total, 3), "Bold" },
-    { "index", Cache.stats.find.index, "Number" },
-    { "fs_stat", Cache.stats.find.stat, "Number" },
-    { "not found", Cache.stats.find.not_found, "Number" },
+    { "total", Cache.stats.total, "Number" },
+    { "time", self:ms(Cache.stats.time, 3), "Bold" },
+    { "avg time", self:ms(Cache.stats.time / Cache.stats.total, 3), "Bold" },
+    { "index", Cache.stats.index, "Number" },
+    { "fs_stat", Cache.stats.stat, "Number" },
+    { "not found", Cache.stats.not_found, "Number" },
   }, { indent = 2 })
   self:nl()
-
-  self:append("Cache.autoload()", "LazyH2"):nl()
-  self:props({
-    { "total", Cache.stats.autoload.total, "Number" },
-    { "time", self:ms(Cache.stats.autoload.time, 3), "Bold" },
-    { "avg time", self:ms(Cache.stats.autoload.time / Cache.stats.autoload.total, 3), "Bold" },
-  }, { indent = 2 })
-  self:nl()
-
-  self:append("Cache", "LazyH2"):nl()
-  local Cache = require("lazy.core.cache")
-  Util.foreach(Cache.cache, function(modname, entry)
-    local kb = math.floor(#entry.chunk / 10.24) / 100
-    self:append("● ", "LazySpecial", { indent = 2 }):append(modname):append(" " .. kb .. "Kb", "Bold")
-    if entry.modpath ~= modname then
-      self:append(" " .. vim.fn.fnamemodify(entry.modpath, ":p:~:."), "LazyComment")
-    end
-    self:nl()
-  end)
 end
 
 return M

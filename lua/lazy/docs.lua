@@ -131,12 +131,7 @@ function M.colors()
 end
 
 function M.update()
-  local cache_config = M.extract("lua/lazy/core/cache.lua", "\nM%.config = ({.-\n})")
   local config = M.extract("lua/lazy/core/config.lua", "\nM%.defaults = ({.-\n})")
-  config = config:gsub(
-    "\n%s*%-%-%-@type LazyCacheConfig.*cache = nil,",
-    "\n" .. M.indent("cache = " .. cache_config .. ",", 4)
-  )
   config = config:gsub("%s*debug = false.\n", "\n")
   M.save({
     bootstrap = M.extract("lua/lazy/init.lua", "function M%.bootstrap%(%)\n(.-)\nend"),
