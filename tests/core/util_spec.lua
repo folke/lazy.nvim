@@ -51,9 +51,7 @@ describe("util", function()
       local files = Helpers.fs_create(test.files)
 
       -- test with empty cache
-      Cache.cache = {}
-      Cache._topmods = {}
-      Cache.topmods_rtp = false
+      package.loaded["lazy.core.cache"] = nil
       local root = Util.find_root(test.mod)
       assert(root, "no root found for " .. test.mod .. " (test " .. t .. ")")
       assert.same(Helpers.path(test.root), root)
@@ -65,12 +63,7 @@ describe("util", function()
       assert.same(expected, mods)
 
       -- fill the cache
-      Cache.cache = {}
-      for i, file in ipairs(files) do
-        Cache.cache[test.mods[i]] = { modpath = file }
-      end
-      Cache._topmods = {}
-      Cache.topmods_rtp = false
+      package.loaded["lazy.core.cache"] = nil
       root = Util.find_root(test.mod)
       assert(root, "no root found for " .. test.mod .. " (test " .. t .. ")")
       assert.same(Helpers.path(test.root), root)
