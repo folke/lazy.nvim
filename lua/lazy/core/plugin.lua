@@ -415,8 +415,8 @@ end
 ---@param prop string
 ---@param is_list? boolean
 function M.values(plugin, prop, is_list)
-  ---@type table
-  local ret = plugin._.super and M.values(plugin._.super, prop) or {}
+  ---@type table | nil
+  local ret = plugin._.super and M.values(plugin._.super, prop)
   local values = rawget(plugin, prop)
 
   if not values then
@@ -427,7 +427,7 @@ function M.values(plugin, prop, is_list)
   end
 
   values = type(values) == "table" and values or { values }
-  return is_list and Util.extend(ret, values) or Util.merge(ret, values)
+  return is_list and Util.extend(ret or {}, values) or Util.merge(ret, values)
 end
 
 return M
