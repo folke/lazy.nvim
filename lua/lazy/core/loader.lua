@@ -4,6 +4,7 @@ local Handler = require("lazy.core.handler")
 local Cache = require("lazy.core.cache")
 local Plugin = require("lazy.core.plugin")
 
+---@class LazyCoreLoader
 local M = {}
 
 local DEFAULT_PRIORITY = 50
@@ -450,27 +451,35 @@ function M.colorscheme(name)
   end
 end
 
+function M.auto_load(modname, modpath)
+  local plugin = Plugin.find(modpath)
+  if plugin and modpath:find(plugin.dir, 1, true) == 1 then
+    -- don't load if we're loading specs or if the plugin is already loaded
+    if not (Plugin.loading or plugin._.loaded) then
+      if plugin.module == false then
+        error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
+      end
+      M.load(plugin, { require = modname })
+    end
+    return true
+  end
+  return false
+end
+
 ---@param modname string
 function M.loader(modname)
-  local modpath = Cache.find(modname, { rtp = false, paths = Util.get_unloaded_rtp(modname) })
+  local paths = Util.get_unloaded_rtp(modname)
+  local modpath, hash = Cache._Cache.find(modname, { rtp = false, paths = paths })
+  -- print(modname .. " " .. paths[1])
   if modpath then
-    local plugin = Plugin.find(modpath)
-    if plugin and modpath:find(plugin.dir, 1, true) == 1 then
-      -- don't load if we're loading specs or if the plugin is already loaded
-      if not (Plugin.loading or plugin._.loaded) then
-        if plugin.module == false then
-          error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
-        end
-        M.load(plugin, { require = modname })
+    M.auto_load(modname, modpath)
+    local mod = package.loaded[modname]
+    if type(mod) == "table" then
+      return function()
+        return mod
       end
-      local mod = package.loaded[modname]
-      if type(mod) == "table" then
-        return function()
-          return mod
-        end
-      end
-      return loadfile(modpath)
     end
+    return Cache.load(modpath, { hash = hash })
   end
 end
 

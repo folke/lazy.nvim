@@ -670,16 +670,21 @@ function M:debug()
   end)
   self:nl()
 
-  self:append("Cache.find()", "LazyH2"):nl()
-  self:props({
-    { "total", Cache.stats.find.total, "Number" },
-    { "time", self:ms(Cache.stats.find.time, 3), "Bold" },
-    { "avg time", self:ms(Cache.stats.find.time / Cache.stats.find.total, 3), "Bold" },
-    { "index", Cache.stats.find.index, "Number" },
-    { "fs_stat", Cache.stats.find.stat, "Number" },
-    { "not found", Cache.stats.find.not_found, "Number" },
-  }, { indent = 2 })
-  self:nl()
+  Util.foreach(Cache.stats, function(name, stats)
+    self:append(name, "LazyH2"):nl()
+    local props = {
+      { "total", stats.total or 0, "Number" },
+      { "time", self:ms(stats.time or 0, 3), "Bold" },
+      { "avg time", self:ms((stats.time or 0) / (stats.total or 0), 3), "Bold" },
+    }
+    for k, v in pairs(stats) do
+      if k ~= "total" and k ~= "time" then
+        props[#props + 1] = { k, v, "Number" }
+      end
+    end
+    self:props(props, { indent = 2 })
+    self:nl()
+  end)
 end
 
 return M
