@@ -3,7 +3,7 @@ local Loader = require("lazy.core.loader")
 
 ---@class LazyKeys
 ---@field [1] string lhs
----@field [2]? string|fun() rhs
+---@field [2]? string|fun()|false rhs
 ---@field desc? string
 ---@field mode? string|string[]
 ---@field noremap? boolean
