@@ -1,5 +1,18 @@
 # Changelog
 
+## [9.8.1](https://github.com/folke/lazy.nvim/compare/v9.8.0...v9.8.1) (2023-02-14)
+
+
+### Bug Fixes
+
+* **keys:** fixed keys types. rhs can be `false` ([6a18404](https://github.com/folke/lazy.nvim/commit/6a18404b7d1c05f0d1f35f7b78bd5c282dff7a89))
+
+
+### Performance Improvements
+
+* more cache optims ([17a3c3a](https://github.com/folke/lazy.nvim/commit/17a3c3acea400679027e675cc19b738e842a5ea0))
+* use modkey instead of modpath ([b1f7ae6](https://github.com/folke/lazy.nvim/commit/b1f7ae68a75401152eb23edbd5827b69761e9bc7))
+
 ## [9.8.0](https://github.com/folke/lazy.nvim/compare/v9.7.0...v9.8.0) (2023-02-13)
 
 
