@@ -129,13 +129,13 @@ end
 function Cache.loader(modname)
   local start = uv.hrtime()
   local modpath, hash = Cache.find(modname)
-  ---@type function?, string?
-  local chunk, err
   if modpath then
-    chunk, err = M.load(modpath, { hash = hash })
+    local chunk, err = M.load(modpath, { hash = hash })
+    M.track("loader", start)
+    return chunk or error(err)
   end
   M.track("loader", start)
-  return chunk or err or "module " .. modname .. " not found"
+  return "\nlazy_loader: module " .. modname .. " not found"
 end
 
 ---@param modname string
@@ -154,10 +154,10 @@ function Cache.loader_lib(modname)
     local funcname = dash and modname:sub(dash + 1) or modname
     local chunk, err = package.loadlib(modpath, "luaopen_" .. funcname:gsub("%.", "_"))
     M.track("loader_lib", start)
-    return chunk or err
+    return chunk or error(err)
   end
   M.track("loader_lib", start)
-  return "module " .. modname .. " not found"
+  return "\nlazy_loader_lib: module " .. modname .. " not found"
 end
 
 ---@param filename? string
@@ -337,8 +337,11 @@ function M.lsmod(path)
       t = t or uv.fs_stat(path .. "/" .. name).type
       ---@type string
       local topname
-      if name:sub(-4) == ".lua" then
+      local ext = name:sub(-4)
+      if ext == ".lua" or ext == ".dll" then
         topname = name:sub(1, -5)
+      elseif name:sub(-3) == ".so" then
+        topname = name:sub(1, -4)
       elseif t == "link" or t == "directory" then
         topname = name
       end
