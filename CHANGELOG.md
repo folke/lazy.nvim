@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.8.2](https://github.com/folke/lazy.nvim/compare/v9.8.1...v9.8.2) (2023-02-15)
+
+
+### Bug Fixes
+
+* **cache:** lsmod now also supports lua libs. Fixes [#544](https://github.com/folke/lazy.nvim/issues/544) ([9ca3222](https://github.com/folke/lazy.nvim/commit/9ca3222061fcc07a7ac5f685d80b49944b347a03))
+
 ## [9.8.1](https://github.com/folke/lazy.nvim/compare/v9.8.0...v9.8.1) (2023-02-14)
 
 
