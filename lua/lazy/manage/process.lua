@@ -2,7 +2,7 @@ local Config = require("lazy.core.config")
 
 local M = {}
 
----@type table<vim.loop.Process, true>
+---@type table<uv.uv_process_t, true>
 M.running = {}
 
 M.signals = {
@@ -57,28 +57,31 @@ function M.spawn(cmd, opts)
   opts = opts or {}
   opts.timeout = opts.timeout or (Config.options.git and Config.options.git.timeout * 1000)
 
+  ---@type table<string, string>
   local env = vim.tbl_extend("force", {
     GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
   }, uv.os_environ(), opts.env or {})
   env.GIT_DIR = nil
   env.GIT_TERMINAL_PROMPT = "0"
 
+  ---@type string[]
   local env_flat = {}
   for k, v in pairs(env) do
     env_flat[#env_flat + 1] = k .. "=" .. v
   end
 
-  local stdout = uv.new_pipe()
-  local stderr = uv.new_pipe()
+  local stdout = assert(uv.new_pipe())
+  local stderr = assert(uv.new_pipe())
 
   local output = ""
-  ---@type vim.loop.Process
+  ---@type uv.uv_process_t
   local handle = nil
 
+  ---@type uv.uv_timer_t
   local timeout
   local killed = false
   if opts.timeout then
-    timeout = uv.new_timer()
+    timeout = assert(uv.new_timer())
     timeout:start(opts.timeout, 0, function()
       if M.kill(handle) then
         killed = true
@@ -100,7 +103,7 @@ function M.spawn(cmd, opts)
     handle:close()
     stdout:close()
     stderr:close()
-    local check = uv.new_check()
+    local check = assert(uv.new_check())
     check:start(function()
       if not stdout:is_closing() or not stderr:is_closing() then
         return
