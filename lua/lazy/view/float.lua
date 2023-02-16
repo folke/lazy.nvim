@@ -107,6 +107,7 @@ function M:mount()
   local function opts()
     vim.bo[self.buf].bufhidden = "wipe"
     vim.wo[self.win].conceallevel = 3
+    vim.wo[self.win].foldenable = false
     vim.wo[self.win].spell = false
     vim.wo[self.win].wrap = true
     vim.wo[self.win].winhighlight = "Normal:LazyNormal"
