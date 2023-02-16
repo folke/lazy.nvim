@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.8.3](https://github.com/folke/lazy.nvim/compare/v9.8.2...v9.8.3) (2023-02-16)
+
+
+### Bug Fixes
+
+* **cache:** hack to work around plugins trying to load relatve modules. Fixes [#543](https://github.com/folke/lazy.nvim/issues/543) ([e916f41](https://github.com/folke/lazy.nvim/commit/e916f41df26e33b01f1b3ebe28881090da3a7281))
+* **ui:** disable folding of floating window ([#550](https://github.com/folke/lazy.nvim/issues/550)) ([6771c7e](https://github.com/folke/lazy.nvim/commit/6771c7e23c3ecdb50a9510c4cd5e1e0d2db9e5ca))
+
 ## [9.8.2](https://github.com/folke/lazy.nvim/compare/v9.8.1...v9.8.2) (2023-02-15)
 
 
