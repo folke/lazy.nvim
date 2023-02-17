@@ -254,7 +254,15 @@ function Spec:import(spec)
   self.modules[#self.modules + 1] = spec.import
 
   local imported = 0
+
+  ---@type string[]
+  local modnames = {}
   Util.lsmod(spec.import, function(modname)
+    modnames[#modnames + 1] = modname
+  end)
+  table.sort(modnames)
+
+  for _, modname in ipairs(modnames) do
     imported = imported + 1
     Util.track({ import = modname })
     self.importing = modname
@@ -273,7 +281,7 @@ function Spec:import(spec)
         Util.track()
       end,
     })
-  end)
+  end
   if imported == 0 then
     self:error("No specs found for module " .. spec.import)
   end
