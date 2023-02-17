@@ -77,7 +77,7 @@ function M.create()
 
   vim.keymap.set("n", ViewConfig.keys.abort, function()
     require("lazy.manage.process").abort()
-    return "<c-c>"
+    return ViewConfig.keys.abort
   end, { silent = true, buffer = self.buf, expr = true })
 
   -- plugin details

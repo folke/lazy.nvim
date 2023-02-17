@@ -160,7 +160,7 @@ end
 function M:help()
   self:append("Help", "LazyH2"):nl():nl()
 
-  self:append("Use "):append("<C-c>", "LazySpecial"):append(" to abort all running tasks."):nl():nl()
+  self:append("Use "):append(ViewConfig.keys.abort, "LazySpecial"):append(" to abort all running tasks."):nl():nl()
 
   self:append("You can press "):append("<CR>", "LazySpecial"):append(" on a plugin to show its details."):nl():nl()
 
