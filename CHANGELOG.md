@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.8.4](https://github.com/folke/lazy.nvim/compare/v9.8.3...v9.8.4) (2023-02-17)
+
+
+### Bug Fixes
+
+* **spec:** make sure imported specs are sorted alphabetically ([ff76e58](https://github.com/folke/lazy.nvim/commit/ff76e58961509038e3e0365c47580e595977a3a2))
+* **ui:** return abort key instead of `&lt;c-c&gt;` ([5cfe156](https://github.com/folke/lazy.nvim/commit/5cfe1560c551720bdc125e68431bacb836eb28d3))
+
 ## [9.8.3](https://github.com/folke/lazy.nvim/compare/v9.8.2...v9.8.3) (2023-02-16)
 
 
