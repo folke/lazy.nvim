@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.8.5](https://github.com/folke/lazy.nvim/compare/v9.8.4...v9.8.5) (2023-02-20)
+
+
+### Bug Fixes
+
+* **ui:** disable colorcolumn on floating window ([#575](https://github.com/folke/lazy.nvim/issues/575)) ([43496fa](https://github.com/folke/lazy.nvim/commit/43496fa82cd4d68523754c3492660a9883e747d9))
+* **ui:** don't close on BufLeave. Fixes [#561](https://github.com/folke/lazy.nvim/issues/561) ([7339145](https://github.com/folke/lazy.nvim/commit/7339145a223dab7e7ddccf0986ffbf9d2cb804e8))
+
 ## [9.8.4](https://github.com/folke/lazy.nvim/compare/v9.8.3...v9.8.4) (2023-02-17)
 
 
