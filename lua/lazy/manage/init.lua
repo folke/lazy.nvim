@@ -131,7 +131,7 @@ function M.check(opts)
       { "git.log", check = true },
     },
     plugins = function(plugin)
-      return plugin.url and plugin._.installed
+      return plugin.url and plugin._.installed and plugin._.cond
     end,
   }, opts)
 end

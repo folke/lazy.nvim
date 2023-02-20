@@ -13,7 +13,7 @@ end
 ---@alias LazySection {title:string, filter:fun(plugin:LazyPlugin):boolean?}
 
 ---@type LazySection[]
-return {
+local sections = {
   {
     filter = function(plugin)
       return has_task(plugin, function(task)
@@ -47,21 +47,18 @@ return {
     title = "Breaking Changes",
   },
   {
-    ---@param plugin LazyPlugin
     filter = function(plugin)
       return plugin._.updated and plugin._.updated.from ~= plugin._.updated.to
     end,
     title = "Updated",
   },
   {
-    ---@param plugin LazyPlugin
     filter = function(plugin)
       return plugin._.cloned
     end,
     title = "Installed",
   },
   {
-    ---@param plugin LazyPlugin
     filter = function(plugin)
       return plugin._.updates
     end,
@@ -95,14 +92,15 @@ return {
   },
   {
     filter = function(plugin)
-      return plugin._.installed
+      return plugin._.installed and plugin._.cond
     end,
     title = "Not Loaded",
   },
   {
     filter = function(plugin)
-      return plugin._.kind == "disabled"
+      return plugin._.kind == "disabled" or not plugin._.cond
     end,
     title = "Disabled",
   },
 }
+return sections

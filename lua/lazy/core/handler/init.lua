@@ -42,9 +42,20 @@ end
 ---@param plugin LazyPlugin
 function M.enable(plugin)
   if not plugin._.loaded then
-    for type, handler in pairs(M.handlers) do
-      if plugin[type] then
-        handler:add(plugin)
+    local cond = type(plugin.cond) == "function" and plugin.cond
+      or function()
+        if plugin.cond == nil then
+          return true
+        end
+        return plugin.cond
+      end
+
+    plugin._.cond = cond()
+    if plugin._.cond then
+      for type, handler in pairs(M.handlers) do
+        if plugin[type] then
+          handler:add(plugin)
+        end
       end
     end
   end

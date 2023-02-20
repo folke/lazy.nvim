@@ -397,7 +397,7 @@ function M:plugin(plugin)
   local plugin_start = self:row()
   if plugin._.loaded then
     self:reason(plugin._.loaded)
-  else
+  elseif plugin._.cond then
     self:append(" ")
     local reason = {}
     for handler in pairs(Handler.types) do
