@@ -111,6 +111,7 @@ function M:mount()
     vim.wo[self.win].spell = false
     vim.wo[self.win].wrap = true
     vim.wo[self.win].winhighlight = "Normal:LazyNormal"
+    vim.wo[self.win].colorcolumn = ""
   end
   opts()
 
