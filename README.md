@@ -7,9 +7,9 @@
 ## ✨ Features
 
 - 📦 Manage all your Neovim plugins with a powerful UI
-- 🚀 Fast startup times thanks to automatic caching and bytecode compilation of lua modules
+- 🚀 Fast startup times thanks to automatic caching and bytecode compilation of Lua modules
 - 💾 Partial clones instead of shallow clones
-- 🔌 Automatic lazy-loading of lua modules and lazy-loading on events, commands, filetypes, and key mappings
+- 🔌 Automatic lazy-loading of Lua modules and lazy-loading on events, commands, filetypes, and key mappings
 - ⏳ Automatically install missing plugins before starting up Neovim, allowing you to start using it right away
 - 💪 Async execution for improved performance
 - 🛠️ No need to manually compile plugins
@@ -32,7 +32,7 @@
 
 ## 📦 Installation
 
-You can add the following Lua code to your `init.lua` to bootstrap **lazy.nvim**
+You can add the following Lua code to your `init.lua` to bootstrap **lazy.nvim**:
 
 <!-- bootstrap:start -->
 
@@ -53,7 +53,7 @@ vim.opt.rtp:prepend(lazypath)
 
 <!-- bootstrap:end -->
 
-Next step is to add **lazy.nvim** below the code added in the last step in `init.lua`
+Next step is to add **lazy.nvim** below the code added in the prior step in `init.lua`:
 
 ```lua
 require("lazy").setup(plugins, opts)
@@ -65,8 +65,8 @@ require("lazy").setup(plugins, opts)
 - **opts**: see [Configuration](#%EF%B8%8F-configuration) **_(optional)_**
 
 ```lua
--- example using a list of specs with the default options
-vim.g.mapleader = " " -- make sure to set `mapleader` before lazy so your mappings are correct
+-- Example using a list of specs with the default options
+vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
 
 require("lazy").setup({
   "folke/which-key.nvim",
@@ -75,7 +75,7 @@ require("lazy").setup({
 })
 ```
 
-ℹ️ It is recommended to run `:checkhealth lazy` after installation
+ℹ️ It is recommended to run `:checkhealth lazy` after installation.
 
 ## 🔌 Plugin Spec
 
@@ -110,7 +110,7 @@ require("lazy").setup({
 ### Lazy Loading
 
 **lazy.nvim** automagically lazy-loads Lua modules, so it is not needed to
-specify `module=...` everywhere in your plugin specification. This mean that if
+specify `module=...` everywhere in your plugin specification. This means that if
 you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
 module of plugin `A`, then plugin `A` will be loaded on demand as expected.
 
@@ -124,8 +124,8 @@ Additionally, you can also lazy-load on **events**, **commands**,
 
 Plugins will be lazy-loaded when one of the following is `true`:
 
-- the plugin only exists as a dependency in your spec
-- it has an `event`, `cmd`, `ft` or `keys` key
+- The plugin only exists as a dependency in your spec
+- It has an `event`, `cmd`, `ft` or `keys` key
 - `config.defaults.lazy == true`
 
 #### 🌈 Colorschemes
@@ -605,7 +605,7 @@ The profiling view shows you why and how long it took to load your plugins.
 
 ## 🐛 Debug
 
-See an overview of active lazy-loading handlers and what's in the module cache
+See an overview of active lazy-loading handlers and what's in the module cache.
 
 ![image](https://user-images.githubusercontent.com/292349/208301790-7eedbfa5-d202-4e70-852e-de68aa47233b.png)
 
@@ -617,10 +617,10 @@ startup sequence for more flexibility and better performance.
 
 In practice this means that step 10 of [Neovim Initialization](https://neovim.io/doc/user/starting.html#initialization) is done by Lazy:
 
-1. all the plugins' `init()` functions are executed
-2. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
-3. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
-4. all `/after/plugin` files are sourced (this includes `/after` from plugins)
+1. All the plugins' `init()` functions are executed
+2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
+3. All files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 Files from runtime directories are always sourced in alphabetical order.
 
@@ -633,9 +633,9 @@ so it is not needed to add `require` calls in your main plugin file to the other
 
 The benefits of using this approach:
 
-- simple to **add** new plugin specs. Just create a new file in your plugins module.
-- allows for **caching** of all your plugin specs. This becomes important if you have a lot of smaller plugin specs.
-- spec changes will automatically be **reloaded** when they're updated, so the `:Lazy` UI is always up to date
+- Simple to **add** new plugin specs. Just create a new file in your plugins module.
+- Allows for **caching** of all your plugin specs. This becomes important if you have a lot of smaller plugin specs.
+- Spec changes will automatically be **reloaded** when they're updated, so the `:Lazy` UI is always up to date.
 
 Example:
 
@@ -655,7 +655,7 @@ return {
 }
 ```
 
-- any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec
+- Any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec
 
 For a real-life example, you can check [LazyVim](https://github.com/LazyVim/LazyVim) and more specifically:
 
@@ -669,7 +669,7 @@ Both of the `setup()` calls are equivalent:
 ```lua
 require("lazy").setup("plugins")
 
--- same as:
+-- Same as:
 require("lazy").setup({{import = "plugins"}})
 ```
 
@@ -705,7 +705,7 @@ end
 ```
 
 With packer `wants`, `requires` and `after` can be used to manage dependencies.
-With lazy, this isn't needed for most of the lua dependencies. They can be installed just like normal plugins
+With lazy, this isn't needed for most of the Lua dependencies. They can be installed just like normal plugins
 (even with `lazy=true`) and will be loaded when other plugins need them.
 The `dependencies` key can be used to group those required plugins with the one that requires them.
 The plugins which are added as `dependencies` will always be lazy-loaded and loaded when the plugin is loaded.
@@ -724,7 +724,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 - **state**: `~/.local/state/nvim/lazy`
 - **lockfile**: `~/.config/nvim/lazy-lock.json`
 
-> paths can differ if you changed `XDG` environment variables.
+> Paths can differ if you changed `XDG` environment variables.
 
 ## 🌈 Highlight Groups
 
