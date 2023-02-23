@@ -1,5 +1,134 @@
 # Changelog
 
+## [9.8.5](https://github.com/folke/lazy.nvim/compare/v9.8.4...v9.8.5) (2023-02-20)
+
+
+### Bug Fixes
+
+* **ui:** disable colorcolumn on floating window ([#575](https://github.com/folke/lazy.nvim/issues/575)) ([43496fa](https://github.com/folke/lazy.nvim/commit/43496fa82cd4d68523754c3492660a9883e747d9))
+* **ui:** don't close on BufLeave. Fixes [#561](https://github.com/folke/lazy.nvim/issues/561) ([7339145](https://github.com/folke/lazy.nvim/commit/7339145a223dab7e7ddccf0986ffbf9d2cb804e8))
+
+## [9.8.4](https://github.com/folke/lazy.nvim/compare/v9.8.3...v9.8.4) (2023-02-17)
+
+
+### Bug Fixes
+
+* **spec:** make sure imported specs are sorted alphabetically ([ff76e58](https://github.com/folke/lazy.nvim/commit/ff76e58961509038e3e0365c47580e595977a3a2))
+* **ui:** return abort key instead of `&lt;c-c&gt;` ([5cfe156](https://github.com/folke/lazy.nvim/commit/5cfe1560c551720bdc125e68431bacb836eb28d3))
+
+## [9.8.3](https://github.com/folke/lazy.nvim/compare/v9.8.2...v9.8.3) (2023-02-16)
+
+
+### Bug Fixes
+
+* **cache:** hack to work around plugins trying to load relatve modules. Fixes [#543](https://github.com/folke/lazy.nvim/issues/543) ([e916f41](https://github.com/folke/lazy.nvim/commit/e916f41df26e33b01f1b3ebe28881090da3a7281))
+* **ui:** disable folding of floating window ([#550](https://github.com/folke/lazy.nvim/issues/550)) ([6771c7e](https://github.com/folke/lazy.nvim/commit/6771c7e23c3ecdb50a9510c4cd5e1e0d2db9e5ca))
+
+## [9.8.2](https://github.com/folke/lazy.nvim/compare/v9.8.1...v9.8.2) (2023-02-15)
+
+
+### Bug Fixes
+
+* **cache:** lsmod now also supports lua libs. Fixes [#544](https://github.com/folke/lazy.nvim/issues/544) ([9ca3222](https://github.com/folke/lazy.nvim/commit/9ca3222061fcc07a7ac5f685d80b49944b347a03))
+
+## [9.8.1](https://github.com/folke/lazy.nvim/compare/v9.8.0...v9.8.1) (2023-02-14)
+
+
+### Bug Fixes
+
+* **keys:** fixed keys types. rhs can be `false` ([6a18404](https://github.com/folke/lazy.nvim/commit/6a18404b7d1c05f0d1f35f7b78bd5c282dff7a89))
+
+
+### Performance Improvements
+
+* more cache optims ([17a3c3a](https://github.com/folke/lazy.nvim/commit/17a3c3acea400679027e675cc19b738e842a5ea0))
+* use modkey instead of modpath ([b1f7ae6](https://github.com/folke/lazy.nvim/commit/b1f7ae68a75401152eb23edbd5827b69761e9bc7))
+
+## [9.8.0](https://github.com/folke/lazy.nvim/compare/v9.7.0...v9.8.0) (2023-02-13)
+
+
+### Features
+
+* **git:** `Plugin.submodules = false` will now skip fetching git submodules ([0d3f2c4](https://github.com/folke/lazy.nvim/commit/0d3f2c40421f4774c70f631d7b7023f57cba66cd))
+
+
+### Bug Fixes
+
+* **cmd:** fix Error when trigger on range defined command that doesn't support count  ([#519](https://github.com/folke/lazy.nvim/issues/519)) ([a147110](https://github.com/folke/lazy.nvim/commit/a1471103902a9836d88732eeeeabd11d00a2cb3e))
+* **icons:** replace an obsolete Nerd icon ([#529](https://github.com/folke/lazy.nvim/issues/529)) ([bc978ca](https://github.com/folke/lazy.nvim/commit/bc978ca9be96b75330336a0427771addaa1ccd50))
+* **loader:** don't deactivate when not loaded ([c83d2ae](https://github.com/folke/lazy.nvim/commit/c83d2aeb27fce9cf9f14e779e77a85c63fc3d2c9))
+* **util:** executable checks for `Util.open` ([#528](https://github.com/folke/lazy.nvim/issues/528)) ([4917222](https://github.com/folke/lazy.nvim/commit/4917222c7e5c924bf7471b72a5e2d3e661530b40))
+
+
+### Performance Improvements
+
+* new file-based cache that ensures correct rtp order ([#532](https://github.com/folke/lazy.nvim/issues/532)) ([462633b](https://github.com/folke/lazy.nvim/commit/462633bae11255133f099163dda17180b3a6dc27))
+
+## [9.7.0](https://github.com/folke/lazy.nvim/compare/v9.6.0...v9.7.0) (2023-02-08)
+
+
+### Features
+
+* deactivate WIP ([57a3960](https://github.com/folke/lazy.nvim/commit/57a3960fafc210f240a07439d1adfaba09d6ff59))
+* use "wslview" instead of "xsl-open" if it exsits ([#509](https://github.com/folke/lazy.nvim/issues/509)) ([2451ea4](https://github.com/folke/lazy.nvim/commit/2451ea4e655bc60ef639ad284e69c6fca15da352))
+
+
+### Bug Fixes
+
+* **install:** dont load the colorscheme again if a `config()` of the colorscheme also loads it. Fixes [#488](https://github.com/folke/lazy.nvim/issues/488) ([49b43de](https://github.com/folke/lazy.nvim/commit/49b43def14f7e130cc27c7041ca2942142a881ed))
+* **keys:** feed keys instead of returning expr for Neovim 0.8.x. Fixes [#511](https://github.com/folke/lazy.nvim/issues/511) ([c734d94](https://github.com/folke/lazy.nvim/commit/c734d941b47312baafe3e0429a5fecd25da95f5f))
+* **keys:** refactor retrigger mechanism ([#428](https://github.com/folke/lazy.nvim/issues/428)) ([4272d21](https://github.com/folke/lazy.nvim/commit/4272d2100af2384f4b8aba08aef4a7b9a296bce6))
+* **keys:** replace keycodes manually ([ddaffa0](https://github.com/folke/lazy.nvim/commit/ddaffa07156a090383bd32ef88669eea1b22c11a))
+
+## [9.6.0](https://github.com/folke/lazy.nvim/compare/v9.5.1...v9.6.0) (2023-02-07)
+
+
+### Features
+
+* **cmd:** use cmd table instead of trying to create the cmd string. Fixes [#472](https://github.com/folke/lazy.nvim/issues/472) ([3c29f19](https://github.com/folke/lazy.nvim/commit/3c29f196f4b0f083f2b94c3337599a189f4eef84))
+
+## [9.5.1](https://github.com/folke/lazy.nvim/compare/v9.5.0...v9.5.1) (2023-02-06)
+
+
+### Bug Fixes
+
+* **commands:** sync with plugins list should not delete those plugins. Fixes [#475](https://github.com/folke/lazy.nvim/issues/475) ([0c98031](https://github.com/folke/lazy.nvim/commit/0c980312fd6bce744db499acfa5af47871287151))
+* **health:** existing packages on windows. Fixes [#474](https://github.com/folke/lazy.nvim/issues/474) ([527f83c](https://github.com/folke/lazy.nvim/commit/527f83cae50b99d16327447eb813b4f73e09ec0d))
+* **log:** properly check if plugin dir is a git repo before running git log ([3d2dcb2](https://github.com/folke/lazy.nvim/commit/3d2dcb2d5ef99106c5ff412da88c6f59a9f8a693))
+* **process:** allow overriding GIT_SSH_COMMAND. Fixes [#491](https://github.com/folke/lazy.nvim/issues/491). Fixes [#492](https://github.com/folke/lazy.nvim/issues/492) ([452d4eb](https://github.com/folke/lazy.nvim/commit/452d4eb719c5067f0bae497dc870554cd300758f))
+
+## [9.5.0](https://github.com/folke/lazy.nvim/compare/v9.4.0...v9.5.0) (2023-01-24)
+
+
+### Features
+
+* **config:** added option to disable git filter. NOT recommended. Fixes [#442](https://github.com/folke/lazy.nvim/issues/442) ([26a67e3](https://github.com/folke/lazy.nvim/commit/26a67e3c48951ca3ce47d208c3216143749b0768))
+* **dev:** optionally fallback to git when local plugin doesn't exist ([#446](https://github.com/folke/lazy.nvim/issues/446)) ([772d888](https://github.com/folke/lazy.nvim/commit/772d8888cc6f8e4371c31001197431b24311af48))
+* **health:** check for git in health checks ([9b5cc1b](https://github.com/folke/lazy.nvim/commit/9b5cc1bf53f344c8ad829f33c3ac77f5e3ea8da1))
+* **util:** utility method to walk over all modules in a directory ([5d9d354](https://github.com/folke/lazy.nvim/commit/5d9d35404f39de5d7c9365cbc2aa39858929cbfc))
+
+
+### Bug Fixes
+
+* **checker:** dont check for updates when there's tasks with errors ([c32a618](https://github.com/folke/lazy.nvim/commit/c32a6185ace7cb04572db1637a3010b729a7601e))
+* **checker:** dont clear tasks when running update check ([ed21070](https://github.com/folke/lazy.nvim/commit/ed210702f5dc8c24ec6531c0f2484881d9ebe6b6))
+
+## [9.4.0](https://github.com/folke/lazy.nvim/compare/v9.3.1...v9.4.0) (2023-01-22)
+
+
+### Features
+
+* added `config.ui.wrap` and improved wrapping when wrap=true. Fixes [#422](https://github.com/folke/lazy.nvim/issues/422) ([d6fc848](https://github.com/folke/lazy.nvim/commit/d6fc848067d603800b9e63a7b22b7e5853c6bd7a))
+* **checker:** checker will now save last check time and only check at configured frequency even after restarting Neovim ([813fc94](https://github.com/folke/lazy.nvim/commit/813fc944d797fe1b43abe12866a9ef7af403c35c))
+
+
+### Bug Fixes
+
+* **checker:** make sure we show logs when only doing a fast check ([4008b57](https://github.com/folke/lazy.nvim/commit/4008b57d882065814ce27a0f32609d5ea437a6e9))
+* **git:** unset GIT_DIR when spawning a process. Fixes [#434](https://github.com/folke/lazy.nvim/issues/434) ([9858001](https://github.com/folke/lazy.nvim/commit/9858001c3cdb5713e8d1aeb0f47c23038084fd7c))
+* **render:** get profile_{sort,filter} key bindings from ViewConfig ([#416](https://github.com/folke/lazy.nvim/issues/416)) ([27ca918](https://github.com/folke/lazy.nvim/commit/27ca918bc3d02ea20b3fd901c8919e9925555444))
+* **spec:** dont complain about an invalid short url, when a full url is set. Fixes [#421](https://github.com/folke/lazy.nvim/issues/421) ([c389ad5](https://github.com/folke/lazy.nvim/commit/c389ad552bd5c2050783ac6cd6e54f5fbba3c7bc))
+
 ## [9.3.1](https://github.com/folke/lazy.nvim/compare/v9.3.0...v9.3.1) (2023-01-17)
 
 

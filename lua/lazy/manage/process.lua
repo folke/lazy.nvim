@@ -2,7 +2,7 @@ local Config = require("lazy.core.config")
 
 local M = {}
 
----@type table<vim.loop.Process, true>
+---@type table<uv.uv_process_t, true>
 M.running = {}
 
 M.signals = {
@@ -49,7 +49,7 @@ local uv = vim.loop
 ---@field on_line? fun(string)
 ---@field on_exit? fun(ok:boolean, output:string)
 ---@field timeout? number
----@field env? string[]
+---@field env? table<string,string>
 
 ---@param opts? ProcessOpts
 ---@param cmd string
@@ -57,31 +57,31 @@ function M.spawn(cmd, opts)
   opts = opts or {}
   opts.timeout = opts.timeout or (Config.options.git and Config.options.git.timeout * 1000)
 
-  local env = {
-    "GIT_TERMINAL_PROMPT=0",
-    "GIT_SSH_COMMAND=ssh -oBatchMode=yes",
-  }
-  if opts.env then
-    vim.list_extend(env, opts.env)
+  ---@type table<string, string>
+  local env = vim.tbl_extend("force", {
+    GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
+  }, uv.os_environ(), opts.env or {})
+  env.GIT_DIR = nil
+  env.GIT_TERMINAL_PROMPT = "0"
+
+  ---@type string[]
+  local env_flat = {}
+  for k, v in pairs(env) do
+    env_flat[#env_flat + 1] = k .. "=" .. v
   end
 
-  for key, value in
-    pairs(uv.os_environ() --[[@as string[] ]])
-  do
-    table.insert(env, key .. "=" .. value)
-  end
-
-  local stdout = uv.new_pipe()
-  local stderr = uv.new_pipe()
+  local stdout = assert(uv.new_pipe())
+  local stderr = assert(uv.new_pipe())
 
   local output = ""
-  ---@type vim.loop.Process
+  ---@type uv.uv_process_t
   local handle = nil
 
+  ---@type uv.uv_timer_t
   local timeout
   local killed = false
   if opts.timeout then
-    timeout = uv.new_timer()
+    timeout = assert(uv.new_timer())
     timeout:start(opts.timeout, 0, function()
       if M.kill(handle) then
         killed = true
@@ -93,7 +93,7 @@ function M.spawn(cmd, opts)
     stdio = { nil, stdout, stderr },
     args = opts.args,
     cwd = opts.cwd,
-    env = env,
+    env = env_flat,
   }, function(exit_code, signal)
     M.running[handle] = nil
     if timeout then
@@ -103,7 +103,7 @@ function M.spawn(cmd, opts)
     handle:close()
     stdout:close()
     stderr:close()
-    local check = uv.new_check()
+    local check = assert(uv.new_check())
     check:start(function()
       if not stdout:is_closing() or not stderr:is_closing() then
         return

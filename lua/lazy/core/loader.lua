@@ -4,6 +4,7 @@ local Handler = require("lazy.core.handler")
 local Cache = require("lazy.core.cache")
 local Plugin = require("lazy.core.plugin")
 
+---@class LazyCoreLoader
 local M = {}
 
 local DEFAULT_PRIORITY = 50
@@ -63,7 +64,8 @@ function M.install_missing()
   for _, plugin in pairs(Config.plugins) do
     if not (plugin._.installed or Plugin.has_errors(plugin)) then
       for _, colorscheme in ipairs(Config.options.install.colorscheme) do
-        if pcall(vim.cmd.colorscheme, colorscheme) then
+        M.colorscheme(colorscheme)
+        if vim.g.colors_name or pcall(vim.cmd.colorscheme, colorscheme) then
           break
         end
       end
@@ -71,7 +73,7 @@ function M.install_missing()
       -- remove and installed plugins from indexed, so cache will index again
       for _, p in pairs(Config.plugins) do
         if p._.installed then
-          Cache.indexed[p.dir] = nil
+          Cache.reset(p.dir)
         end
       end
       -- reload plugins
@@ -181,6 +183,82 @@ function M.load(plugins, reason, opts)
 end
 
 ---@param plugin LazyPlugin
+function M.deactivate(plugin)
+  if not plugin._.loaded then
+    return
+  end
+
+  local main = M.get_main(plugin)
+
+  if main then
+    Util.try(function()
+      local mod = require(main)
+      if mod.deactivate then
+        mod.deactivate(plugin)
+      end
+    end, "Failed to deactivate plugin " .. plugin.name)
+  end
+
+  -- execute deactivate when needed
+  if plugin.deactivate then
+    Util.try(function()
+      plugin.deactivate(plugin)
+    end, "Failed to deactivate plugin " .. plugin.name)
+  end
+
+  -- disable handlers
+  Handler.disable(plugin)
+
+  -- remove loaded lua modules
+  Util.walkmods(plugin.dir .. "/lua", function(modname)
+    package.loaded[modname] = nil
+    package.preload[modname] = nil
+  end)
+
+  -- clear vim.g.loaded_ for plugins
+  Util.ls(plugin.dir .. "/plugin", function(_, name, type)
+    if type == "file" then
+      vim.g["loaded_" .. name:gsub("%..*", "")] = nil
+    end
+  end)
+  -- set as not loaded
+  plugin._.loaded = nil
+end
+
+--- reload a plugin
+---@param plugin LazyPlugin
+function M.reload(plugin)
+  M.deactivate(plugin)
+  local load = false -- plugin._.loaded ~= nil
+
+  -- enable handlers
+  Handler.enable(plugin)
+
+  -- run init
+  if plugin.init then
+    Util.try(function()
+      plugin.init(plugin)
+    end, "Failed to run `init` for **" .. plugin.name .. "**")
+  end
+
+  -- if this is a start plugin, load it now
+  if plugin.lazy == false then
+    load = true
+  end
+
+  for _, event in ipairs(plugin.event or {}) do
+    if event == "VimEnter" or event == "UIEnter" or event:find("VeryLazy") then
+      load = true
+      break
+    end
+  end
+
+  if load then
+    M.load(plugin, { start = "reload" })
+  end
+end
+
+---@param plugin LazyPlugin
 ---@param reason {[string]:string}
 ---@param opts? {force:boolean} when force is true, we skip the cond check
 function M._load(plugin, reason, opts)
@@ -241,22 +319,11 @@ function M.config(plugin)
       plugin.config(plugin, opts)
     end
   else
-    local normname = Util.normname(plugin.name)
-    ---@type string[]
-    local mods = {}
-    for _, modname in ipairs(Cache.get_topmods(plugin.dir)) do
-      mods[#mods + 1] = modname
-      local modnorm = Util.normname(modname)
-      -- if we found an exact match, then use that
-      if modnorm == normname then
-        mods = { modname }
-        break
-      end
-    end
-    if #mods == 1 then
+    local main = M.get_main(plugin)
+    if main then
       fn = function()
         local opts = Plugin.values(plugin, "opts", false)
-        require(mods[1]).setup(opts)
+        require(main).setup(opts)
       end
     else
       return Util.error(
@@ -265,6 +332,26 @@ function M.config(plugin)
     end
   end
   Util.try(fn, "Failed to run `config` for " .. plugin.name)
+end
+
+---@param plugin LazyPlugin
+function M.get_main(plugin)
+  if plugin.main then
+    return plugin.main
+  end
+  local normname = Util.normname(plugin.name)
+  ---@type string[]
+  local mods = {}
+  for modname, _ in pairs(Cache.lsmod(plugin.dir)) do
+    mods[#mods + 1] = modname
+    local modnorm = Util.normname(modname)
+    -- if we found an exact match, then use that
+    if modnorm == normname then
+      mods = { modname }
+      break
+    end
+  end
+  return #mods == 1 and mods[1] or nil
 end
 
 ---@param path string
@@ -361,6 +448,38 @@ function M.colorscheme(name)
         end
       end
     end
+  end
+end
+
+function M.auto_load(modname, modpath)
+  local plugin = Plugin.find(modpath)
+  if plugin and modpath:find(plugin.dir, 1, true) == 1 then
+    -- don't load if we're loading specs or if the plugin is already loaded
+    if not (Plugin.loading or plugin._.loaded) then
+      if plugin.module == false then
+        error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
+      end
+      M.load(plugin, { require = modname })
+    end
+    return true
+  end
+  return false
+end
+
+---@param modname string
+function M.loader(modname)
+  local paths = Util.get_unloaded_rtp(modname)
+  local modpath, hash = Cache._Cache.find(modname, { rtp = false, paths = paths })
+  -- print(modname .. " " .. paths[1])
+  if modpath then
+    M.auto_load(modname, modpath)
+    local mod = package.loaded[modname]
+    if type(mod) == "table" then
+      return function()
+        return mod
+      end
+    end
+    return Cache.load(modpath, { hash = hash })
   end
 end
 

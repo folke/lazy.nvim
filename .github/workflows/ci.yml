@@ -57,7 +57,7 @@ jobs:
           package-name: lazy.nvim
           extra-files: |
             lua/lazy/core/config.lua
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: tag stable versions
         if: ${{ steps.release.outputs.release_created }}
         run: |

@@ -19,6 +19,7 @@
 
 ---@class LazyPluginHooks
 ---@field init? fun(self:LazyPlugin) Will always be run
+---@field deactivate? fun(self:LazyPlugin) Unload/Stop a plugin
 ---@field config? fun(self:LazyPlugin, opts:table)|true Will be executed when loading the plugin
 ---@field build? string|fun(self:LazyPlugin)|(string|fun(self:LazyPlugin))[]
 ---@field opts? PluginOpts
@@ -36,10 +37,12 @@
 ---@field commit? string
 ---@field version? string
 ---@field pin? boolean
+---@field submodules? boolean Defaults to true
 
 ---@class LazyPluginBase
 ---@field [1] string?
 ---@field name string display name and name used for plugin config files
+---@field main? string Entry module that has setup & deactivate
 ---@field url string?
 ---@field dir string
 ---@field enabled? boolean|(fun():boolean)

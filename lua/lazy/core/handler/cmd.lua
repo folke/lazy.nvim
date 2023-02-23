@@ -14,16 +14,22 @@ end
 ---@param cmd string
 function M:_add(cmd)
   vim.api.nvim_create_user_command(cmd, function(event)
+    local command = {
+      cmd = cmd,
+      bang = event.bang or nil,
+      mods = event.smods,
+      args = event.fargs,
+      count = event.count >= 0 and event.range == 0 and event.count or nil,
+    }
+
+    if event.range == 1 then
+      command.range = { event.line1 }
+    elseif event.range == 2 then
+      command.range = { event.line1, event.line2 }
+    end
+
     self:_load(cmd)
-    vim.cmd(
-      ("%s %s%s%s %s"):format(
-        event.mods or "",
-        event.line1 == event.line2 and "" or event.line1 .. "," .. event.line2,
-        cmd,
-        event.bang and "!" or "",
-        event.args or ""
-      )
-    )
+    vim.cmd(command)
   end, {
     bang = true,
     range = true,

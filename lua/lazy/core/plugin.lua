@@ -91,7 +91,10 @@ function Spec:add(plugin, results, is_dep)
       end
     end
     -- dev plugins
-    if plugin.dev then
+    if
+      plugin.dev
+      and (not Config.options.dev.fallback or vim.fn.isdirectory(Config.options.dev.path .. "/" .. plugin.name) == 1)
+    then
       plugin.dir = Config.options.dev.path .. "/" .. plugin.name
     else
       -- remote plugin
@@ -251,7 +254,15 @@ function Spec:import(spec)
   self.modules[#self.modules + 1] = spec.import
 
   local imported = 0
+
+  ---@type string[]
+  local modnames = {}
   Util.lsmod(spec.import, function(modname)
+    modnames[#modnames + 1] = modname
+  end)
+  table.sort(modnames)
+
+  for _, modname in ipairs(modnames) do
     imported = imported + 1
     Util.track({ import = modname })
     self.importing = modname
@@ -270,7 +281,7 @@ function Spec:import(spec)
         Util.track()
       end,
     })
-  end)
+  end
   if imported == 0 then
     self:error("No specs found for module " .. spec.import)
   end

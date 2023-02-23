@@ -21,12 +21,17 @@ M.defaults = {
     log = { "--since=3 days ago" }, -- show commits from the last 3 days
     timeout = 120, -- kill processes that take more than 2 minutes
     url_format = "https://github.com/%s.git",
+    -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
+    -- then set the below to false. This is should work, but is NOT supported and will
+    -- increase downloads a lot.
+    filter = true,
   },
   dev = {
     -- directory where you store your local plugin projects
     path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
+    fallback = false, -- Fallback to git when local plugin doesn't exist
   },
   install = {
     -- install missing plugins on startup. This doesn't increase startup time.
@@ -48,7 +53,7 @@ M.defaults = {
       init = " ",
       import = " ",
       keys = " ",
-      lazy = "鈴 ",
+      lazy = "󰒲 ",
       loaded = "●",
       not_loaded = "○",
       plugin = " ",
@@ -108,13 +113,14 @@ M.defaults = {
     notify = true, -- get a notification when changes are found
   },
   performance = {
-    ---@type LazyCacheConfig
-    cache = nil,
+    cache = {
+      enabled = true,
+    },
     reset_packpath = true, -- reset the package path to improve startup time
     rtp = {
       reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
       ---@type string[]
-      paths = {}, -- add any custom paths here that you want to indluce in the rtp
+      paths = {}, -- add any custom paths here that you want to includes in the rtp
       ---@type string[] list any plugins you want to disable here
       disabled_plugins = {
         -- "gzip",
@@ -141,7 +147,7 @@ M.defaults = {
   debug = false,
 }
 
-M.version = "9.3.1" -- x-release-please-version
+M.version = "9.8.5" -- x-release-please-version
 
 M.ns = vim.api.nvim_create_namespace("lazy")
 
@@ -221,7 +227,6 @@ function M.setup(opts)
     pattern = "VeryLazy",
     once = true,
     callback = function()
-      require("lazy.core.cache").autosave()
       require("lazy.view.commands").setup()
       if M.options.change_detection.enabled then
         require("lazy.manage.reloader").enable()

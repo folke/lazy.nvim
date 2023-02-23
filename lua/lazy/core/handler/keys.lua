@@ -3,7 +3,7 @@ local Loader = require("lazy.core.loader")
 
 ---@class LazyKeys
 ---@field [1] string lhs
----@field [2]? string|fun() rhs
+---@field [2]? string|fun()|false rhs
 ---@field desc? string
 ---@field mode? string|string[]
 ---@field noremap? boolean
@@ -13,42 +13,6 @@ local Loader = require("lazy.core.loader")
 
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
-
----@param feed string
-function M.replace_special(feed)
-  for special, key in pairs({ leader = vim.g.mapleader or "\\", localleader = vim.g.maplocalleader or "\\" }) do
-    local pattern = "<"
-    for i = 1, #special do
-      pattern = pattern .. "[" .. special:sub(i, i) .. special:upper():sub(i, i) .. "]"
-    end
-    pattern = pattern .. ">"
-    feed = feed:gsub(pattern, key)
-  end
-  return feed
-end
-
-function M.retrigger(keys)
-  local pending = ""
-  while true do
-    ---@type number|string
-    local c = vim.fn.getchar(0)
-    if c == 0 then
-      break
-    end
-    c = type(c) == "number" and vim.fn.nr2char(c) or c
-    pending = pending .. c
-  end
-  local op = vim.v.operator
-  if op and op ~= "" and vim.api.nvim_get_mode().mode:find("o") then
-    keys = "<esc>" .. op .. keys
-  end
-  local feed = keys .. pending
-  feed = M.replace_special(feed)
-  if vim.v.count ~= 0 then
-    feed = vim.v.count .. feed
-  end
-  vim.api.nvim_input(feed)
-end
 
 ---@param value string|LazyKeys
 function M.parse(value)
@@ -108,9 +72,16 @@ function M:_add(keys)
 
     Util.track({ keys = lhs })
     Loader.load(plugins, { keys = lhs })
-    M.retrigger(lhs)
     Util.track()
-  end, opts)
+
+    local feed = vim.api.nvim_replace_termcodes("<Ignore>" .. lhs, true, true, true)
+    -- insert instead of append the lhs
+    vim.api.nvim_feedkeys(feed, "i", false)
+  end, {
+    desc = opts.desc,
+    -- we do not return anything, but this is still needed to make operator pending mappings work
+    expr = true,
+  })
 end
 
 ---@param keys LazyKeys

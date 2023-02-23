@@ -136,13 +136,13 @@ function M.check(opts)
   }, opts)
 end
 
----@param opts? ManagerOpts
+---@param opts? ManagerOpts | {check?:boolean}
 function M.log(opts)
   opts = M.opts(opts, { mode = "log" })
   return M.run({
     pipeline = {
       { "git.origin", check = true },
-      "git.log",
+      { "git.log", check = opts.check },
     },
     plugins = function(plugin)
       return plugin.url and plugin._.installed
@@ -174,7 +174,10 @@ function M.sync(opts)
     end)
     opts.show = false
   end
-  local clean = M.clean(opts)
+
+  local clean_opts = vim.deepcopy(opts)
+  clean_opts.plugins = nil
+  local clean = M.clean(clean_opts)
   local install = M.install(opts)
   local update = M.update(opts)
   clean:wait(function()

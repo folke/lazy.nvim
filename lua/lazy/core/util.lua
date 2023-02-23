@@ -201,11 +201,62 @@ function M.walk(path, fn)
   end)
 end
 
+---@param root string
+---@param fn fun(modname:string, modpath:string)
+---@param modname? string
+function M.walkmods(root, fn, modname)
+  modname = modname and (modname:gsub("%.$", "") .. ".") or ""
+  M.ls(root, function(path, name, type)
+    if name == "init.lua" then
+      fn(modname:gsub("%.$", ""), path)
+    elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
+      fn(modname .. name:sub(1, -5), path)
+    elseif type == "directory" then
+      M.walkmods(path, fn, modname .. name .. ".")
+    end
+  end)
+end
+
+---@param modname string
+function M.get_unloaded_rtp(modname)
+  modname = modname:gsub("/", ".")
+  local idx = modname:find(".", 1, true)
+  local topmod = idx and modname:sub(1, idx - 1) or modname
+  topmod = M.normname(topmod)
+
+  local rtp = {}
+  local Config = require("lazy.core.config")
+  if Config.spec then
+    for _, plugin in pairs(Config.spec.plugins) do
+      if not (plugin._.loaded or plugin.module == false) then
+        if topmod == M.normname(plugin.name) then
+          table.insert(rtp, 1, plugin.dir)
+        else
+          table.insert(rtp, plugin.dir)
+        end
+      end
+    end
+  end
+  return rtp
+end
+
+function M.find_root(modname)
+  local Cache = require("lazy.core.cache")
+  local modpath = Cache.find(modname, {
+    rtp = true,
+    paths = M.get_unloaded_rtp(modname),
+    patterns = { "", ".lua" },
+  })
+  if modpath then
+    local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+    return root
+  end
+end
+
 ---@param modname string
 ---@param fn fun(modname:string, modpath:string)
 function M.lsmod(modname, fn)
-  local Cache = require("lazy.core.cache")
-  local root = Cache.find_root(modname)
+  local root = M.find_root(modname)
   if not root then
     return
   end

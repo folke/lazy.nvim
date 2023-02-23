@@ -53,7 +53,7 @@ vim.opt.rtp:prepend(lazypath)
 
 <!-- bootstrap:end -->
 
-Next step is to add **lazy.nvim** to the top of your `init.lua`
+Next step is to add **lazy.nvim** below the code added in the last step in `init.lua`
 
 ```lua
 require("lazy").setup(plugins, opts)
@@ -79,32 +79,33 @@ require("lazy").setup({
 
 ## 🔌 Plugin Spec
 
-| Property         | Type                                                                                                    | Description                                                                                                                                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `[1]`            | `string?`                                                                                               | Short plugin url. Will be expanded using `config.git.url_format`                                                                                                                                                                          |
-| **dir**          | `string?`                                                                                               | A directory pointing to a local plugin                                                                                                                                                                                                    |
-| **url**          | `string?`                                                                                               | A custom git url where the plugin is hosted                                                                                                                                                                                               |
-| **name**         | `string?`                                                                                               | A custom name for the plugin used for the local plugin directory and as the display name                                                                                                                                                  |
-| **dev**          | `boolean?`                                                                                              | When `true`, a local plugin directory will be used instead. See `config.dev`                                                                                                                                                              |
-| **lazy**         | `boolean?`                                                                                              | When `true`, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their Lua modules are `required`, or when one of the lazy-loading handlers triggers                                            |
-| **enabled**      | `boolean?` or `fun():boolean`                                                                           | When `false`, or if the `function` returns false, then this plugin will not be included in the spec                                                                                                                                       |
-| **cond**         | `boolean?` or `fun():boolean`                                                                           | When `false`, or if the `function` returns false, then this plugin will not be loaded. Useful to disable some plugins in vscode, or firenvim for example.                                                                                 |
-| **dependencies** | `LazySpec[]`                                                                                            | A list of plugin names or plugin specs that should be loaded when the plugin loads. Dependencies are always lazy-loaded unless specified otherwise. When specifying a name, make sure the plugin spec has been defined somewhere else.    |
-| **init**         | `fun(LazyPlugin)`                                                                                       | `init` functions are always executed during startup                                                                                                                                                                                       |
-| **opts**         | `table` or `fun(LazyPlugin, opts:table)`                                                                | `opts` should be a table (will be merged with parent specs), return a table (replaces parent specs) or should change a table. The table will be passed to the `Plugin.config()` function. Setting this value will imply `Plugin.config()` |
-| **config**       | `fun(LazyPlugin, opts:table)` or `true`                                                                 | `config` is executed when the plugin loads. The default implementation will automatically run `require("plugin").setup(opts)`. `"plugin"` will default to `name` if specified, otherwise `lazy.nvim` will do its best to guess the correct plugin name. See also `opts`. To use the default implementation without `opts` set `config` to `true`.                  |
-| **build**        | `fun(LazyPlugin)` or `string` or a list of build commands                                               | `build` is executed when a plugin is installed or updated. If it's a string it will be ran as a shell command. When prefixed with `:` it is a Neovim command. You can also specify a list to executed multiple build commands             |
-| **branch**       | `string?`                                                                                               | Branch of the repository                                                                                                                                                                                                                  |
-| **tag**          | `string?`                                                                                               | Tag of the repository                                                                                                                                                                                                                     |
-| **commit**       | `string?`                                                                                               | Commit of the repository                                                                                                                                                                                                                  |
-| **version**      | `string?`                                                                                               | Version to use from the repository. Full [Semver](https://devhints.io/semver) ranges are supported                                                                                                                                        |
-| **pin**          | `boolean?`                                                                                              | When `true`, this plugin will not be included in updates                                                                                                                                                                                  |
-| **event**        | `string?` or `string[]` or `fun(self:LazyPlugin, event:string[]):string[]`                              | Lazy-load on event. Events can be specified as `BufEnter` or with a pattern like `BufEnter *.lua`                                                                                                                                         |
-| **cmd**          | `string?` or `string[]` or `fun(self:LazyPlugin, cmd:string[]):string[]`                                | Lazy-load on command                                                                                                                                                                                                                      |
-| **ft**           | `string?` or `string[]` or `fun(self:LazyPlugin, ft:string[]):string[]`                                 | Lazy-load on filetype                                                                                                                                                                                                                     |
-| **keys**         | `string?` or `string[]` or `LazyKeys[]` or `fun(self:LazyPlugin, keys:string[]):(string \| LazyKeys)[]` | Lazy-load on key mapping                                                                                                                                                                                                                  |
-| **module**       | `false?`                                                                                                | Do not automatically load this Lua module when it's required somewhere                                                                                                                                                                    |
-| **priority**     | `number?`                                                                                               | Only useful for **start** plugins (`lazy=false`) to force loading certain plugins first. Default priority is `50`. It's recommended to set this to a high number for colorschemes.                                                        |
+| Property         | Type                                                                                                    | Description                                                                                                                                                                                                                                                                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `[1]`            | `string?`                                                                                               | Short plugin url. Will be expanded using `config.git.url_format`                                                                                                                                                                                                                                                                                  |
+| **dir**          | `string?`                                                                                               | A directory pointing to a local plugin                                                                                                                                                                                                                                                                                                            |
+| **url**          | `string?`                                                                                               | A custom git url where the plugin is hosted                                                                                                                                                                                                                                                                                                       |
+| **name**         | `string?`                                                                                               | A custom name for the plugin used for the local plugin directory and as the display name                                                                                                                                                                                                                                                          |
+| **dev**          | `boolean?`                                                                                              | When `true`, a local plugin directory will be used instead. See `config.dev`                                                                                                                                                                                                                                                                      |
+| **lazy**         | `boolean?`                                                                                              | When `true`, the plugin will only be loaded when needed. Lazy-loaded plugins are automatically loaded when their Lua modules are `required`, or when one of the lazy-loading handlers triggers                                                                                                                                                    |
+| **enabled**      | `boolean?` or `fun():boolean`                                                                           | When `false`, or if the `function` returns false, then this plugin will not be included in the spec                                                                                                                                                                                                                                               |
+| **cond**         | `boolean?` or `fun():boolean`                                                                           | When `false`, or if the `function` returns false, then this plugin will not be loaded. Useful to disable some plugins in vscode, or firenvim for example.                                                                                                                                                                                         |
+| **dependencies** | `LazySpec[]`                                                                                            | A list of plugin names or plugin specs that should be loaded when the plugin loads. Dependencies are always lazy-loaded unless specified otherwise. When specifying a name, make sure the plugin spec has been defined somewhere else.                                                                                                            |
+| **init**         | `fun(LazyPlugin)`                                                                                       | `init` functions are always executed during startup                                                                                                                                                                                                                                                                                               |
+| **opts**         | `table` or `fun(LazyPlugin, opts:table)`                                                                | `opts` should be a table (will be merged with parent specs), return a table (replaces parent specs) or should change a table. The table will be passed to the `Plugin.config()` function. Setting this value will imply `Plugin.config()`                                                                                                         |
+| **config**       | `fun(LazyPlugin, opts:table)` or `true`                                                                 | `config` is executed when the plugin loads. The default implementation will automatically run `require("plugin").setup(opts)`. `"plugin"` will default to `name` if specified, otherwise `lazy.nvim` will do its best to guess the correct plugin name. See also `opts`. To use the default implementation without `opts` set `config` to `true`. |
+| **build**        | `fun(LazyPlugin)` or `string` or a list of build commands                                               | `build` is executed when a plugin is installed or updated. If it's a string it will be ran as a shell command. When prefixed with `:` it is a Neovim command. You can also specify a list to executed multiple build commands                                                                                                                     |
+| **branch**       | `string?`                                                                                               | Branch of the repository                                                                                                                                                                                                                                                                                                                          |
+| **tag**          | `string?`                                                                                               | Tag of the repository                                                                                                                                                                                                                                                                                                                             |
+| **commit**       | `string?`                                                                                               | Commit of the repository                                                                                                                                                                                                                                                                                                                          |
+| **version**      | `string?`                                                                                               | Version to use from the repository. Full [Semver](https://devhints.io/semver) ranges are supported                                                                                                                                                                                                                                                |
+| **pin**          | `boolean?`                                                                                              | When `true`, this plugin will not be included in updates                                                                                                                                                                                                                                                                                          |
+| `submodules`     | `boolean?`                                                                                              | When false, git submodules will not be fetched. Defaults to `true`                                                                                                                                                                                                                                                                                |
+| **event**        | `string?` or `string[]` or `fun(self:LazyPlugin, event:string[]):string[]`                              | Lazy-load on event. Events can be specified as `BufEnter` or with a pattern like `BufEnter *.lua`                                                                                                                                                                                                                                                 |
+| **cmd**          | `string?` or `string[]` or `fun(self:LazyPlugin, cmd:string[]):string[]`                                | Lazy-load on command                                                                                                                                                                                                                                                                                                                              |
+| **ft**           | `string?` or `string[]` or `fun(self:LazyPlugin, ft:string[]):string[]`                                 | Lazy-load on filetype                                                                                                                                                                                                                                                                                                                             |
+| **keys**         | `string?` or `string[]` or `LazyKeys[]` or `fun(self:LazyPlugin, keys:string[]):(string \| LazyKeys)[]` | Lazy-load on key mapping                                                                                                                                                                                                                                                                                                                          |
+| **module**       | `false?`                                                                                                | Do not automatically load this Lua module when it's required somewhere                                                                                                                                                                                                                                                                            |
+| **priority**     | `number?`                                                                                               | Only useful for **start** plugins (`lazy=false`) to force loading certain plugins first. Default priority is `50`. It's recommended to set this to a high number for colorschemes.                                                                                                                                                                |
 
 ### Lazy Loading
 
@@ -314,12 +315,17 @@ return {
     log = { "--since=3 days ago" }, -- show commits from the last 3 days
     timeout = 120, -- kill processes that take more than 2 minutes
     url_format = "https://github.com/%s.git",
+    -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
+    -- then set the below to false. This is should work, but is NOT supported and will
+    -- increase downloads a lot.
+    filter = true,
   },
   dev = {
     -- directory where you store your local plugin projects
     path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
+    fallback = false, -- Fallback to git when local plugin doesn't exist
   },
   install = {
     -- install missing plugins on startup. This doesn't increase startup time.
@@ -330,6 +336,7 @@ return {
   ui = {
     -- a number <1 is a percentage., >1 is a fixed size
     size = { width = 0.8, height = 0.8 },
+    wrap = true, -- wrap the lines in the ui
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
@@ -340,7 +347,7 @@ return {
       init = " ",
       import = " ",
       keys = " ",
-      lazy = "鈴 ",
+      lazy = "󰒲 ",
       loaded = "●",
       not_loaded = "○",
       plugin = " ",
@@ -402,20 +409,12 @@ return {
   performance = {
     cache = {
       enabled = true,
-      path = vim.fn.stdpath("cache") .. "/lazy/cache",
-      -- Once one of the following events triggers, caching will be disabled.
-      -- To cache all modules, set this to `{}`, but that is not recommended.
-      -- The default is to disable on:
-      --  * VimEnter: not useful to cache anything else beyond startup
-      --  * BufReadPre: this will be triggered early when opening a file from the command line directly
-      disable_events = { "UIEnter", "BufReadPre" },
-      ttl = 3600 * 24 * 5, -- keep unused modules for up to 5 days
     },
     reset_packpath = true, -- reset the package path to improve startup time
     rtp = {
       reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
       ---@type string[]
-      paths = {}, -- add any custom paths here that you want to indluce in the rtp
+      paths = {}, -- add any custom paths here that you want to includes in the rtp
       ---@type string[] list any plugins you want to disable here
       disabled_plugins = {
         -- "gzip",
@@ -438,6 +437,7 @@ return {
     -- only generate markdown helptags for plugins that dont have docs
     skip_if_doc_exists = true,
   },
+  state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
 }
 ```
 
@@ -603,7 +603,7 @@ The profiling view shows you why and how long it took to load your plugins.
 
 ![image](https://user-images.githubusercontent.com/292349/208301766-5c400561-83c3-4811-9667-1ec4bb3c43b8.png)
 
-## 🪲 Debug
+## 🐛 Debug
 
 See an overview of active lazy-loading handlers and what's in the module cache
 
@@ -620,7 +620,7 @@ In practice this means that step 10 of [Neovim Initialization](https://neovim.io
 1. all the plugins' `init()` functions are executed
 2. all plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
 3. all files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
-4. all `/after/plugin` files are sourced (this inludes `/after` from plugins)
+4. all `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 Files from runtime directories are always sourced in alphabetical order.
 

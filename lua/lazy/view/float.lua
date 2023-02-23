@@ -53,7 +53,7 @@ function M:init(opts)
   }
   self:mount()
   self:on_key(ViewConfig.keys.close, self.close)
-  self:on({ "BufDelete", "BufLeave", "BufHidden" }, self.close, { once = true })
+  self:on({ "BufDelete", "BufHidden" }, self.close, { once = true })
   return self
 end
 
@@ -107,9 +107,11 @@ function M:mount()
   local function opts()
     vim.bo[self.buf].bufhidden = "wipe"
     vim.wo[self.win].conceallevel = 3
+    vim.wo[self.win].foldenable = false
     vim.wo[self.win].spell = false
     vim.wo[self.win].wrap = true
     vim.wo[self.win].winhighlight = "Normal:LazyNormal"
+    vim.wo[self.win].colorcolumn = ""
   end
   opts()
 

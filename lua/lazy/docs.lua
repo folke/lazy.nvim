@@ -14,21 +14,27 @@ end
 function M.fix_indent(str)
   local lines = vim.split(str, "\n")
 
+  local first = table.remove(lines, 1)
+
   local width = 120
   for _, line in ipairs(lines) do
-    width = math.min(width, #line:match("^%s*"))
+    if not line:find("^%s*$") then
+      width = math.min(width, #line:match("^%s*"))
+    end
   end
 
   for l, line in ipairs(lines) do
     lines[l] = line:sub(width + 1)
   end
+  table.insert(lines, 1, first)
   return table.concat(lines, "\n")
 end
 
 ---@alias ReadmeBlock {content:string, lang?:string}
 ---@param contents table<string, ReadmeBlock|string>
-function M.save(contents)
-  local readme = Util.read_file("README.md")
+---@param readme_file? string
+function M.save(contents, readme_file)
+  local readme = Util.read_file(readme_file or "README.md")
   for tag, block in pairs(contents) do
     if type(block) == "string" then
       block = { content = block, lang = "lua" }
@@ -48,7 +54,7 @@ function M.save(contents)
     end
   end
 
-  Util.write_file("README.md", readme)
+  Util.write_file(readme_file or "README.md", readme)
   vim.cmd.checktime()
 end
 
@@ -125,12 +131,7 @@ function M.colors()
 end
 
 function M.update()
-  local cache_config = M.extract("lua/lazy/core/cache.lua", "\nM%.config = ({.-\n})")
   local config = M.extract("lua/lazy/core/config.lua", "\nM%.defaults = ({.-\n})")
-  config = config:gsub(
-    "\n%s*%-%-%-@type LazyCacheConfig.*cache = nil,",
-    "\n" .. M.indent("cache = " .. cache_config .. ",", 4)
-  )
   config = config:gsub("%s*debug = false.\n", "\n")
   M.save({
     bootstrap = M.extract("lua/lazy/init.lua", "function M%.bootstrap%(%)\n(.-)\nend"),

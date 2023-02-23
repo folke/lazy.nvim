@@ -1,524 +1,420 @@
 local ffi = require("ffi")
----@diagnostic disable-next-line: no-unknown
 local uv = vim.loop
 
 local M = {}
-M.dirty = false
-M.VERSION = "1" .. jit.version
-
----@class LazyCacheConfig
-M.config = {
-  enabled = true,
-  path = vim.fn.stdpath("cache") .. "/lazy/cache",
-  -- Once one of the following events triggers, caching will be disabled.
-  -- To cache all modules, set this to `{}`, but that is not recommended.
-  -- The default is to disable on:
-  --  * VimEnter: not useful to cache anything else beyond startup
-  --  * BufReadPre: this will be triggered early when opening a file from the command line directly
-  disable_events = { "UIEnter", "BufReadPre" },
-  ttl = 3600 * 24 * 5, -- keep unused modules for up to 5 days
-}
-M.debug = false
-
----@type CacheHash
-local cache_hash
 
 ---@alias CacheHash {mtime: {sec:number, nsec:number}, size:number}
----@alias CacheEntry {hash:CacheHash, modpath:string, chunk:string, used:number}
----@type table<string,CacheEntry?>
-M.cache = {}
-M.enabled = true
----@type string[]
-M.rtp = nil
-M.rtp_total = 0
+---@alias CacheEntry {hash:CacheHash, chunk:string}
+
+---@class CacheFindOpts
+---@field rtp? boolean Search for modname in the runtime path (defaults to `true`)
+---@field patterns? string[] Paterns to use (defaults to `{"/init.lua", ".lua"}`)
+---@field paths? string[] Extra paths to search for modname
+
+M.VERSION = 2
+M.path = vim.fn.stdpath("cache") .. "/lazy/luac"
+M.enabled = false
 M.stats = {
-  find = { total = 0, time = 0, rtp = 0, unloaded = 0, index = 0, stat = 0, not_found = 0 },
-  autoload = { total = 0, time = 0 },
+  find = { total = 0, time = 0, not_found = 0 },
 }
-M.me = debug.getinfo(1, "S").source:sub(2)
-M.me = vim.fn.fnamemodify(M.me, ":p:h:h:h:h"):gsub("\\", "/")
----@type table<string, string[]>
-M.topmods = { lazy = { M.me } }
----@type table<string, string[]>
-M.indexed = { [M.me] = { "lazy" } }
-M.indexed_unloaded = false
-M.indexed_rtp = 0
--- selene:allow(global_usage)
-M._loadfile = _G.loadfile
 
--- checks whether the cached modpath is still valid
-function M.check_path(modname, modpath)
-  -- HACK: never return packer paths
-  if modpath:find("/site/pack/packer/", 1, true) then
-    return false
-  end
+---@class ModuleCache
+---@field _rtp string[]
+---@field _rtp_pure string[]
+---@field _rtp_key string
+local Cache = {
+  ---@type table<string, table<string,true>>
+  _indexed = {},
+  ---@type table<string, string[]>
+  _topmods = {},
+  _loadfile = loadfile,
+}
 
-  -- check rtp excluding plugins. This is a very small list, so should be fast
-  for _, path in ipairs(M.get_rtp()) do
-    if modpath:find(path .. "/", 1, true) == 1 then
-      return true
-    end
-  end
-
-  -- the correct lazy path should be part of rtp.
-  -- so if we get here, this is folke using the local dev instance ;)
-  if modname and (modname == "lazy" or modname:sub(1, 5) == "lazy.") then
-    return false
-  end
-
-  return modname and M.check_autoload(modname, modpath)
+function M.track(stat, start)
+  M.stats[stat] = M.stats[stat] or { total = 0, time = 0 }
+  M.stats[stat].total = M.stats[stat].total + 1
+  M.stats[stat].time = M.stats[stat].time + uv.hrtime() - start
 end
 
-function M.check_autoload(modname, modpath)
-  local start = uv.hrtime()
-  M.stats.autoload.total = M.stats.autoload.total + 1
+-- slightly faster/different version than vim.fs.normalize
+-- we also need to have it here, since the cache will load vim.fs
+---@private
+function Cache.normalize(path)
+  if path:sub(1, 1) == "~" then
+    local home = vim.loop.os_homedir() or "~"
+    if home:sub(-1) == "\\" or home:sub(-1) == "/" then
+      home = home:sub(1, -2)
+    end
+    path = home .. path:sub(2)
+  end
+  path = path:gsub("\\", "/"):gsub("/+", "/")
+  return path:sub(-1) == "/" and path:sub(1, -2) or path
+end
 
-  -- check plugins. Again fast, since we check the plugin name from the path.
-  -- only needed when the plugin mod has been loaded
-  ---@type LazyCorePlugin
-  local Plugin = package.loaded["lazy.core.plugin"]
-  if Plugin then
-    local plugin = Plugin.find(modpath)
-    if plugin and modpath:find(plugin.dir, 1, true) == 1 then
-      -- we're not interested in loader time, so calculate delta here
-      M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
-      -- don't load if we're loading specs or if the plugin is already loaded
-      if not (Plugin.loading or plugin._.loaded) then
-        if plugin.module == false then
-          error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
-        end
-        require("lazy.core.loader").load(plugin, { require = modname })
+---@private
+function Cache.get_rtp()
+  local start = uv.hrtime()
+  if vim.in_fast_event() then
+    M.track("get_rtp", start)
+    return (Cache._rtp or {}), false
+  end
+  local updated = false
+  local key = vim.go.rtp
+  if key ~= Cache._rtp_key then
+    Cache._rtp = {}
+    for _, path in ipairs(vim.api.nvim_get_runtime_file("", true)) do
+      path = Cache.normalize(path)
+      -- skip after directories
+      if path:sub(-6, -1) ~= "/after" and not (Cache._indexed[path] and vim.tbl_isempty(Cache._indexed[path])) then
+        Cache._rtp[#Cache._rtp + 1] = path
       end
-      return true
+    end
+    updated = true
+    Cache._rtp_key = key
+  end
+  M.track("get_rtp", start)
+  return Cache._rtp, updated
+end
+
+---@param name string can be a module name, or a file name
+---@private
+function Cache.cache_file(name)
+  local ret = M.path .. "/" .. name:gsub("[/\\:]", "%%")
+  return ret:sub(-4) == ".lua" and (ret .. "c") or (ret .. ".luac")
+end
+
+---@param entry CacheEntry
+---@private
+function Cache.write(name, entry)
+  local cname = Cache.cache_file(name)
+  local f = assert(uv.fs_open(cname, "w", 438))
+  local header = {
+    M.VERSION,
+    entry.hash.size,
+    entry.hash.mtime.sec,
+    entry.hash.mtime.nsec,
+  }
+  uv.fs_write(f, ffi.string(ffi.new("const uint32_t[4]", header), 16))
+  uv.fs_write(f, entry.chunk)
+  uv.fs_close(f)
+end
+
+---@return CacheEntry?
+---@private
+function Cache.read(name)
+  local start = uv.hrtime()
+  local cname = Cache.cache_file(name)
+  local f = uv.fs_open(cname, "r", 438)
+  if f then
+    local hash = uv.fs_fstat(f) --[[@as CacheHash]]
+    local data = uv.fs_read(f, hash.size, 0) --[[@as string]]
+    uv.fs_close(f)
+
+    ---@type integer[]|{[0]:integer}
+    local header = ffi.cast("uint32_t*", ffi.new("const char[16]", data:sub(1, 16)))
+    if header[0] ~= M.VERSION then
+      return
+    end
+    M.track("read", start)
+    return {
+      hash = { size = header[1], mtime = { sec = header[2], nsec = header[3] } },
+      chunk = data:sub(16 + 1),
+    }
+  end
+  M.track("read", start)
+end
+
+---@param modname string
+---@private
+function Cache.loader(modname)
+  local start = uv.hrtime()
+  local modpath, hash = Cache.find(modname)
+  if modpath then
+    local chunk, err = M.load(modpath, { hash = hash })
+    M.track("loader", start)
+    return chunk or error(err)
+  end
+  M.track("loader", start)
+  return "\nlazy_loader: module " .. modname .. " not found"
+end
+
+---@param modname string
+---@private
+function Cache.loader_lib(modname)
+  local start = uv.hrtime()
+  local modpath = Cache.find(modname, { patterns = jit.os:find("Windows") and { ".dll" } or { ".so" } })
+  ---@type function?, string?
+  if modpath then
+    -- Making function name in Lua 5.1 (see src/loadlib.c:mkfuncname) is
+    -- a) strip prefix up to and including the first dash, if any
+    -- b) replace all dots by underscores
+    -- c) prepend "luaopen_"
+    -- So "foo-bar.baz" should result in "luaopen_bar_baz"
+    local dash = modname:find("-", 1, true)
+    local funcname = dash and modname:sub(dash + 1) or modname
+    local chunk, err = package.loadlib(modpath, "luaopen_" .. funcname:gsub("%.", "_"))
+    M.track("loader_lib", start)
+    return chunk or error(err)
+  end
+  M.track("loader_lib", start)
+  return "\nlazy_loader_lib: module " .. modname .. " not found"
+end
+
+---@param filename? string
+---@param mode? "b"|"t"|"bt"
+---@param env? table
+---@return function?, string?  error_message
+---@private
+function Cache.loadfile(filename, mode, env)
+  local start = uv.hrtime()
+  filename = Cache.normalize(filename)
+  local chunk, err = M.load(filename, { mode = mode, env = env })
+  M.track("loadfile", start)
+  return chunk, err
+end
+
+---@param h1 CacheHash
+---@param h2 CacheHash
+---@private
+function Cache.eq(h1, h2)
+  return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
+end
+
+---@param modpath string
+---@param opts? {hash?: CacheHash, mode?: "b"|"t"|"bt", env?:table}
+---@return function?, string? error_message
+---@private
+function M.load(modpath, opts)
+  local start = uv.hrtime()
+
+  opts = opts or {}
+  local hash = opts.hash or uv.fs_stat(modpath)
+  ---@type function?, string?
+  local chunk, err
+
+  if not hash then
+    -- trigger correct error
+    chunk, err = Cache._loadfile(modpath, opts.mode, opts.env)
+    M.track("load", start)
+    return chunk, err
+  end
+
+  local entry = Cache.read(modpath)
+  if entry and Cache.eq(entry.hash, hash) then
+    -- found in cache and up to date
+    -- selene: allow(incorrect_standard_library_use)
+    chunk, err = load(entry.chunk --[[@as string]], "@" .. modpath, opts.mode, opts.env)
+    if not (err and err:find("cannot load incompatible bytecode", 1, true)) then
+      M.track("load", start)
+      return chunk, err
     end
   end
-  M.stats.autoload.time = M.stats.autoload.time + uv.hrtime() - start
-  return false
+  entry = { hash = hash, modpath = modpath }
+
+  chunk, err = Cache._loadfile(modpath, opts.mode, opts.env)
+  if chunk then
+    entry.chunk = string.dump(chunk)
+    Cache.write(modpath, entry)
+  end
+  M.track("load", start)
+  return chunk, err
+end
+
+---@param modname string
+---@param opts? CacheFindOpts
+---@return string? modpath, CacheHash? hash, CacheEntry? entry
+function Cache.find(modname, opts)
+  local start = uv.hrtime()
+  opts = opts or {}
+
+  modname = modname:gsub("/", ".")
+  local basename = modname:gsub("%.", "/")
+  local idx = modname:find(".", 1, true)
+
+  -- HACK: some plugins try to load invalid relative paths (see #543)
+  if idx == 1 then
+    modname = modname:gsub("^%.+", "")
+    basename = modname:gsub("%.", "/")
+    idx = modname:find(".", 1, true)
+  end
+
+  local topmod = idx and modname:sub(1, idx - 1) or modname
+
+  -- OPTIM: search for a directory first when topmod == modname
+  local patterns = opts.patterns or (topmod == modname and { "/init.lua", ".lua" } or { ".lua", "/init.lua" })
+  for p, pattern in ipairs(patterns) do
+    patterns[p] = "/lua/" .. basename .. pattern
+  end
+
+  ---@param paths string[]
+  local function _find(paths)
+    for _, path in ipairs(paths) do
+      if M.lsmod(path)[topmod] then
+        for _, pattern in ipairs(patterns) do
+          local modpath = path .. pattern
+          M.stats.find.stat = (M.stats.find.stat or 0) + 1
+          local hash = uv.fs_stat(modpath)
+          if hash then
+            return modpath, hash
+          end
+        end
+      end
+    end
+  end
+
+  ---@type string, CacheHash
+  local modpath, hash
+
+  if opts.rtp ~= false then
+    modpath, hash = _find(Cache._rtp or {})
+    if not modpath then
+      local rtp, updated = Cache.get_rtp()
+      if updated then
+        modpath, hash = _find(rtp)
+      end
+    end
+  end
+  if (not modpath) and opts.paths then
+    modpath, hash = _find(opts.paths)
+  end
+
+  M.track("find", start)
+  if modpath then
+    return modpath, hash
+  end
+  -- module not found
+  M.stats.find.not_found = M.stats.find.not_found + 1
+end
+
+--- Resets the topmods cache for the path
+---@param path string
+function M.reset(path)
+  Cache._indexed[Cache.normalize(path)] = nil
+end
+
+function M.enable()
+  if M.enabled then
+    return
+  end
+  M.enabled = true
+  vim.fn.mkdir(vim.fn.fnamemodify(M.path, ":p"), "p")
+  -- selene: allow(global_usage)
+  _G.loadfile = Cache.loadfile
+  -- add lua loader
+  table.insert(package.loaders, 2, Cache.loader)
+  -- add libs loader
+  table.insert(package.loaders, 3, Cache.loader_lib)
+  -- remove Neovim loader
+  for l, loader in ipairs(package.loaders) do
+    if loader == vim._load_package then
+      table.remove(package.loaders, l)
+      break
+    end
+  end
 end
 
 function M.disable()
   if not M.enabled then
     return
   end
-  -- selene:allow(global_usage)
-  _G.loadfile = M._loadfile
   M.enabled = false
-  if M.debug and vim.tbl_count(M.topmods) > 1 then
-    M.log(M.topmods, { level = vim.log.levels.WARN, title = "topmods" })
-  end
-  if M.debug and false then
-    local stats = vim.deepcopy(M.stats)
-    stats.time = (stats.time or 0) / 1e6
-    stats.find.time = (stats.find.time or 0) / 1e6
-    stats.autoload.time = (stats.autoload.time or 0) / 1e6
-    M.log(stats, { title = "stats" })
-  end
-end
-
----@param msg string|table
----@param opts? LazyNotifyOpts
-function M.log(msg, opts)
-  if M.debug then
-    msg = vim.deepcopy(msg)
-    vim.schedule(function()
-      require("lazy.core.util").debug(msg, opts)
-    end)
-  end
-end
-
-function M.check_loaded(modname)
+  -- selene: allow(global_usage)
+  _G.loadfile = Cache._loadfile
   ---@diagnostic disable-next-line: no-unknown
-  local mod = package.loaded[modname]
-  if type(mod) == "table" then
-    return function()
-      return mod
+  for l, loader in ipairs(package.loaders) do
+    if loader == Cache.loader or loader == Cache.loader_lib then
+      table.remove(package.loaders, l)
     end
   end
+  table.insert(package.loaders, 2, vim._load_package)
 end
 
----@param modname string
----@return fun()|string
-function M.loader(modname)
-  modname = modname:gsub("/", ".")
-  local entry = M.cache[modname]
-
-  local chunk, err
-  if entry then
-    if M.check_path(modname, entry.modpath) then
-      M.stats.find.total = M.stats.find.total + 1
-      chunk, err = M.load(modname, entry.modpath)
-    else
-      M.cache[modname] = nil
-      M.dirty = true
-    end
-  end
-  if not chunk then
-    -- find the modpath and load the module
-    local modpath = M.find(modname)
-    if modpath then
-      M.check_autoload(modname, modpath)
-      if M.enabled then
-        chunk, err = M.load(modname, modpath)
-      else
-        chunk = M.check_loaded(modname)
-        if not chunk then
-          chunk, err = M._loadfile(modpath)
-        end
+-- Return the top-level `/lua/*` modules for this path
+---@return string[]
+function M.lsmod(path)
+  if not Cache._indexed[path] then
+    local start = uv.hrtime()
+    Cache._indexed[path] = {}
+    local handle = vim.loop.fs_scandir(path .. "/lua")
+    while handle do
+      local name, t = vim.loop.fs_scandir_next(handle)
+      if not name then
+        break
       end
-    end
-  end
-  return chunk or err or ("module " .. modname .. " not found")
-end
-
----@param modpath string
----@return any, string?
-function M.loadfile(modpath)
-  modpath = modpath:gsub("\\", "/")
-  return M.load(modpath, modpath)
-end
-
----@param modkey string
----@param modpath string
----@return function?, string? error_message
-function M.load(modkey, modpath)
-  local chunk, err
-  chunk = M.check_loaded(modkey)
-  if chunk then
-    return chunk
-  end
-  modpath = modpath:gsub("\\", "/")
-  local hash = M.hash(modpath)
-  if not hash then
-    -- trigger correct error
-    return M._loadfile(modpath)
-  end
-
-  local entry = M.cache[modkey]
-  if entry then
-    entry.modpath = modpath
-    entry.used = os.time()
-    if M.eq(entry.hash, hash) then
-      -- found in cache and up to date
-      chunk, err = loadstring(entry.chunk --[[@as string]], "@" .. entry.modpath)
-      if not (err and err:find("cannot load incompatible bytecode", 1, true)) then
-        return chunk, err
-      end
-    end
-  else
-    entry = { hash = hash, modpath = modpath, used = os.time() }
-    M.cache[modkey] = entry
-  end
-  entry.hash = hash
-
-  if M.debug then
-    M.log("`" .. modpath .. "`", { level = vim.log.levels.WARN, title = "Cache.load" })
-  end
-
-  chunk, err = M._loadfile(entry.modpath)
-  M.dirty = true
-  if chunk then
-    entry.chunk = string.dump(chunk)
-  else
-    M.cache[modkey] = nil
-  end
-  return chunk, err
-end
-
--- index the top-level lua modules for this path
-function M._index(path)
-  if not M.indexed[path] and path:sub(-6, -1) ~= "/after" then
-    M.stats.find.index = M.stats.find.index + 1
-    ---@type LazyUtilCore
-    local Util = package.loaded["lazy.core.util"]
-    if not Util then
-      return false
-    end
-    M.indexed[path] = {}
-    Util.ls(path .. "/lua", function(_, name, t)
+      -- HACK: type is not always returned due to a bug in luv
+      t = t or uv.fs_stat(path .. "/" .. name).type
+      ---@type string
       local topname
-      if name:sub(-4) == ".lua" then
+      local ext = name:sub(-4)
+      if ext == ".lua" or ext == ".dll" then
         topname = name:sub(1, -5)
+      elseif name:sub(-3) == ".so" then
+        topname = name:sub(1, -4)
       elseif t == "link" or t == "directory" then
         topname = name
       end
       if topname then
-        M.topmods[topname] = M.topmods[topname] or {}
-        if not vim.tbl_contains(M.topmods[topname], path) then
-          table.insert(M.topmods[topname], path)
-        end
-        if not vim.tbl_contains(M.indexed[path], topname) then
-          table.insert(M.indexed[path], topname)
-        end
-      end
-    end)
-    return true
-  end
-  return false
-end
-
-function M.get_topmods(path)
-  M._index(path)
-  return M.indexed[path] or {}
-end
-
----@param modname string
----@return string?
-function M.find_root(modname)
-  if M.cache[modname] then
-    -- check if modname is in cache
-    local modpath = M.cache[modname].modpath
-    if M.check_path(modname, modpath) and uv.fs_stat(modpath) then
-      local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-      return root
-    end
-  else
-    -- in case modname is just a directory and not a real mod,
-    -- check for any children in the cache
-    for child, entry in pairs(M.cache) do
-      if child:find(modname, 1, true) == 1 then
-        if M.check_path(child, entry.modpath) and uv.fs_stat(entry.modpath) then
-          local basename = modname:gsub("%.", "/")
-          local childbase = child:gsub("%.", "/")
-          local ret = entry.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-          local idx = assert(ret:find(childbase, 1, true))
-          return ret:sub(1, idx - 1) .. basename
+        Cache._indexed[path][topname] = true
+        Cache._topmods[topname] = Cache._topmods[topname] or {}
+        if not vim.tbl_contains(Cache._topmods[topname], path) then
+          table.insert(Cache._topmods[topname], path)
         end
       end
     end
+    M.track("lsmod", start)
   end
-
-  -- not found in cache, so find the root with the special pattern
-  local modpath = M.find(modname, { patterns = { "" } })
-  if modpath then
-    local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-    return root
-  end
+  return Cache._indexed[path]
 end
 
 ---@param modname string
----@param opts? {patterns?:string[]}
----@return string?
+---@param opts? CacheFindOpts
+---@return string? modpath
 function M.find(modname, opts)
-  opts = opts or {}
-
-  M.stats.find.total = M.stats.find.total + 1
-  local start = uv.hrtime()
-  local basename = modname:gsub("%.", "/")
-  local idx = modname:find(".", 1, true)
-  local topmod = idx and modname:sub(1, idx - 1) or modname
-
-  -- search for a directory first when topmod == modname
-  local patterns = topmod == modname and { "/init.lua", ".lua" } or { ".lua", "/init.lua" }
-
-  if opts.patterns then
-    vim.list_extend(patterns, opts.patterns)
-  end
-
-  -- check top-level mods to find the module
-  local function _find()
-    for _, toppath in ipairs(M.topmods[topmod] or {}) do
-      for _, pattern in ipairs(patterns) do
-        local path = toppath .. "/lua/" .. basename .. pattern
-        M.stats.find.stat = M.stats.find.stat + 1
-        if uv.fs_stat(path) then
-          return path
-        end
-      end
-    end
-  end
-
-  local modpath = _find()
-  if not modpath then
-    -- update rtp
-    local rtp = M.list_rtp()
-    if #rtp ~= M.indexed_rtp then
-      M.indexed_rtp = #rtp
-      local updated = false
-      for _, path in ipairs(rtp) do
-        updated = M._index(path) or updated
-      end
-      if updated then
-        modpath = _find()
-      end
-    end
-
-    -- update unloaded
-    if not modpath and not M.indexed_unloaded then
-      M.indexed_unloaded = true
-      local updated = false
-      ---@type LazyCoreConfig
-      local Config = package.loaded["lazy.core.config"]
-      if Config and Config.spec then
-        for _, plugin in pairs(Config.spec.plugins) do
-          if not (M.indexed[plugin.dir] or plugin._.loaded or plugin.module == false) then
-            updated = M._index(plugin.dir) or updated
-          end
-        end
-      end
-      if updated then
-        modpath = _find()
-      end
-    end
-
-    -- module not found
-    if not modpath then
-      M.stats.find.not_found = M.stats.find.not_found + 1
-    end
-  end
-
-  M.stats.find.time = M.stats.find.time + uv.hrtime() - start
+  local modpath = Cache.find(modname, opts)
   return modpath
 end
 
--- returns the cached RTP excluding plugin dirs
-function M.get_rtp()
-  local rtp = M.list_rtp()
-  if not M.rtp or #rtp ~= M.rtp_total then
-    M.rtp_total = #rtp
-    M.rtp = {}
-    ---@type table<string,true>
-    local skip = {}
-    -- only skip plugins once Config has been setup
-    ---@type LazyCoreConfig
-    local Config = package.loaded["lazy.core.config"]
-    if Config then
-      for _, plugin in pairs(Config.plugins) do
-        if plugin.name ~= "lazy.nvim" then
-          skip[plugin.dir] = true
-        end
+function M.profile_loaders()
+  for l, loader in pairs(package.loaders) do
+    local loc = debug.getinfo(loader, "Sn").source:sub(2)
+    package.loaders[l] = function(modname)
+      local start = vim.loop.hrtime()
+      local ret = loader(modname)
+      M.track("loader " .. l .. ": " .. loc, start)
+      M.track("loader_all", start)
+      return ret
+    end
+  end
+end
+
+function M.inspect()
+  local function ms(nsec)
+    return math.floor(nsec / 1e6 * 1000 + 0.5) / 1000 .. "ms"
+  end
+  local chunks = {} ---@type string[][]
+  ---@type string[]
+  local stats = vim.tbl_keys(M.stats)
+  table.sort(stats)
+  for _, stat in ipairs(stats) do
+    vim.list_extend(chunks, {
+      { "\n" .. stat .. "\n", "Title" },
+      { "* total:    " },
+      { tostring(M.stats[stat].total) .. "\n", "Number" },
+      { "* time:     " },
+      { ms(M.stats[stat].time) .. "\n", "Bold" },
+      { "* avg time: " },
+      { ms(M.stats[stat].time / M.stats[stat].total) .. "\n", "Bold" },
+    })
+    for k, v in pairs(M.stats[stat]) do
+      if not vim.tbl_contains({ "time", "total" }, k) then
+        chunks[#chunks + 1] = { "* " .. k .. ":" .. string.rep(" ", 9 - #k) }
+        chunks[#chunks + 1] = { tostring(v) .. "\n", "Number" }
       end
     end
-    for _, path in ipairs(rtp) do
-      ---@type string
-      path = path:gsub("\\", "/")
-      if not skip[path] and not path:find("after/?$") then
-        M.rtp[#M.rtp + 1] = path
-      end
-    end
   end
-  return M.rtp
+  vim.api.nvim_echo(chunks, true, {})
 end
 
-function M.list_rtp()
-  return vim.api.nvim_get_runtime_file("", true)
-end
-
----@param opts? LazyConfig
-function M.setup(opts)
-  -- no fancy deep extend here. just set the options
-  if opts and opts.performance and opts.performance.cache then
-    ---@diagnostic disable-next-line: no-unknown
-    for k, v in pairs(opts.performance.cache) do
-      ---@diagnostic disable-next-line: no-unknown
-      M.config[k] = v
-    end
-  end
-  M.debug = opts and opts.debug
-  M.enabled = M.config.enabled
-
-  if M.enabled then
-    table.insert(package.loaders, 2, M.loader)
-    M.load_cache()
-    -- selene:allow(global_usage)
-    _G.loadfile = M.loadfile
-    if #M.config.disable_events > 0 then
-      vim.api.nvim_create_autocmd(M.config.disable_events, { once = true, callback = M.disable })
-    end
-  else
-    -- we need to always add the loader since this will autoload unloaded modules
-    table.insert(package.loaders, M.loader)
-  end
-
-  return M
-end
-
----@return CacheHash?
-function M.hash(file)
-  local ok, ret = pcall(uv.fs_stat, file)
-  return ok and ret or nil
-end
-
----@param h1 CacheHash
----@param h2 CacheHash
-function M.eq(h1, h2)
-  return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
-end
-
-function M.save_cache()
-  vim.fn.mkdir(vim.fn.fnamemodify(M.config.path, ":p:h"), "p")
-  local f = assert(uv.fs_open(M.config.path, "w", 438))
-  uv.fs_write(f, M.VERSION)
-  uv.fs_write(f, "\0")
-  for modname, entry in pairs(M.cache) do
-    if entry.used > os.time() - M.config.ttl then
-      entry.modname = modname
-      local header = {
-        entry.hash.size,
-        entry.hash.mtime.sec,
-        entry.hash.mtime.nsec,
-        #modname,
-        #entry.chunk,
-        #entry.modpath,
-        entry.used,
-      }
-      uv.fs_write(f, ffi.string(ffi.new("const uint32_t[7]", header), 28))
-      uv.fs_write(f, modname)
-      uv.fs_write(f, entry.chunk)
-      uv.fs_write(f, entry.modpath)
-    end
-  end
-  uv.fs_close(f)
-end
-
-function M.load_cache()
-  M.cache = {}
-  local f = uv.fs_open(M.config.path, "r", 438)
-  if f then
-    cache_hash = uv.fs_fstat(f) --[[@as CacheHash]]
-    local data = uv.fs_read(f, cache_hash.size, 0) --[[@as string]]
-    uv.fs_close(f)
-
-    local zero = data:find("\0", 1, true)
-    if not zero then
-      return
-    end
-
-    if M.VERSION ~= data:sub(1, zero - 1) then
-      return
-    end
-
-    local offset = zero + 1
-    while offset + 1 < #data do
-      local header = ffi.cast("uint32_t*", ffi.new("const char[28]", data:sub(offset, offset + 27)))
-      offset = offset + 28
-      local modname = data:sub(offset, offset + header[3] - 1)
-      offset = offset + header[3]
-      local chunk = data:sub(offset, offset + header[4] - 1)
-      offset = offset + header[4]
-      local file = data:sub(offset, offset + header[5] - 1)
-      offset = offset + header[5]
-      M.cache[modname] = {
-        hash = { size = header[0], mtime = { sec = header[1], nsec = header[2] } },
-        chunk = chunk,
-        modpath = file,
-        used = header[6],
-      }
-    end
-  end
-end
-
-function M.autosave()
-  vim.api.nvim_create_autocmd("VimLeavePre", {
-    callback = function()
-      if M.dirty then
-        local hash = M.hash(M.config.path)
-        -- abort when the file was changed in the meantime
-        if hash == nil or M.eq(cache_hash, hash) then
-          M.save_cache()
-        end
-      end
-    end,
-  })
-end
+M._Cache = Cache
 
 return M
