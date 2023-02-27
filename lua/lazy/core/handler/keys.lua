@@ -79,6 +79,7 @@ function M:_add(keys)
     vim.api.nvim_feedkeys(feed, "i", false)
   end, {
     desc = opts.desc,
+    nowait = opts.nowait,
     -- we do not return anything, but this is still needed to make operator pending mappings work
     expr = true,
   })
