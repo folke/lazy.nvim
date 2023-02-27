@@ -30,6 +30,15 @@ function M.check()
     vim.health.report_ok("no existing packages found by other package managers")
   end
 
+  for _, name in ipairs({ "packer", "plugged", "paq" }) do
+    for _, path in ipairs(vim.opt.rtp:get()) do
+      if path:find(name, 1, true) then
+        vim.health.report_error("Found paths on the rtp from another plugin manager `" .. name .. "`")
+        break
+      end
+    end
+  end
+
   local packer_compiled = vim.fn.stdpath("config") .. "/plugin/packer_compiled.lua"
   if vim.loop.fs_stat(packer_compiled) then
     vim.health.report_error("please remove the file `" .. packer_compiled .. "`")
