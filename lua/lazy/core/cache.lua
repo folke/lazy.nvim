@@ -231,13 +231,6 @@ function Cache.find(modname, opts)
   local basename = modname:gsub("%.", "/")
   local idx = modname:find(".", 1, true)
 
-  -- HACK: some plugins try to load invalid relative paths (see #543)
-  if idx == 1 then
-    modname = modname:gsub("^%.+", "")
-    basename = modname:gsub("%.", "/")
-    idx = modname:find(".", 1, true)
-  end
-
   local topmod = idx and modname:sub(1, idx - 1) or modname
 
   -- OPTIM: search for a directory first when topmod == modname
