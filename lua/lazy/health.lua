@@ -94,6 +94,7 @@ M.valid = {
   "commit",
   "cond",
   "config",
+  "deactivate",
   "dependencies",
   "dev",
   "dir",
