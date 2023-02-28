@@ -1,5 +1,22 @@
 # Changelog
 
+## [9.9.0](https://github.com/folke/lazy.nvim/compare/v9.8.5...v9.9.0) (2023-02-28)
+
+
+### Features
+
+* **health:** check for paths on the rtp from plugged or packer ([9bd1c94](https://github.com/folke/lazy.nvim/commit/9bd1c946d6114affebb57dbe3e33741ded566559))
+
+
+### Bug Fixes
+
+* **cache:** add hack to work-around incorrect requires back. Not a fan of this. Fixes [#603](https://github.com/folke/lazy.nvim/issues/603) ([79f85e5](https://github.com/folke/lazy.nvim/commit/79f85e5fed3ea020b09720e273c8b626f699b19a))
+* **git:** honor clone.defaultRemoteName. Fixes [#602](https://github.com/folke/lazy.nvim/issues/602) ([5af9380](https://github.com/folke/lazy.nvim/commit/5af93806aaa33fd9e8b4a7a32e9f847a3ad64c2a))
+* **git:** properly deal with failed clones. Fixes [#571](https://github.com/folke/lazy.nvim/issues/571) ([7722378](https://github.com/folke/lazy.nvim/commit/77223786aaa91446649d0dbdc3eabc2e53f9de6d))
+* **health:** whitelist deactivate prop ([5694483](https://github.com/folke/lazy.nvim/commit/5694483e8782f4d9a01ea8822166998924df5f00))
+* **keys:** set nowait for lazy keymaps when needed. Fixes [#600](https://github.com/folke/lazy.nvim/issues/600) ([1657ae9](https://github.com/folke/lazy.nvim/commit/1657ae9b8c86d672517ac7f573eb180d3f5ecb79))
+* **ui:** always show diagnostics virtual text ([0f713b2](https://github.com/folke/lazy.nvim/commit/0f713b2958b8a2e624fa0e2615418bd6c8fb8e10))
+
 ## [9.8.5](https://github.com/folke/lazy.nvim/compare/v9.8.4...v9.8.5) (2023-02-20)
 
 
