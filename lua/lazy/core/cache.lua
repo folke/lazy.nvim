@@ -231,6 +231,12 @@ function Cache.find(modname, opts)
   local basename = modname:gsub("%.", "/")
   local idx = modname:find(".", 1, true)
 
+  -- HACK: fix incorrect require statements. Really not a fan of keeping this
+  if idx == 1 then
+    modname = modname:gsub("^%.+", "")
+    basename = modname:gsub("%.", "/")
+    idx = modname:find(".", 1, true)
+  end
   local topmod = idx and modname:sub(1, idx - 1) or modname
 
   -- OPTIM: search for a directory first when topmod == modname
