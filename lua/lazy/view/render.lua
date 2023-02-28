@@ -84,7 +84,7 @@ function M:update()
       diag.lnum = diag.row - 1
       return diag
     end, self._diagnostics),
-    { signs = false }
+    { signs = false, virtual_text = true }
   )
 end
 
