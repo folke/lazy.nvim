@@ -1,6 +1,7 @@
 local Git = require("lazy.manage.git")
 local Lock = require("lazy.manage.lock")
 local Config = require("lazy.core.config")
+local Util = require("lazy.util")
 
 ---@type table<string, LazyTaskDef>
 local M = {}
@@ -81,6 +82,14 @@ M.clone = {
     end
 
     table.insert(args, self.plugin.dir)
+
+    if vim.fn.isdirectory(self.plugin.dir) == 1 then
+      require("lazy.manage.task.fs").clean.run(self, {})
+    end
+
+    local marker = self.plugin.dir .. ".cloning"
+    Util.write_file(marker, "")
+
     self:spawn("git", {
       args = args,
       on_exit = function(ok)
@@ -88,6 +97,7 @@ M.clone = {
           self.plugin._.cloned = true
           self.plugin._.installed = true
           self.plugin._.dirty = true
+          vim.loop.fs_unlink(marker)
         end
       end,
     })

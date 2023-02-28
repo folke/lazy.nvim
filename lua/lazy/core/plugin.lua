@@ -308,13 +308,23 @@ function Spec:merge(old, new)
 end
 
 function M.update_state()
+  ---@type string[]
+  local cloning = {}
+
   ---@type table<string,FileType>
   local installed = {}
   Util.ls(Config.options.root, function(_, name, type)
     if type == "directory" and name ~= "readme" then
       installed[name] = type
+    elseif type == "file" and name:sub(-8) == ".cloning" then
+      name = name:sub(1, -9)
+      cloning[#cloning + 1] = name
     end
   end)
+
+  for _, failed in ipairs(cloning) do
+    installed[failed] = nil
+  end
 
   for _, plugin in pairs(Config.plugins) do
     plugin._ = plugin._ or {}

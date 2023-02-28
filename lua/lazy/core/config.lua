@@ -188,6 +188,8 @@ function M.setup(opts)
   M.options.lockfile = Util.norm(M.options.lockfile)
   M.options.readme.root = Util.norm(M.options.readme.root)
 
+  vim.fn.mkdir(M.options.root, "p")
+
   if M.options.performance.reset_packpath then
     vim.go.packpath = vim.env.VIMRUNTIME
   end
