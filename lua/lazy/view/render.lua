@@ -456,14 +456,20 @@ function M:log(task)
         self:diagnostic({ message = "Breaking Changes", severity = vim.diagnostic.severity.WARN })
       end
       self:append(ref:sub(1, 7) .. " ", "LazyCommit", { indent = 6 })
-      self:append(vim.trim(msg)):highlight({
-        ["#%d+"] = "LazyCommitIssue",
-        ["^%S+:"] = "LazyCommitType",
-        ["^%S+(%(.*%)):"] = "LazyCommitScope",
-        ["`.-`"] = "@text.literal.markdown_inline",
-        ["%*.-%*"] = "Italic",
-        ["%*%*.-%*%*"] = "Bold",
-      })
+      if msg:match([[^chore]]) or msg:match([[^ci]]) or msg:match([[^doc]]) then
+        self:append(vim.trim(msg)):highlight({
+          ["."] = "LazyComment",
+        })
+      else
+        self:append(vim.trim(msg)):highlight({
+          ["#%d+"] = "LazyCommitIssue",
+          ["^%S+:"] = "LazyCommitType",
+          ["^%S+(%(.*%)):"] = "LazyCommitScope",
+          ["`.-`"] = "@text.literal.markdown_inline",
+          ["%*.-%*"] = "Italic",
+          ["%*%*.-%*%*"] = "Bold",
+        })
+      end
       -- string.gsub
       self:append(" " .. time, "LazyComment")
       self:nl()
