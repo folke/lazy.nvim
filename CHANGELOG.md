@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.10.0](https://github.com/folke/lazy.nvim/compare/v9.9.0...v9.10.0) (2023-03-02)
+
+
+### Features
+
+* **render:** dim housekeeping commits by default ([#612](https://github.com/folke/lazy.nvim/issues/612)) ([1f7ffec](https://github.com/folke/lazy.nvim/commit/1f7ffec177656ac806706097d23f288e3a5e0b51))
+
 ## [9.9.0](https://github.com/folke/lazy.nvim/compare/v9.8.5...v9.9.0) (2023-02-28)
 
 
