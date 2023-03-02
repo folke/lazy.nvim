@@ -456,21 +456,21 @@ function M:log(task)
         self:diagnostic({ message = "Breaking Changes", severity = vim.diagnostic.severity.WARN })
       end
       self:append(ref:sub(1, 7) .. " ", "LazyCommit", { indent = 6 })
-      if msg:match([[^chore]]) or msg:match([[^ci]]) or msg:match([[^doc]]) then
-        self:append(vim.trim(msg)):highlight({
-          ["."] = "LazyComment",
-        })
-      else
-        self:append(vim.trim(msg)):highlight({
-          ["#%d+"] = "LazyCommitIssue",
-          ["^%S+:"] = "LazyCommitType",
-          ["^%S+(%(.*%)):"] = "LazyCommitScope",
-          ["`.-`"] = "@text.literal.markdown_inline",
-          ["%*.-%*"] = "Italic",
-          ["%*%*.-%*%*"] = "Bold",
-        })
+
+      local dimmed = false
+      for _, dim in ipairs(ViewConfig.dimmed_commits) do
+        if msg:find("^" .. dim) then
+          dimmed = true
+        end
       end
-      -- string.gsub
+      self:append(vim.trim(msg), dimmed and "LazyDimmed" or nil):highlight({
+        ["#%d+"] = "LazyCommitIssue",
+        ["^%S+:"] = dimmed and "Bold" or "LazyCommitType",
+        ["^%S+(%(.*%)):"] = "LazyCommitScope",
+        ["`.-`"] = "@text.literal.markdown_inline",
+        ["%*.-%*"] = "Italic",
+        ["%*%*.-%*%*"] = "Bold",
+      })
       self:append(" " .. time, "LazyComment")
       self:nl()
     end

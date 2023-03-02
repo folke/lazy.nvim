@@ -9,6 +9,7 @@ M.colors = {
   CommitIssue = "Number",
   CommitType = "Title", -- conventional commit type
   CommitScope = "Italic", -- conventional commit scope
+  Dimmed = "Conceal", -- property
   Prop = "Conceal", -- property
   Value = "@string", -- value of a property
   NoCond = "DiagnosticWarn", -- unloaded icon for a plugin where `cond()` was false
