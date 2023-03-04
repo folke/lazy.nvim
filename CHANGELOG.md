@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.10.1](https://github.com/folke/lazy.nvim/compare/v9.10.0...v9.10.1) (2023-03-04)
+
+
+### Bug Fixes
+
+* **process:** unset GIT_WORK_TREE ([c60f7ea](https://github.com/folke/lazy.nvim/commit/c60f7ea985c488192a38bb3ddf7705f958bd3674))
+
 ## [9.10.0](https://github.com/folke/lazy.nvim/compare/v9.9.0...v9.10.0) (2023-03-02)
 
 
