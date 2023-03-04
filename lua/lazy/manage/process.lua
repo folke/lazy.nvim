@@ -62,6 +62,7 @@ function M.spawn(cmd, opts)
     GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
   }, uv.os_environ(), opts.env or {})
   env.GIT_DIR = nil
+  env.GIT_WORK_TREE = nil
   env.GIT_TERMINAL_PROMPT = "0"
 
   ---@type string[]
