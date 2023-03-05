@@ -75,6 +75,8 @@ M.clone = {
       args[#args + 1] = "--recurse-submodules"
     end
 
+    args[#args + 1] = "--origin=origin"
+
     args[#args + 1] = "--progress"
 
     if self.plugin.branch then
