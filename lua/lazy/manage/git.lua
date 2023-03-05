@@ -196,9 +196,7 @@ end
 
 ---@param repo string
 function M.get_origin(repo)
-  local config = M.get_config(repo)
-  local remote = config["clone.defaultRemoteName"] or "origin"
-  return config["remote." .. remote .. ".url"] or config["remote.origin.url"]
+  return M.get_config(repo)["remote.origin.url"]
 end
 
 ---@param repo string
