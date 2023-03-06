@@ -1,4 +1,4 @@
-*lazy.nvim.txt*         For Neovim >= 0.8.0         Last change: 2023 March 05
+*lazy.nvim.txt*         For Neovim >= 0.8.0         Last change: 2023 March 06
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -409,7 +409,7 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
         timeout = 120, -- kill processes that take more than 2 minutes
         url_format = "https://github.com/%s.git",
         -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
-        -- then set the below to false. This is should work, but is NOT supported and will
+        -- then set the below to false. This should work, but is NOT supported and will
         -- increase downloads a lot.
         filter = true,
       },
@@ -870,6 +870,8 @@ Click to see all highlight groups ~
   LazyCommitScope     Italic                   conventional commit scope
 
   LazyCommitType      Title                    conventional commit type
+
+  LazyDimmed          Conceal                  property
 
   LazyDir             _@text.reference_        directory
 
