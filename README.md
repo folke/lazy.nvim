@@ -316,7 +316,7 @@ return {
     timeout = 120, -- kill processes that take more than 2 minutes
     url_format = "https://github.com/%s.git",
     -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
-    -- then set the below to false. This is should work, but is NOT supported and will
+    -- then set the below to false. This should work, but is NOT supported and will
     -- increase downloads a lot.
     filter = true,
   },
@@ -742,6 +742,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 | **LazyCommitIssue**   | **_Number_**               |                                                     |
 | **LazyCommitScope**   | **_Italic_**               | conventional commit scope                           |
 | **LazyCommitType**    | **_Title_**                | conventional commit type                            |
+| **LazyDimmed**        | **_Conceal_**              | property                                            |
 | **LazyDir**           | **_@text.reference_**      | directory                                           |
 | **LazyH1**            | **_IncSearch_**            | home button                                         |
 | **LazyH2**            | **_Bold_**                 | titles                                              |
