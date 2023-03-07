@@ -434,7 +434,7 @@ end
 ---@param is_list? boolean
 function M.values(plugin, prop, is_list)
   ---@type table
-  local ret = plugin._.super and M.values(plugin._.super, prop) or {}
+  local ret = plugin._.super and M.values(plugin._.super, prop, is_list) or {}
   local values = rawget(plugin, prop)
 
   if not values then
