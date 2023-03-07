@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.10.2](https://github.com/folke/lazy.nvim/compare/v9.10.1...v9.10.2) (2023-03-07)
+
+
+### Bug Fixes
+
+* **git:** always set origin name when cloning ([#622](https://github.com/folke/lazy.nvim/issues/622)) ([53be2c0](https://github.com/folke/lazy.nvim/commit/53be2c0ee1848fee2a47b89d184ad02410d3c319))
+* **plugin:** properly pass is_list for recursively merging props ([355312e](https://github.com/folke/lazy.nvim/commit/355312eb514b58b79e93753d46b2612a21949aa4))
+
 ## [9.10.1](https://github.com/folke/lazy.nvim/compare/v9.10.0...v9.10.1) (2023-03-04)
 
 
