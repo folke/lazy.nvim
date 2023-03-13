@@ -341,7 +341,7 @@ function M.lsmod(path)
         break
       end
       -- HACK: type is not always returned due to a bug in luv
-      t = t or uv.fs_stat(path .. "/" .. name).type
+      t = t or uv.fs_stat(path .. "/lua/" .. name).type
       ---@type string
       local topname
       local ext = name:sub(-4)
