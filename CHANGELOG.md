@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.10.3](https://github.com/folke/lazy.nvim/compare/v9.10.2...v9.10.3) (2023-03-13)
+
+
+### Bug Fixes
+
+* **cache:** path ([#645](https://github.com/folke/lazy.nvim/issues/645)) ([8d73b9b](https://github.com/folke/lazy.nvim/commit/8d73b9bccd1fef7a7d3f5cc990c79b2dafcd9a3a))
+
 ## [9.10.2](https://github.com/folke/lazy.nvim/compare/v9.10.1...v9.10.2) (2023-03-07)
 
 
