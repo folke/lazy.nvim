@@ -1,3 +1,8 @@
+-- interop with the native Neovim cache
+if type(package.loaded["vim.cache"]) == "table" then
+  return package.loaded["vim.cache"]
+end
+
 local ffi = require("ffi")
 local uv = vim.loop
 
@@ -31,14 +36,16 @@ local Cache = {
   _loadfile = loadfile,
 }
 
+--- Tracks the time spent in a function
+---@private
 function M.track(stat, start)
   M.stats[stat] = M.stats[stat] or { total = 0, time = 0 }
   M.stats[stat].total = M.stats[stat].total + 1
   M.stats[stat].time = M.stats[stat].time + uv.hrtime() - start
 end
 
--- slightly faster/different version than vim.fs.normalize
--- we also need to have it here, since the cache will load vim.fs
+--- slightly faster/different version than vim.fs.normalize
+--- we also need to have it here, since the cache will load vim.fs
 ---@private
 function Cache.normalize(path)
   if path:sub(1, 1) == "~" then
@@ -52,9 +59,9 @@ function Cache.normalize(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
--- Gets the rtp excluding after directories.
--- The result is cached, and will be updated if the runtime path changes.
--- When called from a fast event, the cached value will be returned.
+--- Gets the rtp excluding after directories.
+--- The result is cached, and will be updated if the runtime path changes.
+--- When called from a fast event, the cached value will be returned.
 --- @return string[] rtp, boolean updated
 ---@private
 function Cache.get_rtp()
@@ -81,7 +88,7 @@ function Cache.get_rtp()
   return Cache._rtp, updated
 end
 
--- Returns the cache file name
+--- Returns the cache file name
 ---@param name string can be a module name, or a file name
 ---@return string file_name
 ---@private
@@ -90,7 +97,7 @@ function Cache.cache_file(name)
   return ret:sub(-4) == ".lua" and (ret .. "c") or (ret .. ".luac")
 end
 
--- Saves the cache entry for a given module or file
+--- Saves the cache entry for a given module or file
 ---@param name string module name or filename
 ---@param entry CacheEntry
 ---@private
@@ -108,7 +115,7 @@ function Cache.write(name, entry)
   uv.fs_close(f)
 end
 
--- Loads the cache entry for a given module or file
+--- Loads the cache entry for a given module or file
 ---@param name string module name or filename
 ---@return CacheEntry?
 ---@private
@@ -135,7 +142,7 @@ function Cache.read(name)
   M.track("read", start)
 end
 
--- The `package.loaders` loader for lua files using the cache.
+--- The `package.loaders` loader for lua files using the cache.
 ---@param modname string module name
 ---@return string|function
 ---@private
@@ -151,7 +158,7 @@ function Cache.loader(modname)
   return "\ncache_loader: module " .. modname .. " not found"
 end
 
--- The `package.loaders` loader for libs
+--- The `package.loaders` loader for libs
 ---@param modname string module name
 ---@return string|function
 ---@private
@@ -175,7 +182,7 @@ function Cache.loader_lib(modname)
   return "\ncache_loader_lib: module " .. modname .. " not found"
 end
 
--- `loadfile` using the cache
+--- `loadfile` using the cache
 ---@param filename? string
 ---@param mode? "b"|"t"|"bt"
 ---@param env? table
@@ -190,10 +197,10 @@ function Cache.loadfile(filename, mode, env)
   return chunk, err
 end
 
--- Checks whether two cache hashes are the same based on:
--- * file size
--- * mtime in seconds
--- * mtime in nanoseconds
+--- Checks whether two cache hashes are the same based on:
+--- * file size
+--- * mtime in seconds
+--- * mtime in nanoseconds
 ---@param h1 CacheHash
 ---@param h2 CacheHash
 ---@private
@@ -201,11 +208,14 @@ function Cache.eq(h1, h2)
   return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
 end
 
--- Loads the given module path using the cache
+--- Loads the given module path using the cache
 ---@param modpath string
----@param opts? {hash?: CacheHash, mode?: "b"|"t"|"bt", env?:table}
+---@param opts? {hash?: CacheHash, mode?: "b"|"t"|"bt", env?:table} (table|nil) Options for loading the module:
+---    - hash: (table) the hash of the file to load if it is already known. (defaults to `vim.loop.fs_stat({modpath})`)
+---    - mode: (string) the mode to load the module with. "b"|"t"|"bt" (defaults to `nil`)
+---    - env: (table) the environment to load the module in. (defaults to `nil`)
+---@see |luaL_loadfile()|
 ---@return function?, string? error_message
----@private
 function M.load(modpath, opts)
   local start = uv.hrtime()
 
@@ -242,10 +252,13 @@ function M.load(modpath, opts)
   return chunk, err
 end
 
--- Finds the module path for the given module name
+--- Finds the module path for the given module name
 ---@param modname string
----@param opts? CacheFindOpts
----@return string? modpath, CacheHash? hash
+---@param opts? CacheFindOpts (table|nil) Options for finding a module:
+---    - rtp: (boolean) Search for modname in the runtime path (defaults to `true`)
+---    - patterns: (string[]) Paterns to use (defaults to `{"/init.lua", ".lua"}`)
+---    - paths: (string[]) Extra paths to search for modname (defaults to `{}`)
+---@return string? modpath, CacheHash? hash (string|nil) modpath for the module
 function M.find(modname, opts)
   local start = uv.hrtime()
   opts = opts or {}
@@ -319,16 +332,16 @@ function M.find(modname, opts)
 end
 
 --- Resets the topmods cache for the path
----@param path string
+---@param path string path to reset
 function M.reset(path)
   Cache._indexed[Cache.normalize(path)] = nil
 end
 
--- Enables the cache:
--- * override loadfile
--- * adds the lua loader
--- * adds the libs loader
--- * remove the Neovim loader
+--- Enables the cache:
+--- * override loadfile
+--- * adds the lua loader
+--- * adds the libs loader
+--- * remove the Neovim loader
 function M.enable()
   if M.enabled then
     return
@@ -353,9 +366,9 @@ function M.enable()
   -- This will make sure we can properly load new top-level lua modules
 end
 
--- Disables the cache:
--- * removes the cache loaders
--- * adds the Neovim loader
+--- Disables the cache:
+--- * removes the cache loaders
+--- * adds the Neovim loader
 function M.disable()
   if not M.enabled then
     return
@@ -372,7 +385,8 @@ function M.disable()
   table.insert(package.loaders, 2, vim._load_package)
 end
 
--- Return the top-level `/lua/*` modules for this path
+--- Return the top-level `/lua/*` modules for this path
+---@param path string path to check for top-level lua modules
 ---@return string[]
 function M.lsmod(path)
   if not Cache._indexed[path] then
@@ -409,7 +423,7 @@ function M.lsmod(path)
   return Cache._indexed[path]
 end
 
--- Debug function that wrapps all loaders and tracks stats
+--- Debug function that wrapps all loaders and tracks stats
 function M.profile_loaders()
   for l, loader in pairs(package.loaders) do
     local loc = debug.getinfo(loader, "Sn").source:sub(2)
@@ -423,7 +437,7 @@ function M.profile_loaders()
   end
 end
 
--- Prints all cache stats
+--- Prints all cache stats
 function M.inspect()
   ---@private
   local function ms(nsec)
