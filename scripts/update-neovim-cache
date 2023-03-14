@@ -1,0 +1,4 @@
+#!/bin/env bash
+cd ~/projects/neovim || exit
+sed -n '/NEOVIM/,$p' ~/projects/lazy.nvim/lua/lazy/core/cache.lua | sed '1d' | rg -v "selene" >./runtime/lua/vim/cache.lua
+stylua ./runtime/lua/vim/cache.lua

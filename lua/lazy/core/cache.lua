@@ -7,6 +7,7 @@ if type(package.loaded["vim.cache"]) == "table" then
   return package.loaded["vim.cache"]
 end
 
+-- NEOVIM
 local uv = vim.loop
 
 local M = {}
