@@ -193,6 +193,7 @@ end
 ---@param env? table
 ---@return function?, string?  error_message
 ---@private
+-- luacheck: ignore 312
 function Cache.loadfile(filename, mode, env)
   local start = uv.hrtime()
   filename = Cache.normalize(filename)
@@ -332,6 +333,7 @@ function M.find(modname, opts)
   if modpath then
     return modpath, hash
   end
+
   -- module not found
   M.stats.find.not_found = M.stats.find.not_found + 1
 end
