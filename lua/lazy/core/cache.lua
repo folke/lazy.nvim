@@ -42,7 +42,7 @@ local Cache = {
 
 --- Tracks the time spent in a function
 ---@private
-function M.track(stat, start)
+function M._track(stat, start)
   M.stats[stat] = M.stats[stat] or { total = 0, time = 0 }
   M.stats[stat].total = M.stats[stat].total + 1
   M.stats[stat].time = M.stats[stat].time + uv.hrtime() - start
@@ -71,7 +71,7 @@ end
 function Cache.get_rtp()
   local start = uv.hrtime()
   if vim.in_fast_event() then
-    M.track("get_rtp", start)
+    M._track("get_rtp", start)
     return (Cache._rtp or {}), false
   end
   local updated = false
@@ -88,7 +88,7 @@ function Cache.get_rtp()
     updated = true
     Cache._rtp_key = key
   end
-  M.track("get_rtp", start)
+  M._track("get_rtp", start)
   return Cache._rtp, updated
 end
 
@@ -143,7 +143,7 @@ function Cache.read(name)
       chunk = data:sub(16 + 1),
     }
   end
-  M.track("read", start)
+  M._track("read", start)
 end
 
 --- The `package.loaders` loader for lua files using the cache.
@@ -155,10 +155,10 @@ function Cache.loader(modname)
   local modpath, hash = M.find(modname)
   if modpath then
     local chunk, err = M.load(modpath, { hash = hash })
-    M.track("loader", start)
+    M._track("loader", start)
     return chunk or error(err)
   end
-  M.track("loader", start)
+  M._track("loader", start)
   return "\ncache_loader: module " .. modname .. " not found"
 end
 
@@ -179,10 +179,10 @@ function Cache.loader_lib(modname)
     local dash = modname:find("-", 1, true)
     local funcname = dash and modname:sub(dash + 1) or modname
     local chunk, err = package.loadlib(modpath, "luaopen_" .. funcname:gsub("%.", "_"))
-    M.track("loader_lib", start)
+    M._track("loader_lib", start)
     return chunk or error(err)
   end
-  M.track("loader_lib", start)
+  M._track("loader_lib", start)
   return "\ncache_loader_lib: module " .. modname .. " not found"
 end
 
@@ -197,7 +197,7 @@ function Cache.loadfile(filename, mode, env)
   filename = Cache.normalize(filename)
   mode = nil -- ignore mode, since we byte-compile the lua source files
   local chunk, err = M.load(filename, { mode = mode, env = env })
-  M.track("loadfile", start)
+  M._track("loadfile", start)
   return chunk, err
 end
 
@@ -231,7 +231,7 @@ function M.load(modpath, opts)
   if not hash then
     -- trigger correct error
     chunk, err = Cache._loadfile(modpath, opts.mode, opts.env)
-    M.track("load", start)
+    M._track("load", start)
     return chunk, err
   end
 
@@ -241,7 +241,7 @@ function M.load(modpath, opts)
     -- selene: allow(incorrect_standard_library_use)
     chunk, err = load(entry.chunk --[[@as string]], "@" .. modpath, opts.mode, opts.env)
     if not (err and err:find("cannot load incompatible bytecode", 1, true)) then
-      M.track("load", start)
+      M._track("load", start)
       return chunk, err
     end
   end
@@ -252,7 +252,7 @@ function M.load(modpath, opts)
     entry.chunk = string.dump(chunk)
     Cache.write(modpath, entry)
   end
-  M.track("load", start)
+  M._track("load", start)
   return chunk, err
 end
 
@@ -327,7 +327,7 @@ function M.find(modname, opts)
     modpath, hash = _find(opts.paths)
   end
 
-  M.track("find", start)
+  M._track("find", start)
   if modpath then
     return modpath, hash
   end
@@ -422,7 +422,7 @@ function M.lsmod(path)
         end
       end
     end
-    M.track("lsmod", start)
+    M._track("lsmod", start)
   end
   return Cache._indexed[path]
 end
@@ -434,8 +434,8 @@ function M.profile_loaders()
     package.loaders[l] = function(modname)
       local start = vim.loop.hrtime()
       local ret = loader(modname)
-      M.track("loader " .. l .. ": " .. loc, start)
-      M.track("loader_all", start)
+      M._track("loader " .. l .. ": " .. loc, start)
+      M._track("loader_all", start)
       return ret
     end
   end
