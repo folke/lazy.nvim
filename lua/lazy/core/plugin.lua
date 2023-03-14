@@ -1,7 +1,6 @@
 local Config = require("lazy.core.config")
 local Util = require("lazy.core.util")
 local Handler = require("lazy.core.handler")
-local Cache = require("lazy.core.cache")
 
 ---@class LazyCorePlugin
 local M = {}
@@ -395,7 +394,6 @@ function M.load()
   Util.track("state")
   M.update_state()
   Util.track()
-  require("lazy.core.cache").indexed_unloaded = false
   M.loading = false
 end
 

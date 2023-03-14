@@ -183,7 +183,6 @@ function M.setup(opts)
   if type(M.options.spec) == "string" then
     M.options.spec = { import = M.options.spec }
   end
-  M.options.performance.cache = require("lazy.core.cache").config
   table.insert(M.options.install.colorscheme, "habamax")
 
   M.options.root = Util.norm(M.options.root)

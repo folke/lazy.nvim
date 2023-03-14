@@ -33,15 +33,20 @@ function M.setup(spec, opts)
   end
   local start = vim.loop.hrtime()
 
-  -- load module cache before anything else
+  -- poly-fill vim.cache
+  if not vim.cache then
+    vim.cache = require("lazy.core.cache")
+  end
+
   local enable_cache = not (
     opts
     and opts.performance
     and opts.performance.cache
     and opts.performance.cache.enabled == false
   )
+  -- load module cache before anything else
   if enable_cache then
-    require("lazy.core.cache").enable()
+    vim.cache.enable()
   end
 
   require("lazy.stats").track("LazyStart")
@@ -53,7 +58,7 @@ function M.setup(spec, opts)
   table.insert(package.loaders, 3, Loader.loader)
 
   if vim.g.profile_loaders then
-    require("lazy.core.cache").profile_loaders()
+    vim.cache.profile_loaders()
   end
 
   Util.track({ plugin = "lazy.nvim" }) -- setup start

@@ -241,8 +241,7 @@ function M.get_unloaded_rtp(modname)
 end
 
 function M.find_root(modname)
-  local Cache = require("lazy.core.cache")
-  local modpath = Cache.find(modname, {
+  local modpath = vim.cache.find(modname, {
     rtp = true,
     paths = M.get_unloaded_rtp(modname),
     patterns = { "", ".lua" },

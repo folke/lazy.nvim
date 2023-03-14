@@ -5,7 +5,6 @@ local Handler = require("lazy.core.handler")
 local Git = require("lazy.manage.git")
 local Plugin = require("lazy.core.plugin")
 local ViewConfig = require("lazy.view.config")
-local Cache = require("lazy.core.cache")
 
 local Text = require("lazy.view.text")
 
@@ -676,7 +675,7 @@ function M:debug()
   end)
   self:nl()
 
-  Util.foreach(Cache.stats, function(name, stats)
+  Util.foreach(vim.cache.stats, function(name, stats)
     self:append(name, "LazyH2"):nl()
     local props = {
       { "total", stats.total or 0, "Number" },
