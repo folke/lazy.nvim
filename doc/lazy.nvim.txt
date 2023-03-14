@@ -1,4 +1,4 @@
-*lazy.nvim.txt*         For Neovim >= 0.8.0         Last change: 2023 March 13
+*lazy.nvim.txt*         For Neovim >= 0.8.0         Last change: 2023 March 14
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -129,7 +129,7 @@ PLUGIN SPEC                                  *lazy.nvim-lazy.nvim-plugin-spec*
   enabled        boolean? or fun():boolean                                    When false, or if the function returns false, then
                                                                               this plugin will not be included in the spec
 
-  cond           boolean? or fun():boolean                                    When false, or if the function returns false, then
+  cond           boolean? or fun(LazyPlugin):boolean                          When false, or if the function returns false, then
                                                                               this plugin will not be loaded. Useful to disable
                                                                               some plugins in vscode, or firenvim for example.
 
@@ -396,6 +396,9 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
       defaults = {
         lazy = false, -- should plugins be lazy-loaded?
         version = nil,
+        -- default `cond` you can use to globally disable a lot of plugins
+        -- when running inside vscode for example
+        cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
         -- version = "", -- enable this to try installing the latest stable versions of plugins
       },
       -- leave nil when passing the spec as the first argument to setup()
