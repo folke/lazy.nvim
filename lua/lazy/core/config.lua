@@ -9,6 +9,9 @@ M.defaults = {
   defaults = {
     lazy = false, -- should plugins be lazy-loaded?
     version = nil,
+    -- default `cond` you can use to globally disable a lot of plugins
+    -- when running inside vscode for example
+    cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
     -- version = "*", -- enable this to try installing the latest stable versions of plugins
   },
   -- leave nil when passing the spec as the first argument to setup()
