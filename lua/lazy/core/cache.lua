@@ -7,7 +7,6 @@ if type(package.loaded["vim.cache"]) == "table" then
   return package.loaded["vim.cache"]
 end
 
-local ffi = require("ffi")
 local uv = vim.loop
 
 local M = {}
@@ -20,7 +19,7 @@ local M = {}
 ---@field patterns? string[] Paterns to use (defaults to `{"/init.lua", ".lua"}`)
 ---@field paths? string[] Extra paths to search for modname
 
-M.VERSION = 2
+M.VERSION = 3
 M.path = vim.fn.stdpath("cache") .. "/luac"
 M.enabled = false
 ---@type table<string, {total:number, time:number, [string]:number?}?>
@@ -114,7 +113,7 @@ function Cache.write(name, entry)
     entry.hash.mtime.sec,
     entry.hash.mtime.nsec,
   }
-  uv.fs_write(f, ffi.string(ffi.new("const uint32_t[4]", header), 16))
+  uv.fs_write(f, table.concat(header, ",") .. "\0")
   uv.fs_write(f, entry.chunk)
   uv.fs_close(f)
 end
@@ -132,15 +131,17 @@ function Cache.read(name)
     local data = uv.fs_read(f, hash.size, 0) --[[@as string]]
     uv.fs_close(f)
 
+    local zero = data:find("\0", 1, true)
+
     ---@type integer[]|{[0]:integer}
-    local header = ffi.cast("uint32_t*", ffi.new("const char[16]", data:sub(1, 16)))
-    if header[0] ~= M.VERSION then
+    local header = vim.split(data:sub(1, zero - 1), ",")
+    if tonumber(header[1]) ~= M.VERSION then
       return
     end
-    M.track("read", start)
+    M._track("read", start)
     return {
-      hash = { size = header[1], mtime = { sec = header[2], nsec = header[3] } },
-      chunk = data:sub(16 + 1),
+      hash = { size = tonumber(header[2]), mtime = { sec = tonumber(header[3]), nsec = tonumber(header[4]) } },
+      chunk = data:sub(zero + 1),
     }
   end
   M._track("read", start)
