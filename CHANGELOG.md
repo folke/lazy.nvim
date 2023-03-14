@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.11.0](https://github.com/folke/lazy.nvim/compare/v9.10.3...v9.11.0) (2023-03-14)
+
+
+### Features
+
+* **plugin:** added config.defaults.cond. Fixes [#640](https://github.com/folke/lazy.nvim/issues/640) ([9afba38](https://github.com/folke/lazy.nvim/commit/9afba388facee5ce45d244c0e10ce650d42d9495))
+
+
+### Bug Fixes
+
+* **loader:** never load lua files from a plugin where cond=false. Show error instead ([10f5844](https://github.com/folke/lazy.nvim/commit/10f5844abf30eb9b180efece36639b6eecb33e86))
+
 ## [9.10.3](https://github.com/folke/lazy.nvim/compare/v9.10.2...v9.10.3) (2023-03-13)
 
 
