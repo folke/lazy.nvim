@@ -12,8 +12,9 @@ local M = {}
 ---@field paths? string[] Extra paths to search for modname
 
 M.VERSION = 2
-M.path = vim.fn.stdpath("cache") .. "/lazy/luac"
+M.path = vim.fn.stdpath("cache") .. "/luac"
 M.enabled = false
+---@type table<string, {total:number, time:number, [string]:number?}?>
 M.stats = {
   find = { total = 0, time = 0, not_found = 0 },
 }
@@ -147,7 +148,7 @@ function Cache.loader(modname)
     return chunk or error(err)
   end
   M.track("loader", start)
-  return "\nlazy_loader: module " .. modname .. " not found"
+  return "\ncache_loader: module " .. modname .. " not found"
 end
 
 -- The `package.loaders` loader for libs
@@ -171,7 +172,7 @@ function Cache.loader_lib(modname)
     return chunk or error(err)
   end
   M.track("loader_lib", start)
-  return "\nlazy_loader_lib: module " .. modname .. " not found"
+  return "\ncache_loader_lib: module " .. modname .. " not found"
 end
 
 -- `loadfile` using the cache
@@ -347,6 +348,9 @@ function M.enable()
       break
     end
   end
+  -- TODO: add an autocmd on BufWritePost that checks if its in a /lua folder
+  -- if thats the case, then reset the plugin path.
+  -- This will make sure we can properly load new top-level lua modules
 end
 
 -- Disables the cache:
