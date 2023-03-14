@@ -460,6 +460,9 @@ function M.auto_load(modname, modpath)
         error("Plugin " .. plugin.name .. " is not loaded and is configured with module=false")
       end
       M.load(plugin, { require = modname })
+      if plugin._.cond == false then
+        error("You're trying to load `" .. plugin.name .. "` for which `cond==false`")
+      end
     end
     return true
   end
@@ -470,7 +473,6 @@ end
 function M.loader(modname)
   local paths = Util.get_unloaded_rtp(modname)
   local modpath, hash = Cache._Cache.find(modname, { rtp = false, paths = paths })
-  -- print(modname .. " " .. paths[1])
   if modpath then
     M.auto_load(modname, modpath)
     local mod = package.loaded[modname]
