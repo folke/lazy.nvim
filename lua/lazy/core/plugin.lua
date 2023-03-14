@@ -250,7 +250,6 @@ function Spec:import(spec)
     return
   end
 
-  Cache.indexed_unloaded = false
   self.modules[#self.modules + 1] = spec.import
 
   local imported = 0

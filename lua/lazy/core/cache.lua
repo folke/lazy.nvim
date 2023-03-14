@@ -51,6 +51,10 @@ function Cache.normalize(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
+-- Gets the rtp excluding after directories.
+-- The result is cached, and will be updated if the runtime path changes.
+-- When called from a fast event, the cached value will be returned.
+--- @return string[] rtp, boolean updated
 ---@private
 function Cache.get_rtp()
   local start = uv.hrtime()
@@ -76,13 +80,17 @@ function Cache.get_rtp()
   return Cache._rtp, updated
 end
 
+-- Returns the cache file name
 ---@param name string can be a module name, or a file name
+---@return string file_name
 ---@private
 function Cache.cache_file(name)
   local ret = M.path .. "/" .. name:gsub("[/\\:]", "%%")
   return ret:sub(-4) == ".lua" and (ret .. "c") or (ret .. ".luac")
 end
 
+-- Saves the cache entry for a given module or file
+---@param name string module name or filename
 ---@param entry CacheEntry
 ---@private
 function Cache.write(name, entry)
@@ -99,6 +107,8 @@ function Cache.write(name, entry)
   uv.fs_close(f)
 end
 
+-- Loads the cache entry for a given module or file
+---@param name string module name or filename
 ---@return CacheEntry?
 ---@private
 function Cache.read(name)
@@ -124,11 +134,13 @@ function Cache.read(name)
   M.track("read", start)
 end
 
----@param modname string
+-- The `package.loaders` loader for lua files using the cache.
+---@param modname string module name
+---@return string|function
 ---@private
 function Cache.loader(modname)
   local start = uv.hrtime()
-  local modpath, hash = Cache.find(modname)
+  local modpath, hash = M.find(modname)
   if modpath then
     local chunk, err = M.load(modpath, { hash = hash })
     M.track("loader", start)
@@ -138,11 +150,13 @@ function Cache.loader(modname)
   return "\nlazy_loader: module " .. modname .. " not found"
 end
 
----@param modname string
+-- The `package.loaders` loader for libs
+---@param modname string module name
+---@return string|function
 ---@private
 function Cache.loader_lib(modname)
   local start = uv.hrtime()
-  local modpath = Cache.find(modname, { patterns = jit.os:find("Windows") and { ".dll" } or { ".so" } })
+  local modpath = M.find(modname, { patterns = jit.os:find("Windows") and { ".dll" } or { ".so" } })
   ---@type function?, string?
   if modpath then
     -- Making function name in Lua 5.1 (see src/loadlib.c:mkfuncname) is
@@ -160,6 +174,7 @@ function Cache.loader_lib(modname)
   return "\nlazy_loader_lib: module " .. modname .. " not found"
 end
 
+-- `loadfile` using the cache
 ---@param filename? string
 ---@param mode? "b"|"t"|"bt"
 ---@param env? table
@@ -168,11 +183,16 @@ end
 function Cache.loadfile(filename, mode, env)
   local start = uv.hrtime()
   filename = Cache.normalize(filename)
+  mode = nil -- ignore mode, since we byte-compile the lua source files
   local chunk, err = M.load(filename, { mode = mode, env = env })
   M.track("loadfile", start)
   return chunk, err
 end
 
+-- Checks whether two cache hashes are the same based on:
+-- * file size
+-- * mtime in seconds
+-- * mtime in nanoseconds
 ---@param h1 CacheHash
 ---@param h2 CacheHash
 ---@private
@@ -180,6 +200,7 @@ function Cache.eq(h1, h2)
   return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
 end
 
+-- Loads the given module path using the cache
 ---@param modpath string
 ---@param opts? {hash?: CacheHash, mode?: "b"|"t"|"bt", env?:table}
 ---@return function?, string? error_message
@@ -220,10 +241,11 @@ function M.load(modpath, opts)
   return chunk, err
 end
 
+-- Finds the module path for the given module name
 ---@param modname string
 ---@param opts? CacheFindOpts
----@return string? modpath, CacheHash? hash, CacheEntry? entry
-function Cache.find(modname, opts)
+---@return string? modpath, CacheHash? hash
+function M.find(modname, opts)
   local start = uv.hrtime()
   opts = opts or {}
 
@@ -231,12 +253,15 @@ function Cache.find(modname, opts)
   local basename = modname:gsub("%.", "/")
   local idx = modname:find(".", 1, true)
 
-  -- HACK: fix incorrect require statements. Really not a fan of keeping this
+  -- HACK: fix incorrect require statements. Really not a fan of keeping this,
+  -- but apparently the regular lua loader also allows this
   if idx == 1 then
     modname = modname:gsub("^%.+", "")
     basename = modname:gsub("%.", "/")
     idx = modname:find(".", 1, true)
   end
+
+  -- get the top-level module name
   local topmod = idx and modname:sub(1, idx - 1) or modname
 
   -- OPTIM: search for a directory first when topmod == modname
@@ -245,7 +270,11 @@ function Cache.find(modname, opts)
     patterns[p] = "/lua/" .. basename .. pattern
   end
 
+  -- Checks if the given paths contain the top-level module.
+  -- If so, it tries to find the module path for the given module name.
   ---@param paths string[]
+  ---@return string? modpath, CacheHash? hash
+  ---@private
   local function _find(paths)
     for _, path in ipairs(paths) do
       if M.lsmod(path)[topmod] then
@@ -261,9 +290,10 @@ function Cache.find(modname, opts)
     end
   end
 
-  ---@type string, CacheHash
+  ---@type string?, CacheHash?
   local modpath, hash
 
+  -- always check the rtp first
   if opts.rtp ~= false then
     modpath, hash = _find(Cache._rtp or {})
     if not modpath then
@@ -273,6 +303,8 @@ function Cache.find(modname, opts)
       end
     end
   end
+
+  -- check any additional paths
   if (not modpath) and opts.paths then
     modpath, hash = _find(opts.paths)
   end
@@ -291,6 +323,11 @@ function M.reset(path)
   Cache._indexed[Cache.normalize(path)] = nil
 end
 
+-- Enables the cache:
+-- * override loadfile
+-- * adds the lua loader
+-- * adds the libs loader
+-- * remove the Neovim loader
 function M.enable()
   if M.enabled then
     return
@@ -312,6 +349,9 @@ function M.enable()
   end
 end
 
+-- Disables the cache:
+-- * removes the cache loaders
+-- * adds the Neovim loader
 function M.disable()
   if not M.enabled then
     return
@@ -365,14 +405,7 @@ function M.lsmod(path)
   return Cache._indexed[path]
 end
 
----@param modname string
----@param opts? CacheFindOpts
----@return string? modpath
-function M.find(modname, opts)
-  local modpath = Cache.find(modname, opts)
-  return modpath
-end
-
+-- Debug function that wrapps all loaders and tracks stats
 function M.profile_loaders()
   for l, loader in pairs(package.loaders) do
     local loc = debug.getinfo(loader, "Sn").source:sub(2)
@@ -386,7 +419,9 @@ function M.profile_loaders()
   end
 end
 
+-- Prints all cache stats
 function M.inspect()
+  ---@private
   local function ms(nsec)
     return math.floor(nsec / 1e6 * 1000 + 0.5) / 1000 .. "ms"
   end

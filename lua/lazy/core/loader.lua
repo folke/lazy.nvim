@@ -476,7 +476,7 @@ end
 ---@param modname string
 function M.loader(modname)
   local paths = Util.get_unloaded_rtp(modname)
-  local modpath, hash = Cache._Cache.find(modname, { rtp = false, paths = paths })
+  local modpath, hash = Cache.find(modname, { rtp = false, paths = paths })
   if modpath then
     M.auto_load(modname, modpath)
     local mod = package.loaded[modname]
