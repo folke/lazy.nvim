@@ -1,5 +1,20 @@
 # Changelog
 
+## [9.12.0](https://github.com/folke/lazy.nvim/compare/v9.11.0...v9.12.0) (2023-03-15)
+
+
+### Features
+
+* **cache:** automatically reset topmods when a user changes a file for a path on the rtp ([5b7b8c5](https://github.com/folke/lazy.nvim/commit/5b7b8c51495de8ced973cc23f0a58cadd21de875))
+* **cache:** drop dependency on ffi ([810acc1](https://github.com/folke/lazy.nvim/commit/810acc1e86180403308e1cf650ed9fb0c5d27a44))
+* **cache:** remove any mentions of lazy. Move the cache to cache/luac instead of cache/lazy/luac ([49dda87](https://github.com/folke/lazy.nvim/commit/49dda8751e99aae2ae7073c6374bc1b8c38d0649))
+* **cache:** use `vim.cache` everywhere. poly-fill when needed ([ea1a044](https://github.com/folke/lazy.nvim/commit/ea1a044e3c819693565e0d73994587023b8e5e90))
+
+
+### Bug Fixes
+
+* **cache:** remove dependency on jit ([942c805](https://github.com/folke/lazy.nvim/commit/942c805b8427e3b4b9586e27702eeceacf967549))
+
 ## [9.11.0](https://github.com/folke/lazy.nvim/compare/v9.10.3...v9.11.0) (2023-03-14)
 
 
