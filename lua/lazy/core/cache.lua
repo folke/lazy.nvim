@@ -1,13 +1,3 @@
----@diagnostic disable: duplicate-doc-alias
----@diagnostic disable: duplicate-doc-field
----@diagnostic disable: duplicate-set-field
-
--- interop with the native Neovim cache
-if type(package.loaded["vim.cache"]) == "table" then
-  return package.loaded["vim.cache"]
-end
-
--- NEOVIM
 local uv = vim.loop
 
 local M = {}

@@ -675,7 +675,7 @@ function M:debug()
   end)
   self:nl()
 
-  Util.foreach(vim.cache.stats, function(name, stats)
+  Util.foreach(require("lazy.core.cache").stats, function(name, stats)
     self:append(name, "LazyH2"):nl()
     local props = {
       { "total", stats.total or 0, "Number" },

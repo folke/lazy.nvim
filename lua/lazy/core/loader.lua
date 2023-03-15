@@ -2,6 +2,7 @@ local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")
+local Cache = require("lazy.core.cache")
 
 ---@class LazyCoreLoader
 local M = {}
@@ -72,7 +73,7 @@ function M.install_missing()
       -- remove and installed plugins from indexed, so cache will index again
       for _, p in pairs(Config.plugins) do
         if p._.installed then
-          vim.cache.reset(p.dir)
+          Cache.reset(p.dir)
         end
       end
       -- reload plugins
@@ -345,7 +346,7 @@ function M.get_main(plugin)
   local normname = Util.normname(plugin.name)
   ---@type string[]
   local mods = {}
-  for modname, _ in pairs(vim.cache.lsmod(plugin.dir)) do
+  for modname, _ in pairs(Cache.lsmod(plugin.dir)) do
     mods[#mods + 1] = modname
     local modnorm = Util.normname(modname)
     -- if we found an exact match, then use that
@@ -475,7 +476,7 @@ end
 ---@param modname string
 function M.loader(modname)
   local paths = Util.get_unloaded_rtp(modname)
-  local modpath, hash = vim.cache.find(modname, { rtp = false, paths = paths })
+  local modpath, hash = Cache.find(modname, { rtp = false, paths = paths })
   if modpath then
     M.auto_load(modname, modpath)
     local mod = package.loaded[modname]
@@ -484,7 +485,7 @@ function M.loader(modname)
         return mod
       end
     end
-    return vim.cache.load(modpath, { hash = hash })
+    return Cache.load(modpath, { hash = hash })
   end
 end
 
