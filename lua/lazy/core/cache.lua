@@ -170,7 +170,8 @@ end
 ---@private
 function Cache.loader_lib(modname)
   local start = uv.hrtime()
-  local modpath = M.find(modname, { patterns = jit.os:find("Windows") and { ".dll" } or { ".so" } })
+  local is_win = uv.os_uname().sysname:lower():find("win", 1, true)
+  local modpath = M.find(modname, { patterns = is_win and { ".dll" } or { ".so" } })
   ---@type function?, string?
   if modpath then
     -- Making function name in Lua 5.1 (see src/loadlib.c:mkfuncname) is
