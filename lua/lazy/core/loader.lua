@@ -346,7 +346,8 @@ function M.get_main(plugin)
   local normname = Util.normname(plugin.name)
   ---@type string[]
   local mods = {}
-  for modname, _ in pairs(Cache.lsmod(plugin.dir)) do
+  for _, mod in ipairs(Cache.find("*", { all = true, rtp = false, paths = { plugin.dir } })) do
+    local modname = mod.modname
     mods[#mods + 1] = modname
     local modnorm = Util.normname(modname)
     -- if we found an exact match, then use that
@@ -476,16 +477,17 @@ end
 ---@param modname string
 function M.loader(modname)
   local paths = Util.get_unloaded_rtp(modname)
-  local modpath, hash = Cache.find(modname, { rtp = false, paths = paths })
-  if modpath then
-    M.auto_load(modname, modpath)
+  local ret = Cache.find(modname, { rtp = false, paths = paths })[1]
+  if ret then
+    M.auto_load(modname, ret.modpath)
     local mod = package.loaded[modname]
     if type(mod) == "table" then
       return function()
         return mod
       end
     end
-    return Cache.load(modpath, { hash = hash })
+    -- selene: allow(incorrect_standard_library_use)
+    return loadfile(ret.modpath, nil, nil, ret.stat)
   end
 end
 

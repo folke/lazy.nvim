@@ -241,13 +241,13 @@ function M.get_unloaded_rtp(modname)
 end
 
 function M.find_root(modname)
-  local modpath = require("lazy.core.cache").find(modname, {
+  local ret = require("lazy.core.cache").find(modname, {
     rtp = true,
     paths = M.get_unloaded_rtp(modname),
     patterns = { "", ".lua" },
-  })
-  if modpath then
-    local root = modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+  })[1]
+  if ret then
+    local root = ret.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
     return root
   end
 end

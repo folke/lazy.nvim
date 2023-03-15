@@ -33,9 +33,9 @@ function M.setup(spec, opts)
   end
   local start = vim.loop.hrtime()
 
-  -- disable the Neovim cache if it would ever be added
-  if vim.cache and vim.cache.disable then
-    vim.cache.disable()
+  -- use the NEovim cache if available
+  if vim.loader then
+    package.loaded["lazy.core.cache"] = vim.loader
   end
 
   local Cache = require("lazy.core.cache")
