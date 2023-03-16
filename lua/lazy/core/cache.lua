@@ -273,7 +273,9 @@ end
 ---@param opts? ModuleFindOpts (table|nil) Options for finding a module:
 ---    - rtp: (boolean) Search for modname in the runtime path (defaults to `true`)
 ---    - paths: (string[]) Extra paths to search for modname (defaults to `{}`)
----    - patterns: (string[]) Paterns to use (defaults to `{"/init.lua", ".lua"}`)
+---    - patterns: (string[]) List of patterns to use when searching for modules.
+--                 A pattern is a string added to the basename of the Lua module being searched.
+--                 (defaults to `{"/init.lua", ".lua"}`)
 --     - all: (boolean) Return all matches instead of just the first one (defaults to `false`)
 ---@return ModuleInfo[] (list) A list of results with the following properties:
 ---    - modpath: (string) the path to the module
