@@ -29,6 +29,13 @@ function M:_add(cmd)
     end
 
     self:_load(cmd)
+
+    local info = vim.api.nvim_get_commands({})[cmd]
+    command.nargs = info.nargs
+    if event.args and event.args ~= "" and info.nargs and info.nargs:find("[1?]") then
+      command.args = { event.args }
+    end
+
     vim.cmd(command)
   end, {
     bang = true,
