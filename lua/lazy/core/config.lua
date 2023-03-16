@@ -49,7 +49,7 @@ M.defaults = {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
-      cmd = " ",
+      cmd = "",
       config = "",
       event = "",
       ft = " ",
@@ -62,7 +62,7 @@ M.defaults = {
       plugin = " ",
       runtime = " ",
       source = " ",
-      start = "",
+      start = "",
       task = "✔ ",
       list = {
         "●",

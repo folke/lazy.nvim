@@ -343,7 +343,7 @@ return {
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
     icons = {
-      cmd = " ",
+      cmd = "",
       config = "",
       event = "",
       ft = " ",
@@ -356,7 +356,7 @@ return {
       plugin = " ",
       runtime = " ",
       source = " ",
-      start = "",
+      start = "",
       task = "✔ ",
       list = {
         "●",
