@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.12.1](https://github.com/folke/lazy.nvim/compare/v9.12.0...v9.12.1) (2023-03-16)
+
+
+### Bug Fixes
+
+* **cmd:** properly deal with commands with nargs=? or nargs=1. Fixes [#659](https://github.com/folke/lazy.nvim/issues/659) ([efe36bd](https://github.com/folke/lazy.nvim/commit/efe36bdfda47256dbc223945a7f35eea52b1d736))
+
 ## [9.12.0](https://github.com/folke/lazy.nvim/compare/v9.11.0...v9.12.0) (2023-03-15)
 
 
