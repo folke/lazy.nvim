@@ -41,6 +41,10 @@ function M.update()
   if Config.plugins["lazy.nvim"] then
     vim.cmd.helptags(Config.plugins["lazy.nvim"].dir .. "/doc")
   end
+  if Config.options.readme.enabled == false then
+    return
+  end
+
   local docs = Config.options.readme.root .. "/doc"
   vim.fn.mkdir(docs, "p")
 
