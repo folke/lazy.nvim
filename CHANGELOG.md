@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.13.0](https://github.com/folke/lazy.nvim/compare/v9.12.1...v9.13.0) (2023-03-17)
+
+
+### Features
+
+* **help:** allow disabling README magic ([#663](https://github.com/folke/lazy.nvim/issues/663)) ([e5759d2](https://github.com/folke/lazy.nvim/commit/e5759d202afe80aeb192e7eb02d28b74cc2d66eb))
+
 ## [9.12.1](https://github.com/folke/lazy.nvim/compare/v9.12.0...v9.12.1) (2023-03-16)
 
 
