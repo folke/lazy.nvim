@@ -677,6 +677,18 @@ require("lazy").setup("plugins")
 require("lazy").setup({{import = "plugins"}})
 ```
 
+To import multiple modules from a plugin, add additional specs for each import.
+For example, to import LazyVim core plugins and an optional plugin:
+
+```lua
+require("lazy").setup({
+  spec = {
+    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
+    { import = "lazyvim.plugins.extras.coding.copilot" },
+  }
+)
+```
+
 When you import specs, you can override them by simply adding a spec for the same plugin to your local
 specs, adding any keys you want to override / merge.
 
