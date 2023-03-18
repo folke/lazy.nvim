@@ -84,7 +84,7 @@ function M.check_override(plugin)
   end
 
   local Handler = require("lazy.core.handler")
-  local skip = { "dependencies", "_", "opts" }
+  local skip = { "dependencies", "_", "opts", 1 }
   vim.list_extend(skip, vim.tbl_values(Handler.types))
 
   for key, value in pairs(plugin._.super) do
