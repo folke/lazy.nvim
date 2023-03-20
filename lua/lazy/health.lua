@@ -114,6 +114,7 @@ M.valid = {
   "init",
   "keys",
   "lazy",
+  "main",
   "module",
   "name",
   "opts",
