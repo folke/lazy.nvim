@@ -1,5 +1,14 @@
 # Changelog
 
+## [9.13.1](https://github.com/folke/lazy.nvim/compare/v9.13.0...v9.13.1) (2023-03-20)
+
+
+### Bug Fixes
+
+* **cache:** fix loading libs on Darwin ([236f851](https://github.com/folke/lazy.nvim/commit/236f8517bae70516a3f89fe154e3e18294eb862a))
+* **health:** add `main` key ([#679](https://github.com/folke/lazy.nvim/issues/679)) ([e7622b7](https://github.com/folke/lazy.nvim/commit/e7622b78f6addaeb93debf43041235c16fc74a57))
+* **health:** allow overriding `1` ([959f8c3](https://github.com/folke/lazy.nvim/commit/959f8c36bc1744db2745b18135f2fb822b382cfb))
+
 ## [9.13.0](https://github.com/folke/lazy.nvim/compare/v9.12.1...v9.13.0) (2023-03-17)
 
 
