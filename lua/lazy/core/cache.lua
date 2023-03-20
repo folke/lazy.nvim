@@ -26,32 +26,34 @@ local M = {}
 ---@field modname string Name of the module
 ---@field stat? uv_fs_t File stat of the module path
 
-M.VERSION = 3
+---@alias LoaderStats table<string, {total:number, time:number, [string]:number?}?>
+
 M.path = vim.fn.stdpath("cache") .. "/luac"
 M.enabled = false
----@type table<string, {total:number, time:number, [string]:number?}?>
-M.stats = {
-  find = { total = 0, time = 0, not_found = 0 },
-}
 
 ---@class Loader
 ---@field _rtp string[]
 ---@field _rtp_pure string[]
 ---@field _rtp_key string
 local Loader = {
+  VERSION = 3,
   ---@type table<string, table<string,ModuleInfo>>
   _indexed = {},
   ---@type table<string, string[]>
   _topmods = {},
   _loadfile = loadfile,
+  ---@type LoaderStats
+  _stats = {
+    find = { total = 0, time = 0, not_found = 0 },
+  },
 }
 
 --- Tracks the time spent in a function
 ---@private
-function M._track(stat, start)
-  M.stats[stat] = M.stats[stat] or { total = 0, time = 0 }
-  M.stats[stat].total = M.stats[stat].total + 1
-  M.stats[stat].time = M.stats[stat].time + uv.hrtime() - start
+function Loader.track(stat, start)
+  Loader._stats[stat] = Loader._stats[stat] or { total = 0, time = 0 }
+  Loader._stats[stat].total = Loader._stats[stat].total + 1
+  Loader._stats[stat].time = Loader._stats[stat].time + uv.hrtime() - start
 end
 
 --- slightly faster/different version than vim.fs.normalize
@@ -77,7 +79,7 @@ end
 function Loader.get_rtp()
   local start = uv.hrtime()
   if vim.in_fast_event() then
-    M._track("get_rtp", start)
+    Loader.track("get_rtp", start)
     return (Loader._rtp or {}), false
   end
   local updated = false
@@ -94,7 +96,7 @@ function Loader.get_rtp()
     updated = true
     Loader._rtp_key = key
   end
-  M._track("get_rtp", start)
+  Loader.track("get_rtp", start)
   return Loader._rtp, updated
 end
 
@@ -115,7 +117,7 @@ function Loader.write(name, entry)
   local cname = Loader.cache_file(name)
   local f = assert(uv.fs_open(cname, "w", 438))
   local header = {
-    M.VERSION,
+    Loader.VERSION,
     entry.hash.size,
     entry.hash.mtime.sec,
     entry.hash.mtime.nsec,
@@ -142,16 +144,16 @@ function Loader.read(name)
 
     ---@type integer[]|{[0]:integer}
     local header = vim.split(data:sub(1, zero - 1), ",")
-    if tonumber(header[1]) ~= M.VERSION then
+    if tonumber(header[1]) ~= Loader.VERSION then
       return
     end
-    M._track("read", start)
+    Loader.track("read", start)
     return {
       hash = { size = tonumber(header[2]), mtime = { sec = tonumber(header[3]), nsec = tonumber(header[4]) } },
       chunk = data:sub(zero + 1),
     }
   end
-  M._track("read", start)
+  Loader.track("read", start)
 end
 
 --- The `package.loaders` loader for lua files using the cache.
@@ -163,10 +165,10 @@ function Loader.loader(modname)
   local ret = M.find(modname)[1]
   if ret then
     local chunk, err = Loader.load(ret.modpath, { hash = ret.stat })
-    M._track("loader", start)
+    Loader.track("loader", start)
     return chunk or error(err)
   end
-  M._track("loader", start)
+  Loader.track("loader", start)
   return "\ncache_loader: module " .. modname .. " not found"
 end
 
@@ -189,10 +191,10 @@ function Loader.loader_lib(modname)
     local dash = modname:find("-", 1, true)
     local funcname = dash and modname:sub(dash + 1) or modname
     local chunk, err = package.loadlib(ret.modpath, "luaopen_" .. funcname:gsub("%.", "_"))
-    M._track("loader_lib", start)
+    Loader.track("loader_lib", start)
     return chunk or error(err)
   end
-  M._track("loader_lib", start)
+  Loader.track("loader_lib", start)
   return "\ncache_loader_lib: module " .. modname .. " not found"
 end
 
@@ -209,7 +211,7 @@ function Loader.loadfile(filename, mode, env, hash)
   filename = Loader.normalize(filename)
   mode = nil -- ignore mode, since we byte-compile the lua source files
   local chunk, err = Loader.load(filename, { mode = mode, env = env, hash = hash })
-  M._track("loadfile", start)
+  Loader.track("loadfile", start)
   return chunk, err
 end
 
@@ -244,7 +246,7 @@ function Loader.load(modpath, opts)
   if not hash then
     -- trigger correct error
     chunk, err = Loader._loadfile(modpath, opts.mode, opts.env)
-    M._track("load", start)
+    Loader.track("load", start)
     return chunk, err
   end
 
@@ -254,7 +256,7 @@ function Loader.load(modpath, opts)
     -- selene: allow(incorrect_standard_library_use)
     chunk, err = load(entry.chunk --[[@as string]], "@" .. modpath, opts.mode, opts.env)
     if not (err and err:find("cannot load incompatible bytecode", 1, true)) then
-      M._track("load", start)
+      Loader.track("load", start)
       return chunk, err
     end
   end
@@ -265,7 +267,7 @@ function Loader.load(modpath, opts)
     entry.chunk = string.dump(chunk)
     Loader.write(modpath, entry)
   end
-  M._track("load", start)
+  Loader.track("load", start)
   return chunk, err
 end
 
@@ -332,7 +334,7 @@ function M.find(modname, opts)
       elseif Loader.lsmod(path)[topmod] then
         for _, pattern in ipairs(patterns) do
           local modpath = path .. pattern
-          M.stats.find.stat = (M.stats.find.stat or 0) + 1
+          Loader._stats.find.stat = (Loader._stats.find.stat or 0) + 1
           local hash = uv.fs_stat(modpath)
           if hash then
             results[#results + 1] = { modpath = modpath, stat = hash, modname = modname }
@@ -361,10 +363,10 @@ function M.find(modname, opts)
     _find(opts.paths)
   end
 
-  M._track("find", start)
+  Loader.track("find", start)
   if #results == 0 then
     -- module not found
-    M.stats.find.not_found = M.stats.find.not_found + 1
+    Loader._stats.find.not_found = Loader._stats.find.not_found + 1
   end
 
   return results
@@ -474,57 +476,60 @@ function Loader.lsmod(path)
         end
       end
     end
-    M._track("lsmod", start)
+    Loader.track("lsmod", start)
   end
   return Loader._indexed[path]
 end
 
 --- Debug function that wrapps all loaders and tracks stats
 ---@private
-function M.profile_loaders()
+function M._profile_loaders()
   for l, loader in pairs(package.loaders) do
     local loc = debug.getinfo(loader, "Sn").source:sub(2)
     package.loaders[l] = function(modname)
       local start = vim.loop.hrtime()
       local ret = loader(modname)
-      M._track("loader " .. l .. ": " .. loc, start)
-      M._track("loader_all", start)
+      Loader.track("loader " .. l .. ": " .. loc, start)
+      Loader.track("loader_all", start)
       return ret
     end
   end
 end
 
 --- Prints all cache stats
+---@param opts? {print?:boolean}
+---@return LoaderStats
 ---@private
-function M.inspect()
-  ---@private
-  local function ms(nsec)
-    return math.floor(nsec / 1e6 * 1000 + 0.5) / 1000 .. "ms"
-  end
-  local chunks = {} ---@type string[][]
-  ---@type string[]
-  local stats = vim.tbl_keys(M.stats)
-  table.sort(stats)
-  for _, stat in ipairs(stats) do
-    vim.list_extend(chunks, {
-      { "\n" .. stat .. "\n", "Title" },
-      { "* total:    " },
-      { tostring(M.stats[stat].total) .. "\n", "Number" },
-      { "* time:     " },
-      { ms(M.stats[stat].time) .. "\n", "Bold" },
-      { "* avg time: " },
-      { ms(M.stats[stat].time / M.stats[stat].total) .. "\n", "Bold" },
-    })
-    for k, v in pairs(M.stats[stat]) do
-      if not vim.tbl_contains({ "time", "total" }, k) then
-        chunks[#chunks + 1] = { "* " .. k .. ":" .. string.rep(" ", 9 - #k) }
-        chunks[#chunks + 1] = { tostring(v) .. "\n", "Number" }
+function M._inspect(opts)
+  if opts and opts.print then
+    ---@private
+    local function ms(nsec)
+      return math.floor(nsec / 1e6 * 1000 + 0.5) / 1000 .. "ms"
+    end
+    local chunks = {} ---@type string[][]
+    ---@type string[]
+    local stats = vim.tbl_keys(Loader._stats)
+    table.sort(stats)
+    for _, stat in ipairs(stats) do
+      vim.list_extend(chunks, {
+        { "\n" .. stat .. "\n", "Title" },
+        { "* total:    " },
+        { tostring(Loader._stats[stat].total) .. "\n", "Number" },
+        { "* time:     " },
+        { ms(Loader._stats[stat].time) .. "\n", "Bold" },
+        { "* avg time: " },
+        { ms(Loader._stats[stat].time / Loader._stats[stat].total) .. "\n", "Bold" },
+      })
+      for k, v in pairs(Loader._stats[stat]) do
+        if not vim.tbl_contains({ "time", "total" }, k) then
+          chunks[#chunks + 1] = { "* " .. k .. ":" .. string.rep(" ", 9 - #k) }
+          chunks[#chunks + 1] = { tostring(v) .. "\n", "Number" }
+        end
       end
     end
+    vim.api.nvim_echo(chunks, true, {})
   end
-  vim.api.nvim_echo(chunks, true, {})
+  return Loader._stats
 end
-
-M._Cache = Loader
 
 return M
