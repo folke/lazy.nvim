@@ -176,7 +176,8 @@ end
 ---@private
 function Loader.loader_lib(modname)
   local start = uv.hrtime()
-  local is_win = uv.os_uname().sysname:lower():find("win", 1, true)
+  local sysname = uv.os_uname().sysname:lower() or ""
+  local is_win = sysname:find("win", 1, true) and not sysname:find("darwin", 1, true)
   local ret = M.find(modname, { patterns = is_win and { ".dll" } or { ".so" } })[1]
   ---@type function?, string?
   if ret then
