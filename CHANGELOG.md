@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.14.0](https://github.com/folke/lazy.nvim/compare/v9.13.1...v9.14.0) (2023-03-22)
+
+
+### Features
+
+* **ui:** added test to dimmed commits ([0e230ca](https://github.com/folke/lazy.nvim/commit/0e230caab9466ae352e9aaa6a4327ebd3e72302a))
+
+
+### Bug Fixes
+
+* **ui:** show full reason for Not-Loaded ([#683](https://github.com/folke/lazy.nvim/issues/683)) ([261c2d6](https://github.com/folke/lazy.nvim/commit/261c2d6f95f1e71480c0a573275bbe4fb2c705a2))
+
 ## [9.13.1](https://github.com/folke/lazy.nvim/compare/v9.13.0...v9.13.1) (2023-03-20)
 
 
