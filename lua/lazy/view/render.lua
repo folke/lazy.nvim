@@ -401,9 +401,11 @@ function M:plugin(plugin)
     local reason = {}
     for handler in pairs(Handler.types) do
       if plugin[handler] then
+        local trigger = {}
         for _, value in ipairs(plugin[handler]) do
-          reason[handler] = value
+          table.insert(trigger, type(value) == 'table' and value[1] or value)
         end
+        reason[handler] = table.concat(trigger, ' ')
       end
     end
     for _, other in pairs(Config.plugins) do
