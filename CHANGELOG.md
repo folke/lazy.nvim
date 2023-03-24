@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.1](https://github.com/folke/lazy.nvim/compare/v9.14.0...v9.14.1) (2023-03-24)
+
+
+### Bug Fixes
+
+* **cache:** handle corrupted cache files ([db5b67e](https://github.com/folke/lazy.nvim/commit/db5b67e75c31c955e3df9a3d6781f397b9dc66e8))
+
 ## [9.14.0](https://github.com/folke/lazy.nvim/compare/v9.13.1...v9.14.0) (2023-03-22)
 
 
