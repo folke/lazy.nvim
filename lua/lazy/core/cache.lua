@@ -141,6 +141,9 @@ function Loader.read(name)
     uv.fs_close(f)
 
     local zero = data:find("\0", 1, true)
+    if not zero then
+      return
+    end
 
     ---@type integer[]|{[0]:integer}
     local header = vim.split(data:sub(1, zero - 1), ",")
