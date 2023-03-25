@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.2](https://github.com/folke/lazy.nvim/compare/v9.14.1...v9.14.2) (2023-03-25)
+
+
+### Bug Fixes
+
+* **keys:** dont add (n) to keys id ([9f9d733](https://github.com/folke/lazy.nvim/commit/9f9d733df9644106c258709e1c910d4034bf06ce))
+
 ## [9.14.1](https://github.com/folke/lazy.nvim/compare/v9.14.0...v9.14.1) (2023-03-24)
 
 
