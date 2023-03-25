@@ -25,8 +25,9 @@ function M.parse(value)
     if type(mode) == "table" then
       ---@cast mode string[]
       table.sort(mode)
-      ret.id = ret.id .. " (" .. table.concat(mode, ", ") .. ")"
-    elseif mode ~= "n" then
+      mode = table.concat(mode, ", ")
+    end
+    if mode ~= "n" then
       ret.id = ret.id .. " (" .. mode .. ")"
     end
   end
