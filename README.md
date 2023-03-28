@@ -665,10 +665,12 @@ As part of a spec, you can add `import` statements to import additional plugin m
 Both of the `setup()` calls are equivalent:
 
 ```lua
-require("lazy").setup("plugins")
+opts = { defaults = { lazy = true } }
+
+require("lazy").setup("plugins", opts)
 
 -- Same as:
-require("lazy").setup({{import = "plugins"}})
+require("lazy").setup({{import = "plugins"}}, opts)
 ```
 
 To import multiple modules from a plugin, add additional specs for each import.
@@ -679,7 +681,10 @@ require("lazy").setup({
   spec = {
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     { import = "lazyvim.plugins.extras.coding.copilot" },
-  }
+  },
+  defaults = {
+    lazy = true,
+  },
 )
 ```
 
