@@ -501,8 +501,6 @@ function M:details(plugin)
     end
     if git.commit then
       table.insert(props, { "commit", git.commit:sub(1, 7), "LazyCommit" })
-    else
-      table.insert(props, { "commit", "No commits yet" })
     end
   end
   if Util.file_exists(plugin.dir .. "/README.md") then
