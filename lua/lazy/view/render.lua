@@ -499,7 +499,9 @@ function M:details(plugin)
     if git.branch then
       table.insert(props, { "branch", git.branch })
     end
-    table.insert(props, { "commit", git.commit:sub(1, 7), "LazyCommit" })
+    if git.commit then
+      table.insert(props, { "commit", git.commit:sub(1, 7), "LazyCommit" })
+    end
   end
   if Util.file_exists(plugin.dir .. "/README.md") then
     table.insert(props, { "readme", "README.md" })
