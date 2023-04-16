@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.14.3](https://github.com/folke/lazy.nvim/compare/v9.14.2...v9.14.3) (2023-04-16)
+
+
+### Bug Fixes
+
+* **checkhealth:** use non-deprecated versions if possible ([#729](https://github.com/folke/lazy.nvim/issues/729)) ([c8cad54](https://github.com/folke/lazy.nvim/commit/c8cad548950807848de11e3710de2b560758ecb4))
+* **render:** show message if not yet committed ([#707](https://github.com/folke/lazy.nvim/issues/707)) ([b7a1a0f](https://github.com/folke/lazy.nvim/commit/b7a1a0fbaf1bd0f394783951f16d4c9f8c9dc210))
+
 ## [9.14.2](https://github.com/folke/lazy.nvim/compare/v9.14.1...v9.14.2) (2023-03-25)
 
 
