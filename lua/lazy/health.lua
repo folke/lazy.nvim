@@ -2,13 +2,19 @@ local Config = require("lazy.core.config")
 
 local M = {}
 
+-- "report_" prefix has been deprecated, use the recommended replacements if they exist.
+local start = vim.health.start or vim.health.report_start
+local ok = vim.health.ok or vim.health.report_ok
+local warn = vim.health.warn or vim.health.report_warn
+local error = vim.health.error or vim.health.report_error
+
 function M.check()
-  vim.health.report_start("lazy.nvim")
+  start("lazy.nvim")
 
   if vim.fn.executable("git") == 1 then
-    vim.health.report_ok("Git installed")
+    ok("Git installed")
   else
-    vim.health.report_error("Git not installd?")
+    error("Git not installd?")
   end
 
   local sites = vim.opt.packpath:get()
@@ -22,18 +28,18 @@ function M.check()
     for _, packs in ipairs(vim.fn.expand(site .. "/pack/*", false, true)) do
       if not packs:find("[/\\]dist$") and vim.loop.fs_stat(packs) then
         existing = true
-        vim.health.report_warn("found existing packages at `" .. packs .. "`")
+        warn("found existing packages at `" .. packs .. "`")
       end
     end
   end
   if not existing then
-    vim.health.report_ok("no existing packages found by other package managers")
+    ok("no existing packages found by other package managers")
   end
 
   for _, name in ipairs({ "packer", "plugged", "paq" }) do
     for _, path in ipairs(vim.opt.rtp:get()) do
       if path:find(name, 1, true) then
-        vim.health.report_error("Found paths on the rtp from another plugin manager `" .. name .. "`")
+        error("Found paths on the rtp from another plugin manager `" .. name .. "`")
         break
       end
     end
@@ -41,9 +47,9 @@ function M.check()
 
   local packer_compiled = vim.fn.stdpath("config") .. "/plugin/packer_compiled.lua"
   if vim.loop.fs_stat(packer_compiled) then
-    vim.health.report_error("please remove the file `" .. packer_compiled .. "`")
+    error("please remove the file `" .. packer_compiled .. "`")
   else
-    vim.health.report_ok("packer_compiled.lua not found")
+    ok("packer_compiled.lua not found")
   end
 
   local spec = Config.spec
@@ -52,14 +58,14 @@ function M.check()
     M.check_override(plugin)
   end
   if #spec.notifs > 0 then
-    vim.health.report_error("Issues were reported when loading your specs:")
+    error("Issues were reported when loading your specs:")
     for _, notif in ipairs(spec.notifs) do
       local lines = vim.split(notif.msg, "\n")
       for _, line in ipairs(lines) do
         if notif.level == vim.log.levels.ERROR then
-          vim.health.report_error(line)
+          error(line)
         else
-          vim.health.report_warn(line)
+          warn(line)
         end
       end
     end
@@ -71,7 +77,7 @@ function M.check_valid(plugin)
   for key in pairs(plugin) do
     if not vim.tbl_contains(M.valid, key) then
       if key ~= "module" or type(plugin.module) ~= "boolean" then
-        vim.health.report_warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
+        warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
       end
     end
   end
@@ -89,7 +95,7 @@ function M.check_override(plugin)
 
   for key, value in pairs(plugin._.super) do
     if not vim.tbl_contains(skip, key) and plugin[key] and plugin[key] ~= value then
-      vim.health.report_warn("{" .. plugin.name .. "}: overriding <" .. key .. ">")
+      warn("{" .. plugin.name .. "}: overriding <" .. key .. ">")
     end
   end
 end
