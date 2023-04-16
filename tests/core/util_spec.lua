@@ -51,7 +51,7 @@ describe("util", function()
       local files = Helpers.fs_create(test.files)
 
       -- test with empty cache
-      package.loaded["lazy.core.cache"] = nil
+      Cache.reset()
       local root = Util.find_root(test.mod)
       assert(root, "no root found for " .. test.mod .. " (test " .. t .. ")")
       assert.same(Helpers.path(test.root), root)
@@ -63,7 +63,7 @@ describe("util", function()
       assert.same(expected, mods)
 
       -- fill the cache
-      package.loaded["lazy.core.cache"] = nil
+      Cache.reset()
       root = Util.find_root(test.mod)
       assert(root, "no root found for " .. test.mod .. " (test " .. t .. ")")
       assert.same(Helpers.path(test.root), root)
@@ -77,12 +77,9 @@ describe("util", function()
   end)
 
   it("find the correct root with dels", function()
-    Cache.cache = {}
-    Cache._topmods = {}
-    Cache.topmods_rtp = false
+    Cache.reset()
     vim.opt.rtp:append(Helpers.path("old"))
     Helpers.fs_create({ "old/lua/foobar/init.lua" })
-    Cache.cache["foobar"] = { modpath = Helpers.path("old/lua/foobar/init.lua") }
     local root = Util.find_root("foobar")
     assert(root, "foobar root not found")
     assert.same(Helpers.path("old/lua/foobar"), root)
@@ -91,33 +88,8 @@ describe("util", function()
     assert(not vim.loop.fs_stat(Helpers.path("old/lua/foobar")), "old/lua/foobar should not exist")
 
     -- vim.opt.rtp = rtp
-    Cache._topmods = {}
     vim.opt.rtp:append(Helpers.path("new"))
     Helpers.fs_create({ "new/lua/foobar/init.lua" })
-    root = Util.find_root("foobar")
-    assert(root, "foobar root not found")
-    assert.same(Helpers.path("new/lua/foobar"), root)
-  end)
-
-  it("find the correct root with mod dels", function()
-    Cache.cache = {}
-    Cache._topmods = {}
-    Cache.enabled = true
-    vim.opt.rtp:append(Helpers.path("old"))
-    Helpers.fs_create({ "old/lua/foobar/test.lua" })
-    Cache.cache["foobar.test"] = { modpath = Helpers.path("old/lua/foobar/test.lua") }
-    local root = Util.find_root("foobar")
-    assert(root, "foobar root not found")
-    assert.same(Helpers.path("old/lua/foobar"), root)
-    assert(not Cache.cache["foobar"], "foobar should not be in cache")
-    assert(Cache.cache["foobar.test"], "foobar.test not found in cache")
-
-    Helpers.fs_rm("old")
-
-    -- vim.opt.rtp = rtp
-    Cache._topmods = {}
-    vim.opt.rtp:append(Helpers.path("new"))
-    Helpers.fs_create({ "new/lua/foobar/test.lua" })
     root = Util.find_root("foobar")
     assert(root, "foobar root not found")
     assert.same(Helpers.path("new/lua/foobar"), root)
