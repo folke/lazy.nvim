@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.4](https://github.com/folke/lazy.nvim/compare/v9.14.3...v9.14.4) (2023-04-18)
+
+
+### Bug Fixes
+
+* **cmd:** show descriptive error when command was not found after loading its plugins ([b582fc5](https://github.com/folke/lazy.nvim/commit/b582fc554582c755c221fdcbb7dce648e971cd88))
+
 ## [9.14.3](https://github.com/folke/lazy.nvim/compare/v9.14.2...v9.14.3) (2023-04-16)
 
 
