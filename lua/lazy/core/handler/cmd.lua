@@ -28,14 +28,20 @@ function M:_add(cmd)
       command.range = { event.line1, event.line2 }
     end
 
+    ---@type string
+    local plugins = "`" .. table.concat(vim.tbl_values(self.active[cmd]), ", ") .. "`"
+
     self:_load(cmd)
 
     local info = vim.api.nvim_get_commands({})[cmd]
+    if not info then
+      return Util.error("Command `" .. cmd .. "` not found after loading " .. plugins)
+    end
+
     command.nargs = info.nargs
     if event.args and event.args ~= "" and info.nargs and info.nargs:find("[1?]") then
       command.args = { event.args }
     end
-
     vim.cmd(command)
   end, {
     bang = true,
