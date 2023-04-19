@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.5](https://github.com/folke/lazy.nvim/compare/v9.14.4...v9.14.5) (2023-04-19)
+
+
+### Bug Fixes
+
+* **loader:** keep using the internal lua cache till 0.9.1 ([78b981b](https://github.com/folke/lazy.nvim/commit/78b981b1f33c50ebc51262694bf99e32cc3012b4))
+
 ## [9.14.4](https://github.com/folke/lazy.nvim/compare/v9.14.3...v9.14.4) (2023-04-18)
 
 
