@@ -1,13 +1,3 @@
----@diagnostic disable: duplicate-doc-alias
----@diagnostic disable: duplicate-doc-field
----@diagnostic disable: duplicate-set-field
-
--- interop with the native Neovim loader
-if vim.loader then
-  return vim.loader
-end
-
--- NEOVIM
 local uv = vim.loop
 
 local M = {}
