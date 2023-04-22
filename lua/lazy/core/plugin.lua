@@ -268,7 +268,18 @@ function Spec:import(spec)
     ---@diagnostic disable-next-line: no-unknown
     package.loaded[modname] = nil
     Util.try(function()
-      self:normalize(require(modname))
+      local mod = require(modname)
+      if type(mod) ~= "table" then
+        self.importing = nil
+        return self:error(
+          "Invalid spec module: `"
+            .. modname
+            .. "`\nExpected a `table` of specs, but a `"
+            .. type(mod)
+            .. "` was returned instead"
+        )
+      end
+      self:normalize(mod)
       self.importing = nil
       Util.track()
     end, {
