@@ -101,7 +101,7 @@ function M.float_term(cmd, opts)
     cmd = { cmd }
   end
   if #cmd == 0 then
-    cmd = { vim.env.SHELL or vim.o.shell }
+    cmd = { vim.o.shell }
   end
   opts = opts or {}
   local float = M.float(opts)
