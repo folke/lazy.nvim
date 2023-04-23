@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.6](https://github.com/folke/lazy.nvim/compare/v9.14.5...v9.14.6) (2023-04-23)
+
+
+### Bug Fixes
+
+* **util:** use vim.o.shell by default ([0cbf466](https://github.com/folke/lazy.nvim/commit/0cbf4669138961c27566de684a0df95c01cd35ad))
+
 ## [9.14.5](https://github.com/folke/lazy.nvim/compare/v9.14.4...v9.14.5) (2023-04-19)
 
 
