@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.7](https://github.com/folke/lazy.nvim/compare/v9.14.6...v9.14.7) (2023-04-24)
+
+
+### Bug Fixes
+
+* **build:** make sure to properly load handlers for plugins that were built during startup. Fixes [#744](https://github.com/folke/lazy.nvim/issues/744) ([a758588](https://github.com/folke/lazy.nvim/commit/a7585880081a8ae3dfbecfced960dcfdc124c361))
+
 ## [9.14.6](https://github.com/folke/lazy.nvim/compare/v9.14.5...v9.14.6) (2023-04-23)
 
 
