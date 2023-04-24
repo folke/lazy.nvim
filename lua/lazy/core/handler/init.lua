@@ -25,7 +25,7 @@ function M.setup()
   end
   for _, plugin in pairs(Config.plugins) do
     Util.try(function()
-      M.enable(plugin)
+      M.enable(plugin, true)
     end, "Failed to setup handlers for " .. plugin.name)
   end
 end
@@ -40,8 +40,9 @@ function M.disable(plugin)
 end
 
 ---@param plugin LazyPlugin
-function M.enable(plugin)
-  if not plugin._.loaded then
+---@param force? boolean
+function M.enable(plugin, force)
+  if force or not plugin._.loaded then
     for type, handler in pairs(M.handlers) do
       if plugin[type] then
         handler:add(plugin)
