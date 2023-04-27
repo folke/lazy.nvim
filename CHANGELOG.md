@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.8](https://github.com/folke/lazy.nvim/compare/v9.14.7...v9.14.8) (2023-04-27)
+
+
+### Bug Fixes
+
+* **health:** show error if setup didn't run ([0c7b418](https://github.com/folke/lazy.nvim/commit/0c7b41872ed20f12b45c41cadbccbf74554ac68e))
+
 ## [9.14.7](https://github.com/folke/lazy.nvim/compare/v9.14.6...v9.14.7) (2023-04-24)
 
 
