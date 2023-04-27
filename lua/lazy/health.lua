@@ -53,19 +53,23 @@ function M.check()
   end
 
   local spec = Config.spec
-  for _, plugin in pairs(spec.plugins) do
-    M.check_valid(plugin)
-    M.check_override(plugin)
-  end
-  if #spec.notifs > 0 then
-    error("Issues were reported when loading your specs:")
-    for _, notif in ipairs(spec.notifs) do
-      local lines = vim.split(notif.msg, "\n")
-      for _, line in ipairs(lines) do
-        if notif.level == vim.log.levels.ERROR then
-          error(line)
-        else
-          warn(line)
+  if spec == nil then
+    ok("no packages setup for installation so far.")
+  else
+    for _, plugin in pairs(spec.plugins) do
+      M.check_valid(plugin)
+      M.check_override(plugin)
+    end
+    if #spec.notifs > 0 then
+      error("Issues were reported when loading your specs:")
+      for _, notif in ipairs(spec.notifs) do
+        local lines = vim.split(notif.msg, "\n")
+        for _, line in ipairs(lines) do
+          if notif.level == vim.log.levels.ERROR then
+            error(line)
+          else
+            warn(line)
+          end
         end
       end
     end
