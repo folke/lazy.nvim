@@ -54,7 +54,7 @@ function M.check()
 
   local spec = Config.spec
   if spec == nil then
-    ok("no packages setup for installation so far.")
+    error("No plugins loaded. Did you forget to run `require(\"lazy\").setup()`?")
   else
     for _, plugin in pairs(spec.plugins) do
       M.check_valid(plugin)
