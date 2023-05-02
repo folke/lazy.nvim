@@ -88,7 +88,7 @@ function Text:render(buf)
       local width = vim.fn.strlen(segment.str)
 
       local extmark = segment.hl
-      if extmark then
+      if extmark and width > 0 then
         if type(extmark) == "string" then
           extmark = { hl_group = extmark, end_col = col + width }
         end
