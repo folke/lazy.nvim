@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.9](https://github.com/folke/lazy.nvim/compare/v9.14.8...v9.14.9) (2023-05-02)
+
+
+### Bug Fixes
+
+* **ui:** don't pad empty lines ([#768](https://github.com/folke/lazy.nvim/issues/768)) ([b00d6f7](https://github.com/folke/lazy.nvim/commit/b00d6f7102a3345704edb46cbabf2dfa21d78d24))
+
 ## [9.14.8](https://github.com/folke/lazy.nvim/compare/v9.14.7...v9.14.8) (2023-04-27)
 
 
