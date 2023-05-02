@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.10](https://github.com/folke/lazy.nvim/compare/v9.14.9...v9.14.10) (2023-05-02)
+
+
+### Bug Fixes
+
+* **ui:** issue with rendering empty lines. Fixes [#770](https://github.com/folke/lazy.nvim/issues/770) ([98ba47e](https://github.com/folke/lazy.nvim/commit/98ba47efedc4a29d2258fe80434d87bf5f72baa2))
+
 ## [9.14.9](https://github.com/folke/lazy.nvim/compare/v9.14.8...v9.14.9) (2023-05-02)
 
 
