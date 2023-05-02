@@ -72,6 +72,9 @@ function Text:render(buf)
       str = str .. segment.str
     end
 
+    if str:match("^%s*$") then
+      str = ""
+    end
     table.insert(lines, str)
   end
 
