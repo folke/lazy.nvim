@@ -240,39 +240,54 @@ function M.get_unloaded_rtp(modname)
   return rtp
 end
 
-function M.find_root(modname)
+function M.find_roots(modname)
   local ret = require("lazy.core.cache").find(modname, {
     rtp = true,
     paths = M.get_unloaded_rtp(modname),
     patterns = { "", ".lua" },
-  })[1]
-  if ret then
-    local root = ret.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-    return root
+    all = true,
+  })
+
+  local roots = {}
+  local hash = {}
+  for _, root in ipairs(ret) do
+    local path = root.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
+    if not hash[path] then
+      roots[#roots + 1] = path
+      hash[path] = true
+    end
   end
+
+  return roots
+end
+
+function M.find_root(modname)
+  return M.find_roots(modname)[1]
 end
 
 ---@param modname string
 ---@param fn fun(modname:string, modpath:string)
 function M.lsmod(modname, fn)
-  local root = M.find_root(modname)
-  if not root then
+  local roots = M.find_roots(modname)
+  if not roots then
     return
   end
 
-  if vim.loop.fs_stat(root .. ".lua") then
-    fn(modname, root .. ".lua")
-  end
-
-  M.ls(root, function(path, name, type)
-    if name == "init.lua" then
-      fn(modname, path)
-    elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
-      fn(modname .. "." .. name:sub(1, -5), path)
-    elseif type == "directory" and vim.loop.fs_stat(path .. "/init.lua") then
-      fn(modname .. "." .. name, path .. "/init.lua")
+  for _, root in ipairs(roots) do
+    if vim.loop.fs_stat(root .. ".lua") then
+      fn(modname, root .. ".lua")
     end
-  end)
+
+    M.ls(root, function(path, name, type)
+      if name == "init.lua" then
+        fn(modname, path)
+      elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
+        fn(modname .. "." .. name:sub(1, -5), path)
+      elseif type == "directory" and vim.loop.fs_stat(path .. "/init.lua") then
+        fn(modname .. "." .. name, path .. "/init.lua")
+      end
+    end)
+  end
 end
 
 ---@generic T

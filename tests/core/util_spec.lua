@@ -15,6 +15,82 @@ describe("util", function()
     assert(not vim.loop.fs_stat(Helpers.path("")), "fs root should be deleted")
   end)
 
+  it("find_roots lists the expected single root", function()
+    vim.opt.rtp:append(Helpers.path(""))
+
+    local tests = {
+      {
+        root = "lua/foo",
+        mod = "foo",
+        files = { "lua/foo/one.lua", "lua/foo/two.lua", "lua/foo/init.lua" },
+      },
+      {
+        root = "lua/foo",
+        mod = "foo",
+        files = { "lua/foo/one.lua", "lua/foo/two.lua", "lua/foo.lua" },
+      },
+      {
+        root = "lua/foo",
+        mod = "foo",
+        files = { "lua/foo/one.lua", "lua/foo/two.lua" },
+      },
+      {
+        root = "lua/load-plugins",
+        mod = "load-plugins",
+        files = { "lua/load-plugins.lua" },
+      },
+    }
+
+    for t, test in ipairs(tests) do
+      Helpers.fs_rm("")
+      assert(not vim.loop.fs_stat(Helpers.path("")), "fs root should be deleted")
+
+      local files = Helpers.fs_create(test.files)
+
+      Cache.reset()
+      local roots = Util.find_roots(test.mod)
+      assert.equal(#roots, 1, "wrong number of roots found for " .. test.mod .. " (test " .. t .. ")")
+
+      local expected_root = Helpers.path(test.root)
+      assert.same({expected_root}, roots, "wrong roots found (test " .. t .. ")")
+    end
+  end)
+
+  it("find_roots lists the correct multiple roots", function()
+    vim.opt.rtp:append(Helpers.path("first"))
+    vim.opt.rtp:append(Helpers.path("second"))
+
+    local tests = {
+      {
+        roots = { "first/lua/foo", "second/lua/foo" },
+        mod = "foo",
+        files = { "first/lua/foo/init.lua", "second/lua/foo/local.lua" },
+      },
+      {
+        roots = { "first/lua/foo", "second/lua/foo" },
+        mod = "foo",
+        files = { "first/lua/foo.lua", "second/lua/foo/baz.lua" },
+      },
+    }
+
+    for t, test in ipairs(tests) do
+      Helpers.fs_rm("")
+      assert(not vim.loop.fs_stat(Helpers.path("")), "fs root should be deleted")
+
+      local files = Helpers.fs_create(test.files)
+
+      Cache.reset()
+      local roots = Util.find_roots(test.mod)
+      assert(#roots > 0, "no roots found for " .. test.mod .. " (test " .. t .. ")")
+
+      local expected_roots = {}
+      for _, root in ipairs(test.roots) do
+        expected_roots[#expected_roots + 1] = Helpers.path(root)
+      end
+      assert.same(expected_roots, roots)
+    end
+  end)
+
   it("lsmod lists all mods in dir", function()
     vim.opt.rtp:append(Helpers.path(""))
     local tests = {
@@ -73,6 +149,50 @@ describe("util", function()
       end)
       table.sort(mods)
       assert.same(expected, mods)
+    end
+  end)
+
+  it("lsmod lists modules in multiple roots", function()
+    vim.opt.rtp:append(Helpers.path("first"))
+    vim.opt.rtp:append(Helpers.path("second"))
+
+    local tests = {
+      {
+        roots = { "first/lua/foo", "second/lua/foo" },
+        mod = "foo",
+        files = { "first/lua/foo/init.lua", "second/lua/foo/local.lua" },
+        mods = { "foo", "foo.local" },
+      },
+      {
+        roots = { "first/lua/foo", "second/lua/foo" },
+        mod = "foo",
+        files = { "first/lua/foo.lua", "second/lua/foo/baz.lua" },
+        mods = { "foo", "foo.baz" },
+      },
+    }
+
+    for t, test in ipairs(tests) do
+      Helpers.fs_rm("")
+      assert(not vim.loop.fs_stat(Helpers.path("")), "fs root should be deleted")
+
+      local files = Helpers.fs_create(test.files)
+
+      Cache.reset()
+      local roots = Util.find_roots(test.mod)
+      assert(#roots > 0, "no roots found for " .. test.mod .. " (test " .. t .. ")")
+
+      local expected_roots = {}
+      for _, root in ipairs(test.roots) do
+        expected_roots[#expected_roots + 1] = Helpers.path(root)
+      end
+      assert.same(expected_roots, roots)
+
+      mods = {}
+      Util.lsmod(test.mod, function(modname, modpath)
+        mods[#mods + 1] = modname
+      end)
+      table.sort(mods)
+      assert.same(test.mods, mods)
     end
   end)
 
