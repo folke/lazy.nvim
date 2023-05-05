@@ -82,30 +82,32 @@ function Text:render(buf)
   vim.api.nvim_buf_clear_namespace(buf, Config.ns, 0, -1)
 
   for l, line in ipairs(self._lines) do
-    local col = self.padding
+    if lines[l] ~= "" then
+      local col = self.padding
 
-    for _, segment in ipairs(line) do
-      local width = vim.fn.strlen(segment.str)
+      for _, segment in ipairs(line) do
+        local width = vim.fn.strlen(segment.str)
 
-      local extmark = segment.hl
-      if extmark and width > 0 then
-        if type(extmark) == "string" then
-          extmark = { hl_group = extmark, end_col = col + width }
+        local extmark = segment.hl
+        if extmark then
+          if type(extmark) == "string" then
+            extmark = { hl_group = extmark, end_col = col + width }
+          end
+          ---@cast extmark Extmark
+
+          local extmark_col = extmark.col or col
+          extmark.col = nil
+          local ok = pcall(vim.api.nvim_buf_set_extmark, buf, Config.ns, l - 1, extmark_col, extmark)
+          if not ok then
+            Util.error(
+              "Failed to set extmark. Please report a bug with this info:\n"
+                .. vim.inspect({ segment = segment, line = line })
+            )
+          end
         end
-        ---@cast extmark Extmark
 
-        local extmark_col = extmark.col or col
-        extmark.col = nil
-        local ok = pcall(vim.api.nvim_buf_set_extmark, buf, Config.ns, l - 1, extmark_col, extmark)
-        if not ok then
-          Util.error(
-            "Failed to set extmark. Please report a bug with this info:\n"
-              .. vim.inspect({ segment = segment, line = line })
-          )
-        end
+        col = col + width
       end
-
-      col = col + width
     end
   end
 end
