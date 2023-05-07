@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.14.11](https://github.com/folke/lazy.nvim/compare/v9.14.10...v9.14.11) (2023-05-05)
+
+
+### Bug Fixes
+
+* **ui:** don' render extmarks for empty lines ([dbe0e29](https://github.com/folke/lazy.nvim/commit/dbe0e29d85e2769be6c9738c176ba6d8b0c6817a))
+
 ## [9.14.10](https://github.com/folke/lazy.nvim/compare/v9.14.9...v9.14.10) (2023-05-02)
 
 
