@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For Neovim >= 0.8.0          Last change: 2023 May 07
+*lazy.nvim.txt*          For Neovim >= 0.8.0          Last change: 2023 May 10
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -28,7 +28,6 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 
 FEATURES                                        *lazy.nvim-lazy.nvim-features*
 
-
 - Manage all your Neovim plugins with a powerful UI
 - Fast startup times thanks to automatic caching and bytecode compilation of Lua modules
 - Partial clones instead of shallow clones
@@ -49,7 +48,6 @@ FEATURES                                        *lazy.nvim-lazy.nvim-features*
 
 
 REQUIREMENTS                                *lazy.nvim-lazy.nvim-requirements*
-
 
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Git >= **2.19.0** (for partial clones support)
@@ -82,7 +80,6 @@ Nextstep is to add **lazy.nvim** below the code added in the prior step in
 >lua
     require("lazy").setup(plugins, opts)
 <
-
 
 - **plugins**this should be a `table` or a `string`
     - `table`a list with your |lazy.nvim-plugin-spec|
@@ -220,7 +217,6 @@ types** and **key mappings**.
 
 Plugins will be lazy-loaded when one of the following is `true`
 
-
 - Theplugin only exists as a dependency in your spec
 - It has an `event`, `cmd`, `ft` or `keys` key
 - `config.defaults.lazy == true`
@@ -241,7 +237,6 @@ LAZY KEY MAPPINGS
 
 The `keys` property can be a `string` or `string[]` for simple normal-mode
 mappings, or it can be a `LazyKeys` table with the following key-value pairs:
-
 
 - **[1]**(`string`) lhs **(required)**
 - **[2]**(`string|fun()`) rhs **(optional)**
@@ -275,7 +270,6 @@ If you want to install a specific revision of a plugin, you can use `commit`,
 The `version` property supports Semver <https://semver.org/> ranges.
 
 Click to see some examples ~
-
 
 - latest stable version (this excludes pre-release versions)
 - `1.2.x`any version that starts with `1.2`, such as `1.2.0`, `1.2.3`, etc.
@@ -620,7 +614,6 @@ example, if you want to sync lazy from the cmdline, you can use:
 
 `opts` is a table with the following key-values:
 
-
 - **wait**when true, then the call will wait till the operation completed
 - **show**when false, the UI will not be shown
 - **plugins**a list of plugin names to run the operation on
@@ -667,7 +660,6 @@ Example of configuring lualine.nvim ~
 USER EVENTS ~
 
 The following user events will be triggered:
-
 
 - **LazyDone**when lazy has finished starting up and loaded your config
 - **LazySync**after running sync
@@ -723,8 +715,10 @@ sequence for more flexibility and better performance.
 
 In practice this means that step 10 of |Neovim Initialization| is done by Lazy:
 
-
-1. All the plugins’ `init()` functions are executed2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)3. All files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
+1. All the plugins’ `init()` functions are executed
+2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
+3. All files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 Files from runtime directories are always sourced in alphabetical order.
 
@@ -739,20 +733,17 @@ to the other files.
 
 The benefits of using this approach:
 
-
 - Simple to **add** new plugin specs. Just create a new file in your plugins module.
 - Allows for **caching** of all your plugin specs. This becomes important if you have a lot of smaller plugin specs.
 - Spec changes will automatically be **reloaded** when they’re updated, so the `:Lazy` UI is always up to date.
 
 Example:
 
-
 - `~/.config/nvim/init.lua`
 
 >lua
     require("lazy").setup("plugins")
 <
-
 
 - `~/.config/nvim/lua/plugins.lua` or `~/.config/nvim/lua/plugins/init.lua` **(this file is optional)**
 
@@ -764,12 +755,10 @@ Example:
     }
 <
 
-
 - Any lua file in `~/.config/nvim/lua/plugins/.lua` will be automatically merged in the main plugin spec
 
 For a real-life example, you can check LazyVim
 <https://github.com/LazyVim/LazyVim> and more specifically:
-
 
 - lazyvim.plugins <https://github.com/LazyVim/LazyVim/tree/main/lua/lazyvim/plugins> contains all the plugin specs that will be loaded
 
@@ -811,7 +800,6 @@ MIGRATION GUIDE                          *lazy.nvim-lazy.nvim-migration-guide*
 
 PACKER.NVIM ~
 
-
 - `setup` `init`
 - `requires` `dependencies`
 - `as` `name`
@@ -844,7 +832,6 @@ loaded.
 
 PAQ-NVIM ~
 
-
 - `as` `name`
 - `opt` `lazy`
 - `run` `build`
@@ -854,7 +841,6 @@ UNINSTALLING                                *lazy.nvim-lazy.nvim-uninstalling*
 
 To uninstall **lazy.nvim**, you need to remove the following files and
 directories:
-
 
 - **data**`~/.local/share/nvim/lazy`
 - **state**`~/.local/state/nvim/lazy`
@@ -933,7 +919,6 @@ Click to see all highlight groups ~
   ---------------------------------------------------------------------------------
 
 OTHER NEOVIM PLUGIN MANAGERS IN LUA*lazy.nvim-lazy.nvim-other-neovim-plugin-managers-in-lua*
-
 
 - packer.nvim <https://github.com/wbthomason/packer.nvim>
 - paq-nvim <https://github.com/savq/paq-nvim>
