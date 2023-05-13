@@ -13,6 +13,7 @@ M.colors = {
   Prop = "Conceal", -- property
   Value = "@string", -- value of a property
   NoCond = "DiagnosticWarn", -- unloaded icon for a plugin where `cond()` was false
+  Local = "Constant",
   ProgressDone = "Constant", -- progress bar done
   ProgressTodo = "LineNr", -- progress bar todo
   Special = "@punctuation.special",

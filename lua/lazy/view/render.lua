@@ -386,12 +386,13 @@ end
 
 ---@param plugin LazyPlugin
 function M:plugin(plugin)
+  local hl = plugin._.is_local and "LazyLocal" or "LazySpecial"
   if plugin._.loaded then
-    self:append("  " .. Config.options.ui.icons.loaded .. " ", "LazySpecial"):append(plugin.name)
+    self:append("  " .. Config.options.ui.icons.loaded .. " ", hl):append(plugin.name)
   elseif plugin._.cond == false then
     self:append("  " .. Config.options.ui.icons.not_loaded .. " ", "LazyNoCond"):append(plugin.name)
   else
-    self:append("  " .. Config.options.ui.icons.not_loaded .. " ", "LazySpecial"):append(plugin.name)
+    self:append("  " .. Config.options.ui.icons.not_loaded .. " ", hl):append(plugin.name)
   end
   local plugin_start = self:row()
   if plugin._.loaded then
@@ -403,9 +404,9 @@ function M:plugin(plugin)
       if plugin[handler] then
         local trigger = {}
         for _, value in ipairs(plugin[handler]) do
-          table.insert(trigger, type(value) == 'table' and value[1] or value)
+          table.insert(trigger, type(value) == "table" and value[1] or value)
         end
-        reason[handler] = table.concat(trigger, ' ')
+        reason[handler] = table.concat(trigger, " ")
       end
     end
     for _, other in pairs(Config.plugins) do
