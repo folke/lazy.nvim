@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.15.0](https://github.com/folke/lazy.nvim/compare/v9.14.11...v9.15.0) (2023-05-13)
+
+
+### Features
+
+* **ui:** show the loaded icon for local plugins in a different color ([96dd205](https://github.com/folke/lazy.nvim/commit/96dd2058fb5427d87589825ad6001ad017548e81))
+
+
+### Bug Fixes
+
+* **config:** use url_format for the lazy plugin ([#792](https://github.com/folke/lazy.nvim/issues/792)) ([d2d67b5](https://github.com/folke/lazy.nvim/commit/d2d67b5a0ba90a33eeae0a1a661249b26754143b))
+
 ## [9.14.11](https://github.com/folke/lazy.nvim/compare/v9.14.10...v9.14.11) (2023-05-05)
 
 
