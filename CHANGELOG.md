@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.16.0](https://github.com/folke/lazy.nvim/compare/v9.15.0...v9.16.0) (2023-05-13)
+
+
+### Features
+
+* **loader:** added explicit support for finding the main module for mini.nvim plugins ([dab6cd5](https://github.com/folke/lazy.nvim/commit/dab6cd50806d6a6b0e8267f628d5fd6b112b151c))
+
 ## [9.15.0](https://github.com/folke/lazy.nvim/compare/v9.14.11...v9.15.0) (2023-05-13)
 
 
