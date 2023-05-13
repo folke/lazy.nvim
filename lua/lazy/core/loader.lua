@@ -343,6 +343,9 @@ function M.get_main(plugin)
   if plugin.main then
     return plugin.main
   end
+  if plugin.name ~= "mini.nvim" and plugin.name:match("^mini%..*$") then
+    return plugin.name
+  end
   local normname = Util.normname(plugin.name)
   ---@type string[]
   local mods = {}
@@ -356,6 +359,7 @@ function M.get_main(plugin)
       break
     end
   end
+
   return #mods == 1 and mods[1] or nil
 end
 
