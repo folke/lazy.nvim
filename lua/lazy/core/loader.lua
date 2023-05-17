@@ -69,7 +69,7 @@ function M.install_missing()
           break
         end
       end
-      require("lazy.manage").install({ wait = true, lockfile = true })
+      require("lazy.manage").install({ wait = true, lockfile = true, clear = false })
       -- remove any installed plugins from indexed, so cache will index again
       for _, p in pairs(Config.plugins) do
         if p._.installed then
