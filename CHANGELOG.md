@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.16.1](https://github.com/folke/lazy.nvim/compare/v9.16.0...v9.16.1) (2023-05-17)
+
+
+### Bug Fixes
+
+* **loader:** dont clear tasks when istalling missing plugins ([80c4dec](https://github.com/folke/lazy.nvim/commit/80c4decc3226551b433dfea5e459998a96f17822))
+* **loader:** reset cache before installing plugins during startup. Fixes [#803](https://github.com/folke/lazy.nvim/issues/803) ([aecdaab](https://github.com/folke/lazy.nvim/commit/aecdaab6a6ce8c9fdf9f983d5f943c6cfb11bf61))
+
 ## [9.16.0](https://github.com/folke/lazy.nvim/compare/v9.15.0...v9.16.0) (2023-05-13)
 
 
