@@ -38,7 +38,7 @@ function M.check()
 
   for _, name in ipairs({ "packer", "plugged", "paq" }) do
     for _, path in ipairs(vim.opt.rtp:get()) do
-      if path:find(name, 1, true) then
+      if path:find("/" .. name .. "/", 1, true) then
         error("Found paths on the rtp from another plugin manager `" .. name .. "`")
         break
       end
