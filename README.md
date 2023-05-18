@@ -671,6 +671,19 @@ require("lazy").setup("plugins")
 require("lazy").setup({{import = "plugins"}})
 ```
 
+If you need to load plugins from multiple locations, such as for a global and
+a site-local Neovim configuration, you can do that with multiple import
+statements:
+
+```lua
+require("lazy").setup(
+	{
+		{ import = "plugins.global" },
+		{ import = "plugins.local" },
+	}
+)
+```
+
 To import multiple modules from a plugin, add additional specs for each import.
 For example, to import LazyVim core plugins and an optional plugin:
 
