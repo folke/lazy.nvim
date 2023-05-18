@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.17.0](https://github.com/folke/lazy.nvim/compare/v9.16.1...v9.17.0) (2023-05-18)
+
+
+### Features
+
+* **cmd:** added `Lazy load all` to load all plugins ([11131ea](https://github.com/folke/lazy.nvim/commit/11131eafa165e54b08aeff3d7e35c65ef8b6e034))
+
 ## [9.16.1](https://github.com/folke/lazy.nvim/compare/v9.16.0...v9.16.1) (2023-05-17)
 
 
