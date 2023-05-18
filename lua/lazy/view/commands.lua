@@ -69,6 +69,9 @@ function M.complete(cmd, prefix)
   end
   ---@type string[]
   local plugins = {}
+  if cmd == "load" then
+    plugins[#plugins + 1] = "all"
+  end
   for name, plugin in pairs(Config.plugins) do
     if cmd ~= "load" or not plugin._.loaded then
       plugins[#plugins + 1] = name
@@ -86,6 +89,9 @@ function M.setup()
     ---@type ManagerOpts
     local opts = { wait = cmd.bang == true }
     local prefix, args = M.parse(cmd.args)
+    if #args == 1 and args[1] == "all" then
+      args = vim.tbl_keys(Config.plugins)
+    end
     if #args > 0 then
       ---@param plugin string
       opts.plugins = vim.tbl_map(function(plugin)
