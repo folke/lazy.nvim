@@ -172,7 +172,10 @@ function M:setup_patterns()
         Util.open(plugin.dir .. "/README.md")
       end
     end,
-    ["|(%S-)|"] = vim.cmd.help, -- vim help links
+    ["|(%S-)|"] = function(h)
+      vim.cmd.help(h)
+      self:close()
+    end,
     ["(https?://%S+)"] = function(url)
       Util.open(url)
     end,
