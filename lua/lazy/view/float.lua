@@ -35,7 +35,7 @@ function M:init(opts)
   self.opts = vim.tbl_deep_extend("force", {
     size = Config.options.ui.size,
     style = "minimal",
-    border = Config.options.ui.border,
+    border = Config.options.ui.border or "none",
     zindex = 50,
   }, opts or {})
 
@@ -65,6 +65,11 @@ function M:layout()
   self.win_opts.height = size(vim.o.lines, self.opts.size.height)
   self.win_opts.row = math.floor((vim.o.lines - self.win_opts.height) / 2)
   self.win_opts.col = math.floor((vim.o.columns - self.win_opts.width) / 2)
+
+  if self.opts.border ~= "none" then
+    self.win_opts.row = self.win_opts.row - 1
+    self.win_opts.col = self.win_opts.col - 1
+  end
 
   if self.opts.margin then
     if self.opts.margin.top then
