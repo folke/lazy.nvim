@@ -141,9 +141,14 @@ function Spec:warn(msg)
 end
 
 function Spec:fix_disabled()
+  ---@param plugin LazyPlugin
+  local function all_weak(plugin)
+    return (not plugin) or (rawget(plugin, "weak") and all_weak(plugin._.super))
+  end
+
   -- handle weak plugins
   for _, plugin in pairs(self.plugins) do
-    if plugin.weak and not plugin._.super then
+    if plugin.weak and all_weak(plugin) then
       self.plugins[plugin.name] = nil
     end
   end
