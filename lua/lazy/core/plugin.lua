@@ -142,13 +142,13 @@ end
 
 function Spec:fix_disabled()
   ---@param plugin LazyPlugin
-  local function all_weak(plugin)
-    return (not plugin) or (rawget(plugin, "weak") and all_weak(plugin._.super))
+  local function all_optional(plugin)
+    return (not plugin) or (rawget(plugin, "optional") and all_optional(plugin._.super))
   end
 
-  -- handle weak plugins
+  -- handle optional plugins
   for _, plugin in pairs(self.plugins) do
-    if plugin.weak and all_weak(plugin) then
+    if plugin.optional and all_optional(plugin) then
       self.plugins[plugin.name] = nil
     end
   end
