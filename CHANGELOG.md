@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.18.1](https://github.com/folke/lazy.nvim/compare/v9.18.0...v9.18.1) (2023-05-22)
+
+
+### Bug Fixes
+
+* **plugin:** rename weak =&gt; optional. Makes more sense :) ([9177778](https://github.com/folke/lazy.nvim/commit/9177778891ecdf02562eeaa1a26b829e4b62bc16))
+
 ## [9.18.0](https://github.com/folke/lazy.nvim/compare/v9.17.0...v9.18.0) (2023-05-22)
 
 
