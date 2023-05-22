@@ -141,6 +141,13 @@ function Spec:warn(msg)
 end
 
 function Spec:fix_disabled()
+  -- handle weak plugins
+  for _, plugin in pairs(self.plugins) do
+    if plugin.weak and not plugin._.super then
+      self.plugins[plugin.name] = nil
+    end
+  end
+
   ---@type table<string,string[]> plugin to parent plugin
   local dep_of = {}
 
