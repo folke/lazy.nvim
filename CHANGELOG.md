@@ -1,5 +1,19 @@
 # Changelog
 
+## [9.18.0](https://github.com/folke/lazy.nvim/compare/v9.17.0...v9.18.0) (2023-05-22)
+
+
+### Features
+
+* **plugin:** added support for `weak` specs. They will not be included in the final spec if not specified somwhere else ([8564f6d](https://github.com/folke/lazy.nvim/commit/8564f6d22b78a4a0fba9811faa556159b6c90a49))
+
+
+### Bug Fixes
+
+* better weak handling ([af39d61](https://github.com/folke/lazy.nvim/commit/af39d61d3f32683b6e9962d64ab269330b456172))
+* **ui:** close ui when opening a help file. Fixes [#808](https://github.com/folke/lazy.nvim/issues/808) ([cc7a764](https://github.com/folke/lazy.nvim/commit/cc7a764aecec11c9598ccd442a6879eed4e85558))
+* **ui:** take border into account for window position. Fixes [#812](https://github.com/folke/lazy.nvim/issues/812) ([451f217](https://github.com/folke/lazy.nvim/commit/451f217e9b2d71f08bdae0ce5ac7e8e8a6503f48))
+
 ## [9.17.0](https://github.com/folke/lazy.nvim/compare/v9.16.1...v9.17.0) (2023-05-18)
 
 
