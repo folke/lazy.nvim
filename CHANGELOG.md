@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.18.2](https://github.com/folke/lazy.nvim/compare/v9.18.1...v9.18.2) (2023-05-23)
+
+
+### Bug Fixes
+
+* **commands:** completion error ([#819](https://github.com/folke/lazy.nvim/issues/819)) ([f125a7d](https://github.com/folke/lazy.nvim/commit/f125a7d333472ada244b4564805ba11be3c269a9))
+
 ## [9.18.1](https://github.com/folke/lazy.nvim/compare/v9.18.0...v9.18.1) (2023-05-22)
 
 
