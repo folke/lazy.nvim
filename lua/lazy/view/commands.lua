@@ -112,7 +112,7 @@ function M.setup()
 
       ---@param key string
       return vim.tbl_filter(function(key)
-        return key:find(prefix) == 1
+        return key:find(prefix, 1, true) == 1
       end, vim.tbl_keys(M.commands))
     end,
   })
