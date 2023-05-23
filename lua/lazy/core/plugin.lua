@@ -12,16 +12,19 @@ M.loading = false
 ---@field modules string[]
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
+---@field optional? boolean
 local Spec = {}
 M.Spec = Spec
 
 ---@param spec? LazySpec
-function Spec.new(spec)
+---@param opts? {optional?:boolean}
+function Spec.new(spec, opts)
   local self = setmetatable({}, { __index = Spec })
   self.plugins = {}
   self.disabled = {}
   self.modules = {}
   self.notifs = {}
+  self.optional = opts and opts.optional
   if spec then
     self:parse(spec)
   end
@@ -141,15 +144,17 @@ function Spec:warn(msg)
 end
 
 function Spec:fix_disabled()
-  ---@param plugin LazyPlugin
-  local function all_optional(plugin)
-    return (not plugin) or (rawget(plugin, "optional") and all_optional(plugin._.super))
-  end
+  if not self.optional then
+    ---@param plugin LazyPlugin
+    local function all_optional(plugin)
+      return (not plugin) or (rawget(plugin, "optional") and all_optional(plugin._.super))
+    end
 
-  -- handle optional plugins
-  for _, plugin in pairs(self.plugins) do
-    if plugin.optional and all_optional(plugin) then
-      self.plugins[plugin.name] = nil
+    -- handle optional plugins
+    for _, plugin in pairs(self.plugins) do
+      if plugin.optional and all_optional(plugin) then
+        self.plugins[plugin.name] = nil
+      end
     end
   end
 
