@@ -196,6 +196,13 @@ PLUGIN SPEC                                  *lazy.nvim-lazy.nvim-plugin-spec*
                                                                               loading certain plugins first. Default priority is
                                                                               50. It’s recommended to set this to a high number
                                                                               for colorschemes.
+
+  optional       boolean?                                                     When a spec is tagged optional, it will only be
+                                                                              included in the final spec, when the same plugin has
+                                                                              been specified at least once somewhere else without
+                                                                              optional. This is mainly useful for Neovim distros,
+                                                                              to allow setting options on plugins that may/may not
+                                                                              be part of the user’s plugins
   --------------------------------------------------------------------------------------------------------------------------------
 
 LAZY LOADING ~
