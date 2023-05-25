@@ -1,5 +1,19 @@
 # Changelog
 
+## [9.19.0](https://github.com/folke/lazy.nvim/compare/v9.18.2...v9.19.0) (2023-05-25)
+
+
+### Features
+
+* **git:** change default log args to last 8 ([49a7f21](https://github.com/folke/lazy.nvim/commit/49a7f21ee37b4f8a13f6774b17ddfcae5e4f41b0))
+* **plugin:** trigger LazyPlugins after loading plugin specs ([57062f3](https://github.com/folke/lazy.nvim/commit/57062f3a09cad6dd5fe745389ad9f8421e3bdcd2))
+
+
+### Bug Fixes
+
+* **plugin:** check that import is a string. See [#825](https://github.com/folke/lazy.nvim/issues/825) ([c325c50](https://github.com/folke/lazy.nvim/commit/c325c50ba42572b25c08330ea10ae4743ee69280))
+* **plugin:** fix url based plugin name and added extra safety checks. Fixes [#824](https://github.com/folke/lazy.nvim/issues/824) ([32170a8](https://github.com/folke/lazy.nvim/commit/32170a88916e0f18ffaf1c32b222a5e2216bdb0e))
+
 ## [9.18.2](https://github.com/folke/lazy.nvim/compare/v9.18.1...v9.18.2) (2023-05-23)
 
 
