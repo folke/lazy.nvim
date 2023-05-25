@@ -265,6 +265,9 @@ function Spec:import(spec)
   if spec.import == "lazy" then
     return self:error("You can't name your plugins module `lazy`.")
   end
+  if type(spec.import) ~= "string" then
+    return self:error("Invalid import spec. `import` should be a string: " .. vim.inspect(spec))
+  end
   if vim.tbl_contains(self.modules, spec.import) then
     return
   end
