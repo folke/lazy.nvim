@@ -423,6 +423,7 @@ function M.load()
   M.update_state()
   Util.track()
   M.loading = false
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyPlugins", modeline = false })
 end
 
 -- Finds the plugin that has this path
