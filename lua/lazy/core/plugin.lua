@@ -130,9 +130,6 @@ function Spec:add(plugin, results, is_dep)
   plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
   if self.plugins[plugin.name] then
     plugin = self:merge(self.plugins[plugin.name], plugin)
-  elseif is_ref and not plugin.url then
-    self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
-    return
   end
   self.plugins[plugin.name] = plugin
   if results then
@@ -150,6 +147,12 @@ function Spec:warn(msg)
 end
 
 function Spec:fix_disabled()
+  for _, plugin in pairs(self.plugins) do
+    if not plugin.url or not plugin.dir then
+      self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
+      self.plugins[plugin.name] = nil
+    end
+  end
   if not self.optional then
     ---@param plugin LazyPlugin
     local function all_optional(plugin)
