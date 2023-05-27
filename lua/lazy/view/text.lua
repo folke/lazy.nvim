@@ -67,12 +67,16 @@ function Text:render(buf)
 
   for _, line in ipairs(self._lines) do
     local str = (" "):rep(self.padding)
+    local has_extmark = false
 
     for _, segment in ipairs(line) do
       str = str .. segment.str
+      if type(segment.hl) == "table" then
+        has_extmark = true
+      end
     end
 
-    if str:match("^%s*$") then
+    if str:match("^%s*$") and not has_extmark then
       str = ""
     end
     table.insert(lines, str)
@@ -97,11 +101,11 @@ function Text:render(buf)
 
           local extmark_col = extmark.col or col
           extmark.col = nil
-          local ok = pcall(vim.api.nvim_buf_set_extmark, buf, Config.ns, l - 1, extmark_col, extmark)
+          local ok, err = pcall(vim.api.nvim_buf_set_extmark, buf, Config.ns, l - 1, extmark_col, extmark)
           if not ok then
             Util.error(
               "Failed to set extmark. Please report a bug with this info:\n"
-                .. vim.inspect({ segment = segment, line = line })
+                .. vim.inspect({ segment = segment, line = line, error = err })
             )
           end
         end
