@@ -107,7 +107,7 @@ require("lazy").setup({
 | **keys**         | `string?` or `string[]` or `LazyKeys[]` or `fun(self:LazyPlugin, keys:string[]):(string \| LazyKeys)[]` | Lazy-load on key mapping                                                                                                                                                                                                                                                                                                                |
 | **module**       | `false?`                                                                                                | Do not automatically load this Lua module when it's required somewhere                                                                                                                                                                                                                                                                  |
 | **priority**     | `number?`                                                                                               | Only useful for **start** plugins (`lazy=false`) to force loading certain plugins first. Default priority is `50`. It's recommended to set this to a high number for colorschemes.                                                                                                                                                      |
-| **optional**     | `boolean?`                                                                                               | When a spec is tagged optional, it will only be included in the final spec, when the same plugin has been specified at least once somewhere else without `optional`. This is mainly useful for Neovim distros, to allow setting options on plugins that may/may not be part of the user's plugins |
+| **optional**     | `boolean?`                                                                                              | When a spec is tagged optional, it will only be included in the final spec, when the same plugin has been specified at least once somewhere else without `optional`. This is mainly useful for Neovim distros, to allow setting options on plugins that may/may not be part of the user's plugins                                       |
 
 ### Lazy Loading
 
@@ -310,7 +310,7 @@ return {
   git = {
     -- defaults for the `Lazy log` command
     -- log = { "-10" }, -- show the last 10 commits
-    log = { "--since=3 days ago" }, -- show commits from the last 3 days
+    log = { "-8" }, -- show commits from the last 3 days
     timeout = 120, -- kill processes that take more than 2 minutes
     url_format = "https://github.com/%s.git",
     -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
@@ -337,6 +337,8 @@ return {
     wrap = true, -- wrap the lines in the ui
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
     border = "none",
+    title = nil, ---@type string only works when border is not "none"
+    title_pos = "center", ---@type "center" | "left" | "right"
     icons = {
       cmd = " ",
       config = "",
@@ -757,6 +759,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 | **LazyDir**           | **_@text.reference_**      | directory                                           |
 | **LazyH1**            | **_IncSearch_**            | home button                                         |
 | **LazyH2**            | **_Bold_**                 | titles                                              |
+| **LazyLocal**         | **_Constant_**             |                                                     |
 | **LazyNoCond**        | **_DiagnosticWarn_**       | unloaded icon for a plugin where `cond()` was false |
 | **LazyNormal**        | **_NormalFloat_**          |                                                     |
 | **LazyProgressDone**  | **_Constant_**             | progress bar done                                   |

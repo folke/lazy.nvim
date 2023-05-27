@@ -9,6 +9,8 @@ local ViewConfig = require("lazy.view.config")
 ---@field zindex? number
 ---@field style? "" | "minimal"
 ---@field border? "none" | "single" | "double" | "rounded" | "solid" | "shadow"
+---@field title? string
+---@field title_pos? "center" | "left" | "right"
 
 ---@class LazyFloat
 ---@field buf number
@@ -50,6 +52,8 @@ function M:init(opts)
     border = self.opts.border,
     zindex = self.opts.zindex,
     noautocmd = true,
+    title = self.opts.title,
+    title_pos = self.opts.title and self.opts.title_pos or nil,
   }
   self:mount()
   self:on_key(ViewConfig.keys.close, self.close)

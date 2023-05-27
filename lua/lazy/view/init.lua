@@ -50,7 +50,10 @@ end
 function M.create()
   local self = setmetatable({}, { __index = setmetatable(M, { __index = Float }) })
   ---@cast self LazyView
-  Float.init(self)
+  Float.init(self, {
+    title = Config.options.ui.title,
+    title_pos = Config.options.ui.title_pos,
+  })
 
   if Config.options.ui.wrap then
     vim.wo[self.win].wrap = true
