@@ -148,7 +148,7 @@ end
 
 function Spec:fix_disabled()
   for _, plugin in pairs(self.plugins) do
-    if not plugin.url or not plugin.dir then
+    if not plugin.name or not plugin.dir then
       self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
       self.plugins[plugin.name] = nil
     end
