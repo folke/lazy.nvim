@@ -1,5 +1,18 @@
 # Changelog
 
+## [9.21.0](https://github.com/folke/lazy.nvim/compare/v9.20.0...v9.21.0) (2023-05-27)
+
+
+### Features
+
+* **commands:** added highly experimental `Lazy reload ...` command. See [#445](https://github.com/folke/lazy.nvim/issues/445) ([a6c8f22](https://github.com/folke/lazy.nvim/commit/a6c8f22362dccf5416ccb108f201e9f1ddda43f1))
+* **loader:** when reloading, always re-source loaded vimscript files. See [#445](https://github.com/folke/lazy.nvim/issues/445) ([d8a5829](https://github.com/folke/lazy.nvim/commit/d8a5829fdad1d435fd74d65743df5d53d4a845d2))
+
+
+### Bug Fixes
+
+* **ui:** make progress bar work again ([efa02ff](https://github.com/folke/lazy.nvim/commit/efa02ff8d37fe5809ea7826f11730a59d25533ef))
+
 ## [9.20.0](https://github.com/folke/lazy.nvim/compare/v9.19.1...v9.20.0) (2023-05-27)
 
 
