@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.19.1](https://github.com/folke/lazy.nvim/compare/v9.19.0...v9.19.1) (2023-05-27)
+
+
+### Bug Fixes
+
+* **plugin:** delay check if plugin ref exists until after loading all plugins. Fixes [#833](https://github.com/folke/lazy.nvim/issues/833) ([199e100](https://github.com/folke/lazy.nvim/commit/199e1004647895d5cb87911ae65e4f01418abf3b))
+* **plugin:** fixup. It's fine that Plugin.url doesn't exist ([42ff600](https://github.com/folke/lazy.nvim/commit/42ff6009f67a712ab4e7c8deedb626f8243a052a))
+
 ## [9.19.0](https://github.com/folke/lazy.nvim/compare/v9.18.2...v9.19.0) (2023-05-25)
 
 
