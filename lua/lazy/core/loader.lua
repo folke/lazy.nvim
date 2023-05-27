@@ -254,8 +254,27 @@ function M.reload(plugin)
     end
   end
 
+  -- reload any vimscript files for this plugin
+  local scripts = vim.fn.getscriptinfo({ name = ".vim" })
+  local loaded_scripts = {}
+  for _, s in ipairs(scripts) do
+    ---@type string
+    local path = s.name
+    if
+      path:sub(-4) == ".vim"
+      and path:find(plugin.dir, 1, true) == 1
+      and not path:find("/plugin/", 1, true)
+      and not path:find("/ftplugin/", 1, true)
+    then
+      loaded_scripts[#loaded_scripts + 1] = path
+    end
+  end
+
   if load then
     M.load(plugin, { start = "reload" })
+    for _, s in ipairs(loaded_scripts) do
+      M.source(s)
+    end
   end
 end
 
