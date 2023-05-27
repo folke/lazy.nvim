@@ -143,10 +143,16 @@ M.commands = {
   },
   build = {
     desc = "Rebuild a plugin",
-    id = 13,
+    id = 15,
     plugins = true,
     plugins_required = true,
     key_plugin = "gb",
+  },
+  reload = {
+    desc = "Reload a plugin (experimental!!)",
+    plugins = true,
+    plugins_required = true,
+    id = 16,
   },
 }
 

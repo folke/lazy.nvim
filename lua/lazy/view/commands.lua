@@ -53,6 +53,12 @@ M.commands = {
     -- when a command is executed with a bang, wait will be set
     require("lazy.core.loader").load(opts.plugins, { cmd = "Lazy load" }, { force = opts.wait })
   end,
+  reload = function(opts)
+    for _, plugin in pairs(opts.plugins) do
+      Util.warn("Reloading **" .. plugin.name .. "**")
+      require("lazy.core.loader").reload(plugin)
+    end
+  end,
   log = Manage.log,
   build = Manage.build,
   clean = Manage.clean,

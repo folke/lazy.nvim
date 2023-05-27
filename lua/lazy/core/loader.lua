@@ -227,10 +227,18 @@ function M.deactivate(plugin)
 end
 
 --- reload a plugin
----@param plugin LazyPlugin
+---@param plugin LazyPlugin|string
 function M.reload(plugin)
+  if type(plugin) == "string" then
+    plugin = Config.plugins[plugin]
+  end
+
+  if not plugin then
+    error("Plugin not found")
+  end
+
+  local load = plugin._.loaded ~= nil
   M.deactivate(plugin)
-  local load = false -- plugin._.loaded ~= nil
 
   -- enable handlers
   Handler.enable(plugin)
