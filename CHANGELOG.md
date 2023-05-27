@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.20.0](https://github.com/folke/lazy.nvim/compare/v9.19.1...v9.20.0) (2023-05-27)
+
+
+### Features
+
+* **ui:** added support for setting a title of the lazy window. Fixes [#814](https://github.com/folke/lazy.nvim/issues/814) ([9dce081](https://github.com/folke/lazy.nvim/commit/9dce0816f15f478c864c65fce0cd55f145faad03))
+
 ## [9.19.1](https://github.com/folke/lazy.nvim/compare/v9.19.0...v9.19.1) (2023-05-27)
 
 
