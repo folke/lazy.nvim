@@ -122,6 +122,9 @@ function M.startup()
   Util.track({ start = "rtp plugins" })
   for _, path in ipairs(rtp) do
     if not path:find("after/?$") then
+      -- these paths don't will already have their ftdetect ran,
+      -- by sourcing filetype.lua above, so skip them
+      M.did_ftdetect[path] = true
       M.packadd(path)
     end
   end
