@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For Neovim >= 0.8.0          Last change: 2023 May 27
+*lazy.nvim.txt*          For Neovim >= 0.8.0          Last change: 2023 May 28
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -168,7 +168,7 @@ PLUGIN SPEC                                  *lazy.nvim-lazy.nvim-plugin-spec*
 
   commit         string?                                                      Commit of the repository
 
-  version        string?                                                      Version to use from the repository. Full Semver
+  version        string? or false to override the default                     Version to use from the repository. Full Semver
                                                                               ranges are supported
 
   pin            boolean?                                                     When true, this plugin will not be included in
