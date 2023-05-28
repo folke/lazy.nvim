@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.21.1](https://github.com/folke/lazy.nvim/compare/v9.21.0...v9.21.1) (2023-05-28)
+
+
+### Bug Fixes
+
+* **loader:** don't run ftdetect twice for paths already on the rtp during startup. Fixes [#839](https://github.com/folke/lazy.nvim/issues/839) ([36a9132](https://github.com/folke/lazy.nvim/commit/36a91320f9ff4f877f09ac3a52c6a26860da047a))
+
 ## [9.21.0](https://github.com/folke/lazy.nvim/compare/v9.20.0...v9.21.0) (2023-05-27)
 
 
