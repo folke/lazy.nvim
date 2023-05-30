@@ -621,6 +621,12 @@ example, if you want to sync lazy from the cmdline, you can use:
     $ nvim --headless "+Lazy! sync" +qa
 <
 
+If you want to do the above, but with the full nvim UI (instead of headless):
+
+>shell
+    $ nvim "+autocmd User VeryLazy Lazy! sync" +qa
+<
+
 `opts` is a table with the following key-values:
 
 - **wait**when true, then the call will wait till the operation completed
