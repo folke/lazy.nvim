@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For Neovim >= 0.8.0          Last change: 2023 May 28
+*lazy.nvim.txt*          For Neovim >= 0.8.0          Last change: 2023 May 30
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -619,12 +619,6 @@ example, if you want to sync lazy from the cmdline, you can use:
 
 >shell
     $ nvim --headless "+Lazy! sync" +qa
-<
-
-If you want to do the above, but with the full nvim UI (instead of headless):
-
->shell
-    $ nvim "+autocmd User VeryLazy Lazy! sync" +qa
 <
 
 `opts` is a table with the following key-values:
