@@ -53,6 +53,7 @@ function M.create()
   Float.init(self, {
     title = Config.options.ui.title,
     title_pos = Config.options.ui.title_pos,
+    noautocmd = true,
   })
 
   if Config.options.ui.wrap then

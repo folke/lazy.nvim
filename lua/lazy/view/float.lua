@@ -11,6 +11,9 @@ local ViewConfig = require("lazy.view.config")
 ---@field border? "none" | "single" | "double" | "rounded" | "solid" | "shadow"
 ---@field title? string
 ---@field title_pos? "center" | "left" | "right"
+---@field persistent? boolean
+---@field ft? string
+---@field noautocmd? boolean
 
 ---@class LazyFloat
 ---@field buf number
@@ -51,7 +54,7 @@ function M:init(opts)
     style = self.opts.style ~= "" and self.opts.style or nil,
     border = self.opts.border,
     zindex = self.opts.zindex,
-    noautocmd = true,
+    noautocmd = self.opts.noautocmd,
     title = self.opts.title,
     title_pos = self.opts.title and self.opts.title_pos or nil,
   }
@@ -94,27 +97,32 @@ function M:layout()
 end
 
 function M:mount()
-  if self.opts.file then
+  if self:buf_valid() then
+    -- keep existing buffer
+    self.buf = self.buf
+  elseif self.opts.file then
     self.buf = vim.fn.bufadd(self.opts.file)
     vim.fn.bufload(self.buf)
     vim.bo[self.buf].modifiable = false
   elseif self.opts.buf then
     self.buf = self.opts.buf
   else
-    self.buf = vim.api.nvim_create_buf(false, false)
+    self.buf = vim.api.nvim_create_buf(false, true)
   end
 
   self:layout()
   self.win = vim.api.nvim_open_win(self.buf, true, self.win_opts)
   self:focus()
 
-  vim.bo[self.buf].buftype = "nofile"
+  if vim.bo[self.buf].buftype == "" then
+    vim.bo[self.buf].buftype = "nofile"
+  end
   if vim.bo[self.buf].filetype == "" then
-    vim.bo[self.buf].filetype = "lazy"
+    vim.bo[self.buf].filetype = self.opts.ft or "lazy"
   end
 
   local function opts()
-    vim.bo[self.buf].bufhidden = "wipe"
+    vim.bo[self.buf].bufhidden = self.opts.persistent and "hide" or "wipe"
     vim.wo[self.win].conceallevel = 3
     vim.wo[self.win].foldenable = false
     vim.wo[self.win].spell = false
@@ -179,20 +187,62 @@ function M:on_key(key, fn, desc)
   })
 end
 
-function M:close()
+---@param opts? {wipe:boolean}
+function M:close(opts)
   local buf = self.buf
   local win = self.win
+  local wipe = opts and opts.wipe
+  if wipe == nil then
+    wipe = not self.opts.persistent
+  end
+
   self.win = nil
-  self.buf = nil
+  if wipe then
+    self.buf = nil
+  end
   vim.schedule(function()
     if win and vim.api.nvim_win_is_valid(win) then
       vim.api.nvim_win_close(win, true)
     end
-    if buf and vim.api.nvim_buf_is_valid(buf) then
+    if wipe and buf and vim.api.nvim_buf_is_valid(buf) then
       vim.diagnostic.reset(Config.ns, buf)
       vim.api.nvim_buf_delete(buf, { force = true })
     end
   end)
+end
+
+function M:win_valid()
+  return self.win and vim.api.nvim_win_is_valid(self.win)
+end
+
+function M:buf_valid()
+  return self.buf and vim.api.nvim_buf_is_valid(self.buf)
+end
+
+function M:hide()
+  if self:win_valid() then
+    self:close({ wipe = false })
+  end
+end
+
+function M:toggle()
+  if self:win_valid() then
+    self:hide()
+    return false
+  else
+    self:show()
+    return true
+  end
+end
+
+function M:show()
+  if self:win_valid() then
+    self:focus()
+  elseif self:buf_valid() then
+    self:mount()
+  else
+    error("LazyFloat: buffer closed")
+  end
 end
 
 function M:focus()

@@ -112,7 +112,7 @@ function M.float_term(cmd, opts)
       once = true,
       buffer = float.buf,
       callback = function()
-        float:close()
+        float:close({ wipe = true })
         vim.cmd.checktime()
       end,
     })
