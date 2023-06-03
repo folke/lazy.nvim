@@ -37,6 +37,7 @@ end
 
 ---@param opts? LazyFloatOptions
 function M:init(opts)
+  require("lazy.view.colors").setup()
   self.opts = vim.tbl_deep_extend("force", {
     size = Config.options.ui.size,
     style = "minimal",

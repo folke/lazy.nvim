@@ -65,8 +65,6 @@ function M.create()
     vim.wo[self.win].wrap = false
   end
 
-  require("lazy.view.colors").setup()
-
   self.state = vim.deepcopy(default_state)
 
   self.render = Render.new(self)
