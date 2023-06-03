@@ -19,7 +19,7 @@ function M.parse(value)
   local ret = vim.deepcopy(value)
   ret = type(ret) == "string" and { ret } or ret --[[@as LazyKeys]]
   ret.mode = ret.mode or "n"
-  ret.id = (ret[1] or "")
+  ret.id = vim.api.nvim_replace_termcodes(ret[1] or "", true, true, true)
   if ret.mode then
     local mode = ret.mode
     if type(mode) == "table" then
