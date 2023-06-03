@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.22.0](https://github.com/folke/lazy.nvim/compare/v9.21.1...v9.22.0) (2023-06-03)
+
+
+### Features
+
+* **float:** floats can now be persistent ([94472b8](https://github.com/folke/lazy.nvim/commit/94472b8303f4db496ff1214a73aa8f600e375974))
+
 ## [9.21.1](https://github.com/folke/lazy.nvim/compare/v9.21.0...v9.21.1) (2023-05-28)
 
 
