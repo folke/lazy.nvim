@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.22.1](https://github.com/folke/lazy.nvim/compare/v9.22.0...v9.22.1) (2023-06-03)
+
+
+### Bug Fixes
+
+* **keys:** replace term codes to calculate ids ([d65a3d6](https://github.com/folke/lazy.nvim/commit/d65a3d6755bd3f1ca7bc4c15a8acf57687b1ca51))
+
 ## [9.22.0](https://github.com/folke/lazy.nvim/compare/v9.21.1...v9.22.0) (2023-06-03)
 
 
