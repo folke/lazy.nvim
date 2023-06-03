@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.22.2](https://github.com/folke/lazy.nvim/compare/v9.22.1...v9.22.2) (2023-06-03)
+
+
+### Bug Fixes
+
+* **ui:** setup colors when loading a float ([dbb2b60](https://github.com/folke/lazy.nvim/commit/dbb2b609f66486251b51c79a7a1d275887413e8e))
+
 ## [9.22.1](https://github.com/folke/lazy.nvim/compare/v9.22.0...v9.22.1) (2023-06-03)
 
 
