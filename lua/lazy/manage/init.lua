@@ -112,6 +112,7 @@ function M.update(opts)
     require("lazy.help").update()
   end)
 end
+
 --
 ---@param opts? ManagerOpts
 function M.restore(opts)
@@ -168,6 +169,7 @@ function M.sync(opts)
     M.clear()
     opts.clear = false
   end
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyPreSync", modeline = false })
   if opts.show ~= false then
     vim.schedule(function()
       require("lazy.view").show("sync")

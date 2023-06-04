@@ -569,6 +569,7 @@ require("lualine").setup({
 The following user events will be triggered:
 
 - **LazyDone**: when lazy has finished starting up and loaded your config
+- **LazyPreSync**: before running sync
 - **LazySync**: after running sync
 - **LazyInstall**: after an install
 - **LazyUpdate**: after an update
