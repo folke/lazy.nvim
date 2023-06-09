@@ -38,7 +38,7 @@ You can add the following Lua code to your `init.lua` to bootstrap **lazy.nvim**
 
 ```lua
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.loop.fs_stat(lazypath) then -- use vim.uv.fs_stat() for nvim-nightly
   vim.fn.system({
     "git",
     "clone",
