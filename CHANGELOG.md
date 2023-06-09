@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.23.0](https://github.com/folke/lazy.nvim/compare/v9.22.2...v9.23.0) (2023-06-08)
+
+
+### Features
+
+* **startup:** added data/site to the rtp. Will be used by upcoming treesitter version ([f131606](https://github.com/folke/lazy.nvim/commit/f131606190535b0d0b35406e8573b973b48e55b1))
+
+
+### Bug Fixes
+
+* **event:** dont use autocmd pattern to detect event retriggering. Fixes [#858](https://github.com/folke/lazy.nvim/issues/858) ([bc89502](https://github.com/folke/lazy.nvim/commit/bc895023573e76f8567d2375bbd3ea8be4f00ca7))
+
 ## [9.22.2](https://github.com/folke/lazy.nvim/compare/v9.22.1...v9.22.2) (2023-06-03)
 
 
