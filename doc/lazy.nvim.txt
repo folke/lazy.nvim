@@ -224,7 +224,7 @@ types** and **key mappings**.
 
 Plugins will be lazy-loaded when one of the following is `true`
 
-- Theplugin only exists as a dependency in your spec
+- The plugin only exists as a dependency in your spec
 - It has an `event`, `cmd`, `ft` or `keys` key
 - `config.defaults.lazy == true`
 
