@@ -57,12 +57,11 @@ function M.create()
   })
 
   if Config.options.ui.wrap then
-    vim.wo[self.win].wrap = true
-    vim.wo[self.win].linebreak = true
-    vim.wo[self.win].breakindent = true
-    -- vim.wo[self.win].breakindentopt = "shift:8"
+    Util.wo(self.win, "wrap", true)
+    Util.wo(self.win, "linebreak", true)
+    Util.wo(self.win, "breakindent", true)
   else
-    vim.wo[self.win].wrap = false
+    Util.wo(self.win, "wrap", false)
   end
 
   self.state = vim.deepcopy(default_state)

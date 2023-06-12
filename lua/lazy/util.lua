@@ -10,6 +10,14 @@ function M.float(opts)
   return require("lazy.view.float")(opts)
 end
 
+function M.wo(win, k, v)
+  if vim.api.nvim_set_option_value then
+    vim.api.nvim_set_option_value(k, v, { scope = "local", win = win })
+  else
+    vim.wo[win][k] = v
+  end
+end
+
 function M.open(uri)
   if M.file_exists(uri) then
     return M.float({ style = "", file = uri })
@@ -180,9 +188,9 @@ function M.markdown(msg, opts)
     vim.tbl_deep_extend("force", {
       title = "lazy.nvim",
       on_open = function(win)
-        vim.wo[win].conceallevel = 3
-        vim.wo[win].concealcursor = "n"
-        vim.wo[win].spell = false
+        M.wo(win, "conceallevel", 3)
+        M.wo(win, "concealcursor", "n")
+        M.wo(win, "spell", false)
 
         vim.treesitter.start(vim.api.nvim_win_get_buf(win), "markdown")
       end,

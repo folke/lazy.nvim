@@ -1,5 +1,6 @@
 local Config = require("lazy.core.config")
 local ViewConfig = require("lazy.view.config")
+local Util = require("lazy.util")
 
 ---@class LazyFloatOptions
 ---@field buf? number
@@ -124,12 +125,12 @@ function M:mount()
 
   local function opts()
     vim.bo[self.buf].bufhidden = self.opts.persistent and "hide" or "wipe"
-    vim.wo[self.win].conceallevel = 3
-    vim.wo[self.win].foldenable = false
-    vim.wo[self.win].spell = false
-    vim.wo[self.win].wrap = true
-    vim.wo[self.win].winhighlight = "Normal:LazyNormal"
-    vim.wo[self.win].colorcolumn = ""
+    Util.wo(self.win, "conceallevel", 3)
+    Util.wo(self.win, "foldenable", false)
+    Util.wo(self.win, "spell", false)
+    Util.wo(self.win, "wrap", true)
+    Util.wo(self.win, "winhighlight", "Normal:LazyNormal")
+    Util.wo(self.win, "colorcolumn", "")
   end
   opts()
 
