@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.24.0](https://github.com/folke/lazy.nvim/compare/v9.23.0...v9.24.0) (2023-06-17)
+
+
+### Features
+
+* added `Pre` events. Fixes [#856](https://github.com/folke/lazy.nvim/issues/856). Fixes [#877](https://github.com/folke/lazy.nvim/issues/877) ([0bca18d](https://github.com/folke/lazy.nvim/commit/0bca18de5d005c700c29da580c20c762c2f9e9e0))
+
+
+### Bug Fixes
+
+* **ui:** set wo options with local. don't use `vim.wo`. See [#829](https://github.com/folke/lazy.nvim/issues/829) ([7f4da7d](https://github.com/folke/lazy.nvim/commit/7f4da7d511b05f4571ea96c67a5988b6389e12e1))
+
 ## [9.23.0](https://github.com/folke/lazy.nvim/compare/v9.22.2...v9.23.0) (2023-06-08)
 
 
