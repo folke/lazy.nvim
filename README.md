@@ -575,6 +575,12 @@ The following user events will be triggered:
 - **LazyClean**: after a clean
 - **LazyCheck**: after checking for updates
 - **LazyLog**: after running log
+- **LazySyncPre**: before running sync
+- **LazyInstallPre**: before an install
+- **LazyUpdatePre**: before an update
+- **LazyCleanPre**: before a clean
+- **LazyCheckPre**: before checking for updates
+- **LazyLogPre**: before running log
 - **LazyReload**: triggered by change detection after reloading plugin specs
 - **VeryLazy**: triggered after `LazyDone` and processing `VimEnter` auto commands
 - **LazyVimStarted**: triggered after `UIEnter` when `require("lazy").stats().startuptime` has been calculated.

@@ -18,6 +18,13 @@ local M = {}
 function M.run(ropts, opts)
   opts = opts or {}
 
+  local mode = opts.mode
+  local event = mode and ("Lazy" .. mode:sub(1, 1):upper() .. mode:sub(2))
+
+  if event then
+    vim.api.nvim_exec_autocmds("User", { pattern = event .. "Pre", modeline = false })
+  end
+
   if opts.plugins then
     ---@param plugin string|LazyPlugin
     opts.plugins = vim.tbl_map(function(plugin)
@@ -49,9 +56,7 @@ function M.run(ropts, opts)
     vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
     Plugin.update_state()
     require("lazy.manage.checker").fast_check({ report = false })
-    local mode = opts.mode
-    if mode then
-      local event = "Lazy" .. mode:sub(1, 1):upper() .. mode:sub(2)
+    if event then
       vim.api.nvim_exec_autocmds("User", { pattern = event, modeline = false })
     end
   end)
