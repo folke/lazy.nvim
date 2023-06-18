@@ -180,6 +180,8 @@ function M.sync(opts)
     opts.show = false
   end
 
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazySyncPre", modeline = false })
+
   local clean_opts = vim.deepcopy(opts)
   clean_opts.plugins = nil
   local clean = M.clean(clean_opts)
