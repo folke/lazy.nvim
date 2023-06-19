@@ -669,6 +669,14 @@ function M:debug()
         plugins = vim.tbl_values(plugins)
         table.sort(plugins)
         self:append("● ", "LazySpecial", { indent = 2 })
+        if handler_type == "keys" then
+          for k, v in pairs(Handler.handlers.keys:values(Config.plugins[plugins[1]])) do
+            if k == value then
+              value = v
+              break
+            end
+          end
+        end
         self:reason({ [handler_type] = value })
         for _, plugin in pairs(plugins) do
           self:append(" ")
