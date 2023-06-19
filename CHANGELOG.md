@@ -1,5 +1,14 @@
 # Changelog
 
+## [9.24.1](https://github.com/folke/lazy.nvim/compare/v9.24.0...v9.24.1) (2023-06-19)
+
+
+### Bug Fixes
+
+* **debug:** show original keymaps instead of ids for the keys handler ([56b1f77](https://github.com/folke/lazy.nvim/commit/56b1f7715ed536a3e9ebfbf0d26e615d211a0cd8))
+* **manage:** trigger LazySyncPre. Fixes [#881](https://github.com/folke/lazy.nvim/issues/881) ([6163413](https://github.com/folke/lazy.nvim/commit/616341372d1908bb2a11e3bf9ed55e74bf605e40))
+* **ui:** trailing space in button row. Fixes [#884](https://github.com/folke/lazy.nvim/issues/884) ([410a736](https://github.com/folke/lazy.nvim/commit/410a7360c1b8df2053ae7ba906ff74c9072e1505))
+
 ## [9.24.0](https://github.com/folke/lazy.nvim/compare/v9.23.0...v9.24.0) (2023-06-17)
 
 
