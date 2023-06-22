@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.24.2](https://github.com/folke/lazy.nvim/compare/v9.24.1...v9.24.2) (2023-06-22)
+
+
+### Bug Fixes
+
+* **config:** on windows default concurrency is now set to 2*available parallelism. See [#887](https://github.com/folke/lazy.nvim/issues/887) ([d7d5842](https://github.com/folke/lazy.nvim/commit/d7d5842d1c9a566d480db8b4a5aaf00054b99bb5))
+
 ## [9.24.1](https://github.com/folke/lazy.nvim/compare/v9.24.0...v9.24.1) (2023-06-19)
 
 
