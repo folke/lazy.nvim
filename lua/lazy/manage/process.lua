@@ -2,7 +2,7 @@ local Config = require("lazy.core.config")
 
 local M = {}
 
----@type table<uv.uv_process_t, true>
+---@type table<uv_process_t, true>
 M.running = {}
 
 M.signals = {
@@ -75,10 +75,10 @@ function M.spawn(cmd, opts)
   local stderr = assert(uv.new_pipe())
 
   local output = ""
-  ---@type uv.uv_process_t
+  ---@type uv_process_t?
   local handle = nil
 
-  ---@type uv.uv_timer_t
+  ---@type uv_timer_t
   local timeout
   local killed = false
   if opts.timeout then
@@ -96,6 +96,7 @@ function M.spawn(cmd, opts)
     cwd = opts.cwd,
     env = env_flat,
   }, function(exit_code, signal)
+    ---@cast handle uv_process_t
     M.running[handle] = nil
     if timeout then
       timeout:stop()
