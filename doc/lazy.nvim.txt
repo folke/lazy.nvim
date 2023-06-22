@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For Neovim >= 0.8.0         Last change: 2023 June 19
+*lazy.nvim.txt*          For Neovim >= 0.8.0         Last change: 2023 June 22
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -157,7 +157,8 @@ PLUGIN SPEC                                  *lazy.nvim-lazy.nvim-plugin-spec*
                                                                               automatically. See config()
 
   build          fun(LazyPlugin) or string or a list of build commands        build is executed when a plugin is installed or
-                                                                              updated. If it’s a string it will be ran as a shell
+                                                                              updated. Before running build, a plugin is first
+                                                                              loaded. If it’s a string it will be ran as a shell
                                                                               command. When prefixed with it is a Neovim command.
                                                                               You can also specify a list to executed multiple
                                                                               build commands
