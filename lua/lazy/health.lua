@@ -127,6 +127,7 @@ M.valid = {
   "main",
   "module",
   "name",
+  "optional",
   "opts",
   "pin",
   "priority",
