@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.25.0](https://github.com/folke/lazy.nvim/compare/v9.24.2...v9.25.0) (2023-06-30)
+
+
+### Features
+
+* **build:** added support for build.lua, build/init.lua ([#903](https://github.com/folke/lazy.nvim/issues/903)) ([4c26421](https://github.com/folke/lazy.nvim/commit/4c26421785be8c49f1d8eaa5bdb55b73c7be5127))
+
+
+### Bug Fixes
+
+* **health:** false warning when checking plugins configured with 'optional' key ([#897](https://github.com/folke/lazy.nvim/issues/897)) ([24803fc](https://github.com/folke/lazy.nvim/commit/24803fcbe3fe2c84300903278b7445cfb2e54deb))
+
 ## [9.24.2](https://github.com/folke/lazy.nvim/compare/v9.24.1...v9.24.2) (2023-06-22)
 
 
