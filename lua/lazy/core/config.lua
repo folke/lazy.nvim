@@ -150,6 +150,12 @@ M.defaults = {
     skip_if_doc_exists = true,
   },
   state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
+  build = {
+    -- Plugins can provide a `build.lua` file that will be executed when the plugin is installed
+    -- or updated. When the plugin spec also has a `build` command, the plugin's `build.lua` not be
+    -- executed. In this case, a warning message will be shown.
+    warn_on_override = true,
+  },
   debug = false,
 }
 

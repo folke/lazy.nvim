@@ -1,5 +1,6 @@
 local Util = require("lazy.util")
 local Loader = require("lazy.core.loader")
+local Config = require("lazy.core.config")
 
 ---@type table<string, LazyTaskDef>
 local M = {}
@@ -32,14 +33,17 @@ M.build = {
     local build_file = get_build_file(self.plugin)
     if build_file then
       if builders then
-        Util.warn(
-          ("Plugin **%s** provides its own build script.\nPlease remove the `build` option from the plugin's spec"):format(
-            self.plugin.name
+        if Config.options.build.warn_on_override then
+          Util.warn(
+            ("Plugin **%s** provides its own build script, but you also defined a `build` command.\nThe `build.lua` file will not be used"):format(
+              self.plugin.name
+            )
           )
-        )
-      end
-      builders = function()
-        Loader.source(build_file)
+        end
+      else
+        builders = function()
+          Loader.source(build_file)
+        end
       end
     end
     if builders then
