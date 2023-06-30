@@ -5,10 +5,10 @@ local Loader = require("lazy.core.loader")
 
 local M = {}
 
----@type table<string, vim.loop.Stat>
+---@type table<string, uv.aliases.fs_stat_table>
 M.files = {}
 
----@type vim.loop.Timer
+---@type uv_timer_t
 M.timer = nil
 
 function M.enable()
@@ -16,7 +16,7 @@ function M.enable()
     M.timer:stop()
   end
   if #Config.spec.modules > 0 then
-    M.timer = vim.loop.new_timer()
+    M.timer = assert(vim.loop.new_timer())
     M.check(true)
     M.timer:start(2000, 2000, M.check)
   end
@@ -29,8 +29,8 @@ function M.disable()
   end
 end
 
----@param h1 vim.loop.Stat
----@param h2 vim.loop.Stat
+---@param h1 uv.aliases.fs_stat_table
+---@param h2 uv.aliases.fs_stat_table
 function M.eq(h1, h2)
   return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
 end
