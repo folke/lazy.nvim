@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.25.1](https://github.com/folke/lazy.nvim/compare/v9.25.0...v9.25.1) (2023-06-30)
+
+
+### Bug Fixes
+
+* **build:** allow `build` command to override plugin's build and option to disable warning ([189371c](https://github.com/folke/lazy.nvim/commit/189371c8d8ac8205687522dd4c3601edc7b7a927))
+
 ## [9.25.0](https://github.com/folke/lazy.nvim/compare/v9.24.2...v9.25.0) (2023-06-30)
 
 
