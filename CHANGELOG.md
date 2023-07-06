@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.0.1](https://github.com/folke/lazy.nvim/compare/v10.0.0...v10.0.1) (2023-07-06)
+
+
+### Bug Fixes
+
+* **stats:** corrected typo in cputime() for Linux ([#916](https://github.com/folke/lazy.nvim/issues/916)) ([5082cd5](https://github.com/folke/lazy.nvim/commit/5082cd56e49c737619c967e9c57309c2eeaad425))
+
 ## [10.0.0](https://github.com/folke/lazy.nvim/compare/v9.25.1...v10.0.0) (2023-07-06)
 
 
