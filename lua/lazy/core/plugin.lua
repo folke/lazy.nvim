@@ -146,13 +146,20 @@ function Spec:warn(msg)
   self:log(msg, vim.log.levels.WARN)
 end
 
-function Spec:fix_disabled()
+function Spec:fix_cond()
   for _, plugin in pairs(self.plugins) do
-    if not plugin.name or not plugin.dir then
-      self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
-      self.plugins[plugin.name] = nil
+    local cond = plugin.cond
+    if cond == nil then
+      cond = Config.options.defaults.cond
+    end
+    if cond == false or (type(cond) == "function" and not cond(plugin)) then
+      plugin._.cond = false
+      plugin.enabled = false
     end
   end
+end
+
+function Spec:fix_optional()
   if not self.optional then
     ---@param plugin LazyPlugin
     local function all_optional(plugin)
@@ -166,6 +173,18 @@ function Spec:fix_disabled()
       end
     end
   end
+end
+
+function Spec:fix_disabled()
+  for _, plugin in pairs(self.plugins) do
+    if not plugin.name or not plugin.dir then
+      self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
+      self.plugins[plugin.name] = nil
+    end
+  end
+
+  self:fix_optional()
+  self:fix_cond()
 
   ---@type table<string,string[]> plugin to parent plugin
   local dep_of = {}
@@ -381,6 +400,12 @@ function M.update_state()
     else
       plugin._.is_local = true
       plugin._.installed = true -- local plugins are managed by the user
+    end
+  end
+
+  for _, plugin in pairs(Config.spec.disabled) do
+    if plugin._.cond == false then
+      installed[plugin.name] = nil
     end
   end
 

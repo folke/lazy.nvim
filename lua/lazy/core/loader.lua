@@ -297,15 +297,8 @@ function M._load(plugin, reason, opts)
     return Util.error("Plugin " .. plugin.name .. " is not installed")
   end
 
-  local cond = plugin.cond
-  if cond == nil then
-    cond = Config.options.defaults.cond
-  end
-  if cond ~= nil and not (opts and opts.force) then
-    if cond == false or (type(cond) == "function" and not cond(plugin)) then
-      plugin._.cond = false
-      return
-    end
+  if plugin._.cond == false and not (opts and opts.force) then
+    return
   end
 
   ---@diagnostic disable-next-line: assign-type-mismatch
