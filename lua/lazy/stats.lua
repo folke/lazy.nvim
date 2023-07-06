@@ -50,7 +50,7 @@ function M.cputime()
     local pnano = assert(ffi.new("nanotime[?]", 1))
     local CLOCK_PROCESS_CPUTIME_ID = jit.os == "OSX" and 12 or 2
     ffi.C.clock_gettime(CLOCK_PROCESS_CPUTIME_ID, pnano)
-    return tonumber(pnano[0].tv_sec) / 1e6 + tonumber(pnano[0].tv_nsec) / 1e6
+    return tonumber(pnano[0].tv_sec) * 1e3 + tonumber(pnano[0].tv_nsec) / 1e6
   end
 
   local function fallback()
