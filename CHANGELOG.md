@@ -1,5 +1,16 @@
 # Changelog
 
+## [10.0.0](https://github.com/folke/lazy.nvim/compare/v9.25.1...v10.0.0) (2023-07-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **plugin:** `cond` is now the same as `enabled`, but skips clean
+
+### Features
+
+* **plugin:** `cond` is now the same as `enabled`, but skips clean ([fbb0bea](https://github.com/folke/lazy.nvim/commit/fbb0bea2db1963b4b83a3cb1f0c09d78a2ab286f))
+
 ## [9.25.1](https://github.com/folke/lazy.nvim/compare/v9.25.0...v9.25.1) (2023-06-30)
 
 
