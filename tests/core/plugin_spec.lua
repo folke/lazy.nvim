@@ -47,6 +47,7 @@ describe("plugin spec opt", function()
       local spec = Plugin.Spec.new(vim.deepcopy(test))
       assert(#spec.notifs == 0)
       Config.plugins = spec.plugins
+      Config.spec = spec
       Plugin.update_state()
       assert(vim.tbl_count(spec.plugins) == 3)
       assert(#spec.plugins.bar.dependencies == 2)
