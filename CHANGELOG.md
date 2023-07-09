@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.0.2](https://github.com/folke/lazy.nvim/compare/v10.0.1...v10.0.2) (2023-07-09)
+
+
+### Bug Fixes
+
+* **event:** pass data to event lazy loaders. Fixes [#922](https://github.com/folke/lazy.nvim/issues/922) ([fd94e69](https://github.com/folke/lazy.nvim/commit/fd94e69ceb15268496b85ee61fcd55a08539df1d))
+
 ## [10.0.1](https://github.com/folke/lazy.nvim/compare/v10.0.0...v10.0.1) (2023-07-06)
 
 
