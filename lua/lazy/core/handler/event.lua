@@ -23,7 +23,7 @@ function M:_add(value)
     group = self.group,
     once = true,
     pattern = pattern,
-    callback = function()
+    callback = function(ev)
       if not self.active[value] then
         return
       end
@@ -32,7 +32,7 @@ function M:_add(value)
       -- load the plugins
       Loader.load(self.active[value], { [self.type] = value })
       -- check if any plugin created an event handler for this event and fire the group
-      self:trigger(event, pattern, groups)
+      self:trigger(event, pattern, groups, ev.data)
       Util.track()
     end,
   })
@@ -61,7 +61,7 @@ end
 ---@param event string|string[]
 ---@param pattern? string
 ---@param groups table<string,true>
-function M:trigger(event, pattern, groups)
+function M:trigger(event, pattern, groups, data)
   local events = M.trigger_events[event] or { event }
   ---@cast events string[]
   for _, e in ipairs(events) do
@@ -77,7 +77,7 @@ function M:trigger(event, pattern, groups)
         end
         Util.track({ event = autocmd.group_name })
         Util.try(function()
-          vim.api.nvim_exec_autocmds(autocmd.event, { group = autocmd.group, modeline = false })
+          vim.api.nvim_exec_autocmds(autocmd.event, { group = autocmd.group, modeline = false, data = data })
           Util.track()
         end)
       end
