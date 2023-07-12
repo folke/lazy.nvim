@@ -582,6 +582,7 @@ The following user events will be triggered:
 - **LazyClean**: after a clean
 - **LazyCheck**: after checking for updates
 - **LazyLog**: after running log
+- **LazyLoad**: after loading a plugin. The `data` attribute will contain the plugin name.
 - **LazySyncPre**: before running sync
 - **LazyInstallPre**: before an install
 - **LazyUpdatePre**: before an update
