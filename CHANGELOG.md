@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.1.0](https://github.com/folke/lazy.nvim/compare/v10.0.2...v10.1.0) (2023-07-12)
+
+
+### Features
+
+* **loader:** `LazyLoad` event with plugin name as `data` field. Useful to do stuff when a plugin loads ([ea5b2e0](https://github.com/folke/lazy.nvim/commit/ea5b2e00bf7aeaaf10a4e93763419e4af2796782))
+
 ## [10.0.2](https://github.com/folke/lazy.nvim/compare/v10.0.1...v10.0.2) (2023-07-09)
 
 
