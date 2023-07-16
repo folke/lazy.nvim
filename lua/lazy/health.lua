@@ -14,7 +14,7 @@ function M.check()
   if vim.fn.executable("git") == 1 then
     ok("Git installed")
   else
-    error("Git not installd?")
+    error("Git not installed?")
   end
 
   local sites = vim.opt.packpath:get()
