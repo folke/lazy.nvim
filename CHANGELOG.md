@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.2.0](https://github.com/folke/lazy.nvim/compare/v10.1.0...v10.2.0) (2023-07-20)
+
+
+### Features
+
+* **view:** add option `ui.pills`. Set to `false` to disable the top buttons in the lazy window ([#938](https://github.com/folke/lazy.nvim/issues/938)) ([84266b9](https://github.com/folke/lazy.nvim/commit/84266b9f0ff314319e69adfeb1a86bd72d1aff91))
+
 ## [10.1.0](https://github.com/folke/lazy.nvim/compare/v10.0.2...v10.1.0) (2023-07-12)
 
 
