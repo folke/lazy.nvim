@@ -112,38 +112,41 @@ function M:get_plugin(row)
 end
 
 function M:title()
-  self:nl():nl()
+  self:nl()
   local modes = vim.tbl_filter(function(c)
     return c.button
   end, ViewConfig.get_commands())
 
-  for c, mode in ipairs(modes) do
-    local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
-    if mode.name == "home" then
-      if self.view.state.mode == "home" then
-        title = " lazy.nvim  " .. Config.options.ui.icons.lazy
-      else
-        title = " lazy.nvim (H) "
-      end
-    end
-
-    if self.view.state.mode == mode.name then
+  if Config.options.ui.pills then
+    self:nl()
+    for c, mode in ipairs(modes) do
+      local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
       if mode.name == "home" then
-        self:append(title, "LazyH1", { wrap = true })
+        if self.view.state.mode == "home" then
+          title = " lazy.nvim  " .. Config.options.ui.icons.lazy
+        else
+          title = " lazy.nvim (H) "
+        end
+      end
+
+      if self.view.state.mode == mode.name then
+        if mode.name == "home" then
+          self:append(title, "LazyH1", { wrap = true })
+        else
+          self:append(title, "LazyButtonActive", { wrap = true })
+          self:highlight({ ["%(.%)"] = "LazySpecial" })
+        end
       else
-        self:append(title, "LazyButtonActive", { wrap = true })
+        self:append(title, "LazyButton", { wrap = true })
         self:highlight({ ["%(.%)"] = "LazySpecial" })
       end
-    else
-      self:append(title, "LazyButton", { wrap = true })
-      self:highlight({ ["%(.%)"] = "LazySpecial" })
+      if c == #modes then
+        break
+      end
+      self:append(" ")
     end
-    if c == #modes then
-      break
-    end
-    self:append(" ")
+    self:nl()
   end
-  self:nl()
   if self.progress.done < self.progress.total then
     self:progressbar()
   end
