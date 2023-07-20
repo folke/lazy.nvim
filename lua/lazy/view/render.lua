@@ -117,7 +117,7 @@ function M:title()
     return c.button
   end, ViewConfig.get_commands())
 
-  if Config.options.ui.button then
+  if Config.options.ui.pills then
     self:nl()
     for c, mode in ipairs(modes) do
       local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "

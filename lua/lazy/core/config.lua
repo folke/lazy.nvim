@@ -50,7 +50,8 @@ M.defaults = {
     border = "none",
     title = nil, ---@type string only works when border is not "none"
     title_pos = "center", ---@type "center" | "left" | "right"
-    button = true, ---@type boolean
+    -- Show pills on top of the Lazy window
+    pills = true, ---@type boolean
     icons = {
       cmd = " ",
       config = "",
