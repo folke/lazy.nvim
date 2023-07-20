@@ -6,6 +6,7 @@ function M.file_exists(file)
 end
 
 ---@param opts? LazyFloatOptions
+---@return LazyFloat
 function M.float(opts)
   return require("lazy.view.float")(opts)
 end
