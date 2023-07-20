@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For Neovim >= 0.8.0         Last change: 2023 July 16
+*lazy.nvim.txt*          For Neovim >= 0.8.0         Last change: 2023 July 20
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -438,6 +438,8 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
         border = "none",
         title = nil, ---@type string only works when border is not "none"
         title_pos = "center", ---@type "center" | "left" | "right"
+        -- Show pills on top of the Lazy window
+        pills = true, ---@type boolean
         icons = {
           cmd = " ",
           config = "",
