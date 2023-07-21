@@ -240,7 +240,7 @@ function Spec:fix_disabled()
     end
   end
 
-  -- fix deps of plugins that are all optional
+  -- fix deps of plugins that are completely optional
   self:fix_dependencies(all_optional_deps, dep_of, function(dep_name)
     self.plugins[dep_name] = nil
   end)
