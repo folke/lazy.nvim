@@ -184,6 +184,7 @@ function Spec:fix_cond()
   end
 end
 
+---@return string[]
 function Spec:fix_optional()
   local all_optional_deps = {}
   if not self.optional then
@@ -219,7 +220,7 @@ function Spec:fix_disabled()
   ---@type string[] dependencies of disabled plugins
   local disabled_deps = {}
 
-  ---@type string[] dependencies of plugins that are all optional
+  ---@type string[] dependencies of plugins that are completely optional
   local all_optional_deps = self:fix_optional()
   self:fix_cond()
 
