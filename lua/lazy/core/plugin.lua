@@ -185,6 +185,7 @@ function Spec:fix_cond()
 end
 
 function Spec:fix_optional()
+  local all_optional_deps = {}
   if not self.optional then
     ---@param plugin LazyPlugin
     local function all_optional(plugin)
@@ -195,9 +196,13 @@ function Spec:fix_optional()
     for _, plugin in pairs(self.plugins) do
       if plugin.optional and all_optional(plugin) then
         self.plugins[plugin.name] = nil
+        if plugin.dependencies then
+          vim.list_extend(all_optional_deps, plugin.dependencies)
+        end
       end
     end
   end
+  return all_optional_deps
 end
 
 function Spec:fix_disabled()
@@ -208,14 +213,15 @@ function Spec:fix_disabled()
     end
   end
 
-  self:fix_optional()
-  self:fix_cond()
-
   ---@type table<string,string[]> plugin to parent plugin
   local dep_of = {}
 
   ---@type string[] dependencies of disabled plugins
   local disabled_deps = {}
+
+  ---@type string[] dependencies of plugins that are all optional
+  local all_optional_deps = self:fix_optional()
+  self:fix_cond()
 
   for _, plugin in pairs(self.plugins) do
     local enabled = not (plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()))
@@ -234,6 +240,10 @@ function Spec:fix_disabled()
     end
   end
 
+  -- fix deps of plugins that are all optional
+  self:fix_dependencies(all_optional_deps, dep_of, function(dep_name)
+    self.plugins[dep_name] = nil
+  end)
   -- fix deps of disabled plugins
   self:fix_dependencies(disabled_deps, dep_of, function(dep_name)
     local plugin = self.plugins[dep_name]
