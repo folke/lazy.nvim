@@ -273,6 +273,25 @@ describe("plugin spec opt", function()
       end
     end
   end)
+
+  it("handles the optional keyword", function()
+    local tests = {
+      [{ { "foo/bax" }, { "foo/bar", optional = true, dependencies = "foo/dep1" } }] = false,
+      [{ { "foo/bax", dependencies = "foo/dep1" }, { "foo/bar", optional = true, dependencies = "foo/dep1" } }] = true,
+    }
+    for test, ret in pairs(tests) do
+      local spec = Plugin.Spec.new(test)
+      assert(#spec.notifs == 0)
+      assert(spec.plugins.bax)
+      assert(not spec.plugins.bar)
+      assert(#spec.disabled == 0)
+      if ret then
+        assert(spec.plugins.dep1)
+      else
+        assert(not spec.plugins.opt1)
+      end
+    end
+  end)
 end)
 
 describe("plugin opts", function()

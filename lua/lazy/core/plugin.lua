@@ -146,6 +146,31 @@ function Spec:warn(msg)
   self:log(msg, vim.log.levels.WARN)
 end
 
+---@param gathered_deps string[]
+---@param dep_of table<string,string[]>
+---@param on_disable fun(string):nil
+function Spec:fix_dependencies(gathered_deps, dep_of, on_disable)
+  local function should_disable(dep_name)
+    for _, parent in ipairs(dep_of[dep_name] or {}) do
+      if self.plugins[parent] then
+        return false
+      end
+    end
+    return true
+  end
+
+  for _, dep_name in ipairs(gathered_deps) do
+    -- only check if the plugin is still enabled and it is a dep
+    if self.plugins[dep_name] and self.plugins[dep_name]._.dep then
+      -- check if the dep is still used by another plugin
+      if should_disable(dep_name) then
+        -- disable the dep when no longer needed
+        on_disable(dep_name)
+      end
+    end
+  end
+end
+
 function Spec:fix_cond()
   for _, plugin in pairs(self.plugins) do
     local cond = plugin.cond
@@ -159,7 +184,9 @@ function Spec:fix_cond()
   end
 end
 
+---@return string[]
 function Spec:fix_optional()
+  local all_optional_deps = {}
   if not self.optional then
     ---@param plugin LazyPlugin
     local function all_optional(plugin)
@@ -170,9 +197,13 @@ function Spec:fix_optional()
     for _, plugin in pairs(self.plugins) do
       if plugin.optional and all_optional(plugin) then
         self.plugins[plugin.name] = nil
+        if plugin.dependencies then
+          vim.list_extend(all_optional_deps, plugin.dependencies)
+        end
       end
     end
   end
+  return all_optional_deps
 end
 
 function Spec:fix_disabled()
@@ -183,14 +214,15 @@ function Spec:fix_disabled()
     end
   end
 
-  self:fix_optional()
-  self:fix_cond()
-
   ---@type table<string,string[]> plugin to parent plugin
   local dep_of = {}
 
   ---@type string[] dependencies of disabled plugins
   local disabled_deps = {}
+
+  ---@type string[] dependencies of plugins that are completely optional
+  local all_optional_deps = self:fix_optional()
+  self:fix_cond()
 
   for _, plugin in pairs(self.plugins) do
     local enabled = not (plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()))
@@ -209,27 +241,17 @@ function Spec:fix_disabled()
     end
   end
 
-  -- check deps of disabled plugins
-  for _, dep in ipairs(disabled_deps) do
-    -- only check if the plugin is still enabled and it is a dep
-    if self.plugins[dep] and self.plugins[dep]._.dep then
-      -- check if the dep is still used by another plugin
-      local keep = false
-      for _, parent in ipairs(dep_of[dep] or {}) do
-        if self.plugins[parent] then
-          keep = true
-          break
-        end
-      end
-      -- disable the dep when no longer needed
-      if not keep then
-        local plugin = self.plugins[dep]
-        plugin._.kind = "disabled"
-        self.plugins[plugin.name] = nil
-        self.disabled[plugin.name] = plugin
-      end
-    end
-  end
+  -- fix deps of plugins that are completely optional
+  self:fix_dependencies(all_optional_deps, dep_of, function(dep_name)
+    self.plugins[dep_name] = nil
+  end)
+  -- fix deps of disabled plugins
+  self:fix_dependencies(disabled_deps, dep_of, function(dep_name)
+    local plugin = self.plugins[dep_name]
+    plugin._.kind = "disabled"
+    self.plugins[plugin.name] = nil
+    self.disabled[plugin.name] = plugin
+  end)
 end
 
 ---@param msg string
