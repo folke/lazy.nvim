@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.2.1](https://github.com/folke/lazy.nvim/compare/v10.2.0...v10.2.1) (2023-07-22)
+
+
+### Bug Fixes
+
+* **loader:** getscriptinfo compat with stable. Fixes [#944](https://github.com/folke/lazy.nvim/issues/944) ([e428c5e](https://github.com/folke/lazy.nvim/commit/e428c5ee4b02dfb39203ac8745a58c1226ceebae))
+
 ## [10.2.0](https://github.com/folke/lazy.nvim/compare/v10.1.0...v10.2.0) (2023-07-20)
 
 
