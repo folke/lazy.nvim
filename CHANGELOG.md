@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.3.0](https://github.com/folke/lazy.nvim/compare/v10.2.1...v10.3.0) (2023-07-22)
+
+
+### Features
+
+* **plugins:** Given an optional plugin, conditionally discard deps ([#947](https://github.com/folke/lazy.nvim/issues/947)) ([e7334d8](https://github.com/folke/lazy.nvim/commit/e7334d8db5bab48463f8ab3ea020bf2f76aaa7f9))
+
 ## [10.2.1](https://github.com/folke/lazy.nvim/compare/v10.2.0...v10.2.1) (2023-07-22)
 
 
