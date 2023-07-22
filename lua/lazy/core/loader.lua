@@ -266,7 +266,7 @@ function M.reload(plugin)
   end
 
   -- reload any vimscript files for this plugin
-  local scripts = vim.fn.getscriptinfo({ name = ".vim" })
+  local scripts = vim.fn.getscriptinfo()
   local loaded_scripts = {}
   for _, s in ipairs(scripts) do
     ---@type string
