@@ -67,6 +67,10 @@ M.clone = {
       self.plugin.url,
     }
 
+    if self.plugin.shallow ~= false then
+       args[#args+1] = "--depth=1"
+    end
+
     if Config.options.git.filter then
       args[#args + 1] = "--filter=blob:none"
     end

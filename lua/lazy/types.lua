@@ -32,6 +32,7 @@
 ---@field module? false
 
 ---@class LazyPluginRef
+---@field shallow? boolean clones the plugin with --depth=1
 ---@field branch? string
 ---@field tag? string
 ---@field commit? string
