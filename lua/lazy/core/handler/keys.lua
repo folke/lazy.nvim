@@ -9,7 +9,7 @@ local Loader = require("lazy.core.loader")
 ---@field noremap? boolean
 ---@field remap? boolean
 ---@field expr? boolean
----@field id string
+---@field id? string
 
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
