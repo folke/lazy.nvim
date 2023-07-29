@@ -699,7 +699,7 @@ require("lazy").setup({
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     { import = "lazyvim.plugins.extras.coding.copilot" },
   }
-)
+})
 ```
 
 When you import specs, you can override them by simply adding a spec for the same plugin to your local
