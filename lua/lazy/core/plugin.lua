@@ -7,7 +7,9 @@ local M = {}
 M.loading = false
 
 ---@class LazySpecLoader
+---@field repair_info table<string,LazyPlugin[]>
 ---@field plugins table<string, LazyPlugin>
+---@field optional_only table<string, LazyPlugin>
 ---@field disabled table<string, LazyPlugin>
 ---@field modules string[]
 ---@field notifs {msg:string, level:number, file?:string}[]
@@ -20,7 +22,9 @@ M.Spec = Spec
 ---@param opts? {optional?:boolean}
 function Spec.new(spec, opts)
   local self = setmetatable({}, { __index = Spec })
+  self.repair_info = {}
   self.plugins = {}
+  self.optional_only = {}
   self.disabled = {}
   self.modules = {}
   self.notifs = {}
@@ -32,18 +36,75 @@ function Spec.new(spec, opts)
 end
 
 function Spec:parse(spec)
+  -- spec -> self.plugins
   self:normalize(spec)
+  -- self.plugins -> self.optional_only, self.disabled
+  self:fix_disabled()
 
-  -- calculate handlers
-  for _, plugin in pairs(self.plugins) do
+  if self:has_unused_plugins() then
+    self:fix_active()
+  end
+
+  self:calculate_handlers(self.plugins)
+  self:calculate_handlers(self.disabled)
+end
+
+function Spec:has_unused_plugins()
+  return not (vim.tbl_isempty(self.optional_only) and vim.tbl_isempty(self.disabled))
+end
+
+function Spec:fix_active()
+  ---@type table<string,LazyPlugin>
+  local unused_plugins = vim.tbl_extend("keep", self.optional_only, self.disabled)
+
+  ---@type string[]
+  local candidates = {}
+  for _, plugin in pairs(unused_plugins) do
+    if plugin.dependencies then
+      vim.list_extend(candidates, plugin.dependencies)
+    end
+  end
+
+  -- merge candidate again without instances supplied by unused plugins
+  for _, candidate in pairs(candidates) do
+    local fix = false
+    local instances = vim.tbl_filter(function(instance)
+      if instance._.parent_name and unused_plugins[instance._.parent_name] then
+        fix = true
+        return false
+      end
+      return instance
+    end, self.repair_info[candidate])
+    if fix then
+      self.plugins[candidate] = self:fix_merge(instances)
+    end
+  end
+end
+
+---@param instances_of_plugin LazyPlugin[]
+---@return LazyPlugin
+function Spec:fix_merge(instances_of_plugin)
+  local last
+  for index, inst in ipairs(instances_of_plugin) do
+    if index == 1 then
+      last = inst
+    else
+      self:merge(last, inst)
+      last = inst
+    end
+  end
+  return last
+end
+
+---@param plugins table<string, LazyPlugin>
+function Spec:calculate_handlers(plugins)
+  for _, plugin in pairs(plugins) do
     for _, handler in pairs(Handler.types) do
       if plugin[handler] then
         plugin[handler] = M.values(plugin, handler, true)
       end
     end
   end
-
-  self:fix_disabled()
 end
 
 -- PERF: optimized code to get package name without using lua patterns
@@ -56,8 +117,8 @@ end
 
 ---@param plugin LazyPlugin
 ---@param results? string[]
----@param is_dep? boolean
-function Spec:add(plugin, results, is_dep)
+---@param parent_name? string
+function Spec:add(plugin, results, parent_name)
   -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
   -- see https://github.com/folke/lazy.nvim/issues/45
   if rawget(plugin, "_") then
@@ -125,9 +186,10 @@ function Spec:add(plugin, results, is_dep)
   end
 
   plugin._ = {}
-  plugin._.dep = is_dep
+  plugin._.dep = (parent_name ~= nil) or nil
 
-  plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+  plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, plugin.name) or nil
+  self:add_to_repair_info(plugin, parent_name)
   if self.plugins[plugin.name] then
     plugin = self:merge(self.plugins[plugin.name], plugin)
   end
@@ -136,6 +198,15 @@ function Spec:add(plugin, results, is_dep)
     table.insert(results, plugin.name)
   end
   return plugin
+end
+
+---@param plugin LazyPlugin
+---@param parent_name? string
+function Spec:add_to_repair_info(plugin, parent_name)
+  local copy = vim.deepcopy(plugin) -- copy the instance of the plugin
+  copy._.parent_name = parent_name
+  self.repair_info[copy.name] = self.repair_info[copy.name] or {}
+  table.insert(self.repair_info[copy.name], copy)
 end
 
 function Spec:error(msg)
@@ -197,6 +268,7 @@ function Spec:fix_optional()
     for _, plugin in pairs(self.plugins) do
       if plugin.optional and all_optional(plugin) then
         self.plugins[plugin.name] = nil
+        self.optional_only[plugin.name] = plugin
         if plugin.dependencies then
           vim.list_extend(all_optional_deps, plugin.dependencies)
         end
@@ -243,7 +315,9 @@ function Spec:fix_disabled()
 
   -- fix deps of plugins that are completely optional
   self:fix_dependencies(all_optional_deps, dep_of, function(dep_name)
+    local plugin = self.plugins[dep_name]
     self.plugins[dep_name] = nil
+    self.optional_only[dep_name] = plugin
   end)
   -- fix deps of disabled plugins
   self:fix_dependencies(disabled_deps, dep_of, function(dep_name)
@@ -271,8 +345,9 @@ end
 
 ---@param spec LazySpec|LazySpecImport
 ---@param results? string[]
----@param is_dep? boolean
-function Spec:normalize(spec, results, is_dep)
+---@param parent_name? string
+function Spec:normalize(spec, results, parent_name)
+  local is_dep = parent_name ~= nil
   if type(spec) == "string" then
     if is_dep and not spec:find("/", 1, true) then
       -- spec is a plugin name
@@ -280,16 +355,16 @@ function Spec:normalize(spec, results, is_dep)
         table.insert(results, spec)
       end
     else
-      self:add({ spec }, results, is_dep)
+      self:add({ spec }, results, parent_name)
     end
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
-      self:normalize(s, results, is_dep)
+      self:normalize(s, results, parent_name)
     end
   elseif spec[1] or spec.dir or spec.url then
     ---@cast spec LazyPlugin
-    local plugin = self:add(spec, results, is_dep)
+    local plugin = self:add(spec, results, parent_name)
     ---@diagnostic disable-next-line: cast-type-mismatch
     ---@cast plugin LazySpecImport
     if plugin and plugin.import then
