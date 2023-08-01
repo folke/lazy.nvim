@@ -53,37 +53,53 @@ function Spec:has_unused_plugins()
   return not (vim.tbl_isempty(self.optional_only) and vim.tbl_isempty(self.disabled))
 end
 
-function Spec:fix_active()
-  ---@type table<string,LazyPlugin>
-  local unused_plugins = vim.tbl_extend("keep", self.optional_only, self.disabled)
+---@return string[]
+function Spec:collect_dirty()
+  ---@return LazyPlugin[]
+  local function collect_unused_plugins()
+    local unused_plugins = vim.list_extend({}, vim.tbl_values(self.optional_only))
+    return vim.list_extend(unused_plugins, vim.tbl_values(self.disabled))
+  end
 
   ---@type string[]
   local candidates = {}
-  for _, plugin in pairs(unused_plugins) do
+  for _, plugin in pairs(collect_unused_plugins()) do
     if plugin.dependencies then
       vim.list_extend(candidates, plugin.dependencies)
     end
   end
 
-  -- merge candidate again without instances supplied by unused plugins
-  for _, candidate in pairs(candidates) do
-    local fix = false
-    local instances = vim.tbl_filter(function(instance)
-      if instance._.parent_name and unused_plugins[instance._.parent_name] then
-        fix = true
+  ---@type table<string, boolean>
+  local seen = {}
+  -- filter: candidates that are not active
+  -- filter: duplicate candidates
+  return vim.tbl_filter(function(candidate)
+    if not self.plugins[candidate] or seen[candidate] then
+      return false
+    end
+    seen[candidate] = true
+    return candidate
+  end, candidates)
+end
+
+function Spec:fix_active()
+  -- merge again without instance contributions by unused plugins
+  local dirty_plugins = self:collect_dirty()
+  for _, plugin_name in pairs(dirty_plugins) do
+    local filtered_instances = vim.tbl_filter(function(instance)
+      if instance._.parent_name and not self.plugins[instance._.parent_name] then
         return false
       end
       return instance
-    end, self.repair_info[candidate])
-    if fix then
-      self.plugins[candidate] = self:fix_merge(instances)
-    end
+    end, self.repair_info[plugin_name])
+
+    self.plugins[plugin_name] = self:redo_merge(filtered_instances)
   end
 end
 
 ---@param instances_of_plugin LazyPlugin[]
 ---@return LazyPlugin
-function Spec:fix_merge(instances_of_plugin)
+function Spec:redo_merge(instances_of_plugin)
   local last
   for index, inst in ipairs(instances_of_plugin) do
     if index == 1 then
