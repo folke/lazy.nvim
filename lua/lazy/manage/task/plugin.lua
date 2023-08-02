@@ -15,6 +15,13 @@ local function get_build_file(plugin)
   end
 end
 
+local function do_in_dir(dir, fn)
+  local d = vim.loop.getcwd()
+  vim.loop.chdir(dir)
+  fn()
+  vim.loop.chdir(d)
+end
+
 M.build = {
   ---@param opts? {force:boolean}
   skip = function(plugin, opts)
@@ -52,9 +59,13 @@ M.build = {
       for _, build in ipairs(builders) do
         if type(build) == "string" and build:sub(1, 1) == ":" then
           local cmd = vim.api.nvim_parse_cmd(build:sub(2), {})
-          self.output = vim.api.nvim_cmd(cmd, { output = true })
+          do_in_dir(self.plugin.dir, function()
+            self.output = vim.api.nvim_cmd(cmd, { output = true })
+          end)
         elseif type(build) == "function" then
-          build(self.plugin)
+          do_in_dir(self.plugin.dir, function()
+            build(self.plugin)
+          end)
         else
           local shell = vim.env.SHELL or vim.o.shell
           local shell_args = shell:find("cmd.exe", 1, true) and "/c" or "-c"
