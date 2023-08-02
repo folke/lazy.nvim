@@ -53,51 +53,37 @@ function Spec:has_unused_plugins()
   return not (vim.tbl_isempty(self.optional_only) and vim.tbl_isempty(self.disabled))
 end
 
----@return string[]
-function Spec:names_to_repair()
-  ---@return LazyPlugin[]
-  local function collect_unused_plugins()
-    local unused = vim.list_extend({}, vim.tbl_values(self.optional_only))
-    return vim.list_extend(unused, vim.tbl_values(self.disabled))
-  end
-
-  ---@type string[]
-  local deps_in_unused = {}
-  for _, plugin in pairs(collect_unused_plugins()) do
-    if plugin.dependencies then
-      vim.list_extend(deps_in_unused, plugin.dependencies)
-    end
-  end
-
+function Spec:fix_active()
   ---@type table<string, boolean>
   local seen = {}
-  -- filter: deps that are not active
-  -- filter: duplicate deps
-  return vim.tbl_filter(function(name)
-    if not self.plugins[name] or seen[name] then
-      return false
+
+  ---@param name string
+  local function repair(name)
+    if not seen[name] and self.plugins[name] then
+      seen[name] = true
+
+      self.plugins[name] = self:redo_merge(vim.tbl_filter(function(contrib)
+        if contrib._.parent_name and not self.plugins[contrib._.parent_name] then
+          return false
+        end
+        return contrib
+      end, self.repair_info[name]))
     end
-    seen[name] = true
-    return name
-  end, deps_in_unused)
-end
-
-function Spec:fix_active()
-  ---@type string[]
-  local names = self:names_to_repair()
-
-  -- merge again without contributions from unused plugins
-  for _, name in pairs(names) do
-    ---@type LazyPlugin[]
-    local filtered_contributions = vim.tbl_filter(function(contr)
-      if contr._.parent_name and not self.plugins[contr._.parent_name] then
-        return false
-      end
-      return contr
-    end, self.repair_info[name])
-
-    self.plugins[name] = self:redo_merge(filtered_contributions)
   end
+
+  ---@param originating_from table<string,LazyPlugin>
+  local function remove_contributions(originating_from)
+    for _, plugin in pairs(originating_from) do
+      if plugin.dependencies then
+        for _, dep in pairs(plugin.dependencies) do
+          repair(dep)
+        end
+      end
+    end
+  end
+
+  remove_contributions(self.optional_only)
+  remove_contributions(self.disabled)
 end
 
 ---@param contributions LazyPlugin[]
