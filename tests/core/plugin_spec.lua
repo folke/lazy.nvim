@@ -335,3 +335,32 @@ describe("plugin opts", function()
     end
   end)
 end)
+
+describe("plugin spec", function()
+  it("discards contributions from unused plugins", function()
+    local tests = {
+      {
+        spec = {
+          { "foo/disabled", enabled = false, dependencies = { "foo/bar", opts = { key_disabled = true } } },
+          { "foo/disabled", dependencies = { "foo/bar", opts = { key_disabled_two = true } } },
+          { "foo/conditional", cond = false, dependencies = { "foo/bar", opts = { key_cond = true } } },
+          { "foo/optional", optional = true, dependencies = { "foo/bar", opts = { key_optional = true } } },
+          { "foo/active", dependencies = { "foo/bar", opts = { key_active = true } } },
+          {
+            "foo/bar",
+            opts = { key = true },
+          },
+        },
+        expected_opts = { key = true, key_active = true },
+      }, -- for now, one test...
+    }
+    for _, test in ipairs(tests) do
+      local spec = Plugin.Spec.new(test.spec)
+      assert(#spec.notifs == 0)
+      assert(vim.tbl_count(spec.plugins) == 2)
+      assert(spec.plugins.active)
+      assert(spec.plugins.bar)
+      assert.same(test.expected_opts, Plugin.values(spec.plugins.bar, "opts"))
+    end
+  end)
+end)
