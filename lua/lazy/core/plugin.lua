@@ -54,54 +54,57 @@ function Spec:has_unused_plugins()
 end
 
 ---@return string[]
-function Spec:collect_dirty()
+function Spec:names_to_repair()
   ---@return LazyPlugin[]
   local function collect_unused_plugins()
-    local unused_plugins = vim.list_extend({}, vim.tbl_values(self.optional_only))
-    return vim.list_extend(unused_plugins, vim.tbl_values(self.disabled))
+    local unused = vim.list_extend({}, vim.tbl_values(self.optional_only))
+    return vim.list_extend(unused, vim.tbl_values(self.disabled))
   end
 
   ---@type string[]
-  local candidates = {}
+  local deps_in_unused = {}
   for _, plugin in pairs(collect_unused_plugins()) do
     if plugin.dependencies then
-      vim.list_extend(candidates, plugin.dependencies)
+      vim.list_extend(deps_in_unused, plugin.dependencies)
     end
   end
 
   ---@type table<string, boolean>
   local seen = {}
-  -- filter: candidates that are not active
-  -- filter: duplicate candidates
-  return vim.tbl_filter(function(candidate)
-    if not self.plugins[candidate] or seen[candidate] then
+  -- filter: deps that are not active
+  -- filter: duplicate deps
+  return vim.tbl_filter(function(name)
+    if not self.plugins[name] or seen[name] then
       return false
     end
-    seen[candidate] = true
-    return candidate
-  end, candidates)
+    seen[name] = true
+    return name
+  end, deps_in_unused)
 end
 
 function Spec:fix_active()
-  -- merge again without instance contributions by unused plugins
-  local dirty_plugins = self:collect_dirty()
-  for _, plugin_name in pairs(dirty_plugins) do
-    local filtered_instances = vim.tbl_filter(function(instance)
-      if instance._.parent_name and not self.plugins[instance._.parent_name] then
+  ---@type string[]
+  local names = self:names_to_repair()
+
+  -- merge again without contributions from unused plugins
+  for _, name in pairs(names) do
+    ---@type LazyPlugin[]
+    local filtered_contributions = vim.tbl_filter(function(contr)
+      if contr._.parent_name and not self.plugins[contr._.parent_name] then
         return false
       end
-      return instance
-    end, self.repair_info[plugin_name])
+      return contr
+    end, self.repair_info[name])
 
-    self.plugins[plugin_name] = self:redo_merge(filtered_instances)
+    self.plugins[name] = self:redo_merge(filtered_contributions)
   end
 end
 
----@param instances_of_plugin LazyPlugin[]
+---@param contributions LazyPlugin[]
 ---@return LazyPlugin
-function Spec:redo_merge(instances_of_plugin)
+function Spec:redo_merge(contributions)
   local last
-  for index, inst in ipairs(instances_of_plugin) do
+  for index, inst in ipairs(contributions) do
     if index == 1 then
       last = inst
     else
@@ -205,7 +208,7 @@ function Spec:add(plugin, results, parent_name)
   plugin._.dep = (parent_name ~= nil) or nil
 
   plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, plugin.name) or nil
-  self:add_to_repair_info(plugin, parent_name)
+  self:add_repair_info(plugin, parent_name)
   if self.plugins[plugin.name] then
     plugin = self:merge(self.plugins[plugin.name], plugin)
   end
@@ -218,8 +221,8 @@ end
 
 ---@param plugin LazyPlugin
 ---@param parent_name? string
-function Spec:add_to_repair_info(plugin, parent_name)
-  local copy = vim.deepcopy(plugin) -- copy the instance of the plugin
+function Spec:add_repair_info(plugin, parent_name)
+  local copy = vim.deepcopy(plugin) -- copy this plugin contribution
   copy._.parent_name = parent_name
   self.repair_info[copy.name] = self.repair_info[copy.name] or {}
   table.insert(self.repair_info[copy.name], copy)
@@ -283,8 +286,7 @@ function Spec:fix_optional()
     -- handle optional plugins
     for _, plugin in pairs(self.plugins) do
       if plugin.optional and all_optional(plugin) then
-        self.plugins[plugin.name] = nil
-        self.optional_only[plugin.name] = plugin
+        self:move_to_optional_only(plugin)
         if plugin.dependencies then
           vim.list_extend(all_optional_deps, plugin.dependencies)
         end
@@ -292,6 +294,17 @@ function Spec:fix_optional()
     end
   end
   return all_optional_deps
+end
+
+function Spec:move_to_disabled(plugin)
+  plugin._.kind = "disabled"
+  self.plugins[plugin.name] = nil
+  self.disabled[plugin.name] = plugin
+end
+
+function Spec:move_to_optional_only(plugin)
+  self.plugins[plugin.name] = nil
+  self.optional_only[plugin.name] = plugin
 end
 
 function Spec:fix_disabled()
@@ -320,9 +333,7 @@ function Spec:fix_disabled()
         table.insert(dep_of[dep], plugin.name)
       end
     else
-      plugin._.kind = "disabled"
-      self.plugins[plugin.name] = nil
-      self.disabled[plugin.name] = plugin
+      self:move_to_disabled(plugin)
       if plugin.dependencies then
         vim.list_extend(disabled_deps, plugin.dependencies)
       end
@@ -331,16 +342,11 @@ function Spec:fix_disabled()
 
   -- fix deps of plugins that are completely optional
   self:fix_dependencies(all_optional_deps, dep_of, function(dep_name)
-    local plugin = self.plugins[dep_name]
-    self.plugins[dep_name] = nil
-    self.optional_only[dep_name] = plugin
+    self:move_to_optional_only(self.plugins[dep_name])
   end)
   -- fix deps of disabled plugins
   self:fix_dependencies(disabled_deps, dep_of, function(dep_name)
-    local plugin = self.plugins[dep_name]
-    plugin._.kind = "disabled"
-    self.plugins[plugin.name] = nil
-    self.disabled[plugin.name] = plugin
+    self:move_to_disabled(self.plugins[dep_name])
   end)
 end
 
