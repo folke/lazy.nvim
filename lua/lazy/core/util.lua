@@ -201,18 +201,49 @@ function M.walk(path, fn)
   end)
 end
 
+---@param delim string
+function string:split(delim)
+  -- This default doesn't fully make sense, but I'm just replicating some python functionality
+  delim = delim or '%.'
+  if self:sub(-#delim ~= delim) then
+    self = self .. delim
+  end
+
+  return self:gmatch('(.-)' .. delim:gsub("[()%%.[^$%]*+%-?]", "%%%1"))
+end
+
+---@param value any
+function table:contains(value)
+  for _, element in ipairs(self) do
+    if element == value then
+      return true
+    end
+  end
+
+  return false
+end
+
 ---@param root string
 ---@param fn fun(modname:string, modpath:string)
----@param modname? string
-function M.walkmods(root, fn, modname)
-  modname = modname and (modname:gsub("%.$", "") .. ".") or ""
+-- @param optionals? {modname:str, extensions:str[]}
+function M.walkmods(root, fn, optionals)
+  optionals.modname = optionals.modname and (optionals.modname:gsub("%.$", "") .. ".") or ""
+  if not optionals.extensions:contains("lua") then
+    table.insert(optionals.extensions, "lua")
+  end
+
   M.ls(root, function(path, name, type)
+    local name_components = name.split("%.")
+    local extension = name_components[#name_components]
     if name == "init.lua" then
-      fn(modname:gsub("%.$", ""), path)
-    elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
-      fn(modname .. name:sub(1, -5), path)
+      fn(optionals.modname:gsub("%.$", ""), path)
+    elseif (type == "file" or type == "link") and (optionals.extensions:contains(extension)) then
+      table.remove(name_components[#name_components])
+      fn(optionals.modname .. table.concat(name_components, ".", path))
     elseif type == "directory" then
-      M.walkmods(path, fn, modname .. name .. ".")
+      M.walkmods(path, fn, {
+        modname = optionals.modname .. name .. ".", extensions = optionals.extensions
+      })
     end
   end)
 end
