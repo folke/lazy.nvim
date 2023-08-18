@@ -50,7 +50,7 @@
 ---@field optional? boolean If set, then this plugin will not be added unless it is added somewhere else
 ---@field lazy? boolean
 ---@field priority? number Only useful for lazy=false plugins to force loading certain plugins first. Default priority is 50
----@field dev? boolean If set, then link to the respective folder under your ~/projects
+---@field dev? LazySpec If set, then link to the respective folder under your ~/projects
 
 ---@class LazyPlugin: LazyPluginBase,LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field dependencies? string[]
