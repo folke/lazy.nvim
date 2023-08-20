@@ -38,11 +38,11 @@ end
 function Spec:parse(spec)
   -- spec -> self.plugins
   self:normalize(spec)
-  -- self.plugins -> self.optional_only, self.disabled
+  -- self.plugins -> self.plugins, self.optional_only, self.disabled
   self:fix_disabled()
 
   if self:has_unused_plugins() then
-    self:fix_active()
+    self:fix_enabled()
   end
 
   self:calculate_handlers(self.plugins)
@@ -53,44 +53,46 @@ function Spec:has_unused_plugins()
   return not (vim.tbl_isempty(self.optional_only) and vim.tbl_isempty(self.disabled))
 end
 
-function Spec:fix_active()
+function Spec:fix_enabled()
   ---@type table<string, boolean>
   local seen = {}
 
   ---@param name string
   local function repair(name)
+    -- only repair a plugin once
+    -- only repair when its enabled
     if not seen[name] and self.plugins[name] then
       seen[name] = true
 
-      self.plugins[name] = self:redo_merge(vim.tbl_filter(function(contrib)
-        if contrib._.parent_name and not self.plugins[contrib._.parent_name] then
+      self.plugins[name] = self:redo_merge(vim.tbl_filter(function(partial)
+        if partial._.parent_name and not self.plugins[partial._.parent_name] then
           return false
         end
-        return contrib
+        return partial
       end, self.repair_info[name]))
     end
   end
 
   ---@param originating_from table<string,LazyPlugin>
-  local function remove_contributions(originating_from)
+  local function remove_partials(originating_from)
     for _, plugin in pairs(originating_from) do
       if plugin.dependencies then
-        for _, dep in pairs(plugin.dependencies) do
-          repair(dep)
+        for _, dep_name in pairs(plugin.dependencies) do
+          repair(dep_name)
         end
       end
     end
   end
 
-  remove_contributions(self.optional_only)
-  remove_contributions(self.disabled)
+  remove_partials(self.optional_only)
+  remove_partials(self.disabled)
 end
 
----@param contributions LazyPlugin[]
+---@param partials LazyPlugin[]
 ---@return LazyPlugin
-function Spec:redo_merge(contributions)
+function Spec:redo_merge(partials)
   local last
-  for index, inst in ipairs(contributions) do
+  for index, inst in ipairs(partials) do
     if index == 1 then
       last = inst
     else
@@ -195,6 +197,7 @@ function Spec:add(plugin, results, parent_name)
 
   plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, plugin.name) or nil
   self:add_repair_info(plugin, parent_name)
+
   if self.plugins[plugin.name] then
     plugin = self:merge(self.plugins[plugin.name], plugin)
   end
@@ -208,7 +211,7 @@ end
 ---@param plugin LazyPlugin
 ---@param parent_name? string
 function Spec:add_repair_info(plugin, parent_name)
-  local copy = vim.deepcopy(plugin) -- copy this plugin contribution
+  local copy = vim.deepcopy(plugin) -- copy this partial plugin spec
   copy._.parent_name = parent_name
   self.repair_info[copy.name] = self.repair_info[copy.name] or {}
   table.insert(self.repair_info[copy.name], copy)

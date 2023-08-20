@@ -337,7 +337,7 @@ describe("plugin opts", function()
 end)
 
 describe("plugin spec", function()
-  it("discards contributions from unused plugins", function()
+  it("only includes partials from enabled plugins", function()
     local tests = {
       {
         spec = {
