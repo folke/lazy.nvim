@@ -3,6 +3,7 @@ local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")
 local Cache = require("lazy.core.cache")
+local View = require("lazy.view")
 
 ---@class LazyCoreLoader
 local M = {}
@@ -45,8 +46,12 @@ function M.setup()
         break
       end
     end
+    if View.visible() then
+      View.view:close()
+    end
     Util.track()
   end
+
   Config.mapleader = vim.g.mapleader
 
   -- report any warnings & errors
