@@ -672,7 +672,7 @@ return {
 }
 ```
 
-- Any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec
+- Any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec if using `.setup("plugins")`.
 
 For a real-life example, you can check [LazyVim](https://github.com/LazyVim/LazyVim) and more specifically:
 
