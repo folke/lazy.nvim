@@ -809,6 +809,7 @@ This makes it easier for users, so they no longer need to specify a `build` comm
 
 ## 📦 Other Neovim Plugin Managers in Lua
 
+- [pckr.nvim](https://github.com/lewis6991/pckr.nvim)
 - [packer.nvim](https://github.com/wbthomason/packer.nvim)
 - [paq-nvim](https://github.com/savq/paq-nvim)
 - [neopm](https://github.com/ii14/neopm)
