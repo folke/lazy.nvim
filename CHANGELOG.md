@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.3.1](https://github.com/folke/lazy.nvim/compare/v10.3.0...v10.3.1) (2023-09-27)
+
+
+### Bug Fixes
+
+* properly setup handlers when loading a plugin before startup (build) etc ([24f6b6f](https://github.com/folke/lazy.nvim/commit/24f6b6f1c7fb68f02335dd9579faee8b243e6a54))
+* return true when opening diff ([#970](https://github.com/folke/lazy.nvim/issues/970)) ([0e1d264](https://github.com/folke/lazy.nvim/commit/0e1d264ab6567725b6c30ffd1ad120b16884ff45))
+
 ## [10.3.0](https://github.com/folke/lazy.nvim/compare/v10.2.1...v10.3.0) (2023-07-22)
 
 
