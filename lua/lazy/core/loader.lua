@@ -34,6 +34,7 @@ function M.setup()
 
   -- load the plugins
   Plugin.load()
+  Handler.init()
 
   -- install missing plugins
   if Config.options.install.missing then
@@ -299,6 +300,12 @@ function M._load(plugin, reason, opts)
 
   if plugin._.cond == false and not (opts and opts.force) then
     return
+  end
+
+  if not Handler.did_setup then
+    Util.try(function()
+      Handler.enable(plugin)
+    end, "Failed to setup handlers for " .. plugin.name)
   end
 
   ---@diagnostic disable-next-line: assign-type-mismatch

@@ -19,13 +19,19 @@ M.types = {
 ---@type table<string,LazyHandler>
 M.handlers = {}
 
-function M.setup()
+M.did_setup = false
+
+function M.init()
   for _, type in pairs(M.types) do
     M.handlers[type] = M.new(type)
   end
+end
+
+function M.setup()
+  M.did_setup = true
   for _, plugin in pairs(Config.plugins) do
     Util.try(function()
-      M.enable(plugin, true)
+      M.enable(plugin)
     end, "Failed to setup handlers for " .. plugin.name)
   end
 end
@@ -40,9 +46,8 @@ function M.disable(plugin)
 end
 
 ---@param plugin LazyPlugin
----@param force? boolean
-function M.enable(plugin, force)
-  if force or not plugin._.loaded then
+function M.enable(plugin)
+  if not plugin._.loaded then
     for type, handler in pairs(M.handlers) do
       if plugin[type] then
         handler:add(plugin)
