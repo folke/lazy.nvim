@@ -243,6 +243,8 @@ function M:diff(opts)
     else
       Diff.handlers[Config.options.diff.cmd](plugin, diff)
     end
+
+    return true
   end
 end
 
