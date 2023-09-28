@@ -28,6 +28,11 @@ M.defaults = {
     -- then set the below to false. This should work, but is NOT supported and will
     -- increase downloads a lot.
     filter = true,
+    -- If git config --global core.autocrlf is true on a Unix/Linux system, then the git clone
+    -- process will lead to files with CRLF endings. Vi / vim / neovim cannot handle this.
+    -- When true, Lazy will force git to clone with core.autocrlf=false. When false, Lazy will
+    -- not touch the core.autocrlf setting.
+    force_autocrlf = true,
   },
   dev = {
     -- directory where you store your local plugin projects

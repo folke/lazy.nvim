@@ -67,6 +67,8 @@ M.clone = {
       self.plugin.url,
     }
 
+    vim.print("force_autocrlf = " .. tostring(Config.options.git.force_autocrlf))
+
     if Config.options.git.filter then
       args[#args + 1] = "--filter=blob:none"
     end
