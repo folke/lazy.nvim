@@ -235,10 +235,14 @@ end
 ---@generic V
 ---@param t table<string, V>
 ---@param fn fun(key:string, value:V)
-function M.foreach(t, fn)
+---@param opts? {case_sensitive?:boolean}
+function M.foreach(t, fn, opts)
   ---@type string[]
   local keys = vim.tbl_keys(t)
   pcall(table.sort, keys, function(a, b)
+    if opts and opts.case_sensitive then
+      return a < b
+    end
     return a:lower() < b:lower()
   end)
   for _, key in ipairs(keys) do

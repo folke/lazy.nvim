@@ -63,7 +63,7 @@ function M.update()
   local lines = { [[!_TAG_FILE_ENCODING	utf-8	//]] }
   Util.foreach(tags, function(_, tag)
     table.insert(lines, ("%s\t%s\t/%s"):format(tag.tag, tag.file, tag.line))
-  end)
+  end, { case_sensitive = true })
   Util.write_file(docs .. "/tags", table.concat(lines, "\n"))
 end
 
