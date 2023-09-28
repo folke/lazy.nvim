@@ -32,7 +32,7 @@ M.defaults = {
     -- process will lead to files with CRLF endings. Vi / vim / neovim cannot handle this.
     -- When true, Lazy will force git to clone with core.autocrlf=false. When false, Lazy will
     -- not touch the core.autocrlf setting.
-    force_autocrlf = true,
+    override_autocrlf = true,
   },
   dev = {
     -- directory where you store your local plugin projects
