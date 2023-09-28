@@ -241,6 +241,9 @@ function M:section(section)
   end, self.plugins)
 
   local count = #section_plugins
+  table.sort(section_plugins, function(a, b)
+    return a.name:lower() < b.name:lower()
+  end)
   if count > 0 then
     self:append(section.title, "LazyH2"):append(" (" .. count .. ")", "LazyComment"):nl()
     for _, plugin in ipairs(section_plugins) do
