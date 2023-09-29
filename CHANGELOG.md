@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.4.0](https://github.com/folke/lazy.nvim/compare/v10.3.1...v10.4.0) (2023-09-29)
+
+
+### Features
+
+* **plugin:** dont include plugin spec fragments for disabled or optional plugins ([#1058](https://github.com/folke/lazy.nvim/issues/1058)) ([f3c7169](https://github.com/folke/lazy.nvim/commit/f3c7169dd65f5ae528b6c930492359971014290b))
+
+
+### Bug Fixes
+
+* **help:** sort readme tags case sensitive. Fixes [#67](https://github.com/folke/lazy.nvim/issues/67) ([54ecfc7](https://github.com/folke/lazy.nvim/commit/54ecfc7c245e5e3fbbc749658ad171335418d48c))
+* **ui:** sort plugins case insensitive ([4f27fc3](https://github.com/folke/lazy.nvim/commit/4f27fc33c4e0e81802f4afadbe350de93447ac1e))
+
 ## [10.3.1](https://github.com/folke/lazy.nvim/compare/v10.3.0...v10.3.1) (2023-09-27)
 
 
