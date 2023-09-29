@@ -2,12 +2,15 @@
 ---@alias LazyPluginKind "normal"|"clean"|"disabled"
 
 ---@class LazyPluginState
+---@field fid number id of the plugin spec fragment
+---@field fpid? number parent id of the plugin spec fragment
+---@field fdeps? number[] children ids of the fragment
 ---@field loaded? {[string]:string}|{time:number}
----@field installed boolean
+---@field installed? boolean
 ---@field tasks? LazyTask[]
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
----@field is_local boolean
+---@field is_local? boolean
 ---@field updates? {from:GitInfo, to:GitInfo}
 ---@field cloned? boolean
 ---@field kind? LazyPluginKind

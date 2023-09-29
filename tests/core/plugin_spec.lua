@@ -1,10 +1,24 @@
 local Config = require("lazy.core.config")
 local Plugin = require("lazy.core.plugin")
-local Loader = require("lazy.core.loader")
 
 local assert = require("luassert")
 
 Config.setup()
+
+---@param plugins LazyPlugin[]|LazyPlugin
+local function clean(plugins)
+  local p = plugins
+  plugins = type(plugins) == "table" and plugins or { plugins }
+  for _, plugin in pairs(plugins) do
+    plugin._.fid = nil
+    plugin._.fpid = nil
+    plugin._.fdeps = nil
+    if plugin._.dep == false then
+      plugin._.dep = nil
+    end
+  end
+  return p
+end
 
 describe("plugin spec url/name", function()
   local tests = {
@@ -28,6 +42,7 @@ describe("plugin spec url/name", function()
       end
       local spec = Plugin.Spec.new(test[1])
       local plugins = vim.tbl_values(spec.plugins)
+      plugins[1]._ = {}
       assert(#spec.notifs == 0)
       assert.equal(1, #plugins)
       assert.same(test[2], plugins[1])
@@ -61,7 +76,7 @@ describe("plugin spec opt", function()
       for _, plugin in pairs(spec.plugins) do
         plugin.dir = nil
       end
-      assert.same(spec.plugins, {
+      assert.same(clean(spec.plugins), {
         bar = {
           "foo/bar",
           _ = {},
@@ -105,7 +120,7 @@ describe("plugin spec opt", function()
         for _, plugin in pairs(spec.plugins) do
           plugin.dir = nil
         end
-        assert.same(spec.plugins, {
+        assert.same(clean(spec.plugins), {
           bar = {
             "foo/bar",
             _ = {},
@@ -332,6 +347,35 @@ describe("plugin opts", function()
       local spec = Plugin.Spec.new(test.spec)
       assert(spec.plugins.foo)
       assert.same(test.opts, Plugin.values(spec.plugins.foo, "opts"))
+    end
+  end)
+end)
+
+describe("plugin spec", function()
+  it("only includes fragments from enabled plugins", function()
+    local tests = {
+      {
+        spec = {
+          { "foo/disabled", enabled = false, dependencies = { "foo/bar", opts = { key_disabled = true } } },
+          { "foo/disabled", dependencies = { "foo/bar", opts = { key_disabled_two = true } } },
+          { "foo/conditional", cond = false, dependencies = { "foo/bar", opts = { key_cond = true } } },
+          { "foo/optional", optional = true, dependencies = { "foo/bar", opts = { key_optional = true } } },
+          { "foo/active", dependencies = { "foo/bar", opts = { key_active = true } } },
+          {
+            "foo/bar",
+            opts = { key = true },
+          },
+        },
+        expected_opts = { key = true, key_active = true },
+      }, -- for now, one test...
+    }
+    for _, test in ipairs(tests) do
+      local spec = Plugin.Spec.new(test.spec)
+      assert(#spec.notifs == 0)
+      assert(vim.tbl_count(spec.plugins) == 2)
+      assert(spec.plugins.active)
+      assert(spec.plugins.bar)
+      assert.same(test.expected_opts, Plugin.values(spec.plugins.bar, "opts"))
     end
   end)
 end)
