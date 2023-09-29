@@ -179,8 +179,10 @@ function Spec:rebuild(name)
   local fragments = {} ---@type LazyPlugin[]
 
   repeat
+    local super = plugin._.super
     if self.fragments[plugin._.fid] then
       plugin._.dep = plugin._.fpid ~= nil
+      plugin._.super = nil
       if plugin._.fdeps then
         plugin.dependencies = {}
         for _, cid in ipairs(plugin._.fdeps) do
@@ -192,7 +194,7 @@ function Spec:rebuild(name)
       setmetatable(plugin, nil)
       table.insert(fragments, 1, plugin)
     end
-    plugin = plugin._.super
+    plugin = super
   until not plugin
 
   if #fragments == 0 then
