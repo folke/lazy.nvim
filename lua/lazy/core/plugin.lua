@@ -8,21 +8,27 @@ M.loading = false
 
 ---@class LazySpecLoader
 ---@field plugins table<string, LazyPlugin>
+---@field fragments table<number, LazyPlugin>
 ---@field disabled table<string, LazyPlugin>
+---@field dirty table<string, true>
 ---@field modules string[]
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
 ---@field optional? boolean
 local Spec = {}
 M.Spec = Spec
+M.last_fid = 0
+M.fid_stack = {} ---@type number[]
 
 ---@param spec? LazySpec
 ---@param opts? {optional?:boolean}
 function Spec.new(spec, opts)
   local self = setmetatable({}, { __index = Spec })
   self.plugins = {}
+  self.fragments = {}
   self.disabled = {}
   self.modules = {}
+  self.dirty = {}
   self.notifs = {}
   self.optional = opts and opts.optional
   if spec then
@@ -56,8 +62,7 @@ end
 
 ---@param plugin LazyPlugin
 ---@param results? string[]
----@param is_dep? boolean
-function Spec:add(plugin, results, is_dep)
+function Spec:add(plugin, results)
   -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
   -- see https://github.com/folke/lazy.nvim/issues/45
   if rawget(plugin, "_") then
@@ -124,10 +129,28 @@ function Spec:add(plugin, results, is_dep)
     plugin.config = nil
   end
 
-  plugin._ = {}
-  plugin._.dep = is_dep
+  local fpid = M.fid_stack[#M.fid_stack]
 
-  plugin.dependencies = plugin.dependencies and self:normalize(plugin.dependencies, {}, true) or nil
+  M.last_fid = M.last_fid + 1
+  plugin._ = {
+    fid = M.last_fid,
+    fpid = fpid,
+    dep = fpid ~= nil,
+  }
+  self.fragments[plugin._.fid] = plugin
+
+  if fpid then
+    local parent = self.fragments[fpid]
+    parent._.fdeps = parent._.fdeps or {}
+    table.insert(parent._.fdeps, plugin._.fid)
+  end
+
+  if plugin.dependencies then
+    table.insert(M.fid_stack, plugin._.fid)
+    plugin.dependencies = self:normalize(plugin.dependencies, {})
+    table.remove(M.fid_stack)
+  end
+
   if self.plugins[plugin.name] then
     plugin = self:merge(self.plugins[plugin.name], plugin)
   end
@@ -146,27 +169,71 @@ function Spec:warn(msg)
   self:log(msg, vim.log.levels.WARN)
 end
 
----@param gathered_deps string[]
----@param dep_of table<string,string[]>
----@param on_disable fun(string):nil
-function Spec:fix_dependencies(gathered_deps, dep_of, on_disable)
-  local function should_disable(dep_name)
-    for _, parent in ipairs(dep_of[dep_name] or {}) do
-      if self.plugins[parent] then
-        return false
-      end
-    end
-    return true
+--- Rebuilds a plugin spec excluding any removed fragments
+---@param name string
+function Spec:rebuild(name)
+  local plugin = self.plugins[name]
+  if not plugin then
+    return
   end
 
-  for _, dep_name in ipairs(gathered_deps) do
-    -- only check if the plugin is still enabled and it is a dep
-    if self.plugins[dep_name] and self.plugins[dep_name]._.dep then
-      -- check if the dep is still used by another plugin
-      if should_disable(dep_name) then
-        -- disable the dep when no longer needed
-        on_disable(dep_name)
+  local fragments = {} ---@type LazyPlugin[]
+
+  repeat
+    if self.fragments[plugin._.fid] then
+      plugin._.dep = plugin._.fpid ~= nil
+      if plugin._.fdeps then
+        plugin.dependencies = {}
+        for _, cid in ipairs(plugin._.fdeps) do
+          if self.fragments[cid] then
+            table.insert(plugin.dependencies, self.fragments[cid].name)
+          end
+        end
       end
+      setmetatable(plugin, nil)
+      table.insert(fragments, 1, plugin)
+    end
+    plugin = plugin._.super
+  until not plugin
+
+  if #fragments == 0 then
+    self.plugins[name] = nil
+    return
+  end
+
+  plugin = fragments[1]
+  for i = 2, #fragments do
+    plugin = self:merge(plugin, fragments[i])
+  end
+  self.plugins[name] = plugin
+end
+
+--- Recursively removes all fragments from a plugin spec or a given fragment
+---@param id string|number Plugin name or fragment id
+---@param opts {self: boolean}
+function Spec:remove_fragments(id, opts)
+  local fids = {} ---@type number[]
+
+  if type(id) == "number" then
+    fids[1] = id
+  else
+    local plugin = self.plugins[id]
+    repeat
+      fids[#fids + 1] = plugin._.fid
+      plugin = plugin._.super
+    until not plugin
+  end
+
+  for _, fid in ipairs(fids) do
+    local fragment = self.fragments[fid]
+    if fragment then
+      for _, cid in ipairs(fragment._.fdeps or {}) do
+        self:remove_fragments(cid, { self = true })
+      end
+      if opts.self then
+        self.fragments[fid] = nil
+      end
+      self.dirty[fragment.name] = true
     end
   end
 end
@@ -184,9 +251,7 @@ function Spec:fix_cond()
   end
 end
 
----@return string[]
 function Spec:fix_optional()
-  local all_optional_deps = {}
   if not self.optional then
     ---@param plugin LazyPlugin
     local function all_optional(plugin)
@@ -196,14 +261,12 @@ function Spec:fix_optional()
     -- handle optional plugins
     for _, plugin in pairs(self.plugins) do
       if plugin.optional and all_optional(plugin) then
+        -- remove all optional fragments
+        self:remove_fragments(plugin.name, { self = true })
         self.plugins[plugin.name] = nil
-        if plugin.dependencies then
-          vim.list_extend(all_optional_deps, plugin.dependencies)
-        end
       end
     end
   end
-  return all_optional_deps
 end
 
 function Spec:fix_disabled()
@@ -214,44 +277,24 @@ function Spec:fix_disabled()
     end
   end
 
-  ---@type table<string,string[]> plugin to parent plugin
-  local dep_of = {}
-
-  ---@type string[] dependencies of disabled plugins
-  local disabled_deps = {}
-
-  ---@type string[] dependencies of plugins that are completely optional
-  local all_optional_deps = self:fix_optional()
+  self:fix_optional()
   self:fix_cond()
 
   for _, plugin in pairs(self.plugins) do
-    local enabled = not (plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()))
-    if enabled then
-      for _, dep in ipairs(plugin.dependencies or {}) do
-        dep_of[dep] = dep_of[dep] or {}
-        table.insert(dep_of[dep], plugin.name)
-      end
-    else
+    local disabled = plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled())
+    if disabled then
       plugin._.kind = "disabled"
+      -- remove all child fragments
+      self:remove_fragments(plugin.name, { self = false })
       self.plugins[plugin.name] = nil
       self.disabled[plugin.name] = plugin
-      if plugin.dependencies then
-        vim.list_extend(disabled_deps, plugin.dependencies)
-      end
     end
   end
 
-  -- fix deps of plugins that are completely optional
-  self:fix_dependencies(all_optional_deps, dep_of, function(dep_name)
-    self.plugins[dep_name] = nil
-  end)
-  -- fix deps of disabled plugins
-  self:fix_dependencies(disabled_deps, dep_of, function(dep_name)
-    local plugin = self.plugins[dep_name]
-    plugin._.kind = "disabled"
-    self.plugins[plugin.name] = nil
-    self.disabled[plugin.name] = plugin
-  end)
+  -- rebuild any plugin specs that were modified
+  for name, _ in pairs(self.dirty) do
+    self:rebuild(name)
+  end
 end
 
 ---@param msg string
@@ -272,24 +315,24 @@ end
 ---@param spec LazySpec|LazySpecImport
 ---@param results? string[]
 ---@param is_dep? boolean
-function Spec:normalize(spec, results, is_dep)
+function Spec:normalize(spec, results)
   if type(spec) == "string" then
-    if is_dep and not spec:find("/", 1, true) then
+    if not spec:find("/", 1, true) then
       -- spec is a plugin name
       if results then
         table.insert(results, spec)
       end
     else
-      self:add({ spec }, results, is_dep)
+      self:add({ spec }, results)
     end
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
-      self:normalize(s, results, is_dep)
+      self:normalize(s, results)
     end
   elseif spec[1] or spec.dir or spec.url then
     ---@cast spec LazyPlugin
-    local plugin = self:add(spec, results, is_dep)
+    local plugin = self:add(spec, results)
     ---@diagnostic disable-next-line: cast-type-mismatch
     ---@cast plugin LazySpecImport
     if plugin and plugin.import then
