@@ -64,7 +64,10 @@ function M.norm(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
+---@generic R
+---@param fn fun():R
 ---@param opts? string|{msg:string, on_error:fun(msg)}
+---@return R
 function M.try(fn, opts)
   opts = type(opts) == "string" and { msg = opts } or opts or {}
   local msg = opts.msg

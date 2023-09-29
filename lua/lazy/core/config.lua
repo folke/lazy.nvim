@@ -158,6 +158,11 @@ M.defaults = {
     -- executed. In this case, a warning message will be shown.
     warn_on_override = true,
   },
+  packspec = {
+    enabled = true,
+    versions = true, -- Honor dependency versions in packspecs
+    path = vim.fn.stdpath("state") .. "/lazy/packspec.lua",
+  },
   debug = false,
 }
 
@@ -252,6 +257,14 @@ function M.setup(opts)
           require("lazy.manage.checker").start()
         end, 10)
       end
+
+      -- useful for plugin developers when making changes to a packspec file
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = "package.lua",
+        callback = function()
+          require("lazy.view.commands").cmd("packspec")
+        end,
+      })
     end,
   })
 

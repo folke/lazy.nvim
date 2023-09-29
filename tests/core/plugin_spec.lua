@@ -15,6 +15,14 @@ describe("plugin spec url/name", function()
     { { "foo/bar", name = "foobar" }, { [1] = "foo/bar", name = "foobar", url = "https://github.com/foo/bar.git" } },
     { { "foo/bar", url = "123" }, { [1] = "foo/bar", name = "123", url = "123" } },
     { { url = "https://foobar" }, { name = "foobar", url = "https://foobar" } },
+    {
+      { { url = "https://foo", name = "foobar" }, { url = "https://foo" } },
+      { name = "foobar", url = "https://foo" },
+    },
+    {
+      { { url = "https://foo" }, { url = "https://foo", name = "foobar" } },
+      { name = "foobar", url = "https://foo" },
+    },
     { { url = "ssh://foobar" }, { name = "foobar", url = "ssh://foobar" } },
     { "foo/bar", { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
     { { { { "foo/bar" } } }, { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
@@ -30,6 +38,7 @@ describe("plugin spec url/name", function()
       local plugins = vim.tbl_values(spec.plugins)
       assert(#spec.notifs == 0)
       assert.equal(1, #plugins)
+      plugins[1]._.super = nil
       assert.same(test[2], plugins[1])
     end)
   end

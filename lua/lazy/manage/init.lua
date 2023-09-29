@@ -92,6 +92,7 @@ function M.install(opts)
   }, opts):wait(function()
     require("lazy.manage.lock").update()
     require("lazy.help").update()
+    require("lazy.core.packspec").update()
   end)
 end
 
@@ -115,6 +116,7 @@ function M.update(opts)
   }, opts):wait(function()
     require("lazy.manage.lock").update()
     require("lazy.help").update()
+    require("lazy.core.packspec").update()
   end)
 end
 --
