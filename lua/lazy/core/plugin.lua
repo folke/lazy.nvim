@@ -325,7 +325,6 @@ end
 
 ---@param spec LazySpec|LazySpecImport
 ---@param results? string[]
----@param is_dep? boolean
 function Spec:normalize(spec, results)
   if type(spec) == "string" then
     if not spec:find("/", 1, true) then
