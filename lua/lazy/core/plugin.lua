@@ -39,6 +39,7 @@ end
 
 function Spec:parse(spec)
   self:normalize(spec)
+  self:fix_disabled()
 
   -- calculate handlers
   for _, plugin in pairs(self.plugins) do
@@ -48,8 +49,6 @@ function Spec:parse(spec)
       end
     end
   end
-
-  self:fix_disabled()
 end
 
 -- PERF: optimized code to get package name without using lua patterns
