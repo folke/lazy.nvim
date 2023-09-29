@@ -11,6 +11,7 @@ M.loading = false
 ---@field fragments table<number, LazyPlugin>
 ---@field disabled table<string, LazyPlugin>
 ---@field dirty table<string, true>
+---@field ignore_installed table<string, true>
 ---@field modules string[]
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
@@ -30,6 +31,7 @@ function Spec.new(spec, opts)
   self.modules = {}
   self.dirty = {}
   self.notifs = {}
+  self.ignore_installed = {}
   self.optional = opts and opts.optional
   if spec then
     self:parse(spec)
@@ -247,6 +249,14 @@ function Spec:fix_cond()
     end
     if cond == false or (type(cond) == "function" and not cond(plugin)) then
       plugin._.cond = false
+      local stack = { plugin }
+      while #stack > 0 do
+        local p = table.remove(stack)
+        for _, dep in ipairs(p.dependencies or {}) do
+          table.insert(stack, self.plugins[dep])
+        end
+        self.ignore_installed[p.name] = true
+      end
       plugin.enabled = false
     end
   end
@@ -469,10 +479,8 @@ function M.update_state()
     end
   end
 
-  for _, plugin in pairs(Config.spec.disabled) do
-    if plugin._.cond == false then
-      installed[plugin.name] = nil
-    end
+  for name in pairs(Config.spec.ignore_installed) do
+    installed[name] = nil
   end
 
   Config.to_clean = {}
