@@ -1,10 +1,24 @@
 local Config = require("lazy.core.config")
 local Plugin = require("lazy.core.plugin")
-local Loader = require("lazy.core.loader")
 
 local assert = require("luassert")
 
 Config.setup()
+
+---@param plugins LazyPlugin[]|LazyPlugin
+local function clean(plugins)
+  local p = plugins
+  plugins = type(plugins) == "table" and plugins or { plugins }
+  for _, plugin in pairs(plugins) do
+    plugin._.fid = nil
+    plugin._.fpid = nil
+    plugin._.fdeps = nil
+    if plugin._.dep == false then
+      plugin._.dep = nil
+    end
+  end
+  return p
+end
 
 describe("plugin spec url/name", function()
   local tests = {
@@ -28,6 +42,7 @@ describe("plugin spec url/name", function()
       end
       local spec = Plugin.Spec.new(test[1])
       local plugins = vim.tbl_values(spec.plugins)
+      plugins[1]._ = {}
       assert(#spec.notifs == 0)
       assert.equal(1, #plugins)
       assert.same(test[2], plugins[1])
@@ -61,7 +76,7 @@ describe("plugin spec opt", function()
       for _, plugin in pairs(spec.plugins) do
         plugin.dir = nil
       end
-      assert.same(spec.plugins, {
+      assert.same(clean(spec.plugins), {
         bar = {
           "foo/bar",
           _ = {},
@@ -105,7 +120,7 @@ describe("plugin spec opt", function()
         for _, plugin in pairs(spec.plugins) do
           plugin.dir = nil
         end
-        assert.same(spec.plugins, {
+        assert.same(clean(spec.plugins), {
           bar = {
             "foo/bar",
             _ = {},
