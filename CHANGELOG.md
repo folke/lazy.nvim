@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.4.1](https://github.com/folke/lazy.nvim/compare/v10.4.0...v10.4.1) (2023-09-30)
+
+
+### Bug Fixes
+
+* **plugin:** prevent recursive loop with cond=false. Fixes [#1061](https://github.com/folke/lazy.nvim/issues/1061) ([09e5010](https://github.com/folke/lazy.nvim/commit/09e5010741e340eb603afbff34453dbee55b7011))
+
 ## [10.4.0](https://github.com/folke/lazy.nvim/compare/v10.3.1...v10.4.0) (2023-09-29)
 
 
