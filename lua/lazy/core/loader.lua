@@ -347,6 +347,10 @@ function M.config(plugin)
       local opts = Plugin.values(plugin, "opts", false)
       plugin.config(plugin, opts)
     end
+  elseif type(plugin.config) == "string" then
+    fn = function()
+      require(plugin.config)
+    end
   else
     local main = M.get_main(plugin)
     if main then
