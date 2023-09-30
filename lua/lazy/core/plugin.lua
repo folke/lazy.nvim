@@ -252,10 +252,12 @@ function Spec:fix_cond()
       local stack = { plugin }
       while #stack > 0 do
         local p = table.remove(stack)
-        for _, dep in ipairs(p.dependencies or {}) do
-          table.insert(stack, self.plugins[dep])
+        if not self.ignore_installed[p.name] then
+          for _, dep in ipairs(p.dependencies or {}) do
+            table.insert(stack, self.plugins[dep])
+          end
+          self.ignore_installed[p.name] = true
         end
-        self.ignore_installed[p.name] = true
       end
       plugin.enabled = false
     end
