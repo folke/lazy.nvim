@@ -137,6 +137,7 @@ function Spec:add(plugin, results)
     fid = M.last_fid,
     fpid = fpid,
     dep = fpid ~= nil,
+    module = self.importing,
   }
   self.fragments[plugin._.fid] = plugin
 

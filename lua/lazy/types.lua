@@ -17,6 +17,7 @@
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 ---@field cond? boolean
 ---@field super? LazyPlugin
+---@field module? string
 
 ---@alias PluginOpts table|fun(self:LazyPlugin, opts:table):table?
 
