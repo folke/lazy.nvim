@@ -315,7 +315,12 @@ function M.notify(msg, opts)
   local lang = opts.lang or "markdown"
   vim.notify(msg, opts.level or vim.log.levels.INFO, {
     on_open = function(win)
-      pcall(require, "nvim-treesitter")
+      local ok = pcall(function()
+        vim.treesitter.language.add("markdown")
+      end)
+      if not ok then
+        pcall(require, "nvim-treesitter")
+      end
       vim.wo[win].conceallevel = 3
       vim.wo[win].concealcursor = ""
       vim.wo[win].spell = false
