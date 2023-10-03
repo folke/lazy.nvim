@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.5.0](https://github.com/folke/lazy.nvim/compare/v10.4.1...v10.5.0) (2023-10-03)
+
+
+### Features
+
+* **plugin:** keep track of the module a spec fragment was defined in ([8eb8de2](https://github.com/folke/lazy.nvim/commit/8eb8de29af6e2ab9dd7986e2521178875dbcad95))
+
+
+### Performance Improvements
+
+* **util:** don't try to load nvim-treesitter when markdown parser is builtin ([8b73492](https://github.com/folke/lazy.nvim/commit/8b73492249100d8a9ce9d874f7ea5a71b4d6f07e))
+
 ## [10.4.1](https://github.com/folke/lazy.nvim/compare/v10.4.0...v10.4.1) (2023-09-30)
 
 
