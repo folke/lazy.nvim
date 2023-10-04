@@ -1,4 +1,4 @@
----@type LazyCommands
+---@class Lazy: LazyCommands
 local M = {}
 M._start = 0
 
