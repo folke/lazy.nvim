@@ -292,7 +292,12 @@ function Spec:fix_disabled()
   end
 
   self:fix_optional()
+  -- rebuild any plugin specs that were modified
+  for name, _ in pairs(self.dirty) do
+    self:rebuild(name)
+  end
   self:fix_cond()
+  self.dirty = {}
 
   for _, plugin in pairs(self.plugins) do
     local disabled = plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled())
