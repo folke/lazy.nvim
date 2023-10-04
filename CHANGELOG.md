@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.5.1](https://github.com/folke/lazy.nvim/compare/v10.5.0...v10.5.1) (2023-10-04)
+
+
+### Bug Fixes
+
+* **plugin:** rebuild plugins after fixing optional and cond to ensure enabled will work correctly ([638c8e6](https://github.com/folke/lazy.nvim/commit/638c8e6382f121aef983c78d865f6dbbc72d68c3))
+
 ## [10.5.0](https://github.com/folke/lazy.nvim/compare/v10.4.1...v10.5.0) (2023-10-03)
 
 
