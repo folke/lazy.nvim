@@ -172,8 +172,14 @@ function Spec:warn(msg)
 end
 
 --- Rebuilds a plugin spec excluding any removed fragments
----@param name string
+---@param name? string
 function Spec:rebuild(name)
+  if not name then
+    for n, _ in pairs(self.dirty) do
+      self:rebuild(n)
+    end
+    self.dirty = {}
+  end
   local plugin = self.plugins[name]
   if not plugin then
     return
@@ -292,11 +298,11 @@ function Spec:fix_disabled()
   end
 
   self:fix_optional()
-  -- rebuild any plugin specs that were modified
-  for name, _ in pairs(self.dirty) do
-    self:rebuild(name)
-  end
+  self:rebuild()
+
   self:fix_cond()
+  self:rebuild()
+
   self.dirty = {}
 
   for _, plugin in pairs(self.plugins) do
@@ -311,9 +317,7 @@ function Spec:fix_disabled()
   end
 
   -- rebuild any plugin specs that were modified
-  for name, _ in pairs(self.dirty) do
-    self:rebuild(name)
-  end
+  self:rebuild()
 end
 
 ---@param msg string
