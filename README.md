@@ -147,6 +147,7 @@ can be a `LazyKeys` table with the following key-value pairs:
 - **[1]**: (`string`) lhs **_(required)_**
 - **[2]**: (`string|fun()`) rhs **_(optional)_**
 - **mode**: (`string|string[]`) mode **_(optional, defaults to `"n"`)_**
+- **ft**: (`string|string[]`) `filetype` for buffer-local keymaps **_(optional)_**
 - any other option valid for `vim.keymap.set`
 
 Key mappings will load the plugin the first time they get executed.
