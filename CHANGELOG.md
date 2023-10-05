@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.6.0](https://github.com/folke/lazy.nvim/compare/v10.5.1...v10.6.0) (2023-10-05)
+
+
+### Features
+
+* **keys:** you can now create buffer-local filetype keymaps by specifying `ft=`. Fixes [#1076](https://github.com/folke/lazy.nvim/issues/1076) ([c42e63c](https://github.com/folke/lazy.nvim/commit/c42e63c1986af6ba417d9c2a0062ac41f79df18b))
+
 ## [10.5.1](https://github.com/folke/lazy.nvim/compare/v10.5.0...v10.5.1) (2023-10-04)
 
 
