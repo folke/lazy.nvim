@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 October 04
+*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 October 05
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -251,6 +251,7 @@ mappings, or it can be a `LazyKeys` table with the following key-value pairs:
 - **[1]**(`string`) lhs **(required)**
 - **[2]**(`string|fun()`) rhs **(optional)**
 - **mode**(`string|string[]`) mode **(optional, defaults to "n")**
+- **ft**(`string|string[]`) `filetype` for buffer-local keymaps **(optional)**
 - any other option valid for `vim.keymap.set`
 
 Key mappings will load the plugin the first time they get executed.
