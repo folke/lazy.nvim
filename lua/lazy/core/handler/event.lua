@@ -7,10 +7,6 @@ local Loader = require("lazy.core.loader")
 ---@field group number
 local M = {}
 
-M.trigger_events = {
-  BufRead = { "BufReadPre", "BufRead" },
-  BufReadPost = { "BufReadPre", "BufRead", "BufReadPost" },
-}
 M.group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
 
 ---@param value string
@@ -28,11 +24,17 @@ function M:_add(value)
         return
       end
       Util.track({ [self.type] = value })
-      local groups = M.get_augroups(event, pattern)
+      local groups = M.get_augroups(ev.event, pattern)
       -- load the plugins
       Loader.load(self.active[value], { [self.type] = value })
       -- check if any plugin created an event handler for this event and fire the group
-      self:trigger(event, pattern, groups, ev.data)
+      M.trigger({
+        event = ev.event,
+        pattern = pattern,
+        exclude = groups,
+        data = ev.data,
+        buf = ev.buf,
+      })
       Util.track()
     end,
   })
@@ -40,47 +42,55 @@ end
 
 ---@param value string
 function M:_event(value)
-  return value == "VeryLazy" and "User VeryLazy" or value
+  if value == "VeryLazy" then
+    return "User VeryLazy"
+  elseif value == "BufRead" then
+    return "BufReadPost"
+  end
+  return value
 end
 
 -- Get all augroups for the events
 ---@param event string
 ---@param pattern? string
 function M.get_augroups(event, pattern)
-  local events = M.trigger_events[event] or { event }
-  ---@type table<string,true>
-  local groups = {}
-  for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = events, pattern = pattern })) do
+  local groups = {} ---@type number[]
+  for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = event, pattern = pattern })) do
     if autocmd.group then
-      groups[autocmd.group] = true
+      table.insert(groups, autocmd.group)
     end
   end
   return groups
 end
 
----@param event string|string[]
----@param pattern? string
----@param groups table<string,true>
-function M:trigger(event, pattern, groups, data)
-  local events = M.trigger_events[event] or { event }
-  ---@cast events string[]
-  for _, e in ipairs(events) do
-    for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = e, pattern = pattern })) do
-      if autocmd.event == e and autocmd.group and not groups[autocmd.group] then
-        if Config.options.debug then
-          Util.info({
-            "# Firing Events",
-            "  - **group:** `" .. autocmd.group_name .. "`",
-            "  - **event:** " .. autocmd.event,
-            pattern and ("  - **pattern:** " .. pattern),
-          })
-        end
-        Util.track({ event = autocmd.group_name })
-        Util.try(function()
-          vim.api.nvim_exec_autocmds(autocmd.event, { group = autocmd.group, modeline = false, data = data })
-          Util.track()
-        end)
+---@param opts {event:string, pattern?:string, exclude?:string[], data?:any, buf?:number}
+function M.trigger(opts)
+  local done = {} ---@type table<string,true>
+  for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = opts.event, pattern = opts.pattern })) do
+    local id = autocmd.event .. ":" .. (autocmd.group or "") ---@type string
+    local skip = done[id] or (opts.exclude and vim.list_contains(opts.exclude, autocmd.group))
+    done[id] = true
+    if autocmd.group and not skip then
+      if Config.options.debug then
+        Util.info({
+          "# Firing Events",
+          "  - **group:** `" .. autocmd.group_name .. "`",
+          "  - **event:** " .. autocmd.event,
+          opts.pattern and ("  - **pattern:** " .. opts.pattern),
+          opts.buf and ("  - **buf:** " .. opts.buf),
+        })
       end
+      Util.track({ event = autocmd.group_name })
+      Util.try(function()
+        vim.api.nvim_exec_autocmds(autocmd.event, {
+          -- pattern = opts.pattern,
+          buffer = opts.buf,
+          group = autocmd.group,
+          modeline = false,
+          data = opts.data,
+        })
+        Util.track()
+      end)
     end
   end
 end
