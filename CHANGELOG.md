@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.7.1](https://github.com/folke/lazy.nvim/compare/v10.7.0...v10.7.1) (2023-10-06)
+
+
+### Bug Fixes
+
+* **event:** prevent loading event handler more than once in some cases ([6b37927](https://github.com/folke/lazy.nvim/commit/6b37927be9e0166ddb4445023904345d88045497))
+
 ## [10.7.0](https://github.com/folke/lazy.nvim/compare/v10.6.0...v10.7.0) (2023-10-06)
 
 
