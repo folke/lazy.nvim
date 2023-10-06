@@ -380,6 +380,9 @@ function Spec:import(spec)
   if vim.tbl_contains(self.modules, spec.import) then
     return
   end
+  if spec.cond == false or (type(spec.cond) == "function" and not spec.cond()) then
+    return
+  end
   if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
     return
   end

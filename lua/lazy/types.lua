@@ -75,3 +75,4 @@
 ---@class LazySpecImport
 ---@field import string spec module to import
 ---@field enabled? boolean|(fun():boolean)
+---@field cond? boolean|(fun():boolean)
