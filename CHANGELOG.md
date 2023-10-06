@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.7.0](https://github.com/folke/lazy.nvim/compare/v10.6.0...v10.7.0) (2023-10-06)
+
+
+### Features
+
+* **plugin:** added support for `cond` for imports ([#1079](https://github.com/folke/lazy.nvim/issues/1079)) ([58e954a](https://github.com/folke/lazy.nvim/commit/58e954a735767fd23c24c455dc09c5323951ec83))
+
+
+### Bug Fixes
+
+* **event:** better dealing with even handlers. Fixes [#788](https://github.com/folke/lazy.nvim/issues/788) ([ef2a5d0](https://github.com/folke/lazy.nvim/commit/ef2a5d0bd1a4995539b93be69fc760be7d9f62be))
+* **event:** use tbl_contains instead of list_contains ([2b2adb9](https://github.com/folke/lazy.nvim/commit/2b2adb9d4d6ccd469b1e82416c58ea74fe5a0e1b))
+
 ## [10.6.0](https://github.com/folke/lazy.nvim/compare/v10.5.1...v10.6.0) (2023-10-05)
 
 
