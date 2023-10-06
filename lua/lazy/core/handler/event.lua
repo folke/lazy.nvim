@@ -68,7 +68,7 @@ function M.trigger(opts)
   local done = {} ---@type table<string,true>
   for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = opts.event, pattern = opts.pattern })) do
     local id = autocmd.event .. ":" .. (autocmd.group or "") ---@type string
-    local skip = done[id] or (opts.exclude and vim.list_contains(opts.exclude, autocmd.group))
+    local skip = done[id] or (opts.exclude and vim.tbl_contains(opts.exclude, autocmd.group))
     done[id] = true
     if autocmd.group and not skip then
       if Config.options.debug then
