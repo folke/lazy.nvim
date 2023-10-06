@@ -15,14 +15,16 @@ function M:_add(value)
   ---@type string?, string?
   local event, pattern = event_spec:match("^(%w+)%s+(.*)$")
   event = event or event_spec
+  local done = false
   vim.api.nvim_create_autocmd(event, {
     group = self.group,
     once = true,
     pattern = pattern,
     callback = function(ev)
-      if not self.active[value] then
+      if done or not self.active[value] then
         return
       end
+      done = true
       Util.track({ [self.type] = value })
       local groups = M.get_augroups(ev.event, pattern)
       -- load the plugins
