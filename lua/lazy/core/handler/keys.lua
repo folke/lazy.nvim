@@ -72,13 +72,18 @@ function M:_add(keys)
       local plugins = self.active[keys.id]
 
       -- always delete the mapping immediately to prevent recursive mappings
-      self:_del(keys, buf)
+      self:_del(keys)
       self.active[keys.id] = nil
 
       if plugins then
         Util.track({ keys = lhs })
         Loader.load(plugins, { keys = lhs })
         Util.track()
+      end
+
+      -- Create the real buffer-local mapping
+      if keys.ft then
+        self:_set(keys, buf)
       end
 
       local feed = vim.api.nvim_replace_termcodes("<Ignore>" .. lhs, true, true, true)
@@ -93,6 +98,7 @@ function M:_add(keys)
     })
   end
 
+  -- buffer-local mappings
   if keys.ft then
     vim.api.nvim_create_autocmd("FileType", {
       pattern = keys.ft,
@@ -102,9 +108,7 @@ function M:_add(keys)
         else
           -- Only create the mapping if its managed by lazy
           -- otherwise the plugin is supposed to manage it
-          if keys[2] then
-            self:_del(keys, event.buf)
-          end
+          self:_set(keys, event.buf)
         end
       end,
     })
@@ -113,10 +117,22 @@ function M:_add(keys)
   end
 end
 
+-- Delete a mapping and create the real global
+-- mapping when needed
+---@param keys LazyKeys
+function M:_del(keys)
+  pcall(vim.keymap.del, keys.mode, keys[1])
+  -- make sure to create global mappings when needed
+  -- buffer-local mappings are managed by lazy
+  if not keys.ft then
+    self:_set(keys)
+  end
+end
+
+-- Create a mapping if it is managed by lazy
 ---@param keys LazyKeys
 ---@param buf number?
-function M:_del(keys, buf)
-  pcall(vim.keymap.del, keys.mode, keys[1], { buffer = buf })
+function M:_set(keys, buf)
   if keys[2] then
     local opts = M.opts(keys)
     opts.buffer = buf
