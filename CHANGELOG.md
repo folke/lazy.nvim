@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.7.2](https://github.com/folke/lazy.nvim/compare/v10.7.1...v10.7.2) (2023-10-07)
+
+
+### Bug Fixes
+
+* **event:** move all ft logic to the event handler ([8871602](https://github.com/folke/lazy.nvim/commit/8871602e541c9c7ecd036d631b527454312f88b2))
+* **ft:** fix ft handlers to properly use new events. Fixes [#1084](https://github.com/folke/lazy.nvim/issues/1084) ([e4ea874](https://github.com/folke/lazy.nvim/commit/e4ea874e33fd3116d0e113f4b03eff2d6b1e3399))
+
 ## [10.7.1](https://github.com/folke/lazy.nvim/compare/v10.7.0...v10.7.1) (2023-10-06)
 
 
