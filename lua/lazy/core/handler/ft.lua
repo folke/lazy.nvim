@@ -20,21 +20,21 @@ function M:add(plugin)
   end
 end
 
----@param pattern? string
-function M:trigger(_, pattern, _)
-  for _, group in ipairs({ "filetypeplugin", "filetypeindent" }) do
-    Util.try(function()
-      if Config.options.debug then
-        Util.info({
-          "# Firing Events",
-          "  - **group:** `" .. group .. "`",
-          "  - **event:** FileType",
-          pattern and ("  - **pattern:** " .. pattern),
-        })
-      end
-      vim.api.nvim_exec_autocmds("FileType", { group = group, modeline = false, pattern = pattern })
-    end)
-  end
+---@param opts LazyEventOpts
+function M:_trigger(opts)
+  Util.try(function()
+    if Config.options.debug then
+      Util.info({
+        "# Firing Events",
+        "  - **event:** FileType",
+        opts.pattern and ("  - **pattern:** " .. opts.pattern),
+        opts.buf and ("  - **buf:** " .. opts.buf),
+      })
+    end
+    Util.track({ event = "FileType" })
+    vim.api.nvim_exec_autocmds("FileType", { modeline = false, buffer = opts.buf })
+    Util.track()
+  end)
 end
 
 return M

@@ -2,6 +2,13 @@ local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 local Loader = require("lazy.core.loader")
 
+---@class LazyEventOpts
+---@field event string
+---@field pattern? string
+---@field exclude? string[]
+---@field data? any
+---@field buf? number}
+
 ---@class LazyEventHandler:LazyHandler
 ---@field events table<string,true>
 ---@field group number
@@ -30,7 +37,7 @@ function M:_add(value)
       -- load the plugins
       Loader.load(self.active[value], { [self.type] = value })
       -- check if any plugin created an event handler for this event and fire the group
-      M.trigger({
+      self:_trigger({
         event = ev.event,
         pattern = pattern,
         exclude = groups,
@@ -56,21 +63,26 @@ end
 ---@param event string
 ---@param pattern? string
 function M.get_augroups(event, pattern)
-  local groups = {} ---@type number[]
+  local groups = {} ---@type string[]
   for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = event, pattern = pattern })) do
-    if autocmd.group then
-      table.insert(groups, autocmd.group)
+    if autocmd.group_name then
+      table.insert(groups, autocmd.group_name)
     end
   end
   return groups
 end
 
----@param opts {event:string, pattern?:string, exclude?:string[], data?:any, buf?:number}
+---@param opts LazyEventOpts
+function M:_trigger(opts)
+  M.trigger(opts)
+end
+
+---@param opts LazyEventOpts
 function M.trigger(opts)
   local done = {} ---@type table<string,true>
   for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = opts.event, pattern = opts.pattern })) do
     local id = autocmd.event .. ":" .. (autocmd.group or "") ---@type string
-    local skip = done[id] or (opts.exclude and vim.tbl_contains(opts.exclude, autocmd.group))
+    local skip = done[id] or (opts.exclude and vim.tbl_contains(opts.exclude, autocmd.group_name))
     done[id] = true
     if autocmd.group and not skip then
       if Config.options.debug then
