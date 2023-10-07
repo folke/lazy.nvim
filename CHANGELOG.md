@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.7.3](https://github.com/folke/lazy.nvim/compare/v10.7.2...v10.7.3) (2023-10-07)
+
+
+### Bug Fixes
+
+* **keys:** fixed buffer-local mappings ([09e30f8](https://github.com/folke/lazy.nvim/commit/09e30f88cd4b47704005c41f0486a628b0b8d774))
+
 ## [10.7.2](https://github.com/folke/lazy.nvim/compare/v10.7.1...v10.7.2) (2023-10-07)
 
 
