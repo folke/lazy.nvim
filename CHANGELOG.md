@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.8.0](https://github.com/folke/lazy.nvim/compare/v10.7.3...v10.8.0) (2023-10-08)
+
+
+### Features
+
+* **keys:** refactor code and allow disabling keymaps per mode. mode no longer needs to be exactly the same in order to disable. ([b79099c](https://github.com/folke/lazy.nvim/commit/b79099cc9d768241162bb45d284d6a243736b9fb))
+
 ## [10.7.3](https://github.com/folke/lazy.nvim/compare/v10.7.2...v10.7.3) (2023-10-07)
 
 
