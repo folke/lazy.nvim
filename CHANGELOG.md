@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.8.1](https://github.com/folke/lazy.nvim/compare/v10.8.0...v10.8.1) (2023-10-08)
+
+
+### Bug Fixes
+
+* **ui:** use correct keymap for display. Fixes [#1089](https://github.com/folke/lazy.nvim/issues/1089) ([26762c9](https://github.com/folke/lazy.nvim/commit/26762c97e6dc3fddf141db0e82d044ee73e5f78d))
+
 ## [10.8.0](https://github.com/folke/lazy.nvim/compare/v10.7.3...v10.8.0) (2023-10-08)
 
 
