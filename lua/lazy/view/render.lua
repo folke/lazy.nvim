@@ -331,7 +331,7 @@ function M:reason(reason, opts)
         value = value:match("User (.*)") or value
       end
       if key == "keys" then
-        value = type(value) == "string" and value or value.lhs
+        value = type(value) == "string" and value or value.lhs or value[1]
       end
       local hl = "LazyReason" .. key:sub(1, 1):upper() .. key:sub(2)
       local icon = Config.options.ui.icons[key]
