@@ -47,7 +47,7 @@ end
 ---@param mode? string
 function M:have(lhs, mode)
   local keys = M.parse(lhs, mode)
-  return self.managed[keys.id]
+  return self.managed[keys.id] ~= nil
 end
 
 ---@param plugin LazyPlugin

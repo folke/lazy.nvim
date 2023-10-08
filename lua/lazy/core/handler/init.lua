@@ -95,8 +95,8 @@ function M:add(plugin)
     if not self.active[key] then
       self.active[key] = {}
       self:_add(value)
+      self.managed[key] = key
     end
-    self.managed[key] = self.managed[key]
     self.active[key][plugin.name] = plugin.name
   end
 end
