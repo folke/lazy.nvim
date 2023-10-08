@@ -1,3 +1,4 @@
+local require = require("lazy.core.util").lazy_require
 local View = require("lazy.view")
 local Manage = require("lazy.manage")
 local Util = require("lazy.util")
