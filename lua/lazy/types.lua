@@ -32,7 +32,7 @@
 ---@field event? string[]
 ---@field cmd? string[]
 ---@field ft? string[]
----@field keys? (string|LazyKeys)[]
+---@field keys? (string|LazyKeysSpec)[]
 ---@field module? false
 
 ---@class LazyPluginRef

@@ -5,6 +5,7 @@ local Config = require("lazy.core.config")
 ---@field type LazyHandlerTypes
 ---@field extends? LazyHandler
 ---@field active table<string,table<string,string>>
+---@field managed table<string,string>
 ---@field super LazyHandler
 local M = {}
 
@@ -64,6 +65,7 @@ function M.new(type)
   local self = setmetatable({}, { __index = setmetatable(handler, { __index = super }) })
   self.super = super
   self.active = {}
+  self.managed = {}
   self.type = type
   return self
 end
@@ -94,6 +96,7 @@ function M:add(plugin)
       self.active[key] = {}
       self:_add(value)
     end
+    self.managed[key] = self.managed[key]
     self.active[key][plugin.name] = plugin.name
   end
 end
