@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.8.2](https://github.com/folke/lazy.nvim/compare/v10.8.1...v10.8.2) (2023-10-08)
+
+
+### Bug Fixes
+
+* **keys:** fixed adding managed keys ([9d92e65](https://github.com/folke/lazy.nvim/commit/9d92e65fd17d35f97bed43dc92810576a57376fc))
+
 ## [10.8.1](https://github.com/folke/lazy.nvim/compare/v10.8.0...v10.8.1) (2023-10-08)
 
 
