@@ -65,6 +65,7 @@ M.defaults = {
       not_loaded = "○",
       plugin = " ",
       runtime = " ",
+      require = "󰢱 ",
       source = " ",
       start = "",
       task = "✔ ",
@@ -157,6 +158,15 @@ M.defaults = {
     -- or updated. When the plugin spec also has a `build` command, the plugin's `build.lua` not be
     -- executed. In this case, a warning message will be shown.
     warn_on_override = true,
+  },
+  -- Enable profiling of lazy.nvim. This will add some overhead,
+  -- so only enable this when you are debugging lazy.nvim
+  profiling = {
+    -- Enables extra stats on the debug tab related to the loader cache.
+    -- Additionally gathers stats about all package.loaders
+    loader = false,
+    -- Track each new require in the Lazy profiling tab
+    require = false,
   },
   debug = false,
 }

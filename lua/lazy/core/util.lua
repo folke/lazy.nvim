@@ -118,7 +118,7 @@ function M.get_source()
     if not info then
       break
     end
-    if info.what ~= "C" and not info.source:find("lazy.nvim", 1, true) then
+    if info.what ~= "C" and not info.source:find("lazy.nvim", 1, true) and info.source ~= "@vim/loader.lua" then
       return info.source:sub(2)
     end
     f = f + 1

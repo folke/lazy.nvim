@@ -320,7 +320,7 @@ function M:reason(reason, opts)
   for _, key in ipairs(keys) do
     local value = reason[key]
     if type(key) == "number" then
-    elseif key == "require" then
+    -- elseif key == "require" then
     elseif key ~= "time" then
       if first then
         first = false

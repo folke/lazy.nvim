@@ -26,6 +26,7 @@ M.colors = {
   ReasonFt = "Character",
   ReasonCmd = "Operator",
   ReasonImport = "Identifier",
+  ReasonRequire = "@parameter",
   Button = "CursorLine",
   ButtonActive = "Visual",
   TaskOutput = "MsgArea", -- task output
