@@ -1,8 +1,8 @@
 local require = require("lazy.core.util").lazy_require
-local View = require("lazy.view")
+local Config = require("lazy.core.config")
 local Manage = require("lazy.manage")
 local Util = require("lazy.util")
-local Config = require("lazy.core.config")
+local View = require("lazy.view")
 local ViewConfig = require("lazy.view.config")
 
 local M = {}

@@ -1,6 +1,6 @@
-local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
 local Loader = require("lazy.core.loader")
+local Util = require("lazy.core.util")
 
 ---@class LazyEventOpts
 ---@field event string

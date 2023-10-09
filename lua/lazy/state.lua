@@ -1,5 +1,5 @@
-local Util = require("lazy.util")
 local Config = require("lazy.core.config")
+local Util = require("lazy.util")
 
 ---@type LazyState
 local M = {}

@@ -1,5 +1,5 @@
-local Util = require("lazy.core.util")
 local Config = require("lazy.core.config")
+local Util = require("lazy.core.util")
 
 ---@class LazyHandler
 ---@field type LazyHandlerTypes

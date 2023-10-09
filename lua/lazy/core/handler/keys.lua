@@ -1,5 +1,5 @@
-local Util = require("lazy.core.util")
 local Loader = require("lazy.core.loader")
+local Util = require("lazy.core.util")
 
 ---@class LazyKeysBase
 ---@field desc? string

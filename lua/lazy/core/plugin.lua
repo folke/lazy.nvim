@@ -1,6 +1,6 @@
 local Config = require("lazy.core.config")
-local Util = require("lazy.core.util")
 local Handler = require("lazy.core.handler")
+local Util = require("lazy.core.util")
 
 ---@class LazyCorePlugin
 local M = {}

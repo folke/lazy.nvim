@@ -1,9 +1,9 @@
 local Config = require("lazy.core.config")
-local Manage = require("lazy.manage")
-local Util = require("lazy.util")
-local Plugin = require("lazy.core.plugin")
 local Git = require("lazy.manage.git")
+local Manage = require("lazy.manage")
+local Plugin = require("lazy.core.plugin")
 local State = require("lazy.state")
+local Util = require("lazy.util")
 
 local M = {}
 

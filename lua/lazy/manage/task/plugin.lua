@@ -1,6 +1,6 @@
-local Util = require("lazy.util")
-local Loader = require("lazy.core.loader")
 local Config = require("lazy.core.config")
+local Loader = require("lazy.core.loader")
+local Util = require("lazy.util")
 
 ---@type table<string, LazyTaskDef>
 local M = {}

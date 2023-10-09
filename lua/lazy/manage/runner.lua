@@ -1,5 +1,5 @@
-local Task = require("lazy.manage.task")
 local Config = require("lazy.core.config")
+local Task = require("lazy.manage.task")
 local Util = require("lazy.util")
 
 ---@class RunnerOpts

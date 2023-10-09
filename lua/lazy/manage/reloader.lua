@@ -1,7 +1,7 @@
 local Config = require("lazy.core.config")
-local Util = require("lazy.util")
-local Plugin = require("lazy.core.plugin")
 local Loader = require("lazy.core.loader")
+local Plugin = require("lazy.core.plugin")
+local Util = require("lazy.util")
 
 local M = {}
 

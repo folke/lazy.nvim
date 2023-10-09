@@ -1,9 +1,9 @@
 local Config = require("lazy.core.config")
-local Util = require("lazy.util")
-local Sections = require("lazy.view.sections")
-local Handler = require("lazy.core.handler")
 local Git = require("lazy.manage.git")
+local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")
+local Sections = require("lazy.view.sections")
+local Util = require("lazy.util")
 local ViewConfig = require("lazy.view.config")
 
 local Text = require("lazy.view.text")

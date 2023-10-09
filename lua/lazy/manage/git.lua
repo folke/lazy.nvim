@@ -1,7 +1,7 @@
-local Util = require("lazy.util")
-local Semver = require("lazy.manage.semver")
 local Config = require("lazy.core.config")
 local Process = require("lazy.manage.process")
+local Semver = require("lazy.manage.semver")
+local Util = require("lazy.util")
 
 local M = {}
 

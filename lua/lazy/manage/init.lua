@@ -1,6 +1,6 @@
 local Config = require("lazy.core.config")
-local Runner = require("lazy.manage.runner")
 local Plugin = require("lazy.core.plugin")
+local Runner = require("lazy.manage.runner")
 
 local M = {}
 

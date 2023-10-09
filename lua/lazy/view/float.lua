@@ -1,6 +1,6 @@
 local Config = require("lazy.core.config")
-local ViewConfig = require("lazy.view.config")
 local Util = require("lazy.util")
+local ViewConfig = require("lazy.view.config")
 
 ---@class LazyFloatOptions
 ---@field buf? number

@@ -1,10 +1,10 @@
-local Util = require("lazy.util")
-local Render = require("lazy.view.render")
 local Config = require("lazy.core.config")
-local ViewConfig = require("lazy.view.config")
-local Git = require("lazy.manage.git")
 local Diff = require("lazy.view.diff")
 local Float = require("lazy.view.float")
+local Git = require("lazy.manage.git")
+local Render = require("lazy.view.render")
+local Util = require("lazy.util")
+local ViewConfig = require("lazy.view.config")
 
 ---@class LazyViewState
 ---@field mode string

@@ -1,6 +1,6 @@
+local Config = require("lazy.core.config")
 local Git = require("lazy.manage.git")
 local Lock = require("lazy.manage.lock")
-local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 
 ---@type table<string, LazyTaskDef>

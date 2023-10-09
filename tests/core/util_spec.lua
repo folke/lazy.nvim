@@ -1,6 +1,6 @@
-local Util = require("lazy.util")
 local Cache = require("lazy.core.cache")
 local Helpers = require("tests.helpers")
+local Util = require("lazy.util")
 
 describe("util", function()
   local rtp = vim.opt.rtp:get()
