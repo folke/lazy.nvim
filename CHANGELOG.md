@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.9.1](https://github.com/folke/lazy.nvim/compare/v10.9.0...v10.9.1) (2023-10-09)
+
+
+### Bug Fixes
+
+* **manage:** prevend auto conversion 'CRLF' to 'LF' in update lazy-lock.json on Windows. Fixes [#1093](https://github.com/folke/lazy.nvim/issues/1093) ([#1094](https://github.com/folke/lazy.nvim/issues/1094)) ([5579d72](https://github.com/folke/lazy.nvim/commit/5579d72576b21b9c8c2d01838598aece5dc2be6d))
+* **profiling:** ensure proper traces in case of require errors ([2782f81](https://github.com/folke/lazy.nvim/commit/2782f8125e793940f5bf942af1a1df0bbc989d11))
+
 ## [10.9.0](https://github.com/folke/lazy.nvim/compare/v10.8.2...v10.9.0) (2023-10-09)
 
 
