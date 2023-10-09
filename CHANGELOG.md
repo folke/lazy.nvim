@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.9.0](https://github.com/folke/lazy.nvim/compare/v10.8.2...v10.9.0) (2023-10-09)
+
+
+### Features
+
+* **profiling:** added options to enable additional profiling ([423a152](https://github.com/folke/lazy.nvim/commit/423a152e94db37dd535d56e6cb6f06b282c5f081))
+
+
+### Performance Improvements
+
+* lazy require commands ([f0cfbf9](https://github.com/folke/lazy.nvim/commit/f0cfbf995238a42064e119bd1daa694fd1683ea3))
+
 ## [10.8.2](https://github.com/folke/lazy.nvim/compare/v10.8.1...v10.8.2) (2023-10-08)
 
 
