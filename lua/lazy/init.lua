@@ -10,8 +10,13 @@ local function profile_require()
     if Util and not done[modname] then
       done[modname] = true
       Util.track({ require = modname })
-      local ret = vim.F.pack_len(r(modname))
+      local ok, ret = pcall(function()
+        return vim.F.pack_len(r(modname))
+      end)
       Util.track()
+      if not ok then
+        error(ret, 2)
+      end
       return vim.F.unpack_len(ret)
     else
       return r(modname)
