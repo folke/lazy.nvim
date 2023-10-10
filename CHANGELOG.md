@@ -1,5 +1,20 @@
 # Changelog
 
+## [10.10.0](https://github.com/folke/lazy.nvim/compare/v10.9.1...v10.10.0) (2023-10-10)
+
+
+### Features
+
+* **git:** show error for local changes during check/update ([43e9165](https://github.com/folke/lazy.nvim/commit/43e9165994d76038bd6ebd2d06830a7204ae74e0))
+* **git:** show help on how to remove local changes ([58e5726](https://github.com/folke/lazy.nvim/commit/58e5726592a3f4a83735edfea996911d8daea002))
+
+
+### Bug Fixes
+
+* **docs:** broken table in readme ([#1097](https://github.com/folke/lazy.nvim/issues/1097)) ([89581ce](https://github.com/folke/lazy.nvim/commit/89581ce37e1252133725cb583b5ba4fa0a827270))
+* **git:** automatically restore doc/tags when modified ([736529d](https://github.com/folke/lazy.nvim/commit/736529d097979b3585cbc8e2728543fde9b314ed))
+* **process:** make sure cwd is a valid directory ([92869d0](https://github.com/folke/lazy.nvim/commit/92869d0928ad3bb1aa61cf61897a78f3faa17835))
+
 ## [10.9.1](https://github.com/folke/lazy.nvim/compare/v10.9.0...v10.9.1) (2023-10-09)
 
 
