@@ -90,6 +90,11 @@ function M.spawn(cmd, opts)
     end)
   end
 
+  -- make sure the cwd is valid
+  if not opts.cwd and type(uv.cwd()) ~= "string" then
+    opts.cwd = uv.os_homedir()
+  end
+
   handle = uv.spawn(cmd, {
     stdio = { nil, stdout, stderr },
     args = opts.args,
