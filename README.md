@@ -506,7 +506,7 @@ Any operation can be started from the UI, with a sub command or an API function:
 <!-- commands:start -->
 
 | Command | Lua | Description |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | `:Lazy build {plugins}` | `require("lazy").build(opts)` | Rebuild a plugin |
 | `:Lazy check [plugins]` | `require("lazy").check(opts?)` | Check for updates and show the log (git fetch) |
 | `:Lazy clean [plugins]` | `require("lazy").clean(opts?)` | Clean plugins that are no longer needed |
