@@ -64,38 +64,41 @@ function M.norm(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
+---@param opts? {level?: number}
+function M.pretty_trace(opts)
+  opts = opts or {}
+  local Config = require("lazy.core.config")
+  local trace = {}
+  local level = opts.level or 2
+  while true do
+    local info = debug.getinfo(level, "Sln")
+    if not info then
+      break
+    end
+    if info.what ~= "C" and not info.source:find("lazy.nvim") then
+      local source = info.source:sub(2)
+      if source:find(Config.options.root, 1, true) == 1 then
+        source = source:sub(#Config.options.root + 1)
+      end
+      source = vim.fn.fnamemodify(source, ":p:~:.") --[[@as string]]
+      local line = "  - " .. source .. ":" .. info.currentline
+      if info.name then
+        line = line .. " _in_ **" .. info.name .. "**"
+      end
+      table.insert(trace, line)
+    end
+    level = level + 1
+  end
+  return #trace > 0 and ("\n\n# stacktrace:\n" .. table.concat(trace, "\n")) or ""
+end
+
 ---@param opts? string|{msg:string, on_error:fun(msg)}
 function M.try(fn, opts)
   opts = type(opts) == "string" and { msg = opts } or opts or {}
   local msg = opts.msg
   -- error handler
   local error_handler = function(err)
-    local Config = require("lazy.core.config")
-    local trace = {}
-    local level = 1
-    while true do
-      local info = debug.getinfo(level, "Sln")
-      if not info then
-        break
-      end
-      if info.what ~= "C" and not info.source:find("lazy.nvim") then
-        local source = info.source:sub(2)
-        if source:find(Config.options.root, 1, true) == 1 then
-          source = source:sub(#Config.options.root + 1)
-        end
-        source = vim.fn.fnamemodify(source, ":p:~:.")
-        local line = "  - " .. source .. ":" .. info.currentline
-        if info.name then
-          line = line .. " _in_ **" .. info.name .. "**"
-        end
-        table.insert(trace, line)
-      end
-      level = level + 1
-    end
-    msg = (msg and (msg .. "\n\n") or "") .. err
-    if #trace > 0 then
-      msg = msg .. "\n\n# stacktrace:\n" .. table.concat(trace, "\n")
-    end
+    msg = (msg and (msg .. "\n\n") or "") .. err .. M.pretty_trace()
     if opts.on_error then
       opts.on_error(msg)
     else
@@ -292,7 +295,7 @@ function M.extend(list, add)
   return list
 end
 
----@alias LazyNotifyOpts {lang?:string, title?:string, level?:number}
+---@alias LazyNotifyOpts {lang?:string, title?:string, level?:number, once?:boolean, stacktrace?:boolean, stacklevel?:number}
 
 ---@param msg string|string[]
 ---@param opts? LazyNotifyOpts
@@ -312,8 +315,12 @@ function M.notify(msg, opts)
       "\n"
     )
   end
+  if opts.stacktrace then
+    msg = msg .. M.pretty_trace({ level = opts.stacklevel or 2 })
+  end
   local lang = opts.lang or "markdown"
-  vim.notify(msg, opts.level or vim.log.levels.INFO, {
+  local n = opts.once and vim.notify_once or vim.notify
+  n(msg, opts.level or vim.log.levels.INFO, {
     on_open = function(win)
       local ok = pcall(function()
         vim.treesitter.language.add("markdown")
