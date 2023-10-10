@@ -168,6 +168,12 @@ M.status = {
         if ok then
           local lines = vim.split(output, "\n")
           lines = vim.tbl_filter(function(line)
+            -- Fix doc/tags being marked as modified
+            if line:gsub("[\\/]", "/") == "doc/tags" then
+              local Process = require("lazy.manage.process")
+              Process.exec({ "git", "checkout", "--", "doc/tags" }, { cwd = self.plugin.dir })
+              return false
+            end
             return line ~= ""
           end, lines)
           if #lines > 0 then
