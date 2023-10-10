@@ -156,6 +156,33 @@ M.origin = {
   end,
 }
 
+M.status = {
+  skip = function(plugin)
+    return not plugin._.installed or plugin._.is_local
+  end,
+  run = function(self)
+    self:spawn("git", {
+      args = { "ls-files", "-d", "-m" },
+      cwd = self.plugin.dir,
+      on_exit = function(ok, output)
+        if ok then
+          local lines = vim.split(output, "\n")
+          lines = vim.tbl_filter(function(line)
+            return line ~= ""
+          end, lines)
+          if #lines > 0 then
+            self.error = "You have local changes in `" .. self.plugin.dir .. "`:\n"
+            for _, line in ipairs(lines) do
+              self.error = self.error .. "  * " .. line .. "\n"
+            end
+            self.error = self.error .. "Please remove them to update."
+          end
+        end
+      end,
+    })
+  end,
+}
+
 -- fetches all needed origin branches
 M.fetch = {
   skip = function(plugin)
