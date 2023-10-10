@@ -478,6 +478,7 @@ return {
       keys = "🗝",
       plugin = "🔌",
       runtime = "💻",
+      require = "🌙",
       source = "📄",
       start = "🚀",
       task = "📌",
