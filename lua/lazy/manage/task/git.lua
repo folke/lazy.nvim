@@ -181,7 +181,8 @@ M.status = {
             for _, line in ipairs(lines) do
               self.error = self.error .. "  * " .. line .. "\n"
             end
-            self.error = self.error .. "Please remove them to update."
+            self.error = self.error .. "Please remove them to update.\n"
+            self.error = self.error .. "You can also press `x` to remove the plugin and then `I` to install it again."
           end
         end
       end,
