@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.11.0](https://github.com/folke/lazy.nvim/compare/v10.10.0...v10.11.0) (2023-10-10)
+
+
+### Features
+
+* **util:** expose pretty stacktraces for notify ([7b84609](https://github.com/folke/lazy.nvim/commit/7b84609a06bd11869370bc20a9255bb469e35a50))
+
 ## [10.10.0](https://github.com/folke/lazy.nvim/compare/v10.9.1...v10.10.0) (2023-10-10)
 
 
