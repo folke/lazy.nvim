@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.12.0](https://github.com/folke/lazy.nvim/compare/v10.11.0...v10.12.0) (2023-10-11)
+
+
+### Features
+
+* **event:** added support for structured events (see readme on event) ([303a3ed](https://github.com/folke/lazy.nvim/commit/303a3ed6a874bb5bdebf11ecdf99e1dfa3eed2c3))
+* **event:** custom lazy event hook for distros ([b65d308](https://github.com/folke/lazy.nvim/commit/b65d3086623448b93bf02055f73819b76ca1dd78))
+
+
+### Bug Fixes
+
+* **ui:** use actual handler values for rendering plugin handlers ([99ee284](https://github.com/folke/lazy.nvim/commit/99ee28473962d9ab8aa11db2d2cc201e38f0f432))
+
 ## [10.11.0](https://github.com/folke/lazy.nvim/compare/v10.10.0...v10.11.0) (2023-10-10)
 
 
