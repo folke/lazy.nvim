@@ -5,17 +5,20 @@ local Loader = require("lazy.core.loader")
 local M = {}
 M.extends = Event
 
----@param value string
-function M:_event(value)
-  return "FileType " .. value
-end
-
 ---@param plugin LazyPlugin
 function M:add(plugin)
   self.super.add(self, plugin)
   if plugin.ft then
     Loader.ftdetect(plugin.dir)
   end
+end
+
+function M:parse(value)
+  return {
+    id = value,
+    event = "FileType",
+    pattern = value,
+  }
 end
 
 return M

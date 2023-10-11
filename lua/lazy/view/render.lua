@@ -319,16 +319,12 @@ function M:reason(reason, opts)
   end
   for _, key in ipairs(keys) do
     local value = reason[key]
-    if type(key) == "number" then
-    -- elseif key == "require" then
-    elseif key ~= "time" then
+    local skip = type(key) == "number" or key == "time"
+    if not skip then
       if first then
         first = false
       else
         self:append(" ")
-      end
-      if key == "event" then
-        value = value:match("User (.*)") or value
       end
       if key == "keys" then
         value = type(value) == "string" and value or value.lhs or value[1]
@@ -414,11 +410,18 @@ function M:plugin(plugin)
     if plugin._.kind ~= "disabled" then
       for handler in pairs(Handler.types) do
         if plugin[handler] then
-          local trigger = {}
-          for _, value in ipairs(plugin[handler]) do
-            table.insert(trigger, type(value) == "table" and value[1] or value)
-          end
-          reason[handler] = table.concat(trigger, " ")
+          local values = Handler.handlers[handler]:values(plugin)
+          values = vim.tbl_map(function(value)
+            if handler == "ft" or handler == "event" then
+              ---@cast value LazyEvent
+              return value.id
+            elseif handler == "keys" then
+              ---@cast value LazyKeys
+              return value.lhs .. (value.mode == "n" and "" or " (" .. value.mode .. ")")
+            end
+            return value
+          end, vim.tbl_values(values))
+          reason[handler] = table.concat(values, " ")
         end
       end
     end
