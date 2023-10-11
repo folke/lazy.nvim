@@ -4,11 +4,13 @@ local Util = require("lazy.core.util")
 
 ---@class LazyEventOpts
 ---@field event string
----@field pattern? string
 ---@field group? string
 ---@field exclude? string[]
 ---@field data? any
 ---@field buffer? number
+
+---@alias LazyEvent {id:string, event:string[]|string, pattern?:string[]|string}
+---@alias LazyEventSpec string|{event?:string|string[], pattern?:string|string[]}|string[]
 
 ---@class LazyEventHandler:LazyHandler
 ---@field events table<string,true>
@@ -23,28 +25,64 @@ M.triggers = {
 
 M.group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
 
----@param value string
-function M:_add(value)
-  local event_spec = self:_event(value)
-  ---@type string?, string?
-  local event, pattern = event_spec:match("^(%w+)%s+(.*)$")
-  event = event or event_spec
+---@param spec LazyEventSpec
+---@return LazyEvent
+function M:parse(spec)
+  local ret = M.mappings[spec] --[[@as LazyEvent?]]
+  if ret then
+    return ret
+  end
+  if type(spec) == "string" then
+    local event, pattern = spec:match("^(%w+)%s+(.*)$")
+    event = event or spec
+    return { id = spec, event = event, pattern = pattern }
+  elseif Util.is_list(spec) then
+    ret = { id = table.concat(spec, "|"), event = spec }
+  else
+    ret = spec --[[@as LazyEvent]]
+    if not ret.id then
+      ---@diagnostic disable-next-line: assign-type-mismatch, param-type-mismatch
+      ret.id = type(ret.event) == "string" and ret.event or table.concat(ret.event, "|")
+      if ret.pattern then
+        ---@diagnostic disable-next-line: assign-type-mismatch, param-type-mismatch
+        ret.id = ret.id .. " " .. (type(ret.pattern) == "string" and ret.pattern or table.concat(ret.pattern, ", "))
+      end
+    end
+  end
+  return ret
+end
+
+---@param plugin LazyPlugin
+function M:values(plugin)
+  ---@type table<string,any>
+  local values = {}
+  ---@diagnostic disable-next-line: no-unknown
+  for _, value in ipairs(plugin[self.type] or {}) do
+    local event = self:parse(value)
+    values[event.id] = event
+  end
+  return values
+end
+
+---@param event LazyEvent
+function M:_add(event)
   local done = false
-  vim.api.nvim_create_autocmd(event, {
+  vim.api.nvim_create_autocmd(event.event, {
     group = self.group,
     once = true,
-    pattern = pattern,
+    pattern = event.pattern,
     callback = function(ev)
-      if done or not self.active[value] then
+      if done or not self.active[event.id] then
         return
       end
+      -- HACK: work-around for https://github.com/neovim/neovim/issues/25526
       done = true
-      Util.track({ [self.type] = value })
+      Util.track({ [self.type] = event.id })
 
-      local state = M.get_state(ev.event, pattern, ev.buf, ev.data)
+      local state = M.get_state(ev.event, ev.buf, ev.data)
 
       -- load the plugins
-      Loader.load(self.active[value], { [self.type] = value })
+      Loader.load(self.active[event.id], { [self.type] = event.id })
 
       -- check if any plugin created an event handler for this event and fire the group
       for _, s in ipairs(state) do
@@ -57,36 +95,21 @@ end
 
 -- Get the current state of the event and all the events that will be fired
 ---@param event string
----@param pattern? string
 ---@param buf number
 ---@param data any
-function M.get_state(event, pattern, buf, data)
+function M.get_state(event, buf, data)
   local state = {} ---@type LazyEventOpts[]
   while event do
     table.insert(state, 1, {
       event = event,
-      pattern = pattern,
       exclude = event ~= "FileType" and M.get_augroups(event) or nil,
       buffer = buf,
       data = data,
     })
     data = nil -- only pass the data to the first event
-    if event == "FileType" then
-      pattern = nil -- only use the pattern for the first event
-    end
     event = M.triggers[event]
   end
   return state
-end
-
----@param value string
-function M:_event(value)
-  if value == "VeryLazy" then
-    return "User VeryLazy"
-  elseif value == "BufRead" then
-    return "BufReadPost"
-  end
-  return value
 end
 
 -- Get all augroups for the events
@@ -127,7 +150,6 @@ function M._trigger(opts)
     Util.info({
       "# Firing Events",
       "  - **event:** " .. opts.event,
-      opts.pattern and ("  - **pattern:** " .. opts.pattern),
       opts.group and ("  - **group:** " .. opts.group),
       opts.buffer and ("  - **buffer:** " .. opts.buffer),
     })
@@ -135,7 +157,6 @@ function M._trigger(opts)
   Util.track({ event = opts.group or opts.event })
   Util.try(function()
     vim.api.nvim_exec_autocmds(opts.event, {
-      -- pattern = opts.pattern,
       buffer = opts.buffer,
       group = opts.group,
       modeline = false,

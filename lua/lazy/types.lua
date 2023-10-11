@@ -29,7 +29,7 @@
 ---@field opts? PluginOpts
 
 ---@class LazyPluginHandlers
----@field event? string[]
+---@field event? LazyEventSpec[]
 ---@field cmd? string[]
 ---@field ft? string[]
 ---@field keys? (string|LazyKeysSpec)[]
