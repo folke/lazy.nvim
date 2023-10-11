@@ -23,6 +23,16 @@ M.triggers = {
   BufReadPost = "BufReadPre",
 }
 
+-- A table of mappings for custom events
+-- Can be used by distros to add custom events (see usage in LazyVim)
+---@type table<string, LazyEvent>
+M.mappings = {
+  VeryLazy = { id = "VeryLazy", event = "User", pattern = "VeryLazy" },
+  -- Example:
+  -- LazyFile = { id = "LazyFile", event = { "BufReadPost", "BufNewFile", "BufWritePre" } },
+}
+M.mappings["User VeryLazy"] = M.mappings.VeryLazy
+
 M.group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
 
 ---@param spec LazyEventSpec
