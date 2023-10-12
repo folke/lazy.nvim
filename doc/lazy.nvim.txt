@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 October 11
+*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 October 12
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -476,7 +476,7 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
           -- You can define custom key maps here. If present, the description will
           -- be shown in the help menu.
           -- To disable one of the defaults, set it to false.
-
+    
           ["<localleader>l"] = {
             function(plugin)
               require("lazy.util").float_term({ "lazygit", "log" }, {
@@ -485,7 +485,7 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
             end,
             desc = "Open lazygit log",
           },
-
+    
           ["<localleader>t"] = {
             function(plugin)
               require("lazy.util").float_term(nil, {
