@@ -64,6 +64,7 @@ function M.spawn(cmd, opts)
   env.GIT_DIR = nil
   env.GIT_WORK_TREE = nil
   env.GIT_TERMINAL_PROMPT = "0"
+  env.GIT_INDEX_FILE = nil
 
   ---@type string[]
   local env_flat = {}
