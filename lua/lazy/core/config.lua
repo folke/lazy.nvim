@@ -81,22 +81,27 @@ M.defaults = {
     browser = nil, ---@type string?
     throttle = 20, -- how frequently should the ui process render events
     custom_keys = {
-      -- you can define custom key maps here.
-      -- To disable one of the defaults, set it to false
+      -- You can define custom key maps here. If present, the description will
+      -- be shown in the help menu.
+      -- To disable one of the defaults, set it to false.
 
-      -- open lazygit log
-      ["<localleader>l"] = function(plugin)
-        require("lazy.util").float_term({ "lazygit", "log" }, {
-          cwd = plugin.dir,
-        })
-      end,
+      ["<localleader>l"] = {
+        function(plugin)
+          require("lazy.util").float_term({ "lazygit", "log" }, {
+            cwd = plugin.dir,
+          })
+        end,
+        desc = "Open lazygit log",
+      },
 
-      -- open a terminal for the plugin dir
-      ["<localleader>t"] = function(plugin)
-        require("lazy.util").float_term(nil, {
-          cwd = plugin.dir,
-        })
-      end,
+      ["<localleader>t"] = {
+        function(plugin)
+          require("lazy.util").float_term(nil, {
+            cwd = plugin.dir,
+          })
+        end,
+        desc = "Open terminal in plugin dir",
+      },
     },
   },
   diff = {

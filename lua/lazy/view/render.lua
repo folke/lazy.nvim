@@ -209,6 +209,14 @@ function M:help()
       self:append(" " .. (mode.desc_plugin or mode.desc)):nl()
     end
   end
+  for lhs, rhs in pairs(Config.options.ui.custom_keys) do
+    if type(rhs) == "table" and rhs.desc then
+      self:append("- ", "LazySpecial", { indent = 2 })
+      self:append("Custom key ", "Title")
+      self:append(lhs, "LazyProp")
+      self:append(" " .. rhs.desc):nl()
+    end
+  end
 end
 
 function M:progressbar()
