@@ -121,9 +121,10 @@ function M.create()
     end
   end)
 
-  for key, handler in pairs(Config.options.ui.custom_keys) do
-    if handler then
-      self:on_key(key, function()
+  for lhs, rhs in pairs(Config.options.ui.custom_keys) do
+    if rhs then
+      local handler = type(rhs) == "table" and rhs[1] or rhs
+      self:on_key(lhs, function()
         local plugin = self.render:get_plugin()
         if plugin then
           handler(plugin)
