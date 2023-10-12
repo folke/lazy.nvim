@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.13.0](https://github.com/folke/lazy.nvim/compare/v10.12.0...v10.13.0) (2023-10-12)
+
+
+### Features
+
+* **keys:** include custom keys in help menu ([#1105](https://github.com/folke/lazy.nvim/issues/1105)) ([43c284a](https://github.com/folke/lazy.nvim/commit/43c284a57870e1a7ed42782eacf444a6a752f81e))
+
 ## [10.12.0](https://github.com/folke/lazy.nvim/compare/v10.11.0...v10.12.0) (2023-10-11)
 
 
