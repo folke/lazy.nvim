@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.13.1](https://github.com/folke/lazy.nvim/compare/v10.13.0...v10.13.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **git:** unset GIT_INDEX_FILE so we dont accidentally overwrite a different git repo. Fixes [#1107](https://github.com/folke/lazy.nvim/issues/1107) ([7f70dd1](https://github.com/folke/lazy.nvim/commit/7f70dd17497973f2a83e7e46aa7479111174e765))
+
 ## [10.13.0](https://github.com/folke/lazy.nvim/compare/v10.12.0...v10.13.0) (2023-10-12)
 
 
