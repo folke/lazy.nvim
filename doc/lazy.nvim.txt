@@ -249,7 +249,8 @@ automagically load when doing `colorscheme foobar`.
 LAZY KEY MAPPINGS
 
 The `keys` property can be a `string` or `string[]` for simple normal-mode
-mappings, or it can be a `LazyKeys` table with the following key-value pairs:
+mappings, or it can be a `LazyKeysSpec` table with the following key-value
+pairs:
 
 - **[1]**(`string`) lhs **(required)**
 - **[2]**(`string|fun()`) rhs **(optional)**
