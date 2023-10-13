@@ -396,22 +396,19 @@ end
 ---@param ... T
 ---@return T
 function M.merge(...)
-  local values = { ... }
-  local ret = values[1]
-
+  local ret = select(1, ...)
   if ret == vim.NIL then
     ret = nil
   end
-
-  for i = 2, #values, 1 do
-    local value = values[i]
+  for i = 2, select("#", ...) do
+    local value = select(i, ...)
     if can_merge(ret) and can_merge(value) then
       for k, v in pairs(value) do
         ret[k] = M.merge(ret[k], v)
       end
     elseif value == vim.NIL then
       ret = nil
-    else
+    elseif value ~= nil then
       ret = value
     end
   end

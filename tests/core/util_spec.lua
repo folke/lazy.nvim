@@ -102,6 +102,22 @@ describe("util", function()
         output = { a = 1, b = 2 },
       },
       {
+        input = { nil, { a = 1 }, { b = 2 } },
+        output = { a = 1, b = 2 },
+      },
+      {
+        input = { { a = 1 }, { b = 2 }, nil },
+        output = { a = 1, b = 2 },
+      },
+      {
+        input = { { a = 1 }, nil, { b = 2 } },
+        output = { a = 1, b = 2 },
+      },
+      {
+        input = { nil, { a = 1 }, nil, { b = 2 }, nil },
+        output = { a = 1, b = 2 },
+      },
+      {
         input = { { a = 1 }, { a = 2 } },
         output = { a = 2 },
       },
@@ -120,7 +136,11 @@ describe("util", function()
     }
 
     for _, test in ipairs(tests) do
-      assert.same(test.output, Util.merge(unpack(test.input)))
+      local n = 0
+      for i in pairs(test.input) do
+        n = math.max(n, i)
+      end
+      assert.same(test.output, Util.merge(unpack(test.input, 1, n)))
     end
   end)
 end)
