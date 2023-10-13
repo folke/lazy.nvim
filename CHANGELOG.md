@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.13.2](https://github.com/folke/lazy.nvim/compare/v10.13.1...v10.13.2) (2023-10-13)
+
+
+### Bug Fixes
+
+* **float:** disable swapfile for files shown in Float ([3769461](https://github.com/folke/lazy.nvim/commit/37694611946387dc79d546bdc193bc8611ac1c6d))
+* **util:** Util.merge now skips nil args ([70f764b](https://github.com/folke/lazy.nvim/commit/70f764bf735f74aed795188aeb8e57ccae0ae94e))
+
 ## [10.13.1](https://github.com/folke/lazy.nvim/compare/v10.13.0...v10.13.1) (2023-10-12)
 
 
