@@ -429,6 +429,7 @@ function M:plugin(plugin)
             end
             return value
           end, vim.tbl_values(values))
+          table.sort(values)
           reason[handler] = table.concat(values, " ")
         end
       end
