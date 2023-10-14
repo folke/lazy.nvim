@@ -441,7 +441,7 @@ function Spec:merge(old, new)
   new._.dep = old._.dep and new._.dep
 
   if new.url and old.url and new.url ~= old.url then
-    self:error("Two plugins with the same name and different url:\n" .. vim.inspect({ old = old, new = new }))
+    self:warn("Two plugins with the same name and different url:\n" .. vim.inspect({ old = old, new = new }))
   end
 
   if new.dependencies and old.dependencies then
