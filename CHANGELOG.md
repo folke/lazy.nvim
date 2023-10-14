@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.13.3](https://github.com/folke/lazy.nvim/compare/v10.13.2...v10.13.3) (2023-10-14)
+
+
+### Bug Fixes
+
+* **ui:** sort lazy plugin handlers ([ad5da0a](https://github.com/folke/lazy.nvim/commit/ad5da0ae20beca5dd89cb17c515c237c46c37b1e))
+
 ## [10.13.2](https://github.com/folke/lazy.nvim/compare/v10.13.1...v10.13.2) (2023-10-13)
 
 
