@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.13.4](https://github.com/folke/lazy.nvim/compare/v10.13.3...v10.13.4) (2023-10-14)
+
+
+### Bug Fixes
+
+* **cmd:** lazy-cmds no longer show an error for buffer-local commands ([3b31897](https://github.com/folke/lazy.nvim/commit/3b31897275d5c09e2654db1c163b87eb383ca25e))
+
 ## [10.13.3](https://github.com/folke/lazy.nvim/compare/v10.13.2...v10.13.3) (2023-10-14)
 
 
