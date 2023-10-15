@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.14.0](https://github.com/folke/lazy.nvim/compare/v10.13.4...v10.14.0) (2023-10-15)
+
+
+### Features
+
+* **plugin:** treat url changes as warnings. They will only be shown with checkhealth ([0c53d46](https://github.com/folke/lazy.nvim/commit/0c53d4673ff02c57a192558325b394cfd9adde0f))
+
+
+### Bug Fixes
+
+* **plugin:** dont allow `dir` changes when we already loaded files from the plugin's old dir. Show an error in this case. Fixes [#993](https://github.com/folke/lazy.nvim/issues/993) ([c8e2091](https://github.com/folke/lazy.nvim/commit/c8e2091e6d2836b587b9892e0fb64afaec36926a))
+* **plugin:** improved dir/dev merging. Fixes [#993](https://github.com/folke/lazy.nvim/issues/993) ([3dc413d](https://github.com/folke/lazy.nvim/commit/3dc413d6fd279dfff777a9f9a964697a16c5aabc))
+
 ## [10.13.4](https://github.com/folke/lazy.nvim/compare/v10.13.3...v10.13.4) (2023-10-14)
 
 
