@@ -50,6 +50,43 @@ describe("plugin spec url/name", function()
   end
 end)
 
+describe("plugin spec dir", function()
+  local tests = {
+    {
+      "~/projects/gitsigns.nvim",
+      { "lewis6991/gitsigns.nvim", opts = {}, dev = true },
+      { "lewis6991/gitsigns.nvim" },
+    },
+    {
+      "~/projects/gitsigns.nvim",
+      { "lewis6991/gitsigns.nvim", opts = {}, dev = true },
+      { "gitsigns.nvim" },
+    },
+    {
+      "~/projects/gitsigns.nvim",
+      { "lewis6991/gitsigns.nvim", opts = {} },
+      { "lewis6991/gitsigns.nvim", dev = true },
+    },
+    {
+      "~/projects/gitsigns.nvim",
+      { "lewis6991/gitsigns.nvim", opts = {} },
+      { "gitsigns.nvim", dev = true },
+    },
+  }
+
+  for _, test in ipairs(tests) do
+    local dir = vim.fn.expand(test[1])
+    local input = vim.list_slice(test, 2)
+    it("parses dir " .. vim.inspect(input):gsub("%s+", " "), function()
+      local spec = Plugin.Spec.new(input)
+      local plugins = vim.tbl_values(spec.plugins)
+      assert(spec:report() == 0)
+      assert.equal(1, #plugins)
+      assert.same(dir, plugins[1].dir)
+    end)
+  end
+end)
+
 describe("plugin spec opt", function()
   it("handles dependencies", function()
     Config.options.defaults.lazy = false

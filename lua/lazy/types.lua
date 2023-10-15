@@ -18,6 +18,7 @@
 ---@field cond? boolean
 ---@field super? LazyPlugin
 ---@field module? string
+---@field dir? string Explicit dir or dev set for this plugin
 
 ---@alias PluginOpts table|fun(self:LazyPlugin, opts:table):table?
 

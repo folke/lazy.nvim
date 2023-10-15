@@ -84,8 +84,11 @@ function Spec:add(plugin, results)
     end
   end
 
+  ---@type string?
+  local dir
+
   if plugin.dir then
-    plugin.dir = Util.norm(plugin.dir)
+    dir = Util.norm(plugin.dir)
     -- local plugin
     plugin.name = plugin.name or Spec.get_name(plugin.dir)
   elseif plugin.url then
@@ -99,16 +102,6 @@ function Spec:add(plugin, results)
         end
       end
     end
-    -- dev plugins
-    if
-      plugin.dev
-      and (not Config.options.dev.fallback or vim.fn.isdirectory(Config.options.dev.path .. "/" .. plugin.name) == 1)
-    then
-      plugin.dir = Config.options.dev.path .. "/" .. plugin.name
-    else
-      -- remote plugin
-      plugin.dir = Config.options.root .. "/" .. plugin.name
-    end
   elseif is_ref then
     plugin.name = plugin[1]
   else
@@ -119,6 +112,17 @@ function Spec:add(plugin, results)
   if not plugin.name or plugin.name == "" then
     self:error("Plugin spec " .. vim.inspect(plugin) .. " has no name")
     return
+  end
+
+  -- dev plugins
+  if
+    plugin.dev
+    and (not Config.options.dev.fallback or vim.fn.isdirectory(Config.options.dev.path .. "/" .. plugin.name) == 1)
+  then
+    dir = Config.options.dev.path .. "/" .. plugin.name
+  elseif plugin.dev == false then
+    -- explicitely select the default path
+    dir = Config.options.root .. "/" .. plugin.name
   end
 
   if type(plugin.config) == "table" then
@@ -134,12 +138,15 @@ function Spec:add(plugin, results)
 
   M.last_fid = M.last_fid + 1
   plugin._ = {
+    dir = dir,
     fid = M.last_fid,
     fpid = fpid,
     dep = fpid ~= nil,
     module = self.importing,
   }
   self.fragments[plugin._.fid] = plugin
+  -- remote plugin
+  plugin.dir = plugin._.dir or (plugin.name and (Config.options.root .. "/" .. plugin.name)) or nil
 
   if fpid then
     local parent = self.fragments[fpid]
@@ -328,11 +335,14 @@ end
 
 function Spec:report(level)
   level = level or vim.log.levels.ERROR
+  local count = 0
   for _, notif in ipairs(self.notifs) do
     if notif.level >= level then
       Util.notify(notif.msg, { level = notif.level })
+      count = count + 1
     end
   end
+  return count
 end
 
 ---@param spec LazySpec|LazySpecImport
@@ -447,6 +457,12 @@ function Spec:merge(old, new)
   if new.dependencies and old.dependencies then
     Util.extend(new.dependencies, old.dependencies)
   end
+
+  local new_dir = new._.dir or old._.dir or (new.name and (Config.options.root .. "/" .. new.name)) or nil
+  if new_dir ~= new.dir then
+    self:warn("Plugin `" .. new.name .. "` changed `dir`:\n- from: `" .. new.dir .. "`\n- to: `" .. new_dir .. "`")
+  end
+  new.dir = new_dir
 
   new._.super = old
   setmetatable(new, { __index = old })
