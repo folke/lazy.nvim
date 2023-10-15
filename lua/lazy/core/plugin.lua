@@ -459,10 +459,19 @@ function Spec:merge(old, new)
   end
 
   local new_dir = new._.dir or old._.dir or (new.name and (Config.options.root .. "/" .. new.name)) or nil
-  if new_dir ~= new.dir then
-    self:warn("Plugin `" .. new.name .. "` changed `dir`:\n- from: `" .. new.dir .. "`\n- to: `" .. new_dir .. "`")
+  if new_dir ~= old.dir then
+    local msg = "Plugin `" .. new.name .. "` changed `dir`:\n- from: `" .. old.dir .. "`\n- to: `" .. new_dir .. "`"
+    if new._.rtp_loaded or old._.rtp_loaded then
+      msg = msg
+        .. "\n\nThis plugin was already partially loaded, so we did not change it's `dir`.\nPlease fix your config."
+      self:error(msg)
+      new_dir = old.dir
+    else
+      self:warn(msg)
+    end
   end
   new.dir = new_dir
+  new._.rtp_loaded = new._.rtp_loaded or old._.rtp_loaded
 
   new._.super = old
   setmetatable(new, { __index = old })

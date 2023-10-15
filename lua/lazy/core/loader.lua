@@ -495,6 +495,7 @@ end
 function M.auto_load(modname, modpath)
   local plugin = Plugin.find(modpath)
   if plugin and modpath:find(plugin.dir, 1, true) == 1 then
+    plugin._.rtp_loaded = true
     -- don't load if we're loading specs or if the plugin is already loaded
     if not (Plugin.loading or plugin._.loaded) then
       if plugin.module == false then
