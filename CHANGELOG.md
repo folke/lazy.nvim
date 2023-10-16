@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.14.3](https://github.com/folke/lazy.nvim/compare/v10.14.2...v10.14.3) (2023-10-16)
+
+
+### Performance Improvements
+
+* **plugin:** cache lazy handler values ([c1b9887](https://github.com/folke/lazy.nvim/commit/c1b98873730d7121fec6a2f732b2083cd2cd62bf))
+
 ## [10.14.2](https://github.com/folke/lazy.nvim/compare/v10.14.1...v10.14.2) (2023-10-16)
 
 
