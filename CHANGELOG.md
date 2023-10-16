@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.14.1](https://github.com/folke/lazy.nvim/compare/v10.14.0...v10.14.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* **loader:** don't load handlers before installing plugins ([1cfd6d1](https://github.com/folke/lazy.nvim/commit/1cfd6d1f368ab72690e31cf4d8e15c36d8b60202))
+
 ## [10.14.0](https://github.com/folke/lazy.nvim/compare/v10.13.4...v10.14.0) (2023-10-15)
 
 
