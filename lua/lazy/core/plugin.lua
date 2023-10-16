@@ -556,6 +556,10 @@ function M.load()
       Config.plugins[name]._ = plugin._
       Config.plugins[name]._.dep = dep
       Config.plugins[name]._.super = super
+      -- FIXME: work-around for changes related to Plugin.values
+      for handler in pairs(Handler) do
+        Config.plugins[name][handler] = plugin[handler]
+      end
     end
   end
   Util.track()
