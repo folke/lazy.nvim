@@ -682,7 +682,6 @@ function M:debug()
 
   Util.foreach(require("lazy.core.handler").handlers, function(handler_type, handler)
     Util.foreach(handler.active, function(value, plugins)
-      assert(type(value) == "string")
       if not vim.tbl_isempty(plugins) then
         ---@type string[]
         plugins = vim.tbl_values(plugins)
@@ -691,7 +690,7 @@ function M:debug()
         if handler_type == "keys" then
           for k, v in pairs(Config.plugins[plugins[1]]._.handlers.keys) do
             if k == value then
-              value = v.name
+              value = Keys.to_string(v)
               break
             end
           end
