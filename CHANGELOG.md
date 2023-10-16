@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.14.2](https://github.com/folke/lazy.nvim/compare/v10.14.1...v10.14.2) (2023-10-16)
+
+
+### Bug Fixes
+
+* **plugin:** work-around for Plugin.values error. Will add proper fix later. Fixes [#1124](https://github.com/folke/lazy.nvim/issues/1124) ([2270bbb](https://github.com/folke/lazy.nvim/commit/2270bbbc48503f468633cc5c2065321001c4f0ac))
+
 ## [10.14.1](https://github.com/folke/lazy.nvim/compare/v10.14.0...v10.14.1) (2023-10-16)
 
 
