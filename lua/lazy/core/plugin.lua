@@ -556,10 +556,6 @@ function M.load()
       Config.plugins[name]._ = plugin._
       Config.plugins[name]._.dep = dep
       Config.plugins[name]._.super = super
-      -- FIXME: work-around for changes related to Plugin.values
-      for handler in pairs(Handler) do
-        Config.plugins[name][handler] = plugin[handler]
-      end
     end
   end
   Util.track()
@@ -607,29 +603,32 @@ function M.values(plugin, prop, is_list)
   if not plugin[prop] then
     return {}
   end
-  plugin._.values = plugin._.values or {}
+  plugin._.cache = plugin._.cache or {}
   local key = prop .. (is_list and "_list" or "")
-  if plugin._.values[key] == nil then
-    plugin[prop] = M._values(plugin, prop, is_list)
-    plugin._.values[key] = true
+  if plugin._.cache[key] == nil then
+    plugin._.cache[key] = M._values(plugin, plugin, prop, is_list)
   end
-  return plugin[prop] or {}
+  return plugin._.cache[key]
 end
 
 -- Merges super values or runs the values function to override values or return new ones
 -- Used for opts, cmd, event, ft and keys
+---@param root LazyPlugin
 ---@param plugin LazyPlugin
 ---@param prop string
 ---@param is_list? boolean
-function M._values(plugin, prop, is_list)
+function M._values(root, plugin, prop, is_list)
+  if not plugin[prop] then
+    return {}
+  end
   ---@type table
-  local ret = plugin._.super and M._values(plugin._.super, prop, is_list) or {}
+  local ret = plugin._.super and M._values(root, plugin._.super, prop, is_list) or {}
   local values = rawget(plugin, prop)
 
   if not values then
     return ret
   elseif type(values) == "function" then
-    ret = values(plugin, ret) or ret
+    ret = values(root, ret) or ret
     return type(ret) == "table" and ret or { ret }
   end
 

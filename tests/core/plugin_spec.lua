@@ -1,4 +1,5 @@
 local Config = require("lazy.core.config")
+local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")
 
 local assert = require("luassert")
@@ -142,6 +143,9 @@ describe("plugin spec opt", function()
   end)
 
   describe("deps", function()
+    before_each(function()
+      Handler.init()
+    end)
     it("handles dep names", function()
       Config.options.defaults.lazy = false
       local tests = {
@@ -237,11 +241,13 @@ describe("plugin spec opt", function()
         local spec = Plugin.Spec.new(test)
         assert(#spec.notifs == 0)
         assert(vim.tbl_count(spec.plugins) == 1)
-        Plugin.values(spec.plugins.bar, "event", true)
-        assert(type(spec.plugins.bar.event) == "table")
-        assert(#spec.plugins.bar.event == 2)
-        assert(vim.tbl_contains(spec.plugins.bar.event, "mod1"))
-        assert(vim.tbl_contains(spec.plugins.bar.event, "mod2"))
+        Handler.load(spec.plugins.bar)
+        vim.print(spec.plugins.bar._.handlers)
+        local events = vim.tbl_keys(spec.plugins.bar._.handlers.event or {})
+        assert(type(events) == "table")
+        assert(#events == 2)
+        assert(vim.tbl_contains(events, "mod1"))
+        assert(vim.tbl_contains(events, "mod2"))
       end
     end)
   end)
@@ -297,14 +303,16 @@ describe("plugin spec opt", function()
       { { "foo/bar", event = "mod1" }, { "foo/bar", event = { "mod2" } } },
     }
     for _, test in ipairs(tests) do
+      Handler.init()
       local spec = Plugin.Spec.new(test)
       assert(#spec.notifs == 0)
       assert(vim.tbl_count(spec.plugins) == 1)
-      Plugin.values(spec.plugins.bar, "event", true)
-      assert(type(spec.plugins.bar.event) == "table")
-      assert(#spec.plugins.bar.event == 2)
-      assert(vim.tbl_contains(spec.plugins.bar.event, "mod1"))
-      assert(vim.tbl_contains(spec.plugins.bar.event, "mod2"))
+      Handler.load(spec.plugins.bar)
+      local events = spec.plugins.bar._.handlers.event
+      assert(type(events) == "table")
+      assert(vim.tbl_count(events) == 2)
+      assert(events["mod1"])
+      assert(events["mod2"])
     end
   end)
 

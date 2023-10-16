@@ -1,6 +1,7 @@
 local Config = require("lazy.core.config")
 local Git = require("lazy.manage.git")
 local Handler = require("lazy.core.handler")
+local Keys = require("lazy.core.handler.keys")
 local Plugin = require("lazy.core.plugin")
 local Sections = require("lazy.view.sections")
 local Util = require("lazy.util")
@@ -334,12 +335,10 @@ function M:reason(reason, opts)
       else
         self:append(" ")
       end
-      if key == "keys" then
-        value = type(value) == "string" and value or value.lhs or value[1]
-      end
       local hl = "LazyReason" .. key:sub(1, 1):upper() .. key:sub(2)
       local icon = Config.options.ui.icons[key]
       if icon then
+        icon = icon:gsub("%s*$", "")
         self:append(icon .. " ", hl)
         self:append(value, hl)
       else
@@ -411,35 +410,18 @@ function M:plugin(plugin)
   end
   local plugin_start = self:row()
   if plugin._.loaded then
+    -- When the plugin is loaded, only show the loading reason
     self:reason(plugin._.loaded)
   else
+    -- otherwise show all lazy handlers
     self:append(" ")
-    local reason = {}
-    if plugin._.kind ~= "disabled" and plugin._.handlers_enabled then
-      for handler in pairs(Handler.types) do
-        if plugin[handler] then
-          local values = Handler.handlers[handler]:values(plugin)
-          values = vim.tbl_map(function(value)
-            if handler == "ft" or handler == "event" then
-              ---@cast value LazyEvent
-              return value.id
-            elseif handler == "keys" then
-              ---@cast value LazyKeys
-              return value.lhs .. (value.mode == "n" and "" or " (" .. value.mode .. ")")
-            end
-            return value
-          end, vim.tbl_values(values))
-          table.sort(values)
-          reason[handler] = table.concat(values, " ")
-        end
-      end
-    end
+    self:handlers(plugin)
     for _, other in pairs(Config.plugins) do
       if vim.tbl_contains(other.dependencies or {}, plugin.name) then
-        reason.plugin = other.name
+        self:reason({ plugin = other.name })
+        self:append(" ")
       end
     end
-    self:reason(reason)
   end
   self:diagnostics(plugin)
   self:nl()
@@ -542,24 +524,34 @@ function M:details(plugin)
     end
   end)
 
-  if plugin._.handlers_enabled then
-    for handler in pairs(Handler.types) do
-      if plugin[handler] then
-        table.insert(props, {
-          handler,
-          function()
-            for _, value in ipairs(Plugin.values(plugin, handler, true)) do
-              self:reason({ [handler] = value })
-              self:append(" ")
-            end
-          end,
-        })
-      end
-    end
+  for handler in pairs(plugin._.handlers or {}) do
+    table.insert(props, {
+      handler,
+      function()
+        self:handlers(plugin, handler)
+      end,
+    })
   end
   self:props(props, { indent = 6 })
 
   self:nl()
+end
+
+---@param plugin LazyPlugin
+---@param types? LazyHandlerTypes[]|LazyHandlerTypes
+function M:handlers(plugin, types)
+  if not plugin._.handlers then
+    return
+  end
+  types = type(types) == "string" and { types } or types
+  types = types and types or vim.tbl_keys(Handler.types)
+  for _, t in ipairs(types) do
+    for id, value in pairs(plugin._.handlers[t] or {}) do
+      value = t == "keys" and Keys.to_string(value) or id
+      self:reason({ [t] = value })
+      self:append(" ")
+    end
+  end
 end
 
 ---@alias LazyProps {[1]:string, [2]:string|fun(), [3]?:string}[]
@@ -690,16 +682,16 @@ function M:debug()
 
   Util.foreach(require("lazy.core.handler").handlers, function(handler_type, handler)
     Util.foreach(handler.active, function(value, plugins)
-      value = type(value) == "table" and value[1] or value
+      assert(type(value) == "string")
       if not vim.tbl_isempty(plugins) then
         ---@type string[]
         plugins = vim.tbl_values(plugins)
         table.sort(plugins)
         self:append("● ", "LazySpecial", { indent = 2 })
         if handler_type == "keys" then
-          for k, v in pairs(Handler.handlers.keys:values(Config.plugins[plugins[1]])) do
+          for k, v in pairs(Config.plugins[plugins[1]]._.handlers.keys) do
             if k == value then
-              value = v
+              value = v.name
               break
             end
           end
