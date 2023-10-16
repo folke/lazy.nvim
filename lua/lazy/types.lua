@@ -20,8 +20,8 @@
 ---@field module? string
 ---@field dir? string Explicit dir or dev set for this plugin
 ---@field rtp_loaded? boolean
----@field values? table<string,boolean>
----@field handlers_enabled? boolean
+---@field handlers? LazyPluginHandlers
+---@field cache? table<string,any>
 
 ---@alias PluginOpts table|fun(self:LazyPlugin, opts:table):table?
 
@@ -32,12 +32,11 @@
 ---@field build? string|fun(self:LazyPlugin)|(string|fun(self:LazyPlugin))[]
 ---@field opts? PluginOpts
 
----@class LazyPluginHandlers
----@field event? LazyEventSpec[]
----@field cmd? string[]
----@field ft? string[]
----@field keys? (string|LazyKeysSpec)[]
----@field module? false
+---@class LazyPluginHandlers: {[string]: any}
+---@field event? table<string,LazyEvent>
+---@field ft? table<string,LazyEvent>
+---@field keys? table<string,LazyKeys>
+---@field cmd? table<string,string>
 
 ---@class LazyPluginRef
 ---@field branch? string

@@ -55,7 +55,7 @@ M.defaults = {
     icons = {
       cmd = " ",
       config = "",
-      event = "",
+      event = " ",
       ft = " ",
       init = " ",
       import = " ",
@@ -67,7 +67,7 @@ M.defaults = {
       runtime = " ",
       require = "󰢱 ",
       source = " ",
-      start = "",
+      start = " ",
       task = "✔ ",
       list = {
         "●",

@@ -37,7 +37,7 @@ M.group = vim.api.nvim_create_augroup("lazy_handler_event", { clear = true })
 
 ---@param spec LazyEventSpec
 ---@return LazyEvent
-function M:parse(spec)
+function M:_parse(spec)
   local ret = M.mappings[spec] --[[@as LazyEvent?]]
   if ret then
     return ret
@@ -60,19 +60,6 @@ function M:parse(spec)
     end
   end
   return ret
-end
-
----@param plugin LazyPlugin
-function M:values(plugin)
-  local Plugin = require("lazy.core.plugin")
-  ---@type table<string,any>
-  local values = {}
-  ---@diagnostic disable-next-line: no-unknown
-  for _, value in ipairs(Plugin.values(plugin, self.type, true)) do
-    local event = self:parse(value)
-    values[event.id] = event
-  end
-  return values
 end
 
 ---@param event LazyEvent

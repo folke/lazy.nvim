@@ -39,29 +39,25 @@ end
 
 ---@param plugin LazyPlugin
 function M.disable(plugin)
-  if not plugin._.handlers_enabled then
-    return
-  end
-  plugin._.handlers_enabled = false
-  for type, handler in pairs(M.handlers) do
-    if plugin[type] then
-      handler:del(plugin)
-    end
+  for type in pairs(plugin._.handlers or {}) do
+    M.handlers[type]:del(plugin)
   end
 end
 
 ---@param plugin LazyPlugin
 function M.enable(plugin)
   if not plugin._.loaded then
-    if plugin._.handlers_enabled then
-      return
-    end
-    for type, handler in pairs(M.handlers) do
-      if plugin[type] then
-        handler:add(plugin)
+    if not plugin._.handlers then
+      plugin._.handlers = {}
+      for type, handler in pairs(M.handlers) do
+        if plugin[type] then
+          handler:load(plugin)
+        end
       end
     end
-    plugin._.handlers_enabled = true
+    for type in pairs(plugin._.handlers or {}) do
+      M.handlers[type]:add(plugin)
+    end
   end
 end
 
@@ -86,21 +82,35 @@ function M:_add(_value) end
 ---@protected
 function M:_del(_value) end
 
+---@param value any
+---@param _plugin LazyPlugin
+---@return string|{id:string}
+function M:_parse(value, _plugin)
+  assert(type(value) == "string", "Expected string, got " .. vim.inspect(value))
+  return value
+end
+
+---@param values any[]
 ---@param plugin LazyPlugin
-function M:values(plugin)
-  local Plugin = require("lazy.core.plugin")
+function M:_values(values, plugin)
   ---@type table<string,any>
-  local values = {}
-  ---@diagnostic disable-next-line: no-unknown
-  for _, value in ipairs(Plugin.values(plugin, self.type, true)) do
-    values[value] = value
+  local ret = {}
+  for _, value in ipairs(values) do
+    local parsed = self:_parse(value, plugin)
+    ret[type(parsed) == "string" and parsed or parsed.id] = parsed
   end
-  return values
+  return ret
+end
+
+---@param plugin LazyPlugin
+function M:load(plugin)
+  local Plugin = require("lazy.core.plugin")
+  plugin._.handlers[self.type] = self:_values(Plugin.values(plugin, self.type, true), plugin)
 end
 
 ---@param plugin LazyPlugin
 function M:add(plugin)
-  for key, value in pairs(self:values(plugin)) do
+  for key, value in pairs(plugin._.handlers[self.type] or {}) do
     if not self.active[key] then
       self.active[key] = {}
       self:_add(value)
@@ -112,7 +122,10 @@ end
 
 ---@param plugin LazyPlugin
 function M:del(plugin)
-  for key, value in pairs(self:values(plugin)) do
+  if not plugin._.handlers then
+    return
+  end
+  for key, value in pairs(plugin._.handlers[self.type] or {}) do
     if self.active[key] and self.active[key][plugin.name] then
       self.active[key][plugin.name] = nil
       if vim.tbl_isempty(self.active[key]) then

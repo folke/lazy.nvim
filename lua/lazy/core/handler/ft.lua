@@ -13,7 +13,8 @@ function M:add(plugin)
   end
 end
 
-function M:parse(value)
+---@return LazyEvent
+function M:_parse(value)
   return {
     id = value,
     event = "FileType",

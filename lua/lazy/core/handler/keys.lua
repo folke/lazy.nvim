@@ -19,9 +19,12 @@ local Util = require("lazy.core.util")
 ---@field rhs? string|fun() rhs
 ---@field mode? string
 ---@field id string
+---@field name string
 
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
+
+local skip = { mode = true, id = true, ft = true, rhs = true, lhs = true, name = true }
 
 ---@param value string|LazyKeysSpec
 ---@param mode? string
@@ -37,8 +40,11 @@ function M.parse(value, mode)
   ret[2] = nil
   ret.mode = mode or "n"
   ret.id = vim.api.nvim_replace_termcodes(ret.lhs, true, true, true)
+  ret.name = ret.lhs
+
   if ret.mode ~= "n" then
     ret.id = ret.id .. " (" .. ret.mode .. ")"
+    ret.name = ret.name .. " (" .. ret.mode .. ")"
   end
   return ret
 end
@@ -50,10 +56,8 @@ function M:have(lhs, mode)
   return self.managed[keys.id] ~= nil
 end
 
----@param plugin LazyPlugin
-function M:values(plugin)
-  local Plugin = require("lazy.core.plugin")
-  return M.resolve(Plugin.values(plugin, "keys", true))
+function M:_values(values)
+  return M.resolve(values)
 end
 
 ---@param spec? (string|LazyKeysSpec)[]
@@ -79,7 +83,6 @@ end
 
 ---@param keys LazyKeys
 function M.opts(keys)
-  local skip = { mode = true, id = true, ft = true, rhs = true, lhs = true }
   local opts = {} ---@type LazyKeysBase
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(keys) do
@@ -106,8 +109,8 @@ function M:_add(keys)
       self.active[keys.id] = nil
 
       if plugins then
-        Util.track({ keys = lhs })
-        Loader.load(plugins, { keys = lhs })
+        Util.track({ keys = keys.name })
+        Loader.load(plugins, { keys = keys.name })
         Util.track()
       end
 
