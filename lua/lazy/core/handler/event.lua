@@ -64,10 +64,11 @@ end
 
 ---@param plugin LazyPlugin
 function M:values(plugin)
+  local Plugin = require("lazy.core.plugin")
   ---@type table<string,any>
   local values = {}
   ---@diagnostic disable-next-line: no-unknown
-  for _, value in ipairs(plugin[self.type] or {}) do
+  for _, value in ipairs(Plugin.values(plugin, self.type, true)) do
     local event = self:parse(value)
     values[event.id] = event
   end

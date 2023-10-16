@@ -415,7 +415,7 @@ function M:plugin(plugin)
   else
     self:append(" ")
     local reason = {}
-    if plugin._.kind ~= "disabled" then
+    if plugin._.kind ~= "disabled" and plugin._.handlers_enabled then
       for handler in pairs(Handler.types) do
         if plugin[handler] then
           local values = Handler.handlers[handler]:values(plugin)
@@ -542,17 +542,19 @@ function M:details(plugin)
     end
   end)
 
-  for handler in pairs(Handler.types) do
-    if plugin[handler] then
-      table.insert(props, {
-        handler,
-        function()
-          for _, value in ipairs(plugin[handler]) do
-            self:reason({ [handler] = value })
-            self:append(" ")
-          end
-        end,
-      })
+  if plugin._.handlers_enabled then
+    for handler in pairs(Handler.types) do
+      if plugin[handler] then
+        table.insert(props, {
+          handler,
+          function()
+            for _, value in ipairs(Plugin.values(plugin, handler, true)) do
+              self:reason({ [handler] = value })
+              self:append(" ")
+            end
+          end,
+        })
+      end
     end
   end
   self:props(props, { indent = 6 })

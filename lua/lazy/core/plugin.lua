@@ -42,15 +42,6 @@ end
 function Spec:parse(spec)
   self:normalize(spec)
   self:fix_disabled()
-
-  -- calculate handlers
-  for _, plugin in pairs(self.plugins) do
-    for _, handler in pairs(Handler.types) do
-      if plugin[handler] then
-        plugin[handler] = M.values(plugin, handler, true)
-      end
-    end
-  end
 end
 
 -- PERF: optimized code to get package name without using lua patterns
@@ -609,8 +600,26 @@ end
 ---@param prop string
 ---@param is_list? boolean
 function M.values(plugin, prop, is_list)
+  if not plugin[prop] then
+    return {}
+  end
+  plugin._.values = plugin._.values or {}
+  local key = prop .. (is_list and "_list" or "")
+  if plugin._.values[key] == nil then
+    plugin[prop] = M._values(plugin, prop, is_list)
+    plugin._.values[key] = true
+  end
+  return plugin[prop] or {}
+end
+
+-- Merges super values or runs the values function to override values or return new ones
+-- Used for opts, cmd, event, ft and keys
+---@param plugin LazyPlugin
+---@param prop string
+---@param is_list? boolean
+function M._values(plugin, prop, is_list)
   ---@type table
-  local ret = plugin._.super and M.values(plugin._.super, prop, is_list) or {}
+  local ret = plugin._.super and M._values(plugin._.super, prop, is_list) or {}
   local values = rawget(plugin, prop)
 
   if not values then

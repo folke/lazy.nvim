@@ -39,6 +39,10 @@ end
 
 ---@param plugin LazyPlugin
 function M.disable(plugin)
+  if not plugin._.handlers_enabled then
+    return
+  end
+  plugin._.handlers_enabled = false
   for type, handler in pairs(M.handlers) do
     if plugin[type] then
       handler:del(plugin)
@@ -49,11 +53,15 @@ end
 ---@param plugin LazyPlugin
 function M.enable(plugin)
   if not plugin._.loaded then
+    if plugin._.handlers_enabled then
+      return
+    end
     for type, handler in pairs(M.handlers) do
       if plugin[type] then
         handler:add(plugin)
       end
     end
+    plugin._.handlers_enabled = true
   end
 end
 
@@ -80,10 +88,11 @@ function M:_del(_value) end
 
 ---@param plugin LazyPlugin
 function M:values(plugin)
+  local Plugin = require("lazy.core.plugin")
   ---@type table<string,any>
   local values = {}
   ---@diagnostic disable-next-line: no-unknown
-  for _, value in ipairs(plugin[self.type] or {}) do
+  for _, value in ipairs(Plugin.values(plugin, self.type, true)) do
     values[value] = value
   end
   return values

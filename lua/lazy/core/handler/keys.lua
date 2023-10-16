@@ -52,7 +52,8 @@ end
 
 ---@param plugin LazyPlugin
 function M:values(plugin)
-  return M.resolve(plugin.keys)
+  local Plugin = require("lazy.core.plugin")
+  return M.resolve(Plugin.values(plugin, "keys", true))
 end
 
 ---@param spec? (string|LazyKeysSpec)[]

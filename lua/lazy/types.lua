@@ -20,6 +20,8 @@
 ---@field module? string
 ---@field dir? string Explicit dir or dev set for this plugin
 ---@field rtp_loaded? boolean
+---@field values? table<string,boolean>
+---@field handlers_enabled? boolean
 
 ---@alias PluginOpts table|fun(self:LazyPlugin, opts:table):table?
 
