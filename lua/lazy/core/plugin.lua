@@ -594,7 +594,8 @@ function M.has_errors(plugin)
   return false
 end
 
--- Merges super values or runs the values function to override values or return new ones
+-- Merges super values or runs the values function to override values or return new ones.
+-- Values are cached for performance.
 -- Used for opts, cmd, event, ft and keys
 ---@param plugin LazyPlugin
 ---@param prop string
