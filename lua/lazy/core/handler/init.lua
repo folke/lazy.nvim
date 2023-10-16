@@ -48,12 +48,7 @@ end
 function M.enable(plugin)
   if not plugin._.loaded then
     if not plugin._.handlers then
-      plugin._.handlers = {}
-      for type, handler in pairs(M.handlers) do
-        if plugin[type] then
-          handler:load(plugin)
-        end
-      end
+      M.load(plugin)
     end
     for type in pairs(plugin._.handlers or {}) do
       M.handlers[type]:add(plugin)
@@ -103,9 +98,14 @@ function M:_values(values, plugin)
 end
 
 ---@param plugin LazyPlugin
-function M:load(plugin)
+function M.load(plugin)
   local Plugin = require("lazy.core.plugin")
-  plugin._.handlers[self.type] = self:_values(Plugin.values(plugin, self.type, true), plugin)
+  plugin._.handlers = {}
+  for type, handler in pairs(M.handlers) do
+    if plugin[type] then
+      plugin._.handlers[type] = handler:_values(Plugin.values(plugin, type, true), plugin)
+    end
+  end
 end
 
 ---@param plugin LazyPlugin

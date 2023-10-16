@@ -1,6 +1,7 @@
 local Config = require("lazy.core.config")
 local Git = require("lazy.manage.git")
 local Handler = require("lazy.core.handler")
+local Keys = require("lazy.core.handler.keys")
 local Plugin = require("lazy.core.plugin")
 local Sections = require("lazy.view.sections")
 local Util = require("lazy.util")
@@ -546,7 +547,7 @@ function M:handlers(plugin, types)
   types = types and types or vim.tbl_keys(Handler.types)
   for _, t in ipairs(types) do
     for id, value in pairs(plugin._.handlers[t] or {}) do
-      value = t == "keys" and value.name or id
+      value = t == "keys" and Keys.to_string(value) or id
       self:reason({ [t] = value })
       self:append(" ")
     end
