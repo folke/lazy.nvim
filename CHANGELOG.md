@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.14.4](https://github.com/folke/lazy.nvim/compare/v10.14.3...v10.14.4) (2023-10-16)
+
+
+### Bug Fixes
+
+* **ui:** fixed keymaps in debug view ([fb9795e](https://github.com/folke/lazy.nvim/commit/fb9795e49fcd45e99bf386c675fbca28d98bf0a6))
+
 ## [10.14.3](https://github.com/folke/lazy.nvim/compare/v10.14.2...v10.14.3) (2023-10-16)
 
 
