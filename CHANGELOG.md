@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.14.6](https://github.com/folke/lazy.nvim/compare/v10.14.5...v10.14.6) (2023-10-17)
+
+
+### Bug Fixes
+
+* **cmd:** shedule error message instead of showing directly ([03419f3](https://github.com/folke/lazy.nvim/commit/03419f3e5f7590194d599aa8a1a7a7841409d141))
+* **loader:** dont autoload when lazy handlers have not been setup yet. Fixes [#1132](https://github.com/folke/lazy.nvim/issues/1132) ([daab5fe](https://github.com/folke/lazy.nvim/commit/daab5fe2807c55867d5f7cfb6ef0944783361be2))
+* **ui:** running tasks are now less twitchy ([7613ab2](https://github.com/folke/lazy.nvim/commit/7613ab2abb1bd99e039ae02030bc2c48b7626925))
+
 ## [10.14.5](https://github.com/folke/lazy.nvim/compare/v10.14.4...v10.14.5) (2023-10-17)
 
 
