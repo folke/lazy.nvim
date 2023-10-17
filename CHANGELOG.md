@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.14.5](https://github.com/folke/lazy.nvim/compare/v10.14.4...v10.14.5) (2023-10-17)
+
+
+### Bug Fixes
+
+* **loader:** fixed event check in reload. Fixes [#1124](https://github.com/folke/lazy.nvim/issues/1124) ([cdfa788](https://github.com/folke/lazy.nvim/commit/cdfa78888159323abc931db26f3301360393fbb7))
+
 ## [10.14.4](https://github.com/folke/lazy.nvim/compare/v10.14.3...v10.14.4) (2023-10-16)
 
 
