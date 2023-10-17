@@ -8,6 +8,7 @@
 ---@field loaded? {[string]:string}|{time:number}
 ---@field installed? boolean
 ---@field tasks? LazyTask[]
+---@field working? boolean
 ---@field dirty? boolean
 ---@field updated? {from:string, to:string}
 ---@field is_local? boolean

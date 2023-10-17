@@ -24,6 +24,9 @@ return {
   },
   {
     filter = function(plugin)
+      if plugin._.working then
+        return true
+      end
       return has_task(plugin, function(task)
         return task:is_running()
       end)

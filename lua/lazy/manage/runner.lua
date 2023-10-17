@@ -8,7 +8,7 @@ local Util = require("lazy.util")
 ---@field concurrency? number
 
 ---@alias PipelineStep {task:string, opts?:TaskOptions}
----@alias LazyRunnerTask {co:thread, status: {task?:LazyTask, waiting?:boolean}}
+---@alias LazyRunnerTask {co:thread, status: {task?:LazyTask, waiting?:boolean}, plugin: LazyPlugin}
 
 ---@class Runner
 ---@field _plugins LazyPlugin[]
@@ -29,6 +29,9 @@ function Runner.new(opts)
   else
     self._plugins = plugins or Config.plugins
   end
+  table.sort(self._plugins, function(a, b)
+    return a.name < b.name
+  end)
   self._running = {}
   self._on_done = {}
 
@@ -54,12 +57,19 @@ function Runner:_resume(entry)
 end
 
 function Runner:resume(waiting)
+  if waiting then
+    for _, entry in ipairs(self._running) do
+      if entry.status then
+        if entry.status.waiting then
+          entry.status.waiting = false
+          entry.plugin._.working = true
+        end
+      end
+    end
+  end
   local running = 0
   for _, entry in ipairs(self._running) do
     if entry.status then
-      if waiting and entry.status.waiting then
-        entry.status.waiting = false
-      end
       if not entry.status.waiting and self:_resume(entry) then
         running = running + 1
         if self._opts.concurrency and running >= self._opts.concurrency then
@@ -76,7 +86,7 @@ function Runner:start()
     local co = coroutine.create(self.run_pipeline)
     local ok, err = coroutine.resume(co, self, plugin)
     if ok then
-      table.insert(self._running, { co = co, status = {} })
+      table.insert(self._running, { co = co, status = {}, plugin = plugin })
     else
       Util.error("Could not start tasks for " .. plugin.name .. "\n" .. err)
     end
@@ -99,21 +109,26 @@ end
 ---@async
 ---@param plugin LazyPlugin
 function Runner:run_pipeline(plugin)
+  plugin._.working = true
   coroutine.yield()
   for _, step in ipairs(self._pipeline) do
     if step.task == "wait" then
+      plugin._.working = false
       coroutine.yield({ waiting = true })
+      plugin._.working = true
     else
       local task = self:queue(plugin, step.task, step.opts)
       if task then
         coroutine.yield({ task = task })
         assert(task:is_done())
         if task.error then
+          plugin._.working = false
           return
         end
       end
     end
   end
+  plugin._.working = false
 end
 
 ---@param plugin LazyPlugin
