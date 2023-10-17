@@ -259,8 +259,10 @@ function M.reload(plugin)
     load = true
   end
 
-  for _, event in ipairs(plugin.event or {}) do
-    if event == "VimEnter" or event == "UIEnter" or event:find("VeryLazy") then
+  local events = plugin._.handlers and plugin._.handlers.event and plugin._.handlers.event or {}
+
+  for _, event in pairs(events) do
+    if event.id:find("VimEnter") or event.id:find("UIEnter") or event.id:find("VeryLazy") then
       load = true
       break
     end

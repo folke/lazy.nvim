@@ -32,7 +32,7 @@
 ---@field build? string|fun(self:LazyPlugin)|(string|fun(self:LazyPlugin))[]
 ---@field opts? PluginOpts
 
----@class LazyPluginHandlers: {[string]: any}
+---@class LazyPluginHandlers
 ---@field event? table<string,LazyEvent>
 ---@field ft? table<string,LazyEvent>
 ---@field keys? table<string,LazyKeys>
