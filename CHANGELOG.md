@@ -5,7 +5,7 @@
 
 ### Bug Fixes
 
-* **cmd:** shedule error message instead of showing directly ([03419f3](https://github.com/folke/lazy.nvim/commit/03419f3e5f7590194d599aa8a1a7a7841409d141))
+* **cmd:** schedule error message instead of showing directly ([03419f3](https://github.com/folke/lazy.nvim/commit/03419f3e5f7590194d599aa8a1a7a7841409d141))
 * **loader:** dont autoload when lazy handlers have not been setup yet. Fixes [#1132](https://github.com/folke/lazy.nvim/issues/1132) ([daab5fe](https://github.com/folke/lazy.nvim/commit/daab5fe2807c55867d5f7cfb6ef0944783361be2))
 * **ui:** running tasks are now less twitchy ([7613ab2](https://github.com/folke/lazy.nvim/commit/7613ab2abb1bd99e039ae02030bc2c48b7626925))
 
@@ -133,7 +133,7 @@
 
 ### Bug Fixes
 
-* **manage:** prevend auto conversion 'CRLF' to 'LF' in update lazy-lock.json on Windows. Fixes [#1093](https://github.com/folke/lazy.nvim/issues/1093) ([#1094](https://github.com/folke/lazy.nvim/issues/1094)) ([5579d72](https://github.com/folke/lazy.nvim/commit/5579d72576b21b9c8c2d01838598aece5dc2be6d))
+* **manage:** prevent auto conversion 'CRLF' to 'LF' in update lazy-lock.json on Windows. Fixes [#1093](https://github.com/folke/lazy.nvim/issues/1093) ([#1094](https://github.com/folke/lazy.nvim/issues/1094)) ([5579d72](https://github.com/folke/lazy.nvim/commit/5579d72576b21b9c8c2d01838598aece5dc2be6d))
 * **profiling:** ensure proper traces in case of require errors ([2782f81](https://github.com/folke/lazy.nvim/commit/2782f8125e793940f5bf942af1a1df0bbc989d11))
 
 ## [10.9.0](https://github.com/folke/lazy.nvim/compare/v10.8.2...v10.9.0) (2023-10-09)
@@ -459,7 +459,7 @@
 
 ### Features
 
-* **plugin:** added support for `weak` specs. They will not be included in the final spec if not specified somwhere else ([8564f6d](https://github.com/folke/lazy.nvim/commit/8564f6d22b78a4a0fba9811faa556159b6c90a49))
+* **plugin:** added support for `weak` specs. They will not be included in the final spec if not specified somewhere else ([8564f6d](https://github.com/folke/lazy.nvim/commit/8564f6d22b78a4a0fba9811faa556159b6c90a49))
 
 
 ### Bug Fixes
@@ -480,7 +480,7 @@
 
 ### Bug Fixes
 
-* **loader:** dont clear tasks when istalling missing plugins ([80c4dec](https://github.com/folke/lazy.nvim/commit/80c4decc3226551b433dfea5e459998a96f17822))
+* **loader:** dont clear tasks when installing missing plugins ([80c4dec](https://github.com/folke/lazy.nvim/commit/80c4decc3226551b433dfea5e459998a96f17822))
 * **loader:** reset cache before installing plugins during startup. Fixes [#803](https://github.com/folke/lazy.nvim/issues/803) ([aecdaab](https://github.com/folke/lazy.nvim/commit/aecdaab6a6ce8c9fdf9f983d5f943c6cfb11bf61))
 
 ## [9.16.0](https://github.com/folke/lazy.nvim/compare/v9.15.0...v9.16.0) (2023-05-13)
@@ -758,7 +758,7 @@
 ### Features
 
 * deactivate WIP ([57a3960](https://github.com/folke/lazy.nvim/commit/57a3960fafc210f240a07439d1adfaba09d6ff59))
-* use "wslview" instead of "xsl-open" if it exsits ([#509](https://github.com/folke/lazy.nvim/issues/509)) ([2451ea4](https://github.com/folke/lazy.nvim/commit/2451ea4e655bc60ef639ad284e69c6fca15da352))
+* use "wslview" instead of "xsl-open" if it exists ([#509](https://github.com/folke/lazy.nvim/issues/509)) ([2451ea4](https://github.com/folke/lazy.nvim/commit/2451ea4e655bc60ef639ad284e69c6fca15da352))
 
 
 ### Bug Fixes
@@ -1100,7 +1100,7 @@
 ### Features
 
 * **git:** added support for packed-refs. Fixes [#260](https://github.com/folke/lazy.nvim/issues/260) ([865ff41](https://github.com/folke/lazy.nvim/commit/865ff414c70d20648000d1b9d754dba64dbf4a62))
-* **ui:** make brower configurable. Fixes [#248](https://github.com/folke/lazy.nvim/issues/248) ([679d85c](https://github.com/folke/lazy.nvim/commit/679d85c9ffb6bd49d27267b3a282eeb73e063cde))
+* **ui:** make browser configurable. Fixes [#248](https://github.com/folke/lazy.nvim/issues/248) ([679d85c](https://github.com/folke/lazy.nvim/commit/679d85c9ffb6bd49d27267b3a282eeb73e063cde))
 * **ui:** show when plugin would be loaded for unloaded plugins. Fixes [#261](https://github.com/folke/lazy.nvim/issues/261) ([5575d2b](https://github.com/folke/lazy.nvim/commit/5575d2b2a9eb7e104d85f4f68754ef3734c7a4a1))
 
 
@@ -1167,7 +1167,7 @@
 
 ### Bug Fixes
 
-* **cache:** ad jit.verion to cache version string. Fixes [#225](https://github.com/folke/lazy.nvim/issues/225) ([e3ffcff](https://github.com/folke/lazy.nvim/commit/e3ffcff7cce1206a2e41b413b0923a3aafeb9306))
+* **cache:** ad jit.version to cache version string. Fixes [#225](https://github.com/folke/lazy.nvim/issues/225) ([e3ffcff](https://github.com/folke/lazy.nvim/commit/e3ffcff7cce1206a2e41b413b0923a3aafeb9306))
 * **cache:** added support for top level lua linked directories. Fixes [#233](https://github.com/folke/lazy.nvim/issues/233) ([853d4d5](https://github.com/folke/lazy.nvim/commit/853d4d58381870a4804ee7d822d3331d3cc5924d))
 * **cache:** always normalize modname separators ([8544c38](https://github.com/folke/lazy.nvim/commit/8544c389ab54dd21c562b2763829670c71266caa))
 * **cache:** check package.loaded after auto-load and return existing module if present. Fixes [#224](https://github.com/folke/lazy.nvim/issues/224) ([044e28b](https://github.com/folke/lazy.nvim/commit/044e28bf8bb454335c63998ef6f21bc34b3e6124))
@@ -1187,7 +1187,7 @@
 * **loader:** show proper error message when trying to load a plugin that is not installed. Fixes [#201](https://github.com/folke/lazy.nvim/issues/201). Fixes [#202](https://github.com/folke/lazy.nvim/issues/202) ([956164d](https://github.com/folke/lazy.nvim/commit/956164d27dc02b8d3c21c9ef7cc9028d854b0978))
 * **loader:** temporary fix for Vimtex and others. See [#230](https://github.com/folke/lazy.nvim/issues/230) ([c7122d6](https://github.com/folke/lazy.nvim/commit/c7122d64cdf16766433588486adcee67571de6d0))
 * **loader:** when `config=true`, pass `nil` to `setup()`. Fixes [#208](https://github.com/folke/lazy.nvim/issues/208) ([5f423b2](https://github.com/folke/lazy.nvim/commit/5f423b29c65f536a9c41a34a8328372baa444da5))
-* only show fired ft events in debug obvioulsy. Fixes [#232](https://github.com/folke/lazy.nvim/issues/232) ([c7c1295](https://github.com/folke/lazy.nvim/commit/c7c1295c3e429d4a95e36b5c5b2dfcbeca61f42d))
+* only show fired ft events in debug obviously. Fixes [#232](https://github.com/folke/lazy.nvim/issues/232) ([c7c1295](https://github.com/folke/lazy.nvim/commit/c7c1295c3e429d4a95e36b5c5b2dfcbeca61f42d))
 * **rtp:** correct order of adding to rtp. Fixes [#226](https://github.com/folke/lazy.nvim/issues/226) ([4e3a973](https://github.com/folke/lazy.nvim/commit/4e3a973f85bd2393009d495ecfd6c058345309d4))
 
 
