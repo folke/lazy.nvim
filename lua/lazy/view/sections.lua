@@ -89,6 +89,12 @@ return {
     title = "Not Installed",
   },
   {
+    filter = function (plugin)
+      return plugin._.outdated
+    end,
+    title = "Outdated",
+  },
+  {
     filter = function(plugin)
       return plugin._.loaded ~= nil
     end,
