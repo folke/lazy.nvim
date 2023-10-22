@@ -75,7 +75,7 @@ function M.pretty_trace(opts)
     if not info then
       break
     end
-    if info.what ~= "C" and not info.source:find("lazy.nvim") then
+    if info.what ~= "C" and (Config.options.debug or not info.source:find("lazy.nvim")) then
       local source = info.source:sub(2)
       if source:find(Config.options.root, 1, true) == 1 then
         source = source:sub(#Config.options.root + 1)
