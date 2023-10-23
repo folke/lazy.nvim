@@ -50,14 +50,12 @@ return {
     title = "Breaking Changes",
   },
   {
-    ---@param plugin LazyPlugin
     filter = function(plugin)
       return plugin._.updated and plugin._.updated.from ~= plugin._.updated.to
     end,
     title = "Updated",
   },
   {
-    ---@param plugin LazyPlugin
     filter = function(plugin)
       return plugin._.cloned
     end,
@@ -66,7 +64,7 @@ return {
   {
     ---@param plugin LazyPlugin
     filter = function(plugin)
-      return plugin._.updates
+      return plugin._.updates ~= nil
     end,
     title = "Updates",
   },
@@ -91,8 +89,14 @@ return {
     title = "Not Installed",
   },
   {
+    filter = function (plugin)
+      return plugin._.outdated
+    end,
+    title = "Outdated",
+  },
+  {
     filter = function(plugin)
-      return plugin._.loaded
+      return plugin._.loaded ~= nil
     end,
     title = "Loaded",
   },

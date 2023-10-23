@@ -42,7 +42,14 @@ M.log = {
         error("no target commit found")
       end
       assert(target.commit, self.plugin.name .. " " .. target.branch)
-      if not Git.eq(info, target) then
+      if Git.eq(info, target) then
+        if Config.options.checker.check_pinned then
+          local last_commit = Git.get_commit(self.plugin.dir, target.branch, true)
+          if not Git.eq(info, { commit = last_commit }) then
+            self.plugin._.outdated = true
+          end
+        end
+      else
         self.plugin._.updates = { from = info, to = target }
       end
       table.insert(args, info.commit .. ".." .. target.commit)

@@ -14,6 +14,7 @@
 ---@field is_local? boolean
 ---@field updates? {from:GitInfo, to:GitInfo}
 ---@field cloned? boolean
+---@field outdated? boolean
 ---@field kind? LazyPluginKind
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 ---@field cond? boolean
