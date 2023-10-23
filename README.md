@@ -297,7 +297,10 @@ return {
 {
   root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
   defaults = {
-    lazy = false, -- should plugins be lazy-loaded?
+    -- Increase the laziness, see "Lazy Loading" documentation section for more information.
+    -- Note, this does not have same meaning as lazy = false in the plugin spec,
+    -- so plugins with triggers are still lazily loaded when set to false.
+    lazy = false,
     version = nil,
     -- default `cond` you can use to globally disable a lot of plugins
     -- when running inside vscode for example
