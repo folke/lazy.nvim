@@ -1,4 +1,4 @@
-*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 October 22
+*lazy.nvim.txt*        For Neovim >= 0.8.0        Last change: 2023 October 23
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -512,6 +512,7 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
         concurrency = nil, ---@type number? set to 1 to check for updates very slowly
         notify = true, -- get a notification when new updates are found
         frequency = 3600, -- check for updates every hour
+        check_pinned = false, -- check for pinned packages that can't be updated
       },
       change_detection = {
         -- automatically check for config file changes and reload the ui
