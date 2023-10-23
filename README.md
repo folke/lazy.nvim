@@ -297,9 +297,10 @@ return {
 {
   root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
   defaults = {
-    -- Increase the laziness, see "Lazy Loading" documentation section for more information.
+    -- Enables lazy loading by default for plugins without triggers,
+    -- see the "Lazy Loading" documentation section for more information.
     -- Note, this does not have same meaning as lazy = false in the plugin spec,
-    -- so plugins with triggers are still lazily loaded when set to false.
+    -- which can disable lazy loading completely.
     lazy = false,
     version = nil,
     -- default `cond` you can use to globally disable a lot of plugins
