@@ -216,6 +216,9 @@ function M.deactivate(plugin)
   -- disable handlers
   Handler.disable(plugin)
 
+  -- clear plugin properties cache
+  plugin._.cache = nil
+
   -- remove loaded lua modules
   Util.walkmods(plugin.dir .. "/lua", function(modname)
     package.loaded[modname] = nil
