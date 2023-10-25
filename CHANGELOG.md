@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.15.0](https://github.com/folke/lazy.nvim/compare/v10.14.6...v10.15.0) (2023-10-25)
+
+
+### Features
+
+* **ui:** check pinned packages that can't be updated ([#1139](https://github.com/folke/lazy.nvim/issues/1139)) ([4446fdb](https://github.com/folke/lazy.nvim/commit/4446fdb9af1b1c41560f6cc41452eee826a8bce0))
+
+
+### Bug Fixes
+
+* **loader:** when reloading, clear plugin properties cache ([#1153](https://github.com/folke/lazy.nvim/issues/1153)) ([312e424](https://github.com/folke/lazy.nvim/commit/312e424a084a43b8b786f786b884be60043c23dc)), closes [#445](https://github.com/folke/lazy.nvim/issues/445)
+
 ## [10.14.6](https://github.com/folke/lazy.nvim/compare/v10.14.5...v10.14.6) (2023-10-17)
 
 
