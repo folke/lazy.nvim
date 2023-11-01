@@ -475,7 +475,7 @@ function M:log(task)
       self:append(vim.trim(msg), dimmed and "LazyDimmed" or nil):highlight({
         ["#%d+"] = "LazyCommitIssue",
         ["^%S+:"] = dimmed and "Bold" or "LazyCommitType",
-        ["^%S+(%(.*%)):"] = "LazyCommitScope",
+        ["^%S+(%(.*%))!?:"] = "LazyCommitScope",
         ["`.-`"] = "@text.literal.markdown_inline",
         ["%*.-%*"] = "Italic",
         ["%*%*.-%*%*"] = "Bold",
