@@ -8,6 +8,8 @@ local Util = require("lazy.core.util")
 ---@field expr? boolean
 ---@field nowait? boolean
 ---@field ft? string|string[]
+---@field rhs_maker? fun():string|fun()
+---@field opts? table
 
 ---@class LazyKeysSpec: LazyKeysBase
 ---@field [1] string lhs
@@ -24,7 +26,7 @@ local Util = require("lazy.core.util")
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
 
-local skip = { mode = true, id = true, ft = true, rhs = true, lhs = true }
+local skip = { mode = true, id = true, ft = true, rhs = true, lhs = true , opts=true, rhs_maker=true}
 
 ---@param value string|LazyKeysSpec
 ---@param mode? string
@@ -94,6 +96,13 @@ function M.opts(keys)
       opts[k] = v
     end
   end
+  if keys.opts then
+   opts=vim.tbl_deep_extend("force",opts,keys.opts)
+   if opts.ft then
+    keys.ft=opts.ft
+    opts.ft=nil
+   end
+  end
   return opts
 end
 
@@ -114,7 +123,15 @@ function M:_add(keys)
       if plugins then
         local name = M.to_string(keys)
         Util.track({ keys = name })
-        Loader.load(plugins, { keys = name })
+        if keys.rhs_maker then
+          Loader.load(plugins, { keys = name }, nil, function()
+            keys.rhs=keys.rhs_maker()
+            keys.rhs_maker=nil
+            self:_set(keys, buf)
+          end)
+        else
+          Loader.load(plugins, { keys = name })
+        end
         Util.track()
       end
 

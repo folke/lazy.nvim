@@ -167,7 +167,8 @@ end
 ---@param plugins string|LazyPlugin|string[]|LazyPlugin[]
 ---@param reason {[string]:string}
 ---@param opts? {force:boolean} when force is true, we skip the cond check
-function M.load(plugins, reason, opts)
+---@param afterload? function a function that runs after load
+function M.load(plugins, reason, opts, afterload)
   ---@diagnostic disable-next-line: cast-local-type
   plugins = (type(plugins) == "string" or plugins.name) and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
@@ -185,6 +186,9 @@ function M.load(plugins, reason, opts)
     end
     if plugin and not plugin._.loaded then
       M._load(plugin, reason, opts)
+      if afterload then
+       afterload()
+      end
     end
   end
 end
