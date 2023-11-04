@@ -30,6 +30,11 @@ M.build = {
 
     local builders = self.plugin.build
 
+    -- Skip if `build` is set to `false`
+    if builders == false then
+      return
+    end
+
     local build_file = get_build_file(self.plugin)
     if build_file then
       if builders then
