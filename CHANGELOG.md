@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.15.1](https://github.com/folke/lazy.nvim/compare/v10.15.0...v10.15.1) (2023-11-04)
+
+
+### Bug Fixes
+
+* **build:** allow build=false to skip building ([314193a](https://github.com/folke/lazy.nvim/commit/314193af1d63181bff65e8b24db416e34c5fae86))
+* **ui:** properly highlight breaking change commit scope ([#1160](https://github.com/folke/lazy.nvim/issues/1160)) ([3674036](https://github.com/folke/lazy.nvim/commit/3674036a59a6a4a65559343d606a92145a782533))
+
 ## [10.15.0](https://github.com/folke/lazy.nvim/compare/v10.14.6...v10.15.0) (2023-10-25)
 
 
