@@ -472,7 +472,18 @@ function M.add_to_rtp(plugin)
     table.insert(rtp, idx_after or (#rtp + 1), after)
   end
 
-  vim.opt.rtp = rtp
+  local ok, result = pcall(function()
+    vim.opt.rtp = rtp
+  end)
+  if not ok then
+    -- Often gets E5108 when plugins aren't installed, but it's
+    -- inconsistent.
+    vim.notify(
+      "Unable to add rtp for " .. plugin.name .. ". Error message: " .. result,
+      vim.log.levels.WARN,
+      { title = "lazy.nvim" }
+    )
+  end
 end
 
 function M.source(path)
