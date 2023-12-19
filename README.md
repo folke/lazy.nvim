@@ -738,8 +738,8 @@ Any other property will override the property from the parent spec.
 - `lock` ➡️ `pin`
 - `disable=true` ➡️ `enabled = false`
 - `tag='*'` ➡️ `version="*"`
-- `after` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
-- `wants` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `after` is **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `wants` is **_not needed_** for most use-cases. Use `dependencies` otherwise.
 - `config` don't support string type, use `fun(LazyPlugin)` instead.
 - `module` is auto-loaded. No need to specify
 - `keys` spec is [different](#%EF%B8%8F-lazy-key-mappings)
