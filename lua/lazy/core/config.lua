@@ -134,7 +134,7 @@ M.defaults = {
     rtp = {
       reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
       ---@type string[]
-      paths = {}, -- add any custom paths here that you want to includes in the rtp
+      paths = {}, -- add any custom paths here that you want to include in the rtp
       ---@type string[] list any plugins you want to disable here
       disabled_plugins = {
         -- "gzip",
@@ -146,6 +146,10 @@ M.defaults = {
         -- "tutor",
         -- "zipPlugin",
       },
+      -- to work around circumstances in which your config folder is
+      -- not in the normal location when performance.rtp.reset = true
+      -- such as when loading your config folder from the nix store.
+      custom_config_dir = vim.fn.stdpath("config"),
     },
   },
   -- lazy can generate helptags from the headings in markdown readme files,
@@ -227,12 +231,12 @@ function M.setup(opts)
   M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
   if M.options.performance.rtp.reset then
     vim.opt.rtp = {
-      vim.fn.stdpath("config"),
+      vim.options.performance.rtp.custom_config_dir,
       vim.fn.stdpath("data") .. "/site",
       M.me,
       vim.env.VIMRUNTIME,
       vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
-      vim.fn.stdpath("config") .. "/after",
+      vim.options.performance.rtp.custom_config_dir .. "/after",
     }
   end
   for _, path in ipairs(M.options.performance.rtp.paths) do

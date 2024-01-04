@@ -436,6 +436,10 @@ return {
         -- "tutor",
         -- "zipPlugin",
       },
+      -- to work around circumstances in which your config folder is
+      -- not in the normal location when performance.rtp.reset = true
+      -- such as when loading your config folder from the nix store.
+      custom_config_dir = vim.fn.stdpath("config"),
     },
   },
   -- lazy can generate helptags from the headings in markdown readme files,
