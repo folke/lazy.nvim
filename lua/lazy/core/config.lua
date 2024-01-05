@@ -231,12 +231,12 @@ function M.setup(opts)
   M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
   if M.options.performance.rtp.reset then
     vim.opt.rtp = {
-      vim.options.performance.rtp.custom_config_dir,
+      M.options.performance.rtp.custom_config_dir,
       vim.fn.stdpath("data") .. "/site",
       M.me,
       vim.env.VIMRUNTIME,
       vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
-      vim.options.performance.rtp.custom_config_dir .. "/after",
+      M.options.performance.rtp.custom_config_dir .. "/after",
     }
   end
   for _, path in ipairs(M.options.performance.rtp.paths) do
