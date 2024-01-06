@@ -226,7 +226,6 @@ function M.setup(opts)
     end
     M.options.dev.extra_paths = normalized_extra_dev_paths
   end
-  M.options.performance.rtp.custom_config_dir = Util.norm(M.options.performance.rtp.custom_config_dir)
   M.options.root = Util.norm(M.options.root)
   M.options.dev.path = Util.norm(M.options.dev.path)
   M.options.lockfile = Util.norm(M.options.lockfile)
