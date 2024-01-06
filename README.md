@@ -322,7 +322,7 @@ return {
   dev = {
     -- directory where you store your local plugin projects
     path = "~/projects",
-    -- you may include a list of local paths to also check.
+    -- you may include a list of local paths to also check. e.g. { '~/projects1', '~/projects1' }
     extra_paths = nil,
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}

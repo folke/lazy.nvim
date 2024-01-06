@@ -32,7 +32,7 @@ M.defaults = {
   dev = {
     -- directory where you store your local plugin projects
     path = "~/projects",
-    -- you may include a list of local paths to also check.
+    -- you may include a list of local paths to also check. e.g. { '~/projects1', '~/projects1' }
     extra_paths = nil,
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
@@ -220,6 +220,8 @@ function M.setup(opts)
 
   M.options.root = Util.norm(M.options.root)
   M.options.dev.path = Util.norm(M.options.dev.path)
+  M.options.dev.extra_paths = Util.norm(M.options.dev.extra_paths)
+  M.options.performance.rtp.custom_config_dir = Util.norm(M.options.performance.rtp.custom_config_dir)
   M.options.lockfile = Util.norm(M.options.lockfile)
   M.options.readme.root = Util.norm(M.options.readme.root)
 
