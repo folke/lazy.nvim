@@ -219,15 +219,13 @@ function M.setup(opts)
   table.insert(M.options.install.colorscheme, "habamax")
 
   -- normalize path options
-  local normalized_extra_dev_paths = {}
   if type(M.options.dev.extra_paths) == "table" then
+    local normalized_extra_dev_paths = {}
     for k, path in ipairs(M.options.dev.extra_paths) do
       table.insert(normalized_extra_dev_paths, k, Util.norm(path))
     end
-  else
-    normalized_extra_dev_paths = M.options.dev.extra_paths
+    M.options.dev.extra_paths = normalized_extra_dev_paths
   end
-  M.options.dev.extra_paths = normalized_extra_dev_paths
   M.options.performance.rtp.custom_config_dir = Util.norm(M.options.performance.rtp.custom_config_dir)
   M.options.root = Util.norm(M.options.root)
   M.options.dev.path = Util.norm(M.options.dev.path)
