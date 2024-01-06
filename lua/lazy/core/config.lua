@@ -239,6 +239,7 @@ function M.setup(opts)
 
   M.me = debug.getinfo(1, "S").source:sub(2)
   M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
+  M.options.performance.rtp.custom_config_dir = Util.norm(M.options.performance.rtp.custom_config_dir)
   if M.options.performance.rtp.reset then
     vim.opt.rtp = {
       M.options.performance.rtp.custom_config_dir,
