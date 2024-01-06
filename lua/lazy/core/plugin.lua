@@ -118,7 +118,7 @@ function Spec:add(plugin, results)
       then
       for _, path in ipairs(Config.options.dev.extra_paths) do
         if vim.fn.isdirectory(path .. "/" .. plugin.name) == 1 then
-          path = devPath
+          devPath = path
           break
         end
       end
