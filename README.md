@@ -439,7 +439,7 @@ return {
         -- "zipPlugin",
       },
       -- custom_config_dir exists to work around circumstances
-      -- in which your config folder is -- not in the normal location,
+      -- in which your config folder is not in the normal location,
       -- and thus is unloaded when performance.rtp.reset = true
       -- such as when loaded from the nix store
       custom_config_dir = vim.fn.stdpath("config"),
