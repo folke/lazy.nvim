@@ -32,7 +32,7 @@ M.defaults = {
   dev = {
     -- directory where you store your local plugin projects
     path = "~/projects",
-    -- you may include a list of local paths to also check. e.g. { '~/projects1', '~/projects1' }
+    -- you may include a list of local paths to also check. e.g. { '~/projects1', '~/projects2' }
     extra_paths = nil,
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
@@ -148,9 +148,10 @@ M.defaults = {
         -- "tutor",
         -- "zipPlugin",
       },
-      -- to work around circumstances in which your config folder is
-      -- not in the normal location when performance.rtp.reset = true
-      -- such as when loading your config folder from the nix store.
+      -- custom_config_dir exists to work around circumstances
+      -- in which your config folder is -- not in the normal location,
+      -- and thus is unloaded when performance.rtp.reset = true
+      -- such as when loaded from the nix store
       custom_config_dir = vim.fn.stdpath("config"),
     },
   },
