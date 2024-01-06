@@ -220,8 +220,10 @@ function M.setup(opts)
 
   -- normalize path options
   local normalized_extra_dev_paths
-  for k, path in ipairs(M.options.dev.extra_paths) do
-    table.insert(normalized_extra_dev_paths, k, Util.norm(path))
+  if type(M.options.dev.extra_paths) == "table" then
+    for k, path in ipairs(M.options.dev.extra_paths) do
+      table.insert(normalized_extra_dev_paths, k, Util.norm(path))
+    end
   end
   M.options.dev.extra_paths = normalized_extra_dev_paths
   M.options.performance.rtp.custom_config_dir = Util.norm(M.options.performance.rtp.custom_config_dir)
