@@ -106,11 +106,31 @@ function Spec:add(plugin, results)
   end
 
   -- dev plugins
+  local devPath = nil
+
+  -- check dev.path, and if not check dev.extra_paths
+  -- if not found, devPath will remain nil
+  if plugin.dev then
+    if vim.fn.isdirectory(Config.options.dev.path .. "/" .. plugin.name) == 1 then
+      devPath = Config.options.dev.path .. "/" .. plugin.name
+    elseif Config.options.dev.extra_paths
+        and type(Config.options.dev.extra_paths) == 'table'
+      then
+      for _, path in ipairs(Config.options.dev.extra_paths) do
+        if vim.fn.isdirectory(path .. "/" .. plugin.name) == 1 then
+          path = devPath
+          break
+        end
+      end
+    end
+  end
+
+  -- if dev, add dev path as plugin dir, otherwise use root
   if
     plugin.dev
-    and (not Config.options.dev.fallback or vim.fn.isdirectory(Config.options.dev.path .. "/" .. plugin.name) == 1)
+    and (not Config.options.dev.fallback or devPath)
   then
-    dir = Config.options.dev.path .. "/" .. plugin.name
+    dir = devPath
   elseif plugin.dev == false then
     -- explicitely select the default path
     dir = Config.options.root .. "/" .. plugin.name
