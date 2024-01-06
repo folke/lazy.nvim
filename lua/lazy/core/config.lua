@@ -224,6 +224,8 @@ function M.setup(opts)
     for k, path in ipairs(M.options.dev.extra_paths) do
       table.insert(normalized_extra_dev_paths, k, Util.norm(path))
     end
+  else
+    normalized_extra_dev_paths = M.options.dev.extra_paths
   end
   M.options.dev.extra_paths = normalized_extra_dev_paths
   M.options.performance.rtp.custom_config_dir = Util.norm(M.options.performance.rtp.custom_config_dir)
