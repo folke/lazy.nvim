@@ -219,7 +219,7 @@ function M.setup(opts)
   table.insert(M.options.install.colorscheme, "habamax")
 
   -- normalize path options
-  local normalized_extra_dev_paths
+  local normalized_extra_dev_paths = {}
   if type(M.options.dev.extra_paths) == "table" then
     for k, path in ipairs(M.options.dev.extra_paths) do
       table.insert(normalized_extra_dev_paths, k, Util.norm(path))
