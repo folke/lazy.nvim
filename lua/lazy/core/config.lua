@@ -174,6 +174,7 @@ M.defaults = {
     -- Track each new require in the Lazy profiling tab
     require = false,
   },
+	show_ui = true,
   debug = false,
 }
 

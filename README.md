@@ -464,6 +464,8 @@ return {
     -- Track each new require in the Lazy profiling tab
     require = false,
   },
+  -- Show the lazy.nvim installer interface
+  show_ui = true,
 }
 ```
 
