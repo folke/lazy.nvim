@@ -322,6 +322,8 @@ return {
   dev = {
     -- directory where you store your local plugin projects
     path = "~/projects",
+    -- you may include a list of local paths to also check. e.g. { '~/projects1', '~/projects2' }
+    extra_paths = nil,
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
     fallback = false, -- Fallback to git when local plugin doesn't exist
@@ -424,7 +426,7 @@ return {
     rtp = {
       reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
       ---@type string[]
-      paths = {}, -- add any custom paths here that you want to includes in the rtp
+      paths = {}, -- add any custom paths here that you want to include in the rtp
       ---@type string[] list any plugins you want to disable here
       disabled_plugins = {
         -- "gzip",
@@ -436,6 +438,11 @@ return {
         -- "tutor",
         -- "zipPlugin",
       },
+      -- custom_config_dir exists to work around circumstances
+      -- in which your config folder is not in the normal location,
+      -- and thus is unloaded when performance.rtp.reset = true
+      -- such as when loaded from the nix store
+      custom_config_dir = vim.fn.stdpath("config"),
     },
   },
   -- lazy can generate helptags from the headings in markdown readme files,
