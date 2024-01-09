@@ -64,6 +64,19 @@ function M.norm(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
+---@return table | nil
+function M.norm_list(list)
+  if M.is_list(list) then
+    local normalized_paths = {}
+    for k, path in ipairs(list) do
+      table.insert(normalized_paths, k, M.norm(path))
+    end
+    return normalized_paths
+  else
+    return nil
+  end
+end
+
 ---@param opts? {level?: number}
 function M.pretty_trace(opts)
   opts = opts or {}

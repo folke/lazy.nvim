@@ -32,6 +32,8 @@ M.defaults = {
   dev = {
     -- directory where you store your local plugin projects
     path = "~/projects",
+    ---@type string[] | nil you may include a list of local paths to also check
+    extra_paths = nil,
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
     fallback = false, -- Fallback to git when local plugin doesn't exist
@@ -134,7 +136,7 @@ M.defaults = {
     rtp = {
       reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
       ---@type string[]
-      paths = {}, -- add any custom paths here that you want to includes in the rtp
+      paths = {}, -- add any custom paths here that you want to append to the rtp
       ---@type string[] list any plugins you want to disable here
       disabled_plugins = {
         -- "gzip",
@@ -146,6 +148,18 @@ M.defaults = {
         -- "tutor",
         -- "zipPlugin",
       },
+      -- for niche situations where lazy breaks oddly built configurations
+      -- such as those that can be produced via nix.
+      ---@type fun(DEFAULT: string[], ME: string, VIMRUNTIME: string, NVIM_LIB: string): string[]
+      override_base_rtp = function(DEFAULT, ME, VIMRUNTIME, NVIM_LIB) return DEFAULT end
+      -- DEFAULT = {
+      --   vim.fn.stdpath("config"),
+      --   vim.fn.stdpath("data") .. "/site",
+      --   ME,
+      --   VIMRUNTIME,
+      --   NVIM_LIB,
+      --   vim.fn.stdpath("config") .. "/after",
+      -- }
     },
   },
   -- lazy can generate helptags from the headings in markdown readme files,
@@ -212,6 +226,7 @@ function M.setup(opts)
   end
   table.insert(M.options.install.colorscheme, "habamax")
 
+  M.options.dev.extra_paths = Util.norm_list(M.options.dev.extra_paths)
   M.options.root = Util.norm(M.options.root)
   M.options.dev.path = Util.norm(M.options.dev.path)
   M.options.lockfile = Util.norm(M.options.lockfile)
@@ -226,14 +241,16 @@ function M.setup(opts)
   M.me = debug.getinfo(1, "S").source:sub(2)
   M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
   if M.options.performance.rtp.reset then
-    vim.opt.rtp = {
+    local NVIM_LIB = vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim"
+    local base_rtp = {
       vim.fn.stdpath("config"),
       vim.fn.stdpath("data") .. "/site",
       M.me,
       vim.env.VIMRUNTIME,
-      vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
+      NVIM_LIB,
       vim.fn.stdpath("config") .. "/after",
     }
+    vim.opt.rtp = M.options.performance.rtp.override_base_rtp(base_rtp, M.me, vim.env.VIMRUNTIME, NVIM_LIB)
   end
   for _, path in ipairs(M.options.performance.rtp.paths) do
     vim.opt.rtp:append(path)
