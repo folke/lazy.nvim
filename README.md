@@ -436,6 +436,18 @@ return {
         -- "tutor",
         -- "zipPlugin",
       },
+      -- for niche situations where you need to inject earlier in the load cycle
+      -- such as adding things that must be sourced before VIMRUNTIME
+      ---@type fun(DEFAULT: string[], ME: string, VIMRUNTIME: string, NVIM_LIB: string): string[]
+      override_base_rtp = function(DEFAULT, ME, VIMRUNTIME, NVIM_LIB) return DEFAULT end
+      -- DEFAULT = {
+      --   vim.fn.stdpath("config"),
+      --   vim.fn.stdpath("data") .. "/site",
+      --   ME,
+      --   VIMRUNTIME,
+      --   NVIM_LIB,
+      --   vim.fn.stdpath("config") .. "/after",
+      -- }
     },
   },
   -- lazy can generate helptags from the headings in markdown readme files,
