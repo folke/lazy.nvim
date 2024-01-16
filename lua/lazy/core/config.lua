@@ -210,7 +210,9 @@ function M.setup(opts)
   if type(M.options.spec) == "string" then
     M.options.spec = { import = M.options.spec }
   end
-  table.insert(M.options.install.colorscheme, "habamax")
+  if #M.options.install.colorscheme > 0 then
+      table.insert(M.options.install.colorscheme, "habamax")
+  end
 
   M.options.root = Util.norm(M.options.root)
   M.options.dev.path = Util.norm(M.options.dev.path)
