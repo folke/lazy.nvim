@@ -148,14 +148,14 @@ M.defaults = {
       },
       -- for niche situations where you need to inject earlier in the load cycle
       -- such as adding things that must be sourced before VIMRUNTIME
-      ---@type fun(DEFAULT: string[], ME: string, VIMRUNTIME: string, NVIM_LIB: string): string[]
-      override_base_rtp = function(DEFAULT, ME, VIMRUNTIME, NVIM_LIB) return DEFAULT end
+      ---@type fun(DEFAULT: string[], ME: string): string[]
+      override_base_rtp = function(DEFAULT, ME) return DEFAULT end
       -- DEFAULT = {
       --   vim.fn.stdpath("config"),
       --   vim.fn.stdpath("data") .. "/site",
       --   ME,
-      --   VIMRUNTIME,
-      --   NVIM_LIB,
+      --   vim.env.VIMRUNTIME,
+      --   vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
       --   vim.fn.stdpath("config") .. "/after",
       -- }
     },
@@ -238,16 +238,15 @@ function M.setup(opts)
   M.me = debug.getinfo(1, "S").source:sub(2)
   M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
   if M.options.performance.rtp.reset then
-    local NVIM_LIB = vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim"
     local base_rtp = {
       vim.fn.stdpath("config"),
       vim.fn.stdpath("data") .. "/site",
       M.me,
       vim.env.VIMRUNTIME,
-      NVIM_LIB,
+      vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim",
       vim.fn.stdpath("config") .. "/after",
     }
-    vim.opt.rtp = M.options.performance.rtp.override_base_rtp(base_rtp, M.me, vim.env.VIMRUNTIME, NVIM_LIB)
+    vim.opt.rtp = M.options.performance.rtp.override_base_rtp(base_rtp, M.me)
   end
   for _, path in ipairs(M.options.performance.rtp.paths) do
     vim.opt.rtp:append(path)
