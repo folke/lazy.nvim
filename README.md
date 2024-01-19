@@ -156,6 +156,7 @@ When `[2]` is `nil`, then the real mapping has to be created by the `config()` f
 
 ```lua
 -- Example for neo-tree.nvim
+---@type LazySpec
 {
   "nvim-neo-tree/neo-tree.nvim",
     keys = {
@@ -196,6 +197,7 @@ version of plugins that support Semver.
 <!-- spec:start -->
 
 ```lua
+---@type LazySpec
 return {
   -- the colorscheme should be available when starting Neovim
   {
@@ -683,6 +685,7 @@ require("lazy").setup("plugins")
 - `~/.config/nvim/lua/plugins.lua` or `~/.config/nvim/lua/plugins/init.lua` **_(this file is optional)_**
 
 ```lua
+---@type LazySpec
 return {
   "folke/neodev.nvim",
   "folke/which-key.nvim",
