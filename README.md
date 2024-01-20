@@ -320,7 +320,7 @@ return {
     filter = true,
   },
   dev = {
-    -- directory where you store your local plugin projects
+    ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
     path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
@@ -666,7 +666,7 @@ In practice this means that step 10 of [Neovim Initialization](https://neovim.io
 
 1. All the plugins' `init()` functions are executed
 2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
-3. All files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+3. All files from `/plugin` and `/ftdetect` directories in your rtp are sourced (excluding `/after`)
 4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 Files from runtime directories are always sourced in alphabetical order.
@@ -750,8 +750,8 @@ Any other property will override the property from the parent spec.
 - `lock` ➡️ `pin`
 - `disable=true` ➡️ `enabled = false`
 - `tag='*'` ➡️ `version="*"`
-- `after` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
-- `wants` ℹ️ **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `after` is **_not needed_** for most use-cases. Use `dependencies` otherwise.
+- `wants` is **_not needed_** for most use-cases. Use `dependencies` otherwise.
 - `config` don't support string type, use `fun(LazyPlugin)` instead.
 - `module` is auto-loaded. No need to specify
 - `keys` spec is [different](#%EF%B8%8F-lazy-key-mappings)
@@ -836,7 +836,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 If your plugin needs a build step, you can create a file `build.lua` or `build/init.lua`
 in the root of your repo. This file will be loaded when the plugin is installed or updated.
 
-This makes it easier for users, so they no longer need to specify a `build` command.
+This makes it easier for users, as they no longer need to specify a `build` command.
 
 ## 📦 Other Neovim Plugin Managers in Lua
 

@@ -217,7 +217,7 @@ function M.get_config(repo)
       current_section = section:gsub('%s+"', "."):gsub('"+%s*$', "")
     else
       -- Ignore comments and blank lines
-      if not line:match("^%s*#") and line:match("%S") then
+      if not line:match("^%s*[#;]") and line:match("%S") then
         local key, value = line:match("^%s*(%S+)%s*=%s*(.+)%s*$")
         ret[current_section .. "." .. key] = value
       end
