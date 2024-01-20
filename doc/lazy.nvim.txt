@@ -768,7 +768,7 @@ In practice this means that step 10 of |Neovim Initialization| is done by Lazy:
 
 1. All the plugins’ `init()` functions are executed
 2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
-3. All files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+3. All files from `/plugin` and `/ftdetect` directories in your rtp are sourced (excluding `/after`)
 4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 Files from runtime directories are always sourced in alphabetical order.
@@ -859,8 +859,8 @@ PACKER.NVIM ~
 - `lock` `pin`
 - `disable=true` `enabled = false`
 - `tag='*'` `version="*"`
-- `after` **not needed** for most use-cases. Use `dependencies` otherwise.
-- `wants` **not needed** for most use-cases. Use `dependencies` otherwise.
+- `after` is **not needed** for most use-cases. Use `dependencies` otherwise.
+- `wants` is **not needed** for most use-cases. Use `dependencies` otherwise.
 - `config` don’t support string type, use `fun(LazyPlugin)` instead.
 - `module` is auto-loaded. No need to specify
 - `keys` spec is |lazy.nvim-different|
@@ -979,7 +979,7 @@ If your plugin needs a build step, you can create a file `build.lua` or
 `build/init.lua` in the root of your repo. This file will be loaded when the
 plugin is installed or updated.
 
-This makes it easier for users, so they no longer need to specify a `build`
+This makes it easier for users, as they no longer need to specify a `build`
 command.
 
 
