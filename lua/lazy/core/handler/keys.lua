@@ -41,6 +41,11 @@ function M.parse(value, mode)
   ret.mode = mode or "n"
   ret.id = vim.api.nvim_replace_termcodes(ret.lhs, true, true, true)
 
+  if ret.ft then
+    local ft = type(ret.ft) == "string" and { ret.ft } or ret.ft --[[@as string[] ]]
+    ret.id = ret.id .. " (" .. table.concat(ft, ", ") .. ")"
+  end
+
   if ret.mode ~= "n" then
     ret.id = ret.id .. " (" .. ret.mode .. ")"
   end
