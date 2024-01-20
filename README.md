@@ -320,7 +320,7 @@ return {
     filter = true,
   },
   dev = {
-    -- directory where you store your local plugin projects
+    ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
     path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
