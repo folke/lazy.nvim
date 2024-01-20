@@ -654,7 +654,7 @@ In practice this means that step 10 of [Neovim Initialization](https://neovim.io
 
 1. All the plugins' `init()` functions are executed
 2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
-3. All files from `/plugin` and `/ftdetect` directories in you rtp are sourced (excluding `/after`)
+3. All files from `/plugin` and `/ftdetect` directories in your rtp are sourced (excluding `/after`)
 4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
 
 Files from runtime directories are always sourced in alphabetical order.
@@ -824,7 +824,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 If your plugin needs a build step, you can create a file `build.lua` or `build/init.lua`
 in the root of your repo. This file will be loaded when the plugin is installed or updated.
 
-This makes it easier for users, so they no longer need to specify a `build` command.
+This makes it easier for users, as they no longer need to specify a `build` command.
 
 ## 📦 Other Neovim Plugin Managers in Lua
 
