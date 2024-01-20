@@ -131,6 +131,7 @@ M.valid = {
   "opts",
   "pin",
   "priority",
+  "submodules",
   "tag",
   "url",
   "version",
