@@ -439,7 +439,7 @@ return {
       -- for niche situations where you need to inject earlier in the load cycle
       -- such as adding things that must be sourced before VIMRUNTIME
       ---@type fun(DEFAULT: string[], ME: string): string[]
-      override_base_rtp = function(DEFAULT, ME) return DEFAULT end
+      override_base_rtp = function(DEFAULT, ME) return DEFAULT end,
       -- DEFAULT = {
       --   vim.fn.stdpath("config"),
       --   vim.fn.stdpath("data") .. "/site",
