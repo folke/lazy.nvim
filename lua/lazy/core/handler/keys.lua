@@ -128,6 +128,9 @@ function M:_add(keys)
         self:_set(keys, buf)
       end
 
+      if keys.mode:sub(-1) == 'a' then
+        lhs = lhs .. '<C-]>'
+      end
       local feed = vim.api.nvim_replace_termcodes("<Ignore>" .. lhs, true, true, true)
       -- insert instead of append the lhs
       vim.api.nvim_feedkeys(feed, "i", false)
