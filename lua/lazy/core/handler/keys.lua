@@ -163,7 +163,11 @@ end
 -- mapping when needed
 ---@param keys LazyKeys
 function M:_del(keys)
-  pcall(vim.keymap.del, keys.mode, keys.lhs)
+  pcall(vim.keymap.del, keys.mode, keys.lhs, {
+    -- NOTE: for buffer-local mappings, we only delete the mapping for the current buffer
+    -- So the mapping could still exist in other buffers
+    buffer = keys.ft and true or nil,
+  })
   -- make sure to create global mappings when needed
   -- buffer-local mappings are managed by lazy
   if not keys.ft then
