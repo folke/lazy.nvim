@@ -1,5 +1,23 @@
 # Changelog
 
+## [10.16.0](https://github.com/folke/lazy.nvim/compare/v10.15.1...v10.16.0) (2024-01-21)
+
+
+### Features
+
+* **plugin:** dev.path can now be a function ([#1157](https://github.com/folke/lazy.nvim/issues/1157)) ([a6f782a](https://github.com/folke/lazy.nvim/commit/a6f782adc1ace840a7e671c731daab7851cba6af))
+* **ui:** add style to dimmed commits ([#1210](https://github.com/folke/lazy.nvim/issues/1210)) ([7ded44c](https://github.com/folke/lazy.nvim/commit/7ded44ce2a442aa32b90488b8f1f9c8ca6899f3b))
+
+
+### Bug Fixes
+
+* **fs:** error when plugin directory to delete is not a valid directory ([47d4baa](https://github.com/folke/lazy.nvim/commit/47d4baafcc370f16c195fd718f37f8fb1e0aa9a1))
+* **git:** comment sign detection in get_config function ([#1281](https://github.com/folke/lazy.nvim/issues/1281)) ([d0d410b](https://github.com/folke/lazy.nvim/commit/d0d410bc222a475202d9c2b55d1c5fbd12c26ffe))
+* **health:** dont warn on submodules. Fixes [#1174](https://github.com/folke/lazy.nvim/issues/1174) ([1b3df6c](https://github.com/folke/lazy.nvim/commit/1b3df6c00797e1b12f7c16148261e9dd841a33dd))
+* **keys:** allow global/local ft keymaps to exist at the same time. Fixes [#1241](https://github.com/folke/lazy.nvim/issues/1241) ([5757b55](https://github.com/folke/lazy.nvim/commit/5757b551fc6066d836b9e45f70b41561ca619272))
+* **keys:** fix abbreviation expansion on lazy load ([#1219](https://github.com/folke/lazy.nvim/issues/1219)) ([d09084c](https://github.com/folke/lazy.nvim/commit/d09084c4b1f5c58724152a4acad7c880117a95ea))
+* **keys:** make sure we don't delete the global mapping when executing an ft keymap. See [#1241](https://github.com/folke/lazy.nvim/issues/1241) ([a9b9a4b](https://github.com/folke/lazy.nvim/commit/a9b9a4b3a2dcc1e81828cfd74bfb61193b014b67))
+
 ## [10.15.1](https://github.com/folke/lazy.nvim/compare/v10.15.0...v10.15.1) (2023-11-04)
 
 
