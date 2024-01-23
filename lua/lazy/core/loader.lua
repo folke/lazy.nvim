@@ -67,6 +67,9 @@ function M.install_missing()
   for _, plugin in pairs(Config.plugins) do
     if not (plugin._.installed or Plugin.has_errors(plugin)) then
       for _, colorscheme in ipairs(Config.options.install.colorscheme) do
+        if colorscheme == "default" then
+          break
+        end
         M.colorscheme(colorscheme)
         if vim.g.colors_name or pcall(vim.cmd.colorscheme, colorscheme) then
           break
