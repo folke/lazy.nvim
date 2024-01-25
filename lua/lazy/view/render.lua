@@ -476,7 +476,7 @@ function M:log(task)
         ["#%d+"] = "LazyCommitIssue",
         ["^%S+:"] = dimmed and "Bold" or "LazyCommitType",
         ["^%S+(%(.*%))!?:"] = "LazyCommitScope",
-        ["`.-`"] = "@text.literal.markdown_inline",
+        ["`.-`"] = "@markup.raw.markdown_inline",
         ["%*.-%*"] = "Italic",
         ["%*%*.-%*%*"] = "Bold",
       })
@@ -582,7 +582,7 @@ function M:profile()
     self:append("Based on the actual CPU time of the Neovim process till "):append("UIEnter", "LazySpecial")
     self:append("."):nl()
     self:append("This is more accurate than ")
-    self:append("`nvim --startuptime`", "@text.literal.markdown_inline")
+    self:append("`nvim --startuptime`", "@markup.raw.markdown_inline")
     self:append(".")
   else
     self:append("An accurate startuptime based on the actual CPU time of the Neovim process is not available."):nl()

@@ -21,18 +21,18 @@ M.colors = {
   ReasonPlugin = "Special",
   ReasonEvent = "Constant",
   ReasonKeys = "Statement",
-  ReasonStart = "@field",
+  ReasonStart = "@variable.member",
   ReasonSource = "Character",
   ReasonFt = "Character",
   ReasonCmd = "Operator",
   ReasonImport = "Identifier",
-  ReasonRequire = "@parameter",
+  ReasonRequire = "@variable.parameter",
   Button = "CursorLine",
   ButtonActive = "Visual",
   TaskOutput = "MsgArea", -- task output
   TaskError = "ErrorMsg", -- task errors
-  Dir = "@text.reference", -- directory
-  Url = "@text.reference", -- url
+  Dir = "@markup.link", -- directory
+  Url = "@markup.link", -- url
 }
 
 M.did_setup = false

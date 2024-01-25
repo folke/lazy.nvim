@@ -790,7 +790,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 | **LazyCommitScope**   | **_Italic_**               | conventional commit scope                           |
 | **LazyCommitType**    | **_Title_**                | conventional commit type                            |
 | **LazyDimmed**        | **_Conceal_**              | property                                            |
-| **LazyDir**           | **_@text.reference_**      | directory                                           |
+| **LazyDir**           | **_@markup.link_**         | directory                                           |
 | **LazyH1**            | **_IncSearch_**            | home button                                         |
 | **LazyH2**            | **_Bold_**                 | titles                                              |
 | **LazyLocal**         | **_Constant_**             |                                                     |
@@ -805,14 +805,14 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 | **LazyReasonImport**  | **_Identifier_**           |                                                     |
 | **LazyReasonKeys**    | **_Statement_**            |                                                     |
 | **LazyReasonPlugin**  | **_Special_**              |                                                     |
-| **LazyReasonRequire** | **_@parameter_**           |                                                     |
+| **LazyReasonRequire** | **_@variable.parameter_**  |                                                     |
 | **LazyReasonRuntime** | **_@macro_**               |                                                     |
 | **LazyReasonSource**  | **_Character_**            |                                                     |
-| **LazyReasonStart**   | **_@field_**               |                                                     |
+| **LazyReasonStart**   | **_@variable.member_**     |                                                     |
 | **LazySpecial**       | **_@punctuation.special_** |                                                     |
 | **LazyTaskError**     | **_ErrorMsg_**             | task errors                                         |
 | **LazyTaskOutput**    | **_MsgArea_**              | task output                                         |
-| **LazyUrl**           | **_@text.reference_**      | url                                                 |
+| **LazyUrl**           | **_@markup.link_**         | url                                                 |
 | **LazyValue**         | **_@string_**              | value of a property                                 |
 
 <!-- colors:end -->
