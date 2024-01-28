@@ -341,12 +341,6 @@ function Spec:report(level)
   return count
 end
 
-local remove_internal_keys = function(item, path)
-  if path[#path] == "_" then
-    return nil
-  end
-  return item
-end
 ---@param spec LazySpec|LazySpecImport
 ---@param results? string[]
 function Spec:normalize(spec, results)
@@ -361,12 +355,10 @@ function Spec:normalize(spec, results)
     end
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
-    local ignored_keys = {}
     local ignored_keys_exist = false
     for k, s in pairs(spec) do
+      -- in cases of {'foo', opts = {}, 'bar'} and similar
       if type(k) ~= "number" then
-        -- in cases of {'foo', opts = {}, 'bar'} and similar
-        ignored_keys[k] = s
         ignored_keys_exist = true
       else
         self:normalize(s, results)
@@ -378,7 +370,16 @@ function Spec:normalize(spec, results)
       self:warn(
         "This list of specs has extraneous keys - "
           .. "they do not belong to any plugins, so they are currently unused by lazy.nvim:\n"
-          .. vim.inspect(spec, { depth = 2, process = remove_internal_keys })
+          .. vim.inspect(spec, {
+            depth = 2,
+            process = function(item, path)
+              -- hide internal lazy.nvim key
+              if path[#path] == "_" then
+                return nil
+              end
+              return item
+            end,
+          })
           .. "\n"
       )
     end
