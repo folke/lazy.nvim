@@ -369,7 +369,7 @@ function Spec:normalize(spec, results)
       spec["WARNING:"] = "-- Ignored keys below! --"
       self:warn(
         "This list of specs has extraneous keys - "
-          .. "they do not belong to any plugins, so they are currently unused by lazy.nvim:\n"
+          .. "they do not belong to any plugins, so they are currently ignored by lazy.nvim:\n"
           .. vim.inspect(spec, {
             depth = 2,
             process = function(item, path)
