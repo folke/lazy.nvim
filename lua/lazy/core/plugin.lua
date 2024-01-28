@@ -370,7 +370,8 @@ function Spec:normalize(spec, results)
       -- HACK: Uses hashing order to insert the warning after integer keys, but before the rest of LazySpec's string keys
       spec["WARNING:"] = "-- Ignored keys below! --"
       self:warn(
-        "This list of specs has extraneous keys - these will not be processed by lazy.nvim as they do not belong to any plugins: "
+        "This list of specs has extraneous keys - "
+          .. "these will not be processed by lazy.nvim as they do not belong to any plugins:\n"
           .. vim.inspect(spec, { depth = 2, process = processor })
           .. "\n"
       )
