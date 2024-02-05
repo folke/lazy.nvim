@@ -124,7 +124,7 @@ function M:title()
       local title = " " .. mode.name:sub(1, 1):upper() .. mode.name:sub(2) .. " (" .. mode.key .. ") "
       if mode.name == "home" then
         if self.view.state.mode == "home" then
-          title = " lazy.nvim  " .. Config.options.ui.icons.lazy
+          title = " lazy.nvim " .. Config.options.ui.icons.lazy
         else
           title = " lazy.nvim (H) "
         end
