@@ -353,7 +353,7 @@ function Spec:normalize(spec, results)
     else
       self:add({ spec }, results)
     end
-  elseif #spec > 1 or Util.is_list(spec) then
+  elseif #spec > 1 or Util.is_list(spec) or type(spec[1]) == "table" then
     ---@cast spec LazySpec[]
     local ignored_keys_exist = false
     for k, s in pairs(spec) do
