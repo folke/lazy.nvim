@@ -366,10 +366,10 @@ function Spec:normalize(spec, results)
     end
     if ignored_keys_exist then
       -- HACK: Uses hashing order to insert the warning after integer keys, but before the rest of LazySpec's string keys
-      spec["WARNING:"] = "-- Ignored keys below! --"
+      spec[" WARNING "] = "-- Ignored keys below! --"
       self:warn(
-        "This list of specs has extraneous keys - "
-          .. "they do not belong to any plugins, so they are currently ignored by lazy.nvim:\n"
+        "This list of plugin specs has extraneous keys - "
+          .. "they do not belong to any specs, so they are currently ignored by lazy.nvim:\n"
           .. vim.inspect(spec, {
             depth = 2,
             process = function(item, path)
