@@ -76,6 +76,13 @@ function M.check(start)
     Config.mapleader = vim.g.mapleader
   end
 
+  if Loader.init_done and Config.maplocalleader ~= vim.g.maplocalleader then
+    vim.schedule(function()
+      require("lazy.core.util").warn("You need to set `vim.g.maplocalleader` **BEFORE** loading lazy")
+    end)
+    Config.maplocalleader = vim.g.maplocalleader
+  end
+
   if not (start or #changes == 0) then
     vim.schedule(function()
       if Config.options.change_detection.notify and not Config.headless() then

@@ -50,6 +50,7 @@ function M.setup()
     Util.track()
   end
   Config.mapleader = vim.g.mapleader
+  Config.maplocalleader = vim.g.maplocalleader
 
   -- report any warnings & errors
   Config.spec:report()
