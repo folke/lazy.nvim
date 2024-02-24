@@ -17,6 +17,7 @@ local Text = require("lazy.view.text")
 ---@field progress {total:number, done:number}
 ---@field _diagnostics LazyDiagnostic[]
 ---@field locations {name:string, from: number, to: number, kind?: LazyPluginKind}[]
+---@field selected_plugin {name: string, row: number}?
 local M = {}
 
 ---@return LazyRender
@@ -255,9 +256,21 @@ function M:section(section)
   end)
   if count > 0 then
     self:append(section.title, "LazyH2"):append(" (" .. count .. ")", "LazyComment"):nl()
+    local old_selected_plugin = self.selected_plugin
+    self.selected_plugin = nil
     for _, plugin in ipairs(section_plugins) do
       self:plugin(plugin)
     end
+
+    if
+      self.selected_plugin ~= nil
+      and (old_selected_plugin == nil or old_selected_plugin.name ~= self.selected_plugin.name)
+    then
+      vim.api.nvim_win_set_cursor(self.view.win, { self.selected_plugin.row, 0 })
+    elseif self.selected_plugin == nil and old_selected_plugin ~= nil then
+      vim.api.nvim_win_set_cursor(self.view.win, { old_selected_plugin.row, 0 })
+    end
+
     self:nl()
   end
 end
@@ -428,6 +441,7 @@ function M:plugin(plugin)
 
   if self.view:is_selected(plugin) then
     self:details(plugin)
+    self.selected_plugin = { name = plugin.name, row = plugin_start }
   end
   self:tasks(plugin)
   self.locations[#self.locations + 1] =
