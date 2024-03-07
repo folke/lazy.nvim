@@ -1,5 +1,20 @@
 # Changelog
 
+## [10.17.0](https://github.com/folke/lazy.nvim/compare/v10.16.0...v10.17.0) (2024-03-07)
+
+
+### Features
+
+* **loader:** warn when maplocalleader is changed after init ([#1326](https://github.com/folke/lazy.nvim/issues/1326)) ([0694651](https://github.com/folke/lazy.nvim/commit/0694651fd37c3645e1683b4f392d4e38e7d2991b))
+
+
+### Bug Fixes
+
+* **manage:** better support for using the default colorscheme during install. See [#1277](https://github.com/folke/lazy.nvim/issues/1277) ([670a6fe](https://github.com/folke/lazy.nvim/commit/670a6fec7f9b03134849e308d87f4dc316875c46))
+* **types:** fix incorrect LuaLS types ([#1339](https://github.com/folke/lazy.nvim/issues/1339)) ([5aea4e7](https://github.com/folke/lazy.nvim/commit/5aea4e7021287d7bcda6f31d7ad234580940be32))
+* **ui:** remove a single space character from home title ([#1309](https://github.com/folke/lazy.nvim/issues/1309)) ([d5c58bb](https://github.com/folke/lazy.nvim/commit/d5c58bb1937f8aee390f206e724ef23b0cc95eb3))
+* update to new treesitter capture groups ([#1294](https://github.com/folke/lazy.nvim/issues/1294)) ([298bed1](https://github.com/folke/lazy.nvim/commit/298bed190e40b67bb1c20c4d5845c2c0c7da450f))
+
 ## [10.16.0](https://github.com/folke/lazy.nvim/compare/v10.15.1...v10.16.0) (2024-01-21)
 
 
