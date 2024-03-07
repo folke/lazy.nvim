@@ -67,6 +67,7 @@ require("lazy").setup(plugins, opts)
 ```lua
 -- Example using a list of specs with the default options
 vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
+vim.g.maplocalleader = "\\" -- Same for `maplocalleader`
 
 require("lazy").setup({
   "folke/which-key.nvim",
@@ -537,7 +538,7 @@ Any command can have a **bang** to make the command wait till it finished. For e
 if you want to sync lazy from the cmdline, you can use:
 
 ```shell
-$ nvim --headless "+Lazy! sync" +qa
+nvim --headless "+Lazy! sync" +qa
 ```
 
 `opts` is a table with the following key-values:
