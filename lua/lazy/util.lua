@@ -19,13 +19,15 @@ function M.wo(win, k, v)
   end
 end
 
-function M.open(uri)
-  if M.file_exists(uri) then
+---@param opts? {system?:boolean}
+function M.open(uri, opts)
+  opts = opts or {}
+  if not opts.system and M.file_exists(uri) then
     return M.float({ style = "", file = uri })
   end
   local Config = require("lazy.core.config")
   local cmd
-  if Config.options.ui.browser then
+  if not opts.system and Config.options.ui.browser then
     cmd = { Config.options.ui.browser, uri }
   elseif vim.fn.has("win32") == 1 then
     cmd = { "explorer", uri }
