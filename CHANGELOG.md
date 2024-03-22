@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.18.1](https://github.com/folke/lazy.nvim/compare/v10.18.0...v10.18.1) (2024-03-22)
+
+
+### Bug Fixes
+
+* uv shim was not falling back to vim.loop ([#1370](https://github.com/folke/lazy.nvim/issues/1370)) ([61dddae](https://github.com/folke/lazy.nvim/commit/61dddaec58f8594e40e95a8d5069ce7e493089df))
+
 ## [10.18.0](https://github.com/folke/lazy.nvim/compare/v10.17.0...v10.18.0) (2024-03-22)
 
 
