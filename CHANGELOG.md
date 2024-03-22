@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.19.0](https://github.com/folke/lazy.nvim/compare/v10.18.3...v10.19.0) (2024-03-22)
+
+
+### Features
+
+* **util:** option to force system app for util.open ([66466a2](https://github.com/folke/lazy.nvim/commit/66466a2594ab0c446193772a68c236c7e4e02ade))
+
 ## [10.18.3](https://github.com/folke/lazy.nvim/compare/v10.18.2...v10.18.3) (2024-03-22)
 
 
