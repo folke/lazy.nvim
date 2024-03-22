@@ -24,7 +24,7 @@ function M.get_commands()
   return ret
 end
 
-M.dimmed_commits = { "build", "ci", "chore", "doc", "style", "test" }
+M.dimmed_commits = { "bot", "build", "ci", "chore", "doc", "style", "test" }
 
 M.keys = {
   hover = "K",
