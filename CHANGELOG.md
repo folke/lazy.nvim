@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.18.3](https://github.com/folke/lazy.nvim/compare/v10.18.2...v10.18.3) (2024-03-22)
+
+
+### Bug Fixes
+
+* **cache:** vim.loop fallback ([#1375](https://github.com/folke/lazy.nvim/issues/1375)) ([9131ea4](https://github.com/folke/lazy.nvim/commit/9131ea4c4ae59e347716659088a76d9b9ce3b2f5))
+
 ## [10.18.2](https://github.com/folke/lazy.nvim/compare/v10.18.1...v10.18.2) (2024-03-22)
 
 
