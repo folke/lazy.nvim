@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.18.0](https://github.com/folke/lazy.nvim/compare/v10.17.0...v10.18.0) (2024-03-22)
+
+
+### Features
+
+* refactor all vim.loop -&gt; vim.uv and add a shim when needed ([9e157df](https://github.com/folke/lazy.nvim/commit/9e157df077d24654d0cdefe08158cd4f76e85fe8))
+
 ## [10.17.0](https://github.com/folke/lazy.nvim/compare/v10.16.0...v10.17.0) (2024-03-07)
 
 
