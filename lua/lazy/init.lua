@@ -2,7 +2,7 @@
 local M = {}
 M._start = 0
 
-vim.uv = vim.uv or vim.uv
+vim.uv = vim.uv or vim.loop
 
 local function profile_require()
   local done = {} ---@type table<string, true>
