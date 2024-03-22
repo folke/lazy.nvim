@@ -1,4 +1,4 @@
-local uv = vim.uv
+local uv = vim.uv or vim.loop
 
 local M = {}
 
@@ -51,7 +51,7 @@ end
 ---@private
 function Loader.normalize(path)
   if path:sub(1, 1) == "~" then
-    local home = vim.uv.os_homedir() or "~"
+    local home = uv.os_homedir() or "~"
     if home:sub(-1) == "\\" or home:sub(-1) == "/" then
       home = home:sub(1, -2)
     end
@@ -442,9 +442,9 @@ function Loader.lsmod(path)
   if not Loader._indexed[path] then
     local start = uv.hrtime()
     Loader._indexed[path] = {}
-    local handle = vim.uv.fs_scandir(path .. "/lua")
+    local handle = uv.fs_scandir(path .. "/lua")
     while handle do
-      local name, t = vim.uv.fs_scandir_next(handle)
+      local name, t = uv.fs_scandir_next(handle)
       if not name then
         break
       end
@@ -480,7 +480,7 @@ function M._profile_loaders()
   for l, loader in pairs(package.loaders) do
     local loc = debug.getinfo(loader, "Sn").source:sub(2)
     package.loaders[l] = function(modname)
-      local start = vim.uv.hrtime()
+      local start = uv.hrtime()
       local ret = loader(modname)
       Loader.track("loader " .. l .. ": " .. loc, start)
       Loader.track("loader_all", start)
