@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.18.2](https://github.com/folke/lazy.nvim/compare/v10.18.1...v10.18.2) (2024-03-22)
+
+
+### Bug Fixes
+
+* **ui:** Add "bot" to dimmed commands list ([#1367](https://github.com/folke/lazy.nvim/issues/1367)) ([b6f7ef8](https://github.com/folke/lazy.nvim/commit/b6f7ef856b36c5edbe9f03e3a8554b97c458c953))
+
 ## [10.18.1](https://github.com/folke/lazy.nvim/compare/v10.18.0...v10.18.1) (2024-03-22)
 
 
