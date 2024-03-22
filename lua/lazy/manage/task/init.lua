@@ -65,7 +65,7 @@ function Task:start()
       self:start()
     end)
   end
-  self._started = vim.loop.hrtime()
+  self._started = vim.uv.hrtime()
   ---@type boolean, string|any
   local ok, err = pcall(self._task, self, self._opts)
   if not ok then
@@ -81,7 +81,7 @@ function Task:_check()
       return
     end
   end
-  self._ended = vim.loop.hrtime()
+  self._ended = vim.uv.hrtime()
   if self._opts.on_done then
     self._opts.on_done(self)
   end
@@ -97,7 +97,7 @@ function Task:time()
     return 0
   end
   if not self:is_done() then
-    return (vim.loop.hrtime() - self._started) / 1e6
+    return (vim.uv.hrtime() - self._started) / 1e6
   end
   return (self._ended - self._started) / 1e6
 end

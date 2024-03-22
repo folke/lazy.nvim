@@ -15,7 +15,7 @@ M.log = {
     if opts.updated and not (plugin._.updated and plugin._.updated.from ~= plugin._.updated.to) then
       return true
     end
-    local stat = vim.loop.fs_stat(plugin.dir .. "/.git")
+    local stat = vim.uv.fs_stat(plugin.dir .. "/.git")
     return not (stat and stat.type == "directory")
   end,
   ---@param opts {args?: string[], updated?:boolean, check?:boolean}
@@ -106,7 +106,7 @@ M.clone = {
           self.plugin._.cloned = true
           self.plugin._.installed = true
           self.plugin._.dirty = true
-          vim.loop.fs_unlink(marker)
+          vim.uv.fs_unlink(marker)
         end
       end,
     })

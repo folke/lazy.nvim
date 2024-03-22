@@ -1,4 +1,4 @@
-local uv = vim.loop
+local uv = vim.uv
 
 local M = {}
 
@@ -51,7 +51,7 @@ end
 ---@private
 function Loader.normalize(path)
   if path:sub(1, 1) == "~" then
-    local home = vim.loop.os_homedir() or "~"
+    local home = vim.uv.os_homedir() or "~"
     if home:sub(-1) == "\\" or home:sub(-1) == "/" then
       home = home:sub(1, -2)
     end
@@ -222,7 +222,7 @@ end
 --- Loads the given module path using the cache
 ---@param modpath string
 ---@param opts? {hash?: CacheHash, mode?: "b"|"t"|"bt", env?:table} (table|nil) Options for loading the module:
----    - hash: (table) the hash of the file to load if it is already known. (defaults to `vim.loop.fs_stat({modpath})`)
+---    - hash: (table) the hash of the file to load if it is already known. (defaults to `vim.uv.fs_stat({modpath})`)
 ---    - mode: (string) the mode to load the module with. "b"|"t"|"bt" (defaults to `nil`)
 ---    - env: (table) the environment to load the module in. (defaults to `nil`)
 ---@see |luaL_loadfile()|
@@ -442,9 +442,9 @@ function Loader.lsmod(path)
   if not Loader._indexed[path] then
     local start = uv.hrtime()
     Loader._indexed[path] = {}
-    local handle = vim.loop.fs_scandir(path .. "/lua")
+    local handle = vim.uv.fs_scandir(path .. "/lua")
     while handle do
-      local name, t = vim.loop.fs_scandir_next(handle)
+      local name, t = vim.uv.fs_scandir_next(handle)
       if not name then
         break
       end
@@ -480,7 +480,7 @@ function M._profile_loaders()
   for l, loader in pairs(package.loaders) do
     local loc = debug.getinfo(loader, "Sn").source:sub(2)
     package.loaders[l] = function(modname)
-      local start = vim.loop.hrtime()
+      local start = vim.uv.hrtime()
       local ret = loader(modname)
       Loader.track("loader " .. l .. ": " .. loc, start)
       Loader.track("loader_all", start)

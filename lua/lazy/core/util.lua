@@ -12,7 +12,7 @@ function M.track(data, time)
   if data then
     local entry = {
       data = data,
-      time = time or vim.loop.hrtime(),
+      time = time or vim.uv.hrtime(),
     }
     table.insert(M._profiles[#M._profiles], entry)
 
@@ -23,7 +23,7 @@ function M.track(data, time)
   else
     ---@type LazyProfile
     local entry = table.remove(M._profiles)
-    entry.time = vim.loop.hrtime() - entry.time
+    entry.time = vim.uv.hrtime() - entry.time
     return entry
   end
 end
@@ -54,7 +54,7 @@ end
 ---@return string
 function M.norm(path)
   if path:sub(1, 1) == "~" then
-    local home = vim.loop.os_homedir()
+    local home = vim.uv.os_homedir()
     if home:sub(-1) == "\\" or home:sub(-1) == "/" then
       home = home:sub(1, -2)
     end
@@ -175,9 +175,9 @@ end
 ---@param path string
 ---@param fn fun(path: string, name:string, type:FileType):boolean?
 function M.ls(path, fn)
-  local handle = vim.loop.fs_scandir(path)
+  local handle = vim.uv.fs_scandir(path)
   while handle do
-    local name, t = vim.loop.fs_scandir_next(handle)
+    local name, t = vim.uv.fs_scandir_next(handle)
     if not name then
       break
     end
@@ -187,7 +187,7 @@ function M.ls(path, fn)
     -- HACK: type is not always returned due to a bug in luv,
     -- so fecth it with fs_stat instead when needed.
     -- see https://github.com/folke/lazy.nvim/issues/306
-    if fn(fname, name, t or vim.loop.fs_stat(fname).type) == false then
+    if fn(fname, name, t or vim.uv.fs_stat(fname).type) == false then
       break
     end
   end
@@ -263,7 +263,7 @@ function M.lsmod(modname, fn)
     return
   end
 
-  if vim.loop.fs_stat(root .. ".lua") then
+  if vim.uv.fs_stat(root .. ".lua") then
     fn(modname, root .. ".lua")
   end
 
@@ -272,7 +272,7 @@ function M.lsmod(modname, fn)
       fn(modname, path)
     elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
       fn(modname .. "." .. name:sub(1, -5), path)
-    elseif type == "directory" and vim.loop.fs_stat(path .. "/init.lua") then
+    elseif type == "directory" and vim.uv.fs_stat(path .. "/init.lua") then
       fn(modname .. "." .. name, path .. "/init.lua")
     end
   end)

@@ -41,7 +41,7 @@ M.signals = {
 }
 
 ---@diagnostic disable-next-line: no-unknown
-local uv = vim.loop
+local uv = vim.uv
 
 ---@class ProcessOpts
 ---@field args string[]

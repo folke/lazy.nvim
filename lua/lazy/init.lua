@@ -2,6 +2,8 @@
 local M = {}
 M._start = 0
 
+vim.uv = vim.uv or vim.uv
+
 local function profile_require()
   local done = {} ---@type table<string, true>
   local r = require
@@ -35,7 +37,7 @@ function M.setup(spec, opts)
     opts.spec = spec
   end
 
-  M._start = M._start == 0 and vim.loop.hrtime() or M._start
+  M._start = M._start == 0 and vim.uv.hrtime() or M._start
   if vim.g.lazy_did_setup then
     return vim.notify(
       "Re-sourcing your config is not supported with lazy.nvim",
@@ -53,7 +55,7 @@ function M.setup(spec, opts)
   if not (pcall(require, "ffi") and jit and jit.version) then
     return vim.notify("lazy.nvim requires Neovim built with LuaJIT", vim.log.levels.ERROR, { title = "lazy.nvim" })
   end
-  local start = vim.loop.hrtime()
+  local start = vim.uv.hrtime()
 
   -- use the Neovim cache if available
   if vim.loader and vim.fn.has("nvim-0.9.1") == 1 then
@@ -89,7 +91,7 @@ function M.setup(spec, opts)
   end
 
   Util.track({ plugin = "lazy.nvim" }) -- setup start
-  Util.track("module", vim.loop.hrtime() - start)
+  Util.track("module", vim.uv.hrtime() - start)
 
   -- load config
   Util.track("config")
@@ -100,7 +102,7 @@ function M.setup(spec, opts)
   Loader.setup()
 
   -- correct time delta and loaded
-  local delta = vim.loop.hrtime() - start
+  local delta = vim.uv.hrtime() - start
   Util.track().time = delta -- end setup
   if Config.plugins["lazy.nvim"] then
     Config.plugins["lazy.nvim"]._.loaded = { time = delta, source = "init.lua" }
@@ -120,7 +122,7 @@ end
 
 function M.bootstrap()
   local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.loop.fs_stat(lazypath) then
+  if not vim.uv.fs_stat(lazypath) then
     vim.fn.system({
       "git",
       "clone",

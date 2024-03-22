@@ -4,7 +4,7 @@ local Util = require("lazy.util")
 local M = {}
 
 function M.index(plugin)
-  if Config.options.readme.skip_if_doc_exists and vim.loop.fs_stat(plugin.dir .. "/doc") then
+  if Config.options.readme.skip_if_doc_exists and vim.uv.fs_stat(plugin.dir .. "/doc") then
     return {}
   end
 
@@ -17,7 +17,7 @@ function M.index(plugin)
   local tags = {}
   for _, file in ipairs(files) do
     file = Util.norm(file)
-    if vim.loop.fs_stat(file) then
+    if vim.uv.fs_stat(file) then
       local rel_file = file:sub(#plugin.dir + 1)
       local tag_filename = plugin.name .. vim.fn.fnamemodify(rel_file, ":h"):gsub("%W+", "-"):gsub("^%-$", "")
       local lines = vim.split(Util.read_file(file), "\n")
@@ -50,7 +50,7 @@ function M.update()
 
   Util.ls(docs, function(path, name, type)
     if type == "file" and name:sub(-2) == "md" then
-      vim.loop.fs_unlink(path)
+      vim.uv.fs_unlink(path)
     end
   end)
   ---@type {file:string, tag:string, line:string}[]

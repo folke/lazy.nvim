@@ -12,7 +12,7 @@ describe("util", function()
       end
     end
     Helpers.fs_rm("")
-    assert(not vim.loop.fs_stat(Helpers.path("")), "fs root should be deleted")
+    assert(not vim.uv.fs_stat(Helpers.path("")), "fs root should be deleted")
   end)
 
   it("lsmod lists all mods in dir", function()
@@ -85,7 +85,7 @@ describe("util", function()
     assert.same(Helpers.path("old/lua/foobar"), root)
 
     Helpers.fs_rm("old")
-    assert(not vim.loop.fs_stat(Helpers.path("old/lua/foobar")), "old/lua/foobar should not exist")
+    assert(not vim.uv.fs_stat(Helpers.path("old/lua/foobar")), "old/lua/foobar should not exist")
 
     -- vim.opt.rtp = rtp
     vim.opt.rtp:append(Helpers.path("new"))

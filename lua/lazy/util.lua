@@ -2,7 +2,7 @@
 local M = setmetatable({}, { __index = require("lazy.core.util") })
 
 function M.file_exists(file)
-  return vim.loop.fs_stat(file) ~= nil
+  return vim.uv.fs_stat(file) ~= nil
 end
 
 ---@param opts? LazyFloatOptions
@@ -71,7 +71,7 @@ end
 ---@param fn F
 ---@return F
 function M.throttle(ms, fn)
-  local timer = vim.loop.new_timer()
+  local timer = vim.uv.new_timer()
   local running = false
   local first = true
 

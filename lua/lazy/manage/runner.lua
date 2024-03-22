@@ -92,7 +92,7 @@ function Runner:start()
     end
   end
 
-  local check = vim.loop.new_check()
+  local check = vim.uv.new_check()
   check:start(function()
     if self:resume() then
       return

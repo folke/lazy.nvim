@@ -54,7 +54,7 @@ function M.cputime()
   end
 
   local function fallback()
-    return (vim.loop.hrtime() - require("lazy")._start) / 1e6
+    return (vim.uv.hrtime() - require("lazy")._start) / 1e6
   end
 
   local ok, ret = pcall(real)

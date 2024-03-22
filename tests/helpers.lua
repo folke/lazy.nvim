@@ -26,12 +26,12 @@ function M.fs_rm(dir)
   dir = Util.norm(M.fs_root .. "/" .. dir)
   Util.walk(dir, function(path, _, type)
     if type == "directory" then
-      vim.loop.fs_rmdir(path)
+      vim.uv.fs_rmdir(path)
     else
-      vim.loop.fs_unlink(path)
+      vim.uv.fs_unlink(path)
     end
   end)
-  vim.loop.fs_rmdir(dir)
+  vim.uv.fs_rmdir(dir)
 end
 
 return M

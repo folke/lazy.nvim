@@ -16,7 +16,7 @@ function M.enable()
     M.timer:stop()
   end
   if #Config.spec.modules > 0 then
-    M.timer = assert(vim.loop.new_timer())
+    M.timer = assert(vim.uv.new_timer())
     M.check(true)
     M.timer:start(2000, 2000, M.check)
   end
@@ -44,7 +44,7 @@ function M.check(start)
   -- spec is a module
   local function check(_, modpath)
     checked[modpath] = true
-    local hash = vim.loop.fs_stat(modpath)
+    local hash = vim.uv.fs_stat(modpath)
     if hash then
       if M.files[modpath] then
         if not M.eq(M.files[modpath], hash) then

@@ -12,17 +12,17 @@ M.clean = {
     local dir = self.plugin.dir:gsub("/+$", "")
     assert(dir:find(Config.options.root, 1, true) == 1, self.plugin.dir .. " should be under packpath!")
 
-    local stat = vim.loop.fs_lstat(dir)
+    local stat = vim.uv.fs_lstat(dir)
     assert(stat and stat.type == "directory", self.plugin.dir .. " should be a directory!")
 
     Util.walk(dir, function(path, _, type)
       if type == "directory" then
-        vim.loop.fs_rmdir(path)
+        vim.uv.fs_rmdir(path)
       else
-        vim.loop.fs_unlink(path)
+        vim.uv.fs_unlink(path)
       end
     end)
-    vim.loop.fs_rmdir(dir)
+    vim.uv.fs_rmdir(dir)
 
     self.plugin._.installed = false
   end,
