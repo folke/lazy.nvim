@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.20.0](https://github.com/folke/lazy.nvim/compare/v10.19.0...v10.20.0) (2024-03-26)
+
+
+### Features
+
+* **ui:** backdrop for the lazy floating window. Can be disabled with `opts.ui.backdrop` ([a6b74f3](https://github.com/folke/lazy.nvim/commit/a6b74f30d5aab79a40d932f449c0aa5d4a0c6934))
+
+
+### Bug Fixes
+
+* **types:** fixed type for `version`. Fixes [#1381](https://github.com/folke/lazy.nvim/issues/1381) ([eade87f](https://github.com/folke/lazy.nvim/commit/eade87fb837d6cdeef94587ce5e8c8dfb9f88920))
+
 ## [10.19.0](https://github.com/folke/lazy.nvim/compare/v10.18.3...v10.19.0) (2024-03-22)
 
 
