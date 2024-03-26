@@ -1,4 +1,4 @@
-*lazy.nvim.txt*         For Neovim >= 0.8.0         Last change: 2024 March 24
+*lazy.nvim.txt*         For Neovim >= 0.8.0         Last change: 2024 March 26
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -62,7 +62,7 @@ You can add the following Lua code to your `init.lua` to bootstrap
 
 >lua
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-    if not vim.loop.fs_stat(lazypath) then
+    if not vim.uv.fs_stat(lazypath) then
       vim.fn.system({
         "git",
         "clone",
@@ -411,11 +411,12 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
       -- leave nil when passing the spec as the first argument to setup()
       spec = nil, ---@type LazySpec
       lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
-      concurrency = jit.os:find("Windows") and (vim.loop.available_parallelism() * 2) or nil, ---@type number limit the maximum amount of concurrent tasks
+      ---@type number? limit the maximum amount of concurrent tasks
+      concurrency = jit.os:find("Windows") and (vim.uv.available_parallelism() * 2) or nil,
       git = {
         -- defaults for the `Lazy log` command
-        -- log = { "-10" }, -- show the last 10 commits
-        log = { "-8" }, -- show commits from the last 3 days
+        -- log = { "--since=3 days ago" }, -- show commits from the last 3 days
+        log = { "-8" }, -- show the last 8 commits
         timeout = 120, -- kill processes that take more than 2 minutes
         url_format = "https://github.com/%s.git",
         -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
@@ -442,6 +443,8 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
         wrap = true, -- wrap the lines in the ui
         -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
         border = "none",
+        -- The backdrop opacity. 0 is fully opaque, 100 is fully transparent.
+        backdrop = 60,
         title = nil, ---@type string only works when border is not "none"
         title_pos = "center", ---@type "center" | "left" | "right"
         -- Show pills on top of the Lazy window
@@ -449,7 +452,7 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
         icons = {
           cmd = " ",
           config = "",
-          event = "",
+          event = " ",
           ft = " ",
           init = " ",
           import = " ",
@@ -461,7 +464,7 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
           runtime = " ",
           require = "󰢱 ",
           source = " ",
-          start = "",
+          start = " ",
           task = "✔ ",
           list = {
             "●",
@@ -611,45 +614,63 @@ enabled with `config.checker.enabled = true`.
 Any operation can be started from the UI, with a sub command or an API
 function:
 
-  --------------------------------------------------------------------------------------------------------------
-  Command                   Lua                              Description
-  ------------------------- -------------------------------- ---------------------------------------------------
-  :Lazy build {plugins}     require("lazy").build(opts)      Rebuild a plugin
+  ---------------------------------------------------------------------------------------------------
+  Command                   Lua                              Description            
+  ------------------------- -------------------------------- ---------------------- -----------------
+  :Lazy build {plugins}     require("lazy").build(opts)      Rebuild a plugin       
 
-  :Lazy check [plugins]     require("lazy").check(opts?)     Check for updates and show the log (git fetch)
+  :Lazy check [plugins]     require("lazy").check(opts?)     Check for updates and  
+                                                             show the log (git      
+                                                             fetch)                 
 
-  :Lazy clean [plugins]     require("lazy").clean(opts?)     Clean plugins that are no longer needed
+  :Lazy clean [plugins]     require("lazy").clean(opts?)     Clean plugins that are 
+                                                             no longer needed       
 
-  :Lazy clear               require("lazy").clear()          Clear finished tasks
+  :Lazy clear               require("lazy").clear()          Clear finished tasks   
 
-  :Lazy debug               require("lazy").debug()          Show debug information
+  :Lazy debug               require("lazy").debug()          Show debug information 
 
-  :Lazy health              require("lazy").health()         Run :checkhealth lazy
+  :Lazy health              require("lazy").health()         Run :checkhealth lazy  
 
-  :Lazy help                require("lazy").help()           Toggle this help page
+  :Lazy help                require("lazy").help()           Toggle this help page  
 
-  :Lazy home                require("lazy").home()           Go back to plugin list
+  :Lazy home                require("lazy").home()           Go back to plugin list 
 
-  :Lazy install [plugins]   require("lazy").install(opts?)   Install missing plugins
+  :Lazy install [plugins]   require("lazy").install(opts?)   Install missing        
+                                                             plugins                
 
-  :Lazy load {plugins}      require("lazy").load(opts)       Load a plugin that has not been loaded yet. Similar
-                                                             to :packadd. Like :Lazy load foo.nvim. Use
-                                                             :Lazy! load to skip cond checks.
+  :Lazy load {plugins}      require("lazy").load(opts)       Load a plugin that has 
+                                                             not been loaded yet.   
+                                                             Similar to :packadd.   
+                                                             Like                   
+                                                             :Lazy load foo.nvim.   
+                                                             Use :Lazy! load to     
+                                                             skip cond checks.      
 
-  :Lazy log [plugins]       require("lazy").log(opts?)       Show recent updates
+  :Lazy log [plugins]       require("lazy").log(opts?)       Show recent updates    
 
-  :Lazy profile             require("lazy").profile()        Show detailed profiling
+  :Lazy profile             require("lazy").profile()        Show detailed          
+                                                             profiling              
 
-  :Lazy reload {plugins}    require("lazy").reload(opts)     Reload a plugin (experimental!!)
+  :Lazy reload {plugins}    require("lazy").reload(opts)     Reload a plugin        
+                                                             (experimental!!)       
 
-  :Lazy restore [plugins]   require("lazy").restore(opts?)   Updates all plugins to the state in the lockfile.
-                                                             For a single plugin: restore it to the state in the
-                                                             lockfile or to a given commit under the cursor
+  :Lazy restore [plugins]   require("lazy").restore(opts?)   Updates all plugins to 
+                                                             the state in the       
+                                                             lockfile. For a single 
+                                                             plugin: restore it to  
+                                                             the state in the       
+                                                             lockfile or to a given 
+                                                             commit under the       
+                                                             cursor                 
 
-  :Lazy sync [plugins]      require("lazy").sync(opts?)      Run install, clean and update
+  :Lazy sync [plugins]      require("lazy").sync(opts?)      Run install, clean and 
+                                                             update                 
 
-  :Lazy update [plugins]    require("lazy").update(opts?)    Update plugins. This will also update the lockfile
-  --------------------------------------------------------------------------------------------------------------
+  :Lazy update [plugins]    require("lazy").update(opts?)    Update plugins. This   
+                                                             will also update the   
+                                                             lockfile               
+  ---------------------------------------------------------------------------------------------------
 Any command can have a **bang** to make the command wait till it finished. For
 example, if you want to sync lazy from the cmdline, you can use:
 
@@ -905,74 +926,77 @@ HIGHLIGHT GROUPS                        *lazy.nvim-lazy.nvim-highlight-groups*
 
 Click to see all highlight groups ~
 
-  ---------------------------------------------------------------------------------
-  Highlight Group     Default Group            Description
-  ------------------- ------------------------ ------------------------------------
-  LazyButton          CursorLine               
+  -----------------------------------------------------------------------
+  Highlight Group         Default Group           Description
+  ----------------------- ----------------------- -----------------------
+  LazyButton              CursorLine              
 
-  LazyButtonActive    Visual                   
+  LazyButtonActive        Visual                  
 
-  LazyComment         Comment                  
+  LazyComment             Comment                 
 
-  LazyCommit          _@variable.builtin_      commitref
+  LazyCommit              @variable.builtin       commit ref
 
-  LazyCommitIssue     Number                   
+  LazyCommitIssue         Number                  
 
-  LazyCommitScope     Italic                   conventional commit scope
+  LazyCommitScope         Italic                  conventional commit
+                                                  scope
 
-  LazyCommitType      Title                    conventional commit type
+  LazyCommitType          Title                   conventional commit
+                                                  type
 
-  LazyDimmed          Conceal                  property
+  LazyDimmed              Conceal                 property
 
-  LazyDir             _@markup.link_           directory
+  LazyDir                 @markup.link            directory
 
-  LazyH1              IncSearch                homebutton
+  LazyH1                  IncSearch               home button
 
-  LazyH2              Bold                     titles
+  LazyH2                  Bold                    titles
 
-  LazyLocal           Constant                 
+  LazyLocal               Constant                
 
-  LazyNoCond          DiagnosticWarn           unloaded icon for a plugin where
-                                               cond() was false
+  LazyNoCond              DiagnosticWarn          unloaded icon for a
+                                                  plugin where cond() was
+                                                  false
 
-  LazyNormal          NormalFloat              
+  LazyNormal              NormalFloat             
 
-  LazyProgressDone    Constant                 progress bar done
+  LazyProgressDone        Constant                progress bar done
 
-  LazyProgressTodo    LineNr                   progress bar todo
+  LazyProgressTodo        LineNr                  progress bar todo
 
-  LazyProp            Conceal                  property
+  LazyProp                Conceal                 property
 
-  LazyReasonCmd       Operator                 
+  LazyReasonCmd           Operator                
 
-  LazyReasonEvent     Constant                 
+  LazyReasonEvent         Constant                
 
-  LazyReasonFt        Character                
+  LazyReasonFt            Character               
 
-  LazyReasonImport    Identifier               
+  LazyReasonImport        Identifier              
 
-  LazyReasonKeys      Statement                
+  LazyReasonKeys          Statement               
 
-  LazyReasonPlugin    Special                  
+  LazyReasonPlugin        Special                 
 
-  LazyReasonRequire   _@variable.parameter_    
+  LazyReasonRequire       @variable.parameter     
 
-  LazyReasonRuntime   _@macro_                 
+  LazyReasonRuntime       @macro                  
 
-  LazyReasonSource    Character                
+  LazyReasonSource        Character               
 
-  LazyReasonStart     _@variable.member_       
+  LazyReasonStart         @variable.member        
 
-  LazySpecial         _@punctuation.special_   
+  LazySpecial             @punctuation.special    
 
-  LazyTaskError       ErrorMsg                 taskerrors
+  LazyTaskError           ErrorMsg                task errors
 
-  LazyTaskOutput      MsgArea                  task output
+  LazyTaskOutput          MsgArea                 task output
 
-  LazyUrl             _@markup.link_           url
+  LazyUrl                 @markup.link            url
 
-  LazyValue           _@string_                valueof a property
-  ---------------------------------------------------------------------------------
+  LazyValue               @string                 value of a property
+  -----------------------------------------------------------------------
 
 PLUGIN AUTHORS                            *lazy.nvim-lazy.nvim-plugin-authors*
 
