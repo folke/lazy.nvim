@@ -118,7 +118,7 @@ function M:mount()
     self.buf = vim.api.nvim_create_buf(false, true)
   end
 
-  if self.opts.backdrop and self.opts.backdrop < 100 then
+  if self.opts.backdrop and self.opts.backdrop < 100 and vim.o.termguicolors then
     self.backdrop_buf = vim.api.nvim_create_buf(false, true)
     self.backdrop_win = vim.api.nvim_open_win(self.backdrop_buf, false, {
       relative = "editor",
