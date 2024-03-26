@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.20.1](https://github.com/folke/lazy.nvim/compare/v10.20.0...v10.20.1) (2024-03-26)
+
+
+### Bug Fixes
+
+* **ui:** properly cleanup on `:quit`. Fixes [#1385](https://github.com/folke/lazy.nvim/issues/1385) ([79e2e85](https://github.com/folke/lazy.nvim/commit/79e2e8593410f199b85f5d61a83704a16169282f))
+
 ## [10.20.0](https://github.com/folke/lazy.nvim/compare/v10.19.0...v10.20.0) (2024-03-26)
 
 
