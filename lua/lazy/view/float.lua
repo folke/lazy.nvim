@@ -15,12 +15,15 @@ local ViewConfig = require("lazy.view.config")
 ---@field persistent? boolean
 ---@field ft? string
 ---@field noautocmd? boolean
+---@field backdrop? float
 
 ---@class LazyFloat
 ---@field buf number
 ---@field win number
 ---@field opts LazyFloatOptions
 ---@field win_opts LazyWinOpts
+---@field backdrop_buf number
+---@field backdrop_win number
 ---@overload fun(opts?:LazyFloatOptions):LazyFloat
 local M = {}
 
@@ -43,6 +46,7 @@ function M:init(opts)
     size = Config.options.ui.size,
     style = "minimal",
     border = Config.options.ui.border or "none",
+    backdrop = Config.options.ui.backdrop or 60,
     zindex = 50,
   }, opts or {})
 
@@ -62,7 +66,7 @@ function M:init(opts)
   }
   self:mount()
   self:on_key(ViewConfig.keys.close, self.close)
-  self:on({ "BufDelete", "BufHidden" }, self.close, { once = true })
+  self:on({ "BufDelete", "BufHidden" }, self.close, { once = false })
   return self
 end
 
@@ -114,6 +118,24 @@ function M:mount()
     self.buf = vim.api.nvim_create_buf(false, true)
   end
 
+  if self.opts.backdrop and self.opts.backdrop < 100 then
+    self.backdrop_buf = vim.api.nvim_create_buf(false, true)
+    self.backdrop_win = vim.api.nvim_open_win(self.backdrop_buf, false, {
+      relative = "editor",
+      width = vim.o.columns,
+      height = vim.o.lines,
+      row = 0,
+      col = 0,
+      style = "minimal",
+      focusable = false,
+      zindex = self.opts.zindex - 1,
+    })
+    vim.api.nvim_set_hl(0, "LazyBackdrop", { bg = "#000000", default = true })
+    Util.wo(self.backdrop_win, "winhighlight", "Normal:LazyBackdrop")
+    Util.wo(self.backdrop_win, "winblend", self.opts.backdrop)
+    vim.bo[self.backdrop_buf].buftype = "nofile"
+  end
+
   self:layout()
   self.win = vim.api.nvim_open_win(self.buf, true, self.win_opts)
   self:focus()
@@ -149,6 +171,14 @@ function M:mount()
       end
       config.style = self.opts.style ~= "" and self.opts.style or nil
       vim.api.nvim_win_set_config(self.win, config)
+
+      if self.backdrop_win and vim.api.nvim_win_is_valid(self.backdrop_win) then
+        vim.api.nvim_win_set_config(self.backdrop_win, {
+          width = vim.o.columns,
+          height = vim.o.lines,
+        })
+      end
+
       opts()
       vim.api.nvim_exec_autocmds("User", { pattern = "LazyFloatResized", modeline = false })
     end,
@@ -204,7 +234,18 @@ function M:close(opts)
   if wipe then
     self.buf = nil
   end
+  local backdrop_buf = self.backdrop_buf
+  local backdrop_win = self.backdrop_win
+  self.backdrop_buf = nil
+  self.backdrop_win = nil
+
   vim.schedule(function()
+    if backdrop_win and vim.api.nvim_win_is_valid(backdrop_win) then
+      vim.api.nvim_win_close(backdrop_win, true)
+    end
+    if backdrop_buf and vim.api.nvim_buf_is_valid(backdrop_buf) then
+      vim.api.nvim_buf_delete(backdrop_buf, { force = true })
+    end
     if win and vim.api.nvim_win_is_valid(win) then
       vim.api.nvim_win_close(win, true)
     end
