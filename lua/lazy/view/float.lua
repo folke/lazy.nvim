@@ -66,7 +66,7 @@ function M:init(opts)
   }
   self:mount()
   self:on_key(ViewConfig.keys.close, self.close)
-  self:on({ "BufDelete", "BufHidden" }, self.close, { once = false })
+  self:on({ "WinLeave", "BufDelete", "BufHidden" }, self.close, { once = false })
   return self
 end
 
