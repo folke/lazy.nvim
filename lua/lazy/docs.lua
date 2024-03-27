@@ -109,9 +109,15 @@ function M.table(lines)
   return table.concat(ret, "\n")
 end
 
+---@param opts? {name?:string, path?:string, modname?:string}
 ---@return ReadmeBlock
-function M.colors()
-  local str = M.extract("lua/lazy/view/colors.lua", "\nM%.colors = ({.-\n})")
+function M.colors(opts)
+  opts = vim.tbl_extend("force", {
+    name = "Lazy",
+    path = "lua/lazy/view/colors.lua",
+    modname = "lazy.view.colors",
+  }, opts or {})
+  local str = M.extract(opts.path, "\nM%.colors = ({.-\n})")
   ---@type table<string,string>
   local comments = {}
   for _, line in ipairs(vim.split(str, "\n")) do
@@ -124,8 +130,8 @@ function M.colors()
     { "Highlight Group", "Default Group", "Description" },
     { "---", "---", "---" },
   }
-  Util.foreach(require("lazy.view.colors").colors, function(group, link)
-    lines[#lines + 1] = { "**Lazy" .. group .. "**", "***" .. link .. "***", comments[group] or "" }
+  Util.foreach(require(opts.modname).colors, function(group, link)
+    lines[#lines + 1] = { "**" .. opts.name .. group .. "**", "***" .. link .. "***", comments[group] or "" }
   end)
   return { content = M.table(lines) }
 end
