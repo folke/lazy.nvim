@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.20.2](https://github.com/folke/lazy.nvim/compare/v10.20.1...v10.20.2) (2024-03-27)
+
+
+### Bug Fixes
+
+* **ui:** only enable backdrop when guicolors is set. Fixes [#1387](https://github.com/folke/lazy.nvim/issues/1387) ([d37a76b](https://github.com/folke/lazy.nvim/commit/d37a76b87137c777f3d778ed03729d7f332a85f0))
+* **ui:** special handling for floats closed before VimEnter. Seems that WinClosed events dont execute before that. Fixes [#1390](https://github.com/folke/lazy.nvim/issues/1390) ([eefb897](https://github.com/folke/lazy.nvim/commit/eefb8974d6a092da6e1631855e4288499b651fdd))
+
 ## [10.20.1](https://github.com/folke/lazy.nvim/compare/v10.20.0...v10.20.1) (2024-03-26)
 
 
