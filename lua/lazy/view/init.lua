@@ -53,7 +53,7 @@ function M.create()
   Float.init(self, {
     title = Config.options.ui.title,
     title_pos = Config.options.ui.title_pos,
-    noautocmd = true,
+    noautocmd = false,
   })
 
   if Config.options.ui.wrap then
@@ -69,12 +69,14 @@ function M.create()
   self.render = Render.new(self)
   self.update = Util.throttle(Config.options.ui.throttle, self.update)
 
-  self:on({ "User LazyRender", "User LazyFloatResized" }, function()
-    if not (self.buf and vim.api.nvim_buf_is_valid(self.buf)) then
-      return true
-    end
-    self:update()
-  end)
+  for _, pattern in ipairs({ "LazyRender", "LazyFloatResized" }) do
+    self:on({ "User" }, function()
+      if not (self.buf and vim.api.nvim_buf_is_valid(self.buf)) then
+        return true
+      end
+      self:update()
+    end, { pattern = pattern })
+  end
 
   vim.keymap.set("n", ViewConfig.keys.abort, function()
     require("lazy.manage.process").abort()

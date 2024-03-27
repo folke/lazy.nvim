@@ -98,6 +98,36 @@ function M.throttle(ms, fn)
   end
 end
 
+--- Creates a weak reference to an object.
+--- Calling the returned function will return the object if it has not been garbage collected.
+---@generic T: table
+---@param obj T
+---@return T|fun():T?
+function M.weak(obj)
+  local weak = { _obj = obj }
+  ---@return table<any, any>
+  local function get()
+    local ret = rawget(weak, "_obj")
+    return ret == nil and error("Object has been garbage collected", 2) or ret
+  end
+  local mt = {
+    __mode = "v",
+    __call = function(t)
+      return rawget(t, "_obj")
+    end,
+    __index = function(_, k)
+      return get()[k]
+    end,
+    __newindex = function(_, k, v)
+      get()[k] = v
+    end,
+    __pairs = function()
+      return pairs(get())
+    end,
+  }
+  return setmetatable(weak, mt)
+end
+
 ---@class LazyCmdOptions: LazyFloatOptions
 ---@field cwd? string
 ---@field env? table<string,string>
