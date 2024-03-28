@@ -71,7 +71,7 @@ function M.commands()
   modes.load.opts = true
   local lines = {
     { "Command", "Lua", "Description" },
-    { "---", "---", "---", "---" },
+    { "---", "---", "---" },
   }
   Util.foreach(modes, function(name, mode)
     if commands[name] then
