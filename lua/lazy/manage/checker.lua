@@ -35,7 +35,7 @@ end
 function M.fast_check(opts)
   opts = opts or {}
   for _, plugin in pairs(Config.plugins) do
-    if not plugin.pin and plugin._.installed then
+    if not plugin.pin and not plugin.dev and plugin._.installed then
       plugin._.updates = nil
       local info = Git.info(plugin.dir)
       local ok, target = pcall(Git.get_target, plugin)
