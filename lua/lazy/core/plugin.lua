@@ -353,10 +353,35 @@ function Spec:normalize(spec, results)
     else
       self:add({ spec }, results)
     end
-  elseif #spec > 1 or Util.is_list(spec) then
+  elseif #spec > 1 or Util.is_list(spec) or type(spec[1]) == "table" then
     ---@cast spec LazySpec[]
-    for _, s in ipairs(spec) do
-      self:normalize(s, results)
+    local ignored_keys_exist = false
+    for k, s in pairs(spec) do
+      -- in cases of {'foo', opts = {}, 'bar'} and similar
+      if type(k) ~= "number" then
+        ignored_keys_exist = true
+      else
+        self:normalize(s, results)
+      end
+    end
+    if ignored_keys_exist then
+      -- HACK: Uses hashing order to insert the warning after integer keys, but before the rest of LazySpec's string keys
+      spec[" WARNING "] = "-- Ignored keys below! --"
+      self:warn(
+        "This list of plugin specs has extraneous keys - "
+          .. "they do not belong to any specs, so they are currently ignored by lazy.nvim:\n"
+          .. vim.inspect(spec, {
+            depth = 2,
+            process = function(item, path)
+              -- hide internal lazy.nvim key
+              if path[#path] == "_" then
+                return nil
+              end
+              return item
+            end,
+          })
+          .. "\n"
+      )
     end
   elseif spec[1] or spec.dir or spec.url then
     ---@cast spec LazyPlugin
