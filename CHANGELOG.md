@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.20.3](https://github.com/folke/lazy.nvim/compare/v10.20.2...v10.20.3) (2024-03-28)
+
+
+### Bug Fixes
+
+* **ui:** disable backdrop when Neovim is transparent ([0ccf031](https://github.com/folke/lazy.nvim/commit/0ccf0312270d2d976ec551a9034bf05720f2486b))
+
 ## [10.20.2](https://github.com/folke/lazy.nvim/compare/v10.20.1...v10.20.2) (2024-03-27)
 
 
