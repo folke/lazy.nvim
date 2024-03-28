@@ -78,6 +78,11 @@ M.clone = {
       args[#args + 1] = "--filter=blob:none"
     end
 
+    if Config.options.git.override_autocrlf == true then
+      args[#args + 1] = "-c"
+      args[#args + 1] = "core.autocrlf=false"
+    end
+
     if self.plugin.submodules ~= false then
       args[#args + 1] = "--recurse-submodules"
     end
