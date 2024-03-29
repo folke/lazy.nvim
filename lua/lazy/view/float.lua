@@ -150,6 +150,7 @@ function M:mount()
     Util.wo(self.backdrop_win, "winhighlight", "Normal:LazyBackdrop")
     Util.wo(self.backdrop_win, "winblend", self.opts.backdrop)
     vim.bo[self.backdrop_buf].buftype = "nofile"
+    vim.bo[self.backdrop_buf].filetype = "lazy_backdrop"
   end
 
   self:layout()
