@@ -18,7 +18,7 @@ M.defaults = {
   spec = nil, ---@type LazySpec
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
   ---@type number? limit the maximum amount of concurrent tasks
-  concurrency = jit.os:find("Windows") and (vim.uv.available_parallelism() * 2) or nil,
+  concurrency = jit.os:find("Windows") and ((vim.uv or vim.loop).available_parallelism() * 2) or nil,
   git = {
     -- defaults for the `Lazy log` command
     -- log = { "--since=3 days ago" }, -- show commits from the last 3 days
