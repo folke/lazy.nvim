@@ -1,4 +1,5 @@
 local Config = require("lazy.core.config")
+local uv = vim.uv or vim.loop
 
 local M = {}
 
@@ -26,7 +27,7 @@ function M.check()
   local existing = false
   for _, site in pairs(sites) do
     for _, packs in ipairs(vim.fn.expand(site .. "/pack/*", false, true)) do
-      if not packs:find("[/\\]dist$") and vim.uv.fs_stat(packs) then
+      if not packs:find("[/\\]dist$") and uv.fs_stat(packs) then
         existing = true
         warn("found existing packages at `" .. packs .. "`")
       end
@@ -46,7 +47,7 @@ function M.check()
   end
 
   local packer_compiled = vim.fn.stdpath("config") .. "/plugin/packer_compiled.lua"
-  if vim.uv.fs_stat(packer_compiled) then
+  if uv.fs_stat(packer_compiled) then
     error("please remove the file `" .. packer_compiled .. "`")
   else
     ok("packer_compiled.lua not found")
