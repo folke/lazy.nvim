@@ -120,30 +120,37 @@ M.commands = {
     key = "D",
     toggle = true,
   },
+  locations = {
+    button = false,
+    desc = "Toggle plugin locations (URL)",
+    id = 11,
+    key = "T",
+    toggle = true,
+  },
   help = {
     button = true,
     desc = "Toggle this help page",
-    id = 11,
+    id = 12,
     key = "?",
     toggle = true,
   },
   clear = {
     desc = "Clear finished tasks",
-    id = 12,
+    id = 13,
   },
   load = {
     desc = "Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`. Use `:Lazy! load` to skip `cond` checks.",
-    id = 13,
+    id = 14,
     plugins = true,
     plugins_required = true,
   },
   health = {
     desc = "Run `:checkhealth lazy`",
-    id = 14,
+    id = 15,
   },
   build = {
     desc = "Rebuild a plugin",
-    id = 15,
+    id = 16,
     plugins = true,
     plugins_required = true,
     key_plugin = "gb",
@@ -152,7 +159,7 @@ M.commands = {
     desc = "Reload a plugin (experimental!!)",
     plugins = true,
     plugins_required = true,
-    id = 16,
+    id = 17,
   },
 }
 

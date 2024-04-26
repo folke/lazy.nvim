@@ -8,9 +8,11 @@ local ViewConfig = require("lazy.view.config")
 
 ---@class LazyViewState
 ---@field mode string
+---@field urls boolean
 ---@field plugin? {name:string, kind?: LazyPluginKind}
 local default_state = {
   mode = "home",
+  urls = Config.options.ui.urls.enabled,
   profile = {
     threshold = 0,
     sort_time_taken = false,
@@ -27,6 +29,16 @@ M.view = nil
 
 function M.visible()
   return M.view and M.view.win and vim.api.nvim_win_is_valid(M.view.win)
+end
+
+function M.urls()
+  if Config.headless() then
+    return
+  end
+
+  M.view = M.visible() and M.view or M.create()
+  M.view.state.urls = not M.view.state.urls
+  M.view:update()
 end
 
 ---@param mode? string

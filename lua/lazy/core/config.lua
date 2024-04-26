@@ -79,6 +79,11 @@ M.defaults = {
         "‒",
       },
     },
+    urls = {
+      enabled = false, -- show URLs on home page by default
+      front = "",
+      back = "",
+    },
     -- leave nil, to automatically select a browser depending on your OS.
     -- If you want to use a specific browser, you can define it here
     browser = nil, ---@type string?

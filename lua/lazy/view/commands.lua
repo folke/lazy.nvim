@@ -43,6 +43,9 @@ M.commands = {
   help = function()
     View.show("help")
   end,
+  locations = function()
+    View.urls()
+  end,
   debug = function()
     View.show("debug")
   end,

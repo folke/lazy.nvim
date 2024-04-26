@@ -370,6 +370,11 @@ return {
         "‒",
       },
     },
+    urls = {
+      enabled = false, -- show URLs on home page by default
+      front = "(",
+      back = ")",
+    },
     -- leave nil, to automatically select a browser depending on your OS.
     -- If you want to use a specific browser, you can define it here
     browser = nil, ---@type string?
@@ -525,6 +530,7 @@ Any operation can be started from the UI, with a sub command or an API function:
 | `:Lazy debug` | `require("lazy").debug()` | Show debug information |
 | `:Lazy health` | `require("lazy").health()` | Run `:checkhealth lazy` |
 | `:Lazy help` | `require("lazy").help()` | Toggle this help page |
+| `:Lazy locations` | `require("lazy").locations()` | Toggle plugin URLs in plugin list |
 | `:Lazy home` | `require("lazy").home()` | Go back to plugin list |
 | `:Lazy install [plugins]` | `require("lazy").install(opts?)` | Install missing plugins |
 | `:Lazy load {plugins}` | `require("lazy").load(opts)` | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`. Use `:Lazy! load` to skip `cond` checks. |

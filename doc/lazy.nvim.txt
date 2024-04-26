@@ -634,6 +634,9 @@ function:
   :Lazy health              require("lazy").health()         Run :checkhealth lazy
 
   :Lazy help                require("lazy").help()           Toggle this help page
+  
+  :Lazy locations           require("lazy").locations()      Toggle plugin URLs in
+                                                             plugin list
 
   :Lazy home                require("lazy").home()           Go back to plugin list
 
