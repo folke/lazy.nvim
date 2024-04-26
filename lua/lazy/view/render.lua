@@ -427,9 +427,9 @@ function M:plugin(plugin)
   if plugin.url and self.view.state.urls and self.view.state.mode == "home" and not self.view:is_selected(plugin) then
     self:append(
       (plugin._.loaded and " " or "")
-        .. Config.options.ui.urls.front
+        .. (Config.options.ui.urls.front or "(")
         .. (plugin.url:gsub("%.git$", ""))
-        .. Config.options.ui.urls.back,
+        .. (Config.options.ui.urls.back or ")"),
       "LazyComment"
     )
   end
