@@ -131,8 +131,14 @@ function M:mount()
     self.buf = vim.api.nvim_create_buf(false, true)
   end
 
-  local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
-  local has_bg = normal and normal.bg ~= nil
+  local normal, has_bg
+  if vim.fn.has("nvim-0.9.0") == 0 then
+    normal = vim.api.nvim_get_hl_by_name("Normal", true)
+    has_bg = normal and normal.background ~= nil
+  else
+    normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+    has_bg = normal and normal.bg ~= nil
+  end
 
   if has_bg and self.opts.backdrop and self.opts.backdrop < 100 and vim.o.termguicolors then
     self.backdrop_buf = vim.api.nvim_create_buf(false, true)
