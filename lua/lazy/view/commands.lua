@@ -56,6 +56,9 @@ M.commands = {
   end,
   reload = function(opts)
     for _, plugin in pairs(opts.plugins) do
+      if type(plugin) == "string" then
+        plugin = Config.plugins[plugin]
+      end
       Util.warn("Reloading **" .. plugin.name .. "**")
       require("lazy.core.loader").reload(plugin)
     end
