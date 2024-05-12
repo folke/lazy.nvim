@@ -1,5 +1,16 @@
 # Changelog
 
+## [10.20.4](https://github.com/folke/lazy.nvim/compare/v10.20.3...v10.20.4) (2024-05-12)
+
+
+### Bug Fixes
+
+* **heath:** vim.uv. Fixes [#1412](https://github.com/folke/lazy.nvim/issues/1412) ([481aed7](https://github.com/folke/lazy.nvim/commit/481aed70cc4d8e8a38463fd16edf81a23c153247))
+* **reload:** strings in lua reload ([#1439](https://github.com/folke/lazy.nvim/issues/1439)) ([2fcbcaf](https://github.com/folke/lazy.nvim/commit/2fcbcaf07ab79594f2ba25ebf6f4c47e250c33be))
+* **ui:** add conditional `nvim_get_hl_by_name` for Neovim 0.8.0 ([#1429](https://github.com/folke/lazy.nvim/issues/1429)) ([24234f4](https://github.com/folke/lazy.nvim/commit/24234f47a21ca690de829ea1159b553a733f3968))
+* **ui:** hover now opens repo url when no diff with main. Fixes [#1430](https://github.com/folke/lazy.nvim/issues/1430) ([4084506](https://github.com/folke/lazy.nvim/commit/40845063a2586b725d84d44e41fe2c8737751a30))
+* **ui:** set backdrop filetype to `lazy_backdrop`. Fixes [#1399](https://github.com/folke/lazy.nvim/issues/1399) ([31ddbea](https://github.com/folke/lazy.nvim/commit/31ddbea7c10b6920c9077b66c97951ca8682d5c8))
+
 ## [10.20.3](https://github.com/folke/lazy.nvim/compare/v10.20.2...v10.20.3) (2024-03-28)
 
 
