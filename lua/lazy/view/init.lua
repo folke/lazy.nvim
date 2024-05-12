@@ -211,13 +211,13 @@ function M:restore(opts)
 end
 
 function M:hover()
-  if self:diff({ browser = true }) then
+  if self:diff({ browser = true, hover = true }) then
     return
   end
   self:open_url("")
 end
 
----@param opts? {commit?:string, browser:boolean}
+---@param opts? {commit?:string, browser:boolean, hover:boolean}
 function M:diff(opts)
   opts = opts or {}
   local plugin = self.render:get_plugin()
@@ -231,6 +231,9 @@ function M:diff(opts)
       local info = assert(Git.info(plugin.dir))
       local target = assert(Git.get_target(plugin))
       diff = { from = info.commit, to = target.commit }
+      if opts.hover and diff.from == diff.to then
+        return
+      end
     end
 
     if not diff then
