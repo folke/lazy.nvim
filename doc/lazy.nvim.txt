@@ -149,11 +149,11 @@ PLUGIN SPEC                                  *lazy.nvim-lazy.nvim-plugin-spec*
 
   config         fun(LazyPlugin, opts:table) or true                              config is executed when the plugin loads. The
                                                                                   default implementation will automatically run
-                                                                                  require(MAIN).setup(opts). Lazy uses several
-                                                                                  heuristics to determine the plugin’s MAIN module
-                                                                                  automatically based on the plugin’s name. See also
-                                                                                  opts. To use the default implementation without opts
-                                                                                  set config to true.
+                                                                                  require(MAIN).setup(opts) if opts or config = true
+                                                                                  is set. Lazy uses several heuristics to determine
+                                                                                  the plugin’s MAIN module automatically based on the
+                                                                                  plugin’s name. See also opts. To use the default
+                                                                                  implementation without opts set config to true.
 
   main           string?                                                          You can specify the main module to use for config()
                                                                                   and opts(), in case it can not be determined
