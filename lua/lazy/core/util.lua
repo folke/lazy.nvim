@@ -260,7 +260,12 @@ end
 function M.lsmod(modname, fn)
   local root = M.find_root(modname)
   if not root then
-    return
+      local Config = require("lazy.core.config")
+      if Config.options.moduledir  then
+      root = Config.options.moduledir  .. modname
+  else
+      return
+  end
   end
 
   if vim.uv.fs_stat(root .. ".lua") then
