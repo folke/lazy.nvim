@@ -84,6 +84,12 @@ M.clone = {
 
     args[#args + 1] = "--origin=origin"
 
+    -- If git config --global core.autocrlf is true on a Unix/Linux system, then the git clone
+    -- process will lead to files with CRLF endings. Vi / vim / neovim cannot handle this.
+    -- Force git to clone with core.autocrlf=false.
+    args[#args + 1] = "-c"
+    args[#args + 1] = "core.autocrlf=false"
+
     args[#args + 1] = "--progress"
 
     if self.plugin.branch then
