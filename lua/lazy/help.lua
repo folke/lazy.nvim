@@ -9,9 +9,11 @@ function M.index(plugin)
   end
 
   ---@param file string
-  local files = vim.tbl_flatten(vim.tbl_map(function(file)
+  local tbl = vim.tbl_map(function(file)
     return vim.fn.expand(plugin.dir .. "/" .. file, false, true)
-  end, Config.options.readme.files))
+  end, Config.options.readme.files)
+
+  local files = vim.iter and vim.iter(tbl):flatten():totable() or vim.tbl_flatten(tbl)
 
   ---@type table<string,{file:string, tag:string, line:string}>
   local tags = {}
