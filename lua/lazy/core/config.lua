@@ -59,6 +59,7 @@ M.defaults = {
       cmd = " ",
       config = "",
       event = " ",
+      favorite = " ",
       ft = " ",
       init = " ",
       import = " ",
