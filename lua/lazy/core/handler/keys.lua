@@ -163,11 +163,14 @@ end
 function M:_del(keys)
   -- bufs will be all buffers of the filetype for a buffer-local mapping
   -- OR `false` for a global mapping
-  local bufs = keys.ft
-      and vim.tbl_filter(function(buf)
-        return vim.bo[buf].filetype == keys.ft
-      end, vim.api.nvim_list_bufs())
-    or { false }
+  local bufs = { false }
+
+  if keys.ft then
+    local ft = type(keys.ft) == "string" and { keys.ft } or keys.ft --[[@as string[] ]]
+    bufs = vim.tbl_filter(function(buf)
+      return vim.tbl_contains(ft, vim.bo[buf].filetype)
+    end, vim.api.nvim_list_bufs())
+  end
 
   for _, buf in ipairs(bufs) do
     pcall(vim.keymap.del, keys.mode, keys.lhs, { buffer = buf or nil })
