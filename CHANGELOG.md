@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.20.5](https://github.com/folke/lazy.nvim/compare/v10.20.4...v10.20.5) (2024-05-21)
+
+
+### Bug Fixes
+
+* **checker:** ignore dev plugins ([#1384](https://github.com/folke/lazy.nvim/issues/1384)) ([2e04a0c](https://github.com/folke/lazy.nvim/commit/2e04a0c02c17facd3772c382099215acbe72535b))
+* **git:** force `autocrlf=false`. Fixes [#1055](https://github.com/folke/lazy.nvim/issues/1055) ([d2a4ce2](https://github.com/folke/lazy.nvim/commit/d2a4ce22dc02aa08c176cd7692b5b0ed74e4722b))
+* **help:** get rid of any tbl_flatten or iter flatten code ([56a34a8](https://github.com/folke/lazy.nvim/commit/56a34a825b55e0e30cd9df0e055e428a13afd4aa))
+* **keys:** properly deal with ft list for keys. Fixes [#1448](https://github.com/folke/lazy.nvim/issues/1448) ([82cf974](https://github.com/folke/lazy.nvim/commit/82cf974e0939b3440c4470cbcd8e7869abfe480b))
+* **keys:** properly re-create buffer-local mappings. Fixes [#1448](https://github.com/folke/lazy.nvim/issues/1448) ([39de11a](https://github.com/folke/lazy.nvim/commit/39de11a2fa7f4b91556631c49a673bf3e48bcc16))
+* use vim.iter():flatten():totable() over vim.tbl_flatten ([#1454](https://github.com/folke/lazy.nvim/issues/1454)) ([d039aec](https://github.com/folke/lazy.nvim/commit/d039aecddb414c2df9d295e9182ed217196a2c1c))
+
 ## [10.20.4](https://github.com/folke/lazy.nvim/compare/v10.20.3...v10.20.4) (2024-05-12)
 
 
