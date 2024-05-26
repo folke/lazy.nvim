@@ -1,5 +1,4 @@
 local Config = require("lazy.core.config")
-local Handler = require("lazy.core.handler")
 local Util = require("lazy.core.util")
 
 ---@class LazyCorePlugin
@@ -20,6 +19,7 @@ local Spec = {}
 M.Spec = Spec
 M.last_fid = 0
 M.fid_stack = {} ---@type number[]
+M.LOCAL_SPEC = ".lazy.lua"
 
 ---@param spec? LazySpec
 ---@param opts? {optional?:boolean}
@@ -399,10 +399,15 @@ function Spec:import(spec)
 
   ---@type string[]
   local modnames = {}
-  Util.lsmod(spec.import, function(modname)
-    modnames[#modnames + 1] = modname
-  end)
-  table.sort(modnames)
+
+  if spec.import == M.LOCAL_SPEC then
+    modnames = { spec.import }
+  else
+    Util.lsmod(spec.import, function(modname)
+      modnames[#modnames + 1] = modname
+    end)
+    table.sort(modnames)
+  end
 
   for _, modname in ipairs(modnames) do
     imported = imported + 1
@@ -412,7 +417,12 @@ function Spec:import(spec)
     ---@diagnostic disable-next-line: no-unknown
     package.loaded[modname] = nil
     Util.try(function()
-      local mod = require(modname)
+      local mod = nil
+      if modname == M.LOCAL_SPEC then
+        mod = M.local_spec()
+      else
+        mod = require(modname)
+      end
       if type(mod) ~= "table" then
         self.importing = nil
         return self:error(
@@ -533,12 +543,30 @@ function M.update_state()
   end
 end
 
+function M.local_spec()
+  local filepath = vim.fn.fnamemodify(".lazy.lua", ":p")
+  local file = vim.secure.read(filepath)
+  if file then
+    return loadstring(file)()
+  end
+  return {}
+end
+
 function M.load()
   M.loading = true
   -- load specs
   Util.track("spec")
   Config.spec = Spec.new()
-  Config.spec:parse({ vim.deepcopy(Config.options.spec), { "folke/lazy.nvim" } })
+  Config.spec:parse({
+    vim.deepcopy(Config.options.spec),
+    {
+      import = ".lazy.lua",
+      cond = function()
+        return Config.options.local_spec and vim.fn.filereadable(M.LOCAL_SPEC) == 1
+      end,
+    },
+    { "folke/lazy.nvim" },
+  })
 
   -- override some lazy props
   local lazy = Config.spec.plugins["lazy.nvim"]
