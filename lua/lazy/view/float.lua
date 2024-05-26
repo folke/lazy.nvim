@@ -251,8 +251,9 @@ end
 ---@param key string
 ---@param fn fun(self?)
 ---@param desc? string
-function M:on_key(key, fn, desc)
-  vim.keymap.set("n", key, function()
+---@param mode? string[]
+function M:on_key(key, fn, desc,mode)
+  vim.keymap.set(mode or "n", key, function()
     fn(self)
   end, {
     nowait = true,

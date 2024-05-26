@@ -297,11 +297,21 @@ function M:setup_modes()
     end
     if m.key_plugin and name ~= "restore" then
       self:on_key(m.key_plugin, function()
-        local plugin = self.render:get_plugin()
-        if plugin then
-          Commands.cmd(name, { plugins = { plugin } })
+        vim.api.nvim_feedkeys(vim.keycode("<esc>"), "n", false)
+        local plugins = {}
+        if vim.api.nvim_get_mode().mode:lower() == "v" then
+          local f, t = vim.fn.line("."), vim.fn.line("v")
+          if f > t then f, t = t, f end
+          for i = f, t do
+            plugins[#plugins + 1] = self.render:get_plugin(i)
+          end
+        else
+          plugins[1] = self.render:get_plugin()
         end
-      end, m.desc_plugin)
+        if #plugins > 0 then
+          Commands.cmd(name, { plugins = plugins })
+        end
+      end, m.desc_plugin, { "n", "x" })
     end
   end
 end
