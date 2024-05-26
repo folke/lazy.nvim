@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.21.0](https://github.com/folke/lazy.nvim/compare/v10.20.5...v10.21.0) (2024-05-26)
+
+
+### Features
+
+* added support for local spec files `.lazy.lua` ([9dde1f1](https://github.com/folke/lazy.nvim/commit/9dde1f1bce44a8fd8cb885b5a8e8d47d8fd7b8c1))
+* single-plugin keys in the lazy view in visual mode ([#1476](https://github.com/folke/lazy.nvim/issues/1476)) ([7667a73](https://github.com/folke/lazy.nvim/commit/7667a73dee381c5fb7d538f6152aeb591e3f0372))
+
+
+### Bug Fixes
+
+* **render:** disable underline for diagnostics ([#1478](https://github.com/folke/lazy.nvim/issues/1478)) ([ea7b9c3](https://github.com/folke/lazy.nvim/commit/ea7b9c3c3fd9026e1a5ae27950585df9a42ccd5b))
+
 ## [10.20.5](https://github.com/folke/lazy.nvim/compare/v10.20.4...v10.20.5) (2024-05-21)
 
 
