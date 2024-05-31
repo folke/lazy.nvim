@@ -306,8 +306,12 @@ function M:setup_modes()
             f, t = t, f
           end
           for i = f, t do
-            plugins[#plugins + 1] = self.render:get_plugin(i)
+            local plugin = self.render:get_plugin(i)
+            if plugin then
+              plugins[plugin.name] = plugin
+            end
           end
+          plugins = vim.tbl_values(plugins)
         else
           plugins[1] = self.render:get_plugin()
         end
