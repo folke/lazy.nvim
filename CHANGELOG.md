@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.21.2](https://github.com/folke/lazy.nvim/compare/v10.21.1...v10.21.2) (2024-05-31)
+
+
+### Bug Fixes
+
+* **ui:** deduplicate plugins when selecting multiple ([#1491](https://github.com/folke/lazy.nvim/issues/1491)) ([b77aaa0](https://github.com/folke/lazy.nvim/commit/b77aaa08cb5b178ed8662765caa41c70ff254a4c))
+
 ## [10.21.1](https://github.com/folke/lazy.nvim/compare/v10.21.0...v10.21.1) (2024-05-31)
 
 
