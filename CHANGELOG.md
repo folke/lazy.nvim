@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.21.1](https://github.com/folke/lazy.nvim/compare/v10.21.0...v10.21.1) (2024-05-31)
+
+
+### Bug Fixes
+
+* **view:** backward compat for older Neovim versions. Fixes [#1489](https://github.com/folke/lazy.nvim/issues/1489) ([917dfbe](https://github.com/folke/lazy.nvim/commit/917dfbe2a9b606443639d1e809f2e4561a6dd654))
+
 ## [10.21.0](https://github.com/folke/lazy.nvim/compare/v10.20.5...v10.21.0) (2024-05-26)
 
 
