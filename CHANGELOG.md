@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.22.0](https://github.com/folke/lazy.nvim/compare/v10.21.2...v10.22.0) (2024-06-01)
+
+
+### Features
+
+* set `vim.env.LAZY` to lazy root ([6a141a6](https://github.com/folke/lazy.nvim/commit/6a141a6dbb6f6b5495ef6716c0dce898546d7b2c))
+
 ## [10.21.2](https://github.com/folke/lazy.nvim/compare/v10.21.1...v10.21.2) (2024-05-31)
 
 
