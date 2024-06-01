@@ -221,6 +221,7 @@ function M.setup(opts)
   table.insert(M.options.install.colorscheme, "habamax")
 
   M.options.root = Util.norm(M.options.root)
+  vim.env.LAZY = M.options.root
   if type(M.options.dev.path) == "string" then
     M.options.dev.path = Util.norm(M.options.dev.path)
   end
