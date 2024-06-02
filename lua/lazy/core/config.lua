@@ -220,6 +220,7 @@ function M.setup(opts)
   end
   table.insert(M.options.install.colorscheme, "habamax")
 
+  -- root
   M.options.root = Util.norm(M.options.root)
   if type(M.options.dev.path) == "string" then
     M.options.dev.path = Util.norm(M.options.dev.path)
