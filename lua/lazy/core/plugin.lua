@@ -117,7 +117,7 @@ function Spec:add(plugin, results)
       dir = dir_dev
     end
   elseif plugin.dev == false then
-    -- explicitely select the default path
+    -- explicitly select the default path
     dir = Config.options.root .. "/" .. plugin.name
   end
 

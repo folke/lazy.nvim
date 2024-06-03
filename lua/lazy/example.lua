@@ -80,8 +80,8 @@ return {
   -- you can use a custom url to fetch a plugin
   { url = "git@github.com:folke/noice.nvim.git" },
 
-  -- local plugins can also be configure with the dev option.
-  -- This will use {config.dev.path}/noice.nvim/ instead of fetching it from Github
+  -- local plugins can also be configured with the dev option.
+  -- This will use {config.dev.path}/noice.nvim/ instead of fetching it from GitHub
   -- With the dev option, you can easily switch between the local and installed version of a plugin
   { "folke/noice.nvim", dev = true },
 }
