@@ -1,4 +1,4 @@
-*lazy.nvim.txt*          For Neovim >= 0.8.0         Last change: 2024 June 02
+*lazy.nvim.txt*          For Neovim >= 0.8.0         Last change: 2024 June 03
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
@@ -161,7 +161,7 @@ PLUGIN SPEC                                  *lazy.nvim-lazy.nvim-plugin-spec*
 
   build          fun(LazyPlugin) or string or a list of build commands            build is executed when a plugin is installed or
                                                                                   updated. Before running build, a plugin is first
-                                                                                  loaded. If it’s a string it will be ran as a shell
+                                                                                  loaded. If it’s a string it will be run as a shell
                                                                                   command. When prefixed with : it is a Neovim
                                                                                   command. You can also specify a list to executed
                                                                                   multiple build commands. Some plugins provide their
@@ -386,8 +386,8 @@ EXAMPLES ~
       -- you can use a custom url to fetch a plugin
       { url = "git@github.com:folke/noice.nvim.git" },
     
-      -- local plugins can also be configure with the dev option.
-      -- This will use {config.dev.path}/noice.nvim/ instead of fetching it from Github
+      -- local plugins can also be configured with the dev option.
+      -- This will use {config.dev.path}/noice.nvim/ instead of fetching it from GitHub
       -- With the dev option, you can easily switch between the local and installed version of a plugin
       { "folke/noice.nvim", dev = true },
     }
@@ -675,7 +675,7 @@ Stats API (`require("lazy").stats()`):
     {
       -- startuptime in milliseconds till UIEnter
       startuptime = 0,
-      -- when true, startuptime is the accurate cputime for the Neovim process. (Linux & Macos)
+      -- when true, startuptime is the accurate cputime for the Neovim process. (Linux & macOS)
       -- this is more accurate than `nvim --startuptime`, and as such will be slightly higher
       -- when false, startuptime is calculated based on a delta with a timestamp when lazy started.
       real_cputime = false,
