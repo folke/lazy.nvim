@@ -51,7 +51,7 @@
 
   - [ ] add support to specify `engines`, `os` and `cpu` like in `package.json`
   - [ ] semver merging. Should check if two or more semver ranges are compatible and calculate the union range
-    - default semver merging strategy: if no version matches all, then use highest version?
+    - default semver merging strategy: if no version matches all, then use the highest version?
   - [ ] package meta index (package.lua cache for all packages)
 
 - [x] document highlight groups
@@ -65,7 +65,7 @@
       Maybe a quick, "for example, if you have a lua file
       `~/.config/nvim/lua/config/plugins.lua` that returns a table" or something it'd
       remove most question marks I think.
-- [x] When autoinstalling the plugins the cursor isn't focused on the floating
+- [x] When auto-installing the plugins the cursor isn't focused on the floating
       window, but on the non-floating window in the background.
 - [x] Doing `:Lazy clean` doesn't show which plugins were removed.
 - [x] Shouldn't the "Versioning" section be in the "Lockfile" chapter?

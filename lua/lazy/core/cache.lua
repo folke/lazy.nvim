@@ -8,7 +8,7 @@ local M = {}
 ---@class ModuleFindOpts
 ---@field all? boolean Search for all matches (defaults to `false`)
 ---@field rtp? boolean Search for modname in the runtime path (defaults to `true`)
----@field patterns? string[] Paterns to use (defaults to `{"/init.lua", ".lua"}`)
+---@field patterns? string[] Patterns to use (defaults to `{"/init.lua", ".lua"}`)
 ---@field paths? string[] Extra paths to search for modname
 
 ---@class ModuleInfo
@@ -474,7 +474,7 @@ function Loader.lsmod(path)
   return Loader._indexed[path]
 end
 
---- Debug function that wrapps all loaders and tracks stats
+--- Debug function that wraps all loaders and tracks stats
 ---@private
 function M._profile_loaders()
   for l, loader in pairs(package.loaders) do

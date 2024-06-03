@@ -6,7 +6,7 @@ local M = {}
 M._stats = {
   -- startuptime in milliseconds till UIEnter
   startuptime = 0,
-  -- when true, startuptime is the accurate cputime for the Neovim process. (Linux & Macos)
+  -- when true, startuptime is the accurate cputime for the Neovim process. (Linux & macOS)
   -- this is more accurate than `nvim --startuptime`, and as such will be slightly higher
   -- when false, startuptime is calculated based on a delta with a timestamp when lazy started.
   real_cputime = false,
