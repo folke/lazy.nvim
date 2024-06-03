@@ -476,6 +476,7 @@ function M.add_to_rtp(plugin)
     table.insert(rtp, idx_after or (#rtp + 1), after)
   end
 
+  ---@type vim.Option
   vim.opt.rtp = rtp
 end
 
