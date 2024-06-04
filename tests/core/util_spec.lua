@@ -5,6 +5,7 @@ local Util = require("lazy.util")
 describe("util", function()
   local rtp = vim.opt.rtp:get()
   before_each(function()
+    ---@type vim.Option
     vim.opt.rtp = rtp
     for k, v in pairs(package.loaded) do
       if k:find("^foobar") then
