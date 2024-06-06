@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.22.2](https://github.com/folke/lazy.nvim/compare/v10.22.1...v10.22.2) (2024-06-06)
+
+
+### Bug Fixes
+
+* **keys:** buffer-local nop mappings ([ff90417](https://github.com/folke/lazy.nvim/commit/ff904178089582f90fdc625493f3d3bddbefd6ea))
+* **keys:** never lazy-load `&lt;nop&gt;` or empty rhs keymaps ([3e4c795](https://github.com/folke/lazy.nvim/commit/3e4c795cec32481bc6d0b30c05125fdf7ef2d412))
+
 ## [10.22.1](https://github.com/folke/lazy.nvim/compare/v10.22.0...v10.22.1) (2024-06-02)
 
 
