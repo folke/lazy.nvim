@@ -134,6 +134,18 @@ describe("util", function()
         input = { { a = 1 }, { b = 2, a = vim.NIL } },
         output = { b = 2 },
       },
+      {
+        input = { { 1, 2, __extend = true }, { 3, 4 } },
+        output = { 1, 2, 3, 4, __extend = true },
+      },
+      {
+        input = { { 1, 2, __extend = true }, { __extend = true, 3, 4 } },
+        output = { 1, 2, 3, 4, __extend = true },
+      },
+      {
+        input = { { 1, 2 }, { 3, 4, __extend = true } },
+        output = { 1, 2, 3, 4, __extend = true },
+      },
     }
 
     for _, test in ipairs(tests) do
