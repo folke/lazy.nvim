@@ -109,6 +109,10 @@ function M:_add(keys)
 
   ---@param buf? number
   local function add(buf)
+    if type(keys.rhs) == "string" and (keys.rhs == "" or keys.rhs:lower() == "<nop>") then
+      return self:_set(keys, buf)
+    end
+
     vim.keymap.set(keys.mode, lhs, function()
       local plugins = self.active[keys.id]
 
