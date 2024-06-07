@@ -667,7 +667,27 @@ function M._values(root, plugin, prop, is_list)
   end
 
   values = type(values) == "table" and values or { values }
-  return is_list and Util.extend(ret, values) or Util.merge(ret, values)
+  if is_list then
+    return Util.extend(ret, values)
+  else
+    ---@type {path:string[], list:any[]}[]
+    local lists = {}
+    for _, key in ipairs(plugin[prop .. "_extend"] or {}) do
+      local path = vim.split(key, ".", { plain = true })
+      local r = Util.key_get(ret, path)
+      local v = Util.key_get(values, path)
+      if type(r) == "table" and type(v) == "table" then
+        lists[key] = { path = path, list = {} }
+        vim.list_extend(lists[key].list, r)
+        vim.list_extend(lists[key].list, v)
+      end
+    end
+    local t = Util.merge(ret, values)
+    for _, list in pairs(lists) do
+      Util.key_set(t, list.path, list.list)
+    end
+    return t
+  end
 end
 
 return M

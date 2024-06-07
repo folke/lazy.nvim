@@ -428,4 +428,35 @@ function M.lazy_require(module)
     })
 end
 
+---@param t table
+---@param key string|string[]
+---@return any
+function M.key_get(t, key)
+  local path = type(key) == "table" and key or vim.split(key, ".", true)
+  local value = t
+  for _, k in ipairs(path) do
+    if type(value) ~= "table" then
+      return value
+    end
+    value = value[k]
+  end
+  return value
+end
+
+---@param t table
+---@param key string|string[]
+---@param value any
+function M.key_set(t, key, value)
+  local path = type(key) == "table" and key or vim.split(key, ".", true)
+  local last = t
+  for i = 1, #path - 1 do
+    local k = path[i]
+    if type(last[k]) ~= "table" then
+      last[k] = {}
+    end
+    last = last[k]
+  end
+  last[path[#path]] = value
+end
+
 return M
