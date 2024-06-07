@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.23.0](https://github.com/folke/lazy.nvim/compare/v10.22.2...v10.23.0) (2024-06-07)
+
+
+### Features
+
+* **plugin:** `opts_extend` can be a list of dotted keys that will be extended instead of merged ([1f7b720](https://github.com/folke/lazy.nvim/commit/1f7b720cffa6d8f00ebb040bc60e8e056e0a6002))
+* **util:** opts merging now supports lists extending by tagging a table with __extend = true. Use with care ([74fd361](https://github.com/folke/lazy.nvim/commit/74fd3611f291a2506c5534109689bb7b028f0566))
+
 ## [10.22.2](https://github.com/folke/lazy.nvim/compare/v10.22.1...v10.22.2) (2024-06-06)
 
 
