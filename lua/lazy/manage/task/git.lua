@@ -9,7 +9,7 @@ local M = {}
 M.log = {
   ---@param opts {updated?:boolean, check?: boolean}
   skip = function(plugin, opts)
-    if opts.check and plugin.pin then
+    if opts.check and (plugin.pin or plugin._.is_local) then
       return true
     end
     if opts.updated and not (plugin._.updated and plugin._.updated.from ~= plugin._.updated.to) then
