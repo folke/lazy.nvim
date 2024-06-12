@@ -41,8 +41,7 @@ M.defaults = {
   install = {
     -- install missing plugins on startup. This doesn't increase startup time.
     missing = true,
-    -- try to load one of these colorschemes when starting an installation during startup
-    colorscheme = { "habamax" },
+    colorscheme = { "default" },
   },
   ui = {
     -- a number <1 is a percentage., >1 is a fixed size
@@ -218,7 +217,7 @@ function M.setup(opts)
   if type(M.options.spec) == "string" then
     M.options.spec = { import = M.options.spec }
   end
-  table.insert(M.options.install.colorscheme, "habamax")
+  table.insert(M.options.install.colorscheme, "default")
 
   -- root
   M.options.root = Util.norm(M.options.root)
