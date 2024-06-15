@@ -319,6 +319,9 @@ function Spec:fix_disabled()
     end
   end
 
+  -- check optional plugins again
+  self:fix_optional()
+
   -- rebuild any plugin specs that were modified
   self:rebuild()
 end
