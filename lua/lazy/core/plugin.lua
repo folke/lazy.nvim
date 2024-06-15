@@ -403,7 +403,7 @@ function Spec:import(spec)
   ---@type string[]
   local modnames = {}
 
-  if spec.import == M.LOCAL_SPEC then
+  if spec.import:find(M.LOCAL_SPEC, 1, true) then
     modnames = { spec.import }
   else
     Util.lsmod(spec.import, function(modname)
@@ -414,15 +414,19 @@ function Spec:import(spec)
 
   for _, modname in ipairs(modnames) do
     imported = imported + 1
-    Util.track({ import = modname })
+    local name = modname
+    if modname:find(M.LOCAL_SPEC, 1, true) then
+      name = vim.fn.fnamemodify(modname, ":~:.")
+    end
+    Util.track({ import = name })
     self.importing = modname
     -- unload the module so we get a clean slate
     ---@diagnostic disable-next-line: no-unknown
     package.loaded[modname] = nil
     Util.try(function()
       local mod = nil
-      if modname == M.LOCAL_SPEC then
-        mod = M.local_spec()
+      if modname:find(M.LOCAL_SPEC, 1, true) then
+        mod = M.local_spec(modname)
       else
         mod = require(modname)
       end
@@ -546,13 +550,32 @@ function M.update_state()
   end
 end
 
-function M.local_spec()
-  local filepath = vim.fn.fnamemodify(".lazy.lua", ":p")
-  local file = vim.secure.read(filepath)
+---@param path string
+function M.local_spec(path)
+  local file = vim.secure.read(path)
   if file then
     return loadstring(file)()
   end
   return {}
+end
+
+---@return string?
+function M.find_local_spec()
+  if not Config.options.local_spec then
+    return
+  end
+  local path = vim.uv.cwd()
+  while path ~= "" do
+    local file = path .. "/" .. M.LOCAL_SPEC
+    if vim.fn.filereadable(file) == 1 then
+      return file
+    end
+    local p = vim.fn.fnamemodify(path, ":h")
+    if p == path then
+      break
+    end
+    path = p
+  end
 end
 
 function M.load()
@@ -560,12 +583,15 @@ function M.load()
   -- load specs
   Util.track("spec")
   Config.spec = Spec.new()
+
+  local local_spec = M.find_local_spec()
+
   Config.spec:parse({
     vim.deepcopy(Config.options.spec),
     {
-      import = ".lazy.lua",
+      import = local_spec or M.LOCAL_SPEC,
       cond = function()
-        return Config.options.local_spec and vim.fn.filereadable(M.LOCAL_SPEC) == 1
+        return local_spec ~= nil
       end,
     },
     { "folke/lazy.nvim" },
