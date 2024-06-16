@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.24.1](https://github.com/folke/lazy.nvim/compare/v10.24.0...v10.24.1) (2024-06-16)
+
+
+### Bug Fixes
+
+* **plugin:** better way of dealing with local specs. Fixes [#1524](https://github.com/folke/lazy.nvim/issues/1524) ([be5dfba](https://github.com/folke/lazy.nvim/commit/be5dfba54216ccb80959df24d48540f07ee127a3))
+
 ## [10.24.0](https://github.com/folke/lazy.nvim/compare/v10.23.0...v10.24.0) (2024-06-15)
 
 
