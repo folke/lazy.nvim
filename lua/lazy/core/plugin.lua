@@ -232,6 +232,15 @@ function Spec:remove_fragments(id, opts)
   else
     local plugin = self.plugins[id]
     repeat
+      if plugin._.fpid then
+        local parent = self.fragments[plugin._.fpid]
+        if parent then
+          parent._.fdeps = vim.tbl_filter(function(fid)
+            return fid ~= plugin._.fid
+          end, parent._.fdeps)
+          self.dirty[parent.name] = true
+        end
+      end
       fids[#fids + 1] = plugin._.fid
       plugin = plugin._.super
     until not plugin
@@ -318,11 +327,10 @@ function Spec:fix_disabled()
       self.disabled[plugin.name] = plugin
     end
   end
+  self:rebuild()
 
   -- check optional plugins again
   self:fix_optional()
-
-  -- rebuild any plugin specs that were modified
   self:rebuild()
 end
 
