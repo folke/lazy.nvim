@@ -405,7 +405,7 @@ function Spec:import(spec)
 
   -- relies on `find_local_spec` to always insert a `/` before the local spec location
   local local_spec_suffix = "/" .. M.LOCAL_SPEC
-  if spec.import == M.LOCAL_SPEC or spec.import:sub(-#local_spec_suffix) == local_spec_suffix then
+  if spec.import:sub(-#local_spec_suffix) == local_spec_suffix then
     modnames = { spec.import }
   else
     Util.lsmod(spec.import, function(modname)
@@ -418,7 +418,7 @@ function Spec:import(spec)
     imported = imported + 1
     local name = modname
     local is_local_spec = false
-    if modname == M.LOCAL_SPEC or modname:sub(-#local_spec_suffix) == local_spec_suffix then
+    if modname:sub(-#local_spec_suffix) == local_spec_suffix then
       name = vim.fn.fnamemodify(modname, ":~:.")
       is_local_spec = true
     end
