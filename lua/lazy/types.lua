@@ -78,6 +78,7 @@
 ---@alias LazySpec string|LazyPluginSpec|LazySpecImport|LazySpec[]
 
 ---@class LazySpecImport
----@field import string spec module to import
+---@field import string|(fun():LazyPluginSpec) spec module to import
+---@field name? string
 ---@field enabled? boolean|(fun():boolean)
 ---@field cond? boolean|(fun():boolean)
