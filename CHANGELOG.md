@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.24.2](https://github.com/folke/lazy.nvim/compare/v10.24.1...v10.24.2) (2024-06-16)
+
+
+### Bug Fixes
+
+* **plugin:** rebuild optional when needed and remove frags from parent deps. Fixes [#1402](https://github.com/folke/lazy.nvim/issues/1402) ([b4316da](https://github.com/folke/lazy.nvim/commit/b4316da7310682144c279c5f0451e59ee5f6c9d1))
+
 ## [10.24.1](https://github.com/folke/lazy.nvim/compare/v10.24.0...v10.24.1) (2024-06-16)
 
 
