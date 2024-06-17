@@ -237,6 +237,8 @@ function M._dump(value, result)
     table.insert(result, tostring(value))
   elseif t == "string" then
     table.insert(result, ("%q"):format(value))
+  elseif t == "table" and value._raw then
+    table.insert(result, value._raw)
   elseif t == "table" then
     table.insert(result, "{")
     local i = 1
@@ -244,7 +246,11 @@ function M._dump(value, result)
     for k, v in pairs(value) do
       if k == i then
       elseif type(k) == "string" then
-        table.insert(result, ("[%q]="):format(k))
+        if k:match("^[a-zA-Z]+$") then
+          table.insert(result, ("%s="):format(k))
+        else
+          table.insert(result, ("[%q]="):format(k))
+        end
       else
         table.insert(result, k .. "=")
       end
