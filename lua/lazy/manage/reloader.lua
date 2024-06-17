@@ -84,19 +84,24 @@ function M.check(start)
   end
 
   if not (start or #changes == 0) then
-    vim.schedule(function()
-      if Config.options.change_detection.notify and not Config.headless() then
-        local lines = { "# Config Change Detected. Reloading...", "" }
-        for _, change in ipairs(changes) do
-          table.insert(lines, "- **" .. change.what .. "**: `" .. vim.fn.fnamemodify(change.file, ":p:~:.") .. "`")
-        end
-        Util.warn(lines)
-      end
-      Plugin.load()
-      vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
-      vim.api.nvim_exec_autocmds("User", { pattern = "LazyReload", modeline = false })
-    end)
+    M.reload(changes)
   end
+end
+
+---@param {file:string, what:string}[]
+function M.reload(changes)
+  vim.schedule(function()
+    if Config.options.change_detection.notify and not Config.headless() then
+      local lines = { "# Config Change Detected. Reloading...", "" }
+      for _, change in ipairs(changes) do
+        table.insert(lines, "- **" .. change.what .. "**: `" .. vim.fn.fnamemodify(change.file, ":p:~:.") .. "`")
+      end
+      Util.warn(lines)
+    end
+    Plugin.load()
+    vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+    vim.api.nvim_exec_autocmds("User", { pattern = "LazyReload", modeline = false })
+  end)
 end
 
 return M

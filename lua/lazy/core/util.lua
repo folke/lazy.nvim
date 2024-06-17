@@ -92,7 +92,10 @@ function M.pretty_trace(opts)
   return #trace > 0 and ("\n\n# stacktrace:\n" .. table.concat(trace, "\n")) or ""
 end
 
+---@generic R
+---@param fn fun():R
 ---@param opts? string|{msg:string, on_error:fun(msg)}
+---@return R
 function M.try(fn, opts)
   opts = type(opts) == "string" and { msg = opts } or opts or {}
   local msg = opts.msg
