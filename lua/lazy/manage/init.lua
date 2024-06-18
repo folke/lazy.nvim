@@ -82,12 +82,13 @@ function M.install(opts)
     pipeline = {
       "git.clone",
       { "git.checkout", lockfile = opts.lockfile },
+      "rocks.install",
       "plugin.docs",
       "wait",
       "plugin.build",
     },
     plugins = function(plugin)
-      return plugin.url and not plugin._.installed
+      return plugin.url and not (plugin._.installed and plugin._.rocks_installed ~= false)
     end,
   }, opts):wait(function()
     require("lazy.manage.lock").update()
@@ -105,6 +106,7 @@ function M.update(opts)
       "git.fetch",
       "git.status",
       { "git.checkout", lockfile = opts.lockfile },
+      "rocks.install",
       "plugin.docs",
       "wait",
       "plugin.build",

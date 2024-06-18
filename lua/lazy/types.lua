@@ -24,6 +24,8 @@
 ---@field rtp_loaded? boolean
 ---@field handlers? LazyPluginHandlers
 ---@field cache? table<string,any>
+---@field rocks? LazyRock[]
+---@field rocks_installed? boolean
 
 ---@alias PluginOpts table|fun(self:LazyPlugin, opts:table):table?
 
@@ -60,6 +62,7 @@
 ---@field lazy? boolean
 ---@field priority? number Only useful for lazy=false plugins to force loading certain plugins first. Default priority is 50
 ---@field dev? boolean If set, then link to the respective folder under your ~/projects
+---@field rocks? string[]
 
 ---@class LazyPlugin: LazyPluginBase,LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field dependencies? string[]

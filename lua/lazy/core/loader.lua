@@ -44,6 +44,7 @@ function M.setup()
     while M.install_missing() do
       count = count + 1
       if count > 5 then
+        Util.error("Too many rounds of missing plugins")
         break
       end
     end
@@ -66,7 +67,11 @@ end
 -- multiple rounds can happen when importing a spec from a missing plugin
 function M.install_missing()
   for _, plugin in pairs(Config.plugins) do
-    if not (plugin._.installed or Plugin.has_errors(plugin)) then
+    local installed = plugin._.installed
+    local has_errors = Plugin.has_errors(plugin)
+    local rocks_installed = plugin._.rocks_installed ~= false
+
+    if not has_errors and not (installed and rocks_installed) then
       for _, colorscheme in ipairs(Config.options.install.colorscheme) do
         if colorscheme == "default" then
           break

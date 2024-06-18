@@ -31,6 +31,9 @@ M.defaults = {
     -- increase downloads a lot.
     filter = true,
   },
+  rocks = {
+    root = vim.fn.stdpath("data") .. "/lazy-rocks",
+  },
   dev = {
     ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
     path = "~/projects",
@@ -207,6 +210,9 @@ M.mapleader = nil
 ---@type string
 M.maplocalleader = nil
 
+---@type {specs:string, tree:string, path:string, cpath:string}
+M.rocks = {}
+
 function M.headless()
   return #vim.api.nvim_list_uis() == 0
 end
@@ -256,6 +262,17 @@ function M.setup(opts)
   vim.go.loadplugins = false
   M.mapleader = vim.g.mapleader
   M.maplocalleader = vim.g.maplocalleader
+
+  M.rocks = {
+    specs = M.options.rocks.root .. "/specs",
+    tree = M.options.rocks.root .. "/tree",
+    path = M.options.rocks.root .. "/tree/share/lua/5.1",
+    cpath = M.options.rocks.root .. "/tree/lib/lua/5.1",
+  }
+  vim.fn.mkdir(M.rocks.specs, "p")
+  vim.fn.mkdir(M.rocks.tree, "p")
+  package.path = package.path .. ";" .. M.rocks.path .. "/?.lua;" .. M.rocks.path .. "/?/init.lua;"
+  package.cpath = package.cpath .. ";" .. M.rocks.cpath .. "/?." .. (jit.os:find("Windows") and "dll" or "so") .. ";"
 
   if M.headless() then
     require("lazy.view.commands").setup()

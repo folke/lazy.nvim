@@ -545,6 +545,8 @@ function M.update_state()
     installed[name] = nil
   end
 
+  require("lazy.manage.rocks").update_state()
+
   Config.to_clean = {}
   for pack, dir_type in pairs(installed) do
     table.insert(Config.to_clean, {
