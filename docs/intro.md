@@ -2,7 +2,7 @@
 slug: /
 sidebar_position: 1
 ---
-# 💤 Getting Started
+# 🚀 Getting Started
 
 **lazy.nvim** is a modern plugin manager for Neovim.
 
