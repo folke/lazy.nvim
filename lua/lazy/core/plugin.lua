@@ -1,4 +1,5 @@
 local Config = require("lazy.core.config")
+local Packspec = require("lazy.core.packspec")
 local Util = require("lazy.core.util")
 
 ---@class LazyCorePlugin
@@ -15,6 +16,8 @@ M.loading = false
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
 ---@field optional? boolean
+---@field packspecs table<string, boolean>
+---@field names table<string,string>
 local Spec = {}
 M.Spec = Spec
 M.last_fid = 0
@@ -32,7 +35,9 @@ function Spec.new(spec, opts)
   self.dirty = {}
   self.notifs = {}
   self.ignore_installed = {}
+  self.packspecs = {}
   self.optional = opts and opts.optional
+  self.names = {}
   if spec then
     self:parse(spec)
   end
@@ -45,6 +50,7 @@ function Spec:parse(spec)
 end
 
 -- PERF: optimized code to get package name without using lua patterns
+---@return string
 function Spec.get_name(pkg)
   local name = pkg:sub(-4) == ".git" and pkg:sub(1, -5) or pkg
   name = name:sub(-1) == "/" and name:sub(1, -2) or name
@@ -83,7 +89,17 @@ function Spec:add(plugin, results)
     -- local plugin
     plugin.name = plugin.name or Spec.get_name(plugin.dir)
   elseif plugin.url then
-    plugin.name = plugin.name or Spec.get_name(plugin.url)
+    if plugin.name then
+      self.names[plugin.url] = plugin.name
+      local name = Spec.get_name(plugin.url)
+      if name and self.plugins[name] then
+        self.plugins[name].name = plugin.name
+        self.plugins[plugin.name] = self.plugins[name]
+        self.plugins[name] = nil
+      end
+    else
+      plugin.name = self.names[plugin.url] or Spec.get_name(plugin.url)
+    end
     -- check for dev plugins
     if plugin.dev == nil then
       for _, pattern in ipairs(Config.options.dev.patterns) do
@@ -154,6 +170,15 @@ function Spec:add(plugin, results)
     table.insert(M.fid_stack, plugin._.fid)
     plugin.dependencies = self:normalize(plugin.dependencies, {})
     table.remove(M.fid_stack)
+  end
+
+  -- import the plugin's spec
+  if Config.options.packspec.enabled and plugin.dir and not self.packspecs[plugin.dir] then
+    self.packspecs[plugin.dir] = true
+    local packspec = Packspec.get(plugin)
+    if packspec then
+      self:normalize(packspec, nil, true)
+    end
   end
 
   if self.plugins[plugin.name] then
