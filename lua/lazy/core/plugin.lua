@@ -1,5 +1,5 @@
 local Config = require("lazy.core.config")
-local Packspec = require("lazy.core.packspec")
+local Pkg = require("lazy.pkg")
 local Util = require("lazy.core.util")
 
 ---@class LazyCorePlugin
@@ -16,7 +16,7 @@ M.loading = false
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
 ---@field optional? boolean
----@field packspecs table<string, boolean>
+---@field pkgs table<string, boolean>
 ---@field names table<string,string>
 local Spec = {}
 M.Spec = Spec
@@ -35,7 +35,7 @@ function Spec.new(spec, opts)
   self.dirty = {}
   self.notifs = {}
   self.ignore_installed = {}
-  self.packspecs = {}
+  self.pkgs = {}
   self.optional = opts and opts.optional
   self.names = {}
   if spec then
@@ -173,11 +173,11 @@ function Spec:add(plugin, results)
   end
 
   -- import the plugin's spec
-  if Config.options.packspec.enabled and plugin.dir and not self.packspecs[plugin.dir] then
-    self.packspecs[plugin.dir] = true
-    local packspec = Packspec.get(plugin)
-    if packspec then
-      self:normalize(packspec, nil, true)
+  if Config.options.pkg.enabled and plugin.dir and not self.pkgs[plugin.dir] then
+    self.pkgs[plugin.dir] = true
+    local pkg = Pkg.get_spec(plugin)
+    if pkg then
+      self:normalize(pkg, nil)
     end
   end
 

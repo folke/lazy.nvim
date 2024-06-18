@@ -35,11 +35,11 @@ M.commands = {
     vim.cmd.checkhealth("lazy")
   end,
   pkg = function(opts)
-    local Pkg = require("lazy.core.packspec")
+    local Pkg = require("lazy.pkg")
     Pkg.update()
     require("lazy.manage.reloader").reload({
       {
-        file = "packspec", --Config.options.packspec.path,
+        file = "pkg",
         what = "changed",
       },
     })
