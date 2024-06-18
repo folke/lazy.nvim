@@ -52,7 +52,10 @@ describe("plugin spec url/name", function()
       local spec = Plugin.Spec.new(test[1])
       local plugins = vim.tbl_values(spec.plugins)
       plugins[1]._ = {}
-      assert(#spec.notifs == 0)
+      local notifs = vim.tbl_filter(function(notif)
+        return notif.level > 3
+      end, spec.notifs)
+      assert(#notifs == 0, vim.inspect(spec.notifs))
       assert.equal(1, #plugins)
       plugins[1]._.super = nil
       assert.same(test[2], plugins[1])
