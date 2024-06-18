@@ -7,8 +7,8 @@ import prismTheme from "./src/themes/prism/tokyonight_moon";
 const config: Config = {
   title: "lazy.nvim",
   tagline: "A modern plugin manager for Neovim",
-  url: "https://folke.github.io/",
-  baseUrl: "/lazy.nvim/",
+  url: "https://lazy.folke.io/",
+  baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
