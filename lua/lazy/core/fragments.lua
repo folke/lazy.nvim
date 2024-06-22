@@ -9,6 +9,9 @@ local function next_id()
   return M._fid
 end
 
+--- This class is used to manage the fragments of a plugin spec.
+--- It keeps track of the fragments and their relations to other fragments.
+--- A fragment can be a dependency (dependencies) or a child (specs) of another fragment.
 ---@class LazyFragments
 ---@field fragments table<number, LazyFragment>
 ---@field frag_stack number[]
@@ -34,6 +37,8 @@ function F:get(id)
   return self.fragments[id]
 end
 
+--- Remove a fragment and all its children.
+--- This will also remove the fragment from its parent's children list.
 ---@param id number
 function F:del(id)
   -- del fragment
@@ -73,6 +78,8 @@ function F:del(id)
   self.fragments[id] = nil
 end
 
+--- Add a fragment to the fragments list.
+--- This also resolves its name, url, dir, dependencies and child specs.
 ---@param plugin LazyPluginSpec
 function F:add(plugin)
   local id = next_id()

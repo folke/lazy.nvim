@@ -1,6 +1,8 @@
 local Config = require("lazy.core.config")
 local Util = require("lazy.core.util")
 
+--- This class is used to manage the plugins.
+--- A plugin is a collection of fragments that are related to each other.
 ---@class LazyMeta
 ---@field plugins table<string, LazyPlugin>
 ---@field str_to_meta table<string, LazyPlugin>
@@ -23,6 +25,7 @@ function M.new(spec)
   return self
 end
 
+--- Remove a plugin and all its fragments.
 ---@param name string
 function M:del(name)
   local meta = self.plugins[name]
@@ -35,6 +38,9 @@ function M:del(name)
   self.plugins[name] = nil
 end
 
+--- Add a fragment to a plugin.
+--- This will create a new plugin if it does not exist.
+--- It also keeps track of renames.
 ---@param plugin LazyPluginSpec
 function M:add(plugin)
   local fragment = self.fragments:add(plugin)
@@ -73,6 +79,8 @@ function M:add(plugin)
   self.dirty[meta.name] = true
 end
 
+--- Rebuild all plugins based on dirty fragments,
+--- or dirty plugins. Will remove plugins that no longer have fragments.
 function M:rebuild()
   for fid in pairs(self.fragments.dirty) do
     local meta = self.frag_to_meta[fid]
@@ -101,6 +109,9 @@ function M:rebuild()
   end
 end
 
+--- Rebuild a single plugin.
+--- This will resolve the plugin based on its fragments using metatables.
+--- This also resolves dependencies, dep, optional, dir, dev, and url.
 ---@param name string
 function M:_rebuild(name)
   local plugin = self.plugins[name]
@@ -161,18 +172,23 @@ function M:_rebuild(name)
     plugin.dir = plugin.dir or Config.options.root .. "/" .. plugin.name
   end
 
+  -- dependencies
   if #plugin.dependencies == 0 and not super.dependencies then
     plugin.dependencies = nil
   end
+
+  -- optional
   if not plugin.optional and not super.optional then
     plugin.optional = nil
   end
+
   setmetatable(plugin, { __index = super })
 
   self.dirty[plugin.name] = nil
   return plugin
 end
 
+--- Disable a plugin.
 ---@param plugin LazyPlugin
 function M:disable(plugin)
   plugin._.kind = "disabled"
@@ -180,6 +196,7 @@ function M:disable(plugin)
   self.spec.disabled[plugin.name] = plugin
 end
 
+--- Check if a plugin should be disabled, but ignore uninstalling it.
 function M:fix_cond()
   for _, plugin in pairs(self.plugins) do
     local cond = plugin.cond
@@ -203,6 +220,7 @@ function M:fix_cond()
   end
 end
 
+--- Removes plugins for which all its fragments are optional.
 function M:fix_optional()
   if self.spec.optional then
     return 0
@@ -218,6 +236,7 @@ function M:fix_optional()
   return changes
 end
 
+--- Removes plugins that are disabled.
 function M:fix_disabled()
   local changes = 0
   for _, plugin in pairs(self.plugins) do
@@ -230,7 +249,8 @@ function M:fix_disabled()
   return changes
 end
 
-function M:fix()
+--- Resolve all plugins, based on cond, enabled and optional.
+function M:resolve()
   Util.track("resolve plugins")
   self:rebuild()
 

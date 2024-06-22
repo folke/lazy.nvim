@@ -50,7 +50,7 @@ end
 
 function Spec:parse(spec)
   self:normalize(spec)
-  self.meta:fix()
+  self.meta:resolve()
 end
 
 -- PERF: optimized code to get package name without using lua patterns
