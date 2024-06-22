@@ -86,7 +86,11 @@ end
 function M.get_spec(plugin)
   local pkg = M.get(plugin)
   local spec = pkg and pkg.spec
-  return spec and type(spec) == "table" and vim.deepcopy(spec) or spec
+  if not spec then
+    return
+  end
+  spec = type(spec) == "table" and vim.deepcopy(spec) or spec
+  return { plugin.name, specs = spec }
 end
 
 return M
