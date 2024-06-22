@@ -93,7 +93,7 @@ function M.pretty_trace(opts)
 end
 
 ---@generic R
----@param fn fun():R
+---@param fn fun():R?
 ---@param opts? string|{msg:string, on_error:fun(msg)}
 ---@return R
 function M.try(fn, opts)

@@ -1,4 +1,5 @@
 local Config = require("lazy.core.config")
+local Meta = require("lazy.core.meta")
 local Pkg = require("lazy.pkg")
 local Util = require("lazy.core.util")
 
@@ -7,46 +8,49 @@ local M = {}
 M.loading = false
 
 ---@class LazySpecLoader
+---@field meta LazyMeta
 ---@field plugins table<string, LazyPlugin>
----@field fragments table<number, LazyPlugin>
 ---@field disabled table<string, LazyPlugin>
----@field dirty table<string, true>
 ---@field ignore_installed table<string, true>
 ---@field modules string[]
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
 ---@field optional? boolean
 ---@field pkgs table<string, boolean>
----@field names table<string,string>
 local Spec = {}
 M.Spec = Spec
-M.last_fid = 0
-M.fid_stack = {} ---@type number[]
 M.LOCAL_SPEC = ".lazy.lua"
 
 ---@param spec? LazySpec
 ---@param opts? {optional?:boolean}
 function Spec.new(spec, opts)
-  local self = setmetatable({}, { __index = Spec })
-  self.plugins = {}
-  self.fragments = {}
+  local self = setmetatable({}, Spec)
+  self.meta = Meta.new(self)
   self.disabled = {}
   self.modules = {}
-  self.dirty = {}
   self.notifs = {}
   self.ignore_installed = {}
   self.pkgs = {}
   self.optional = opts and opts.optional
-  self.names = {}
   if spec then
     self:parse(spec)
   end
   return self
 end
 
+function Spec:__index(key)
+  if Spec[key] then
+    return Spec[key]
+  end
+  if key == "plugins" then
+    self.meta:rebuild()
+    return self.meta.plugins
+  end
+end
+
 function Spec:parse(spec)
   self:normalize(spec)
-  self:fix_disabled()
+  self.meta:fix()
 end
 
 -- PERF: optimized code to get package name without using lua patterns
@@ -58,136 +62,22 @@ function Spec.get_name(pkg)
   return slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
 end
 
----@param plugin LazyPlugin
----@param results? string[]
-function Spec:add(plugin, results)
-  -- check if we already processed this spec. Can happen when a user uses the same instance of a spec in multiple specs
-  -- see https://github.com/folke/lazy.nvim/issues/45
-  if rawget(plugin, "_") then
-    if results then
-      table.insert(results, plugin.name)
-    end
-    return plugin
-  end
+---@param plugin LazyPluginSpec
+function Spec:add(plugin)
+  self.meta:add(plugin)
 
-  local is_ref = plugin[1] and not plugin[1]:find("/", 1, true)
-
-  if not plugin.url and not is_ref and plugin[1] then
-    local prefix = plugin[1]:sub(1, 4)
-    if prefix == "http" or prefix == "git@" then
-      plugin.url = plugin[1]
-    else
-      plugin.url = Config.options.git.url_format:format(plugin[1])
-    end
-  end
-
-  ---@type string?
-  local dir
-
-  if plugin.dir then
-    dir = Util.norm(plugin.dir)
-    -- local plugin
-    plugin.name = plugin.name or Spec.get_name(plugin.dir)
-  elseif plugin.url then
-    if plugin.name then
-      self.names[plugin.url] = plugin.name
-      local name = Spec.get_name(plugin.url)
-      if name and self.plugins[name] then
-        self.plugins[name].name = plugin.name
-        self.plugins[plugin.name] = self.plugins[name]
-        self.plugins[name] = nil
-      end
-    else
-      plugin.name = self.names[plugin.url] or Spec.get_name(plugin.url)
-    end
-    -- check for dev plugins
-    if plugin.dev == nil then
-      for _, pattern in ipairs(Config.options.dev.patterns) do
-        if plugin.url:find(pattern, 1, true) then
-          plugin.dev = true
-          break
-        end
-      end
-    end
-  elseif is_ref then
-    plugin.name = plugin[1]
-  else
-    self:error("Invalid plugin spec " .. vim.inspect(plugin))
-    return
-  end
-
-  if not plugin.name or plugin.name == "" then
-    self:error("Plugin spec " .. vim.inspect(plugin) .. " has no name")
-    return
-  end
-
-  -- dev plugins
-  if plugin.dev then
-    local dir_dev
-    if type(Config.options.dev.path) == "string" then
-      dir_dev = Config.options.dev.path .. "/" .. plugin.name
-    else
-      dir_dev = Util.norm(Config.options.dev.path(plugin))
-    end
-    if not Config.options.dev.fallback or vim.fn.isdirectory(dir_dev) == 1 then
-      dir = dir_dev
-    end
-  elseif plugin.dev == false then
-    -- explicitly select the default path
-    dir = Config.options.root .. "/" .. plugin.name
-  end
-
-  if type(plugin.config) == "table" then
-    self:warn(
-      "{" .. plugin.name .. "}: setting a table to `Plugin.config` is deprecated. Please use `Plugin.opts` instead"
-    )
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    plugin.opts = plugin.config
-    plugin.config = nil
-  end
-
-  local fpid = M.fid_stack[#M.fid_stack]
-
-  M.last_fid = M.last_fid + 1
-  plugin._ = {
-    dir = dir,
-    fid = M.last_fid,
-    fpid = fpid,
-    dep = fpid ~= nil,
-    module = self.importing,
-  }
-  self.fragments[plugin._.fid] = plugin
-  -- remote plugin
-  plugin.dir = plugin._.dir or (plugin.name and (Config.options.root .. "/" .. plugin.name)) or nil
-
-  if fpid then
-    local parent = self.fragments[fpid]
-    parent._.fdeps = parent._.fdeps or {}
-    table.insert(parent._.fdeps, plugin._.fid)
-  end
-
-  if plugin.dependencies then
-    table.insert(M.fid_stack, plugin._.fid)
-    plugin.dependencies = self:normalize(plugin.dependencies, {})
-    table.remove(M.fid_stack)
-  end
+  ---@diagnostic disable-next-line: cast-type-mismatch
+  ---@cast plugin LazyPlugin
 
   -- import the plugin's spec
   if Config.options.pkg.enabled and plugin.dir and not self.pkgs[plugin.dir] then
     self.pkgs[plugin.dir] = true
     local pkg = Pkg.get_spec(plugin)
     if pkg then
-      self:normalize(pkg, nil)
+      self:normalize(pkg)
     end
   end
 
-  if self.plugins[plugin.name] then
-    plugin = self:merge(self.plugins[plugin.name], plugin)
-  end
-  self.plugins[plugin.name] = plugin
-  if results then
-    table.insert(results, plugin.name)
-  end
   return plugin
 end
 
@@ -197,166 +87,6 @@ end
 
 function Spec:warn(msg)
   self:log(msg, vim.log.levels.WARN)
-end
-
---- Rebuilds a plugin spec excluding any removed fragments
----@param name? string
-function Spec:rebuild(name)
-  if not name then
-    for n, _ in pairs(self.dirty) do
-      self:rebuild(n)
-    end
-    self.dirty = {}
-  end
-  local plugin = self.plugins[name]
-  if not plugin then
-    return
-  end
-
-  local fragments = {} ---@type LazyPlugin[]
-
-  repeat
-    local super = plugin._.super
-    if self.fragments[plugin._.fid] then
-      plugin._.dep = plugin._.fpid ~= nil
-      plugin._.super = nil
-      if plugin._.fdeps then
-        plugin.dependencies = {}
-        for _, cid in ipairs(plugin._.fdeps) do
-          if self.fragments[cid] then
-            table.insert(plugin.dependencies, self.fragments[cid].name)
-          end
-        end
-      end
-      setmetatable(plugin, nil)
-      table.insert(fragments, 1, plugin)
-    end
-    plugin = super
-  until not plugin
-
-  if #fragments == 0 then
-    self.plugins[name] = nil
-    return
-  end
-
-  plugin = fragments[1]
-  for i = 2, #fragments do
-    plugin = self:merge(plugin, fragments[i])
-  end
-  self.plugins[name] = plugin
-end
-
---- Recursively removes all fragments from a plugin spec or a given fragment
----@param id string|number Plugin name or fragment id
----@param opts {self: boolean}
-function Spec:remove_fragments(id, opts)
-  local fids = {} ---@type number[]
-
-  if type(id) == "number" then
-    fids[1] = id
-  else
-    local plugin = self.plugins[id]
-    repeat
-      if plugin._.fpid then
-        local parent = self.fragments[plugin._.fpid]
-        if parent then
-          parent._.fdeps = vim.tbl_filter(function(fid)
-            return fid ~= plugin._.fid
-          end, parent._.fdeps)
-          self.dirty[parent.name] = true
-        end
-      end
-      fids[#fids + 1] = plugin._.fid
-      plugin = plugin._.super
-    until not plugin
-  end
-
-  for _, fid in ipairs(fids) do
-    local fragment = self.fragments[fid]
-    if fragment then
-      for _, cid in ipairs(fragment._.fdeps or {}) do
-        self:remove_fragments(cid, { self = true })
-      end
-      if opts.self then
-        self.fragments[fid] = nil
-      end
-      self.dirty[fragment.name] = true
-    end
-  end
-end
-
-function Spec:fix_cond()
-  for _, plugin in pairs(self.plugins) do
-    local cond = plugin.cond
-    if cond == nil then
-      cond = Config.options.defaults.cond
-    end
-    if cond == false or (type(cond) == "function" and not cond(plugin)) then
-      plugin._.cond = false
-      local stack = { plugin }
-      while #stack > 0 do
-        local p = table.remove(stack)
-        if not self.ignore_installed[p.name] then
-          for _, dep in ipairs(p.dependencies or {}) do
-            table.insert(stack, self.plugins[dep])
-          end
-          self.ignore_installed[p.name] = true
-        end
-      end
-      plugin.enabled = false
-    end
-  end
-end
-
-function Spec:fix_optional()
-  if not self.optional then
-    ---@param plugin LazyPlugin
-    local function all_optional(plugin)
-      return (not plugin) or (rawget(plugin, "optional") and all_optional(plugin._.super))
-    end
-
-    -- handle optional plugins
-    for _, plugin in pairs(self.plugins) do
-      if plugin.optional and all_optional(plugin) then
-        -- remove all optional fragments
-        self:remove_fragments(plugin.name, { self = true })
-        self.plugins[plugin.name] = nil
-      end
-    end
-  end
-end
-
-function Spec:fix_disabled()
-  for _, plugin in pairs(self.plugins) do
-    if not plugin.name or not plugin.dir then
-      self:error("Plugin spec for **" .. plugin.name .. "** not found.\n```lua\n" .. vim.inspect(plugin) .. "\n```")
-      self.plugins[plugin.name] = nil
-    end
-  end
-
-  self:fix_optional()
-  self:rebuild()
-
-  self:fix_cond()
-  self:rebuild()
-
-  self.dirty = {}
-
-  for _, plugin in pairs(self.plugins) do
-    local disabled = plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled())
-    if disabled then
-      plugin._.kind = "disabled"
-      -- remove all child fragments
-      self:remove_fragments(plugin.name, { self = false })
-      self.plugins[plugin.name] = nil
-      self.disabled[plugin.name] = plugin
-    end
-  end
-  self:rebuild()
-
-  -- check optional plugins again
-  self:fix_optional()
-  self:rebuild()
 end
 
 ---@param msg string
@@ -378,25 +108,17 @@ function Spec:report(level)
 end
 
 ---@param spec LazySpec|LazySpecImport
----@param results? string[]
-function Spec:normalize(spec, results)
+function Spec:normalize(spec)
   if type(spec) == "string" then
-    if not spec:find("/", 1, true) then
-      -- spec is a plugin name
-      if results then
-        table.insert(results, spec)
-      end
-    else
-      self:add({ spec }, results)
-    end
+    self:add({ spec })
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
-      self:normalize(s, results)
+      self:normalize(s)
     end
   elseif spec[1] or spec.dir or spec.url then
-    ---@cast spec LazyPlugin
-    local plugin = self:add(spec, results)
+    ---@cast spec LazyPluginSpec
+    local plugin = self:add(spec)
     ---@diagnostic disable-next-line: cast-type-mismatch
     ---@cast plugin LazySpecImport
     if plugin and plugin.import then
@@ -408,7 +130,6 @@ function Spec:normalize(spec, results)
   else
     self:error("Invalid plugin spec " .. vim.inspect(spec))
   end
-  return results
 end
 
 ---@param spec LazySpecImport
@@ -490,41 +211,6 @@ function Spec:import(spec)
   if imported == 0 then
     self:error("No specs found for module " .. spec.import)
   end
-end
-
----@param old LazyPlugin
----@param new LazyPlugin
----@return LazyPlugin
-function Spec:merge(old, new)
-  new._.dep = old._.dep and new._.dep
-
-  if new.url and old.url and new.url ~= old.url then
-    self:warn("Two plugins with the same name and different url:\n" .. vim.inspect({ old = old, new = new }))
-  end
-
-  if new.dependencies and old.dependencies then
-    Util.extend(new.dependencies, old.dependencies)
-  end
-
-  local new_dir = new._.dir or old._.dir or (new.name and (Config.options.root .. "/" .. new.name)) or nil
-  if new_dir ~= old.dir then
-    local msg = "Plugin `" .. new.name .. "` changed `dir`:\n- from: `" .. old.dir .. "`\n- to: `" .. new_dir .. "`"
-    if new._.rtp_loaded or old._.rtp_loaded then
-      msg = msg
-        .. "\n\nThis plugin was already partially loaded, so we did not change it's `dir`.\nPlease fix your config."
-      self:error(msg)
-      new_dir = old.dir
-    else
-      self:warn(msg)
-    end
-  end
-  new.dir = new_dir
-  new._.rtp_loaded = new._.rtp_loaded or old._.rtp_loaded
-
-  new._.super = old
-  setmetatable(new, { __index = old })
-
-  return new
 end
 
 function M.update_state()
@@ -631,6 +317,7 @@ function M.load()
   Config.spec = Spec.new()
 
   local specs = {
+    ---@diagnostic disable-next-line: param-type-mismatch
     vim.deepcopy(Config.options.spec),
   }
   specs[#specs + 1] = M.find_local_spec()
@@ -655,10 +342,10 @@ function M.load()
   for name, plugin in pairs(existing) do
     if Config.plugins[name] then
       local dep = Config.plugins[name]._.dep
-      local super = Config.plugins[name]._.super
+      local frags = Config.plugins[name]._.frags
       Config.plugins[name]._ = plugin._
       Config.plugins[name]._.dep = dep
-      Config.plugins[name]._.super = super
+      Config.plugins[name]._.frags = frags
     end
   end
   Util.track()
@@ -725,8 +412,9 @@ function M._values(root, plugin, prop, is_list)
   if not plugin[prop] then
     return {}
   end
+  local super = getmetatable(plugin)
   ---@type table
-  local ret = plugin._.super and M._values(root, plugin._.super, prop, is_list) or {}
+  local ret = super and M._values(root, super.__index, prop, is_list) or {}
   local values = rawget(plugin, prop)
 
   if not values then
@@ -742,6 +430,7 @@ function M._values(root, plugin, prop, is_list)
   else
     ---@type {path:string[], list:any[]}[]
     local lists = {}
+    ---@diagnostic disable-next-line: no-unknown
     for _, key in ipairs(plugin[prop .. "_extend"] or {}) do
       local path = vim.split(key, ".", { plain = true })
       local r = Util.key_get(ret, path)

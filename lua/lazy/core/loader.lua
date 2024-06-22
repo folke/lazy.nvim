@@ -105,7 +105,7 @@ function M.startup()
   M.source(vim.env.VIMRUNTIME .. "/filetype.lua")
 
   -- backup original rtp
-  local rtp = vim.opt.rtp:get()
+  local rtp = vim.opt.rtp:get() --[[@as string[] ]]
 
   -- 1. run plugin init
   Util.track({ start = "init" })
@@ -136,7 +136,7 @@ function M.startup()
     if not path:find("after/?$") then
       -- these paths don't will already have their ftdetect ran,
       -- by sourcing filetype.lua above, so skip them
-      M.did_ftdetect[path] = true
+      M.did_ftdetect[path] = path
       M.packadd(path)
     end
   end
@@ -144,7 +144,9 @@ function M.startup()
 
   -- 4. load after plugins
   Util.track({ start = "after" })
-  for _, path in ipairs(vim.opt.rtp:get()) do
+  for _, path in
+    ipairs(vim.opt.rtp:get() --[[@as string[] ]])
+  do
     if path:find("after/?$") then
       M.source_runtime(path, "plugin")
     end

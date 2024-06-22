@@ -1,3 +1,4 @@
+---@module 'luassert'
 local Keys = require("lazy.core.handler.keys")
 
 describe("keys", function()
