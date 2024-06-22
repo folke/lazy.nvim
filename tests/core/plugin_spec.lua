@@ -6,6 +6,10 @@ local assert = require("luassert")
 
 Config.setup()
 
+local function inspect(obj)
+  return vim.inspect(obj):gsub("%s+", " ")
+end
+
 ---@param plugins LazyPlugin[]|LazyPlugin
 local function clean(plugins)
   local p = plugins
@@ -14,6 +18,7 @@ local function clean(plugins)
     plugin._.fid = nil
     plugin._.fpid = nil
     plugin._.fdeps = nil
+    plugin._.frags = nil
     if plugin._.dep == false then
       plugin._.dep = nil
     end
@@ -28,7 +33,7 @@ describe("plugin spec url/name", function()
     { { "foo/bar" }, { [1] = "foo/bar", name = "bar", url = "https://github.com/foo/bar.git" } },
     { { "https://foo.bar" }, { [1] = "https://foo.bar", name = "foo.bar", url = "https://foo.bar" } },
     { { "foo/bar", name = "foobar" }, { [1] = "foo/bar", name = "foobar", url = "https://github.com/foo/bar.git" } },
-    { { "foo/bar", url = "123" }, { [1] = "foo/bar", name = "123", url = "123" } },
+    { { "foo/bar", url = "123" }, { [1] = "foo/bar", name = "bar", url = "123" } },
     { { url = "https://foobar" }, { name = "foobar", url = "https://foobar" } },
     {
       { { url = "https://foo", name = "foobar" }, { url = "https://foo" } },
@@ -45,18 +50,22 @@ describe("plugin spec url/name", function()
 
   for _, test in ipairs(tests) do
     test[2]._ = {}
-    it("parses " .. vim.inspect(test[1]):gsub("%s+", " "), function()
+    it("parses " .. inspect(test[1]), function()
       if not test[2].dir then
         test[2].dir = Config.options.root .. "/" .. test[2].name
       end
       local spec = Plugin.Spec.new(test[1])
-      local plugins = vim.tbl_values(spec.plugins)
-      plugins[1]._ = {}
+      local all = vim.deepcopy(spec.plugins)
+      local plugins = vim.tbl_values(all)
+      plugins = vim.tbl_map(function(plugin)
+        plugin._ = {}
+        return plugin
+      end, plugins)
       local notifs = vim.tbl_filter(function(notif)
         return notif.level > 3
       end, spec.notifs)
       assert(#notifs == 0, vim.inspect(spec.notifs))
-      assert.equal(1, #plugins)
+      assert.equal(1, #plugins, vim.inspect(all))
       plugins[1]._.super = nil
       assert.same(test[2], plugins[1])
     end)
@@ -90,7 +99,40 @@ describe("plugin spec dir", function()
   for _, test in ipairs(tests) do
     local dir = vim.fn.expand(test[1])
     local input = vim.list_slice(test, 2)
-    it("parses dir " .. vim.inspect(input):gsub("%s+", " "), function()
+    it("parses dir " .. inspect(input), function()
+      local spec = Plugin.Spec.new(input)
+      local plugins = vim.tbl_values(spec.plugins)
+      assert(spec:report() == 0)
+      assert.equal(1, #plugins)
+      assert.same(dir, plugins[1].dir)
+    end)
+  end
+end)
+
+describe("plugin dev", function()
+  local tests = {
+    {
+      { "lewis6991/gitsigns.nvim", opts = {}, dev = true },
+      { "lewis6991/gitsigns.nvim" },
+    },
+    {
+      { "lewis6991/gitsigns.nvim", opts = {}, dev = true },
+      { "gitsigns.nvim" },
+    },
+    {
+      { "lewis6991/gitsigns.nvim", opts = {} },
+      { "lewis6991/gitsigns.nvim", dev = true },
+    },
+    {
+      { "lewis6991/gitsigns.nvim", opts = {} },
+      { "gitsigns.nvim", dev = true },
+    },
+  }
+
+  for _, test in ipairs(tests) do
+    local dir = vim.fn.expand("~/projects/gitsigns.nvim")
+    local input = test
+    it("parses dir " .. inspect(input), function()
       local spec = Plugin.Spec.new(input)
       local plugins = vim.tbl_values(spec.plugins)
       assert(spec:report() == 0)
@@ -126,7 +168,7 @@ describe("plugin spec opt", function()
       for _, plugin in pairs(spec.plugins) do
         plugin.dir = nil
       end
-      assert.same(clean(spec.plugins), {
+      assert.same({
         bar = {
           "foo/bar",
           _ = {},
@@ -150,7 +192,7 @@ describe("plugin spec opt", function()
           name = "dep2",
           url = "https://github.com/foo/dep2.git",
         },
-      })
+      }, clean(spec.plugins))
     end
   end)
 
@@ -369,45 +411,45 @@ describe("plugin spec opt", function()
 end)
 
 describe("plugin opts", function()
-  it("correctly parses opts", function()
-    ---@type {spec:LazySpec, opts:table}[]
-    local tests = {
-      {
-        spec = { { "foo/foo", opts = { a = 1, b = 1 } }, { "foo/foo", opts = { a = 2 } } },
-        opts = { a = 2, b = 1 },
-      },
-      {
-        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", opts = { a = 2 } } },
-        opts = { a = 2, b = 1 },
-      },
-      {
-        spec = { { "foo/foo", opts = { a = 1, b = 1 } }, { "foo/foo", config = { a = 2 } } },
-        opts = { a = 2, b = 1 },
-      },
-      {
-        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", config = { a = 2 } } },
-        opts = { a = 2, b = 1 },
-      },
-      {
-        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", config = { a = vim.NIL } } },
-        opts = { b = 1 },
-      },
-      {
-        spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo" } },
-        opts = { a = 1, b = 1 },
-      },
-      {
-        spec = { { "foo/foo" }, { "foo/foo" } },
-        opts = {},
-      },
-    }
+  ---@type {spec:LazySpec, opts:table}[]
+  local tests = {
+    {
+      spec = { { "foo/foo", opts = { a = 1, b = 1 } }, { "foo/foo", opts = { a = 2 } } },
+      opts = { a = 2, b = 1 },
+    },
+    {
+      spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", opts = { a = 2 } } },
+      opts = { a = 2, b = 1 },
+    },
+    {
+      spec = { { "foo/foo", opts = { a = 1, b = 1 } }, { "foo/foo", config = { a = 2 } } },
+      opts = { a = 2, b = 1 },
+    },
+    {
+      spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", config = { a = 2 } } },
+      opts = { a = 2, b = 1 },
+    },
+    {
+      spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo", config = { a = vim.NIL } } },
+      opts = { b = 1 },
+    },
+    {
+      spec = { { "foo/foo", config = { a = 1, b = 1 } }, { "foo/foo" } },
+      opts = { a = 1, b = 1 },
+    },
+    {
+      spec = { { "foo/foo" }, { "foo/foo" } },
+      opts = {},
+    },
+  }
 
-    for _, test in ipairs(tests) do
+  for _, test in ipairs(tests) do
+    it("correctly parses opts for " .. inspect(test.spec), function()
       local spec = Plugin.Spec.new(test.spec)
       assert(spec.plugins.foo)
       assert.same(test.opts, Plugin.values(spec.plugins.foo, "opts"))
-    end
-  end)
+    end)
+  end
 end)
 
 describe("plugin spec", function()

@@ -59,7 +59,6 @@ function M.check()
   else
     for _, plugin in pairs(spec.plugins) do
       M.check_valid(plugin)
-      M.check_override(plugin)
     end
     if #spec.notifs > 0 then
       error("Issues were reported when loading your specs:")
@@ -84,23 +83,6 @@ function M.check_valid(plugin)
       if key ~= "module" or type(plugin.module) ~= "boolean" then
         warn("{" .. plugin.name .. "}: unknown key <" .. key .. ">")
       end
-    end
-  end
-end
-
----@param plugin LazyPlugin
-function M.check_override(plugin)
-  if not plugin._.super then
-    return
-  end
-
-  local Handler = require("lazy.core.handler")
-  local skip = { "dependencies", "_", "opts", 1 }
-  vim.list_extend(skip, vim.tbl_values(Handler.types))
-
-  for key, value in pairs(plugin._.super) do
-    if not vim.tbl_contains(skip, key) and plugin[key] and plugin[key] ~= value then
-      warn("{" .. plugin.name .. "}: overriding <" .. key .. ">")
     end
   end
 end
