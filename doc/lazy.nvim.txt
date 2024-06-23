@@ -10,12 +10,12 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Structured Setup         |lazy.nvim-🛠️-installation-structured-setup|
   - Single File Setup       |lazy.nvim-🛠️-installation-single-file-setup|
 3. 🔌 Plugin Spec                               |lazy.nvim-🔌-plugin-spec|
-  - Source                                 |lazy.nvim-🔌-plugin-spec-source|
-  - Loading                               |lazy.nvim-🔌-plugin-spec-loading|
-  - Setup                                   |lazy.nvim-🔌-plugin-spec-setup|
-  - Lazy Loading                     |lazy.nvim-🔌-plugin-spec-lazy-loading|
-  - Versioning                         |lazy.nvim-🔌-plugin-spec-versioning|
-  - Advanced                             |lazy.nvim-🔌-plugin-spec-advanced|
+  - Spec Source                       |lazy.nvim-🔌-plugin-spec-spec-source|
+  - Spec Loading                     |lazy.nvim-🔌-plugin-spec-spec-loading|
+  - Spec Setup                         |lazy.nvim-🔌-plugin-spec-spec-setup|
+  - Spec Lazy Loading           |lazy.nvim-🔌-plugin-spec-spec-lazy-loading|
+  - Spec Versioning               |lazy.nvim-🔌-plugin-spec-spec-versioning|
+  - Spec Advanced                   |lazy.nvim-🔌-plugin-spec-spec-advanced|
   - Examples                             |lazy.nvim-🔌-plugin-spec-examples|
   - Lazy Loading                     |lazy.nvim-🔌-plugin-spec-lazy-loading|
   - Versioning                         |lazy.nvim-🔌-plugin-spec-versioning|
@@ -164,7 +164,7 @@ SINGLE FILE SETUP           *lazy.nvim-🛠️-installation-single-file-setup*
 3. 🔌 Plugin Spec                               *lazy.nvim-🔌-plugin-spec*
 
 
-SOURCE                                     *lazy.nvim-🔌-plugin-spec-source*
+SPEC SOURCE                           *lazy.nvim-🔌-plugin-spec-spec-source*
 
   -----------------------------------------------------------------------------------
   Property   Type       Description
@@ -185,7 +185,7 @@ SOURCE                                     *lazy.nvim-🔌-plugin-spec-source*
 A valid spec should define one of `[1]`, `dir` or `url`.
 
 
-LOADING                                   *lazy.nvim-🔌-plugin-spec-loading*
+SPEC LOADING                         *lazy.nvim-🔌-plugin-spec-spec-loading*
 
   --------------------------------------------------------------------------------------------------
   Property       Type                      Description
@@ -209,7 +209,7 @@ LOADING                                   *lazy.nvim-🔌-plugin-spec-loading*
                                            colorschemes.
   --------------------------------------------------------------------------------------------------
 
-SETUP                                       *lazy.nvim-🔌-plugin-spec-setup*
+SPEC SETUP                             *lazy.nvim-🔌-plugin-spec-spec-setup*
 
   -----------------------------------------------------------------------------------------------------
   Property   Type                          Description
@@ -244,7 +244,7 @@ SETUP                                       *lazy.nvim-🔌-plugin-spec-setup*
   rocks      string[]?                     Add any luarocks dependencies.
   -----------------------------------------------------------------------------------------------------
 
-LAZY LOADING                         *lazy.nvim-🔌-plugin-spec-lazy-loading*
+SPEC LAZY LOADING               *lazy.nvim-🔌-plugin-spec-spec-lazy-loading*
 
   --------------------------------------------------------------------------------------------------------------------
   Property   Type                                                             Description
@@ -271,7 +271,7 @@ LAZY LOADING                         *lazy.nvim-🔌-plugin-spec-lazy-loading*
 Refer to the Lazy Loading <./lazy_loading.md> section for more information.
 
 
-VERSIONING                             *lazy.nvim-🔌-plugin-spec-versioning*
+SPEC VERSIONING                   *lazy.nvim-🔌-plugin-spec-spec-versioning*
 
   ------------------------------------------------------------------------------
   Property     Type                 Description
@@ -294,7 +294,7 @@ VERSIONING                             *lazy.nvim-🔌-plugin-spec-versioning*
 Refer to the Versioning <./versioning.md> section for more information.
 
 
-ADVANCED                                 *lazy.nvim-🔌-plugin-spec-advanced*
+SPEC ADVANCED                       *lazy.nvim-🔌-plugin-spec-spec-advanced*
 
   ----------------------------------------------------------------------------------------
   Property   Type       Description
