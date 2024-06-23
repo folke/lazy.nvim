@@ -655,40 +655,40 @@ with a lazy extension in `lazy`.
 
 # 🌈 Highlight Groups
 
-| Highlight Group       | Default Group              | Description                                         |
-| --------------------- | -------------------------- | --------------------------------------------------- |
-| **LazyButton**        | **_CursorLine_**           |                                                     |
-| **LazyButtonActive**  | **_Visual_**               |                                                     |
-| **LazyComment**       | **_Comment_**              |                                                     |
-| **LazyCommit**        | **_@variable.builtin_**    | commit ref                                          |
-| **LazyCommitIssue**   | **_Number_**               |                                                     |
-| **LazyCommitScope**   | **_Italic_**               | conventional commit scope                           |
-| **LazyCommitType**    | **_Title_**                | conventional commit type                            |
-| **LazyDimmed**        | **_Conceal_**              | property                                            |
-| **LazyDir**           | **_@markup.link_**         | directory                                           |
-| **LazyH1**            | **_IncSearch_**            | home button                                         |
-| **LazyH2**            | **_Bold_**                 | titles                                              |
-| **LazyLocal**         | **_Constant_**             |                                                     |
-| **LazyNoCond**        | **_DiagnosticWarn_**       | unloaded icon for a plugin where `cond()` was false |
-| **LazyNormal**        | **_NormalFloat_**          |                                                     |
-| **LazyProgressDone**  | **_Constant_**             | progress bar done                                   |
-| **LazyProgressTodo**  | **_LineNr_**               | progress bar todo                                   |
-| **LazyProp**          | **_Conceal_**              | property                                            |
-| **LazyReasonCmd**     | **_Operator_**             |                                                     |
-| **LazyReasonEvent**   | **_Constant_**             |                                                     |
-| **LazyReasonFt**      | **_Character_**            |                                                     |
-| **LazyReasonImport**  | **_Identifier_**           |                                                     |
-| **LazyReasonKeys**    | **_Statement_**            |                                                     |
-| **LazyReasonPlugin**  | **_Special_**              |                                                     |
-| **LazyReasonRequire** | **_@variable.parameter_**  |                                                     |
-| **LazyReasonRuntime** | **_@macro_**               |                                                     |
-| **LazyReasonSource**  | **_Character_**            |                                                     |
-| **LazyReasonStart**   | **_@variable.member_**     |                                                     |
-| **LazySpecial**       | **_@punctuation.special_** |                                                     |
-| **LazyTaskError**     | **_ErrorMsg_**             | task errors                                         |
-| **LazyTaskOutput**    | **_MsgArea_**              | task output                                         |
-| **LazyUrl**           | **_@markup.link_**         | url                                                 |
-| **LazyValue**         | **_@string_**              | value of a property                                 |
+| Highlight Group | Default Group | Description |
+| --- | --- | --- |
+| **LazyButton** | ***CursorLine*** |  |
+| **LazyButtonActive** | ***Visual*** |  |
+| **LazyComment** | ***Comment*** |  |
+| **LazyCommit** | ***@variable.builtin*** | commit ref |
+| **LazyCommitIssue** | ***Number*** |  |
+| **LazyCommitScope** | ***Italic*** | conventional commit scope |
+| **LazyCommitType** | ***Title*** | conventional commit type |
+| **LazyDimmed** | ***Conceal*** | property |
+| **LazyDir** | ***@markup.link*** | directory |
+| **LazyH1** | ***IncSearch*** | home button |
+| **LazyH2** | ***Bold*** | titles |
+| **LazyLocal** | ***Constant*** |  |
+| **LazyNoCond** | ***DiagnosticWarn*** | unloaded icon for a plugin where `cond()` was false |
+| **LazyNormal** | ***NormalFloat*** |  |
+| **LazyProgressDone** | ***Constant*** | progress bar done |
+| **LazyProgressTodo** | ***LineNr*** | progress bar todo |
+| **LazyProp** | ***Conceal*** | property |
+| **LazyReasonCmd** | ***Operator*** |  |
+| **LazyReasonEvent** | ***Constant*** |  |
+| **LazyReasonFt** | ***Character*** |  |
+| **LazyReasonImport** | ***Identifier*** |  |
+| **LazyReasonKeys** | ***Statement*** |  |
+| **LazyReasonPlugin** | ***Special*** |  |
+| **LazyReasonRequire** | ***@variable.parameter*** |  |
+| **LazyReasonRuntime** | ***@macro*** |  |
+| **LazyReasonSource** | ***Character*** |  |
+| **LazyReasonStart** | ***@variable.member*** |  |
+| **LazySpecial** | ***@punctuation.special*** |  |
+| **LazyTaskError** | ***ErrorMsg*** | task errors |
+| **LazyTaskOutput** | ***MsgArea*** | task output |
+| **LazyUrl** | ***@markup.link*** | url |
+| **LazyValue** | ***@string*** | value of a property |
 
 # 🚀 Usage
 
@@ -721,24 +721,24 @@ can be enabled with `config.checker.enabled = true`.
 
 Any operation can be started from the UI, with a sub command or an API function:
 
-| Command                   | Lua                              | Description                                                                                                                                          |
-| ------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `:Lazy build {plugins}`   | `require("lazy").build(opts)`    | Rebuild a plugin                                                                                                                                     |
-| `:Lazy check [plugins]`   | `require("lazy").check(opts?)`   | Check for updates and show the log (git fetch)                                                                                                       |
-| `:Lazy clean [plugins]`   | `require("lazy").clean(opts?)`   | Clean plugins that are no longer needed                                                                                                              |
-| `:Lazy clear`             | `require("lazy").clear()`        | Clear finished tasks                                                                                                                                 |
-| `:Lazy debug`             | `require("lazy").debug()`        | Show debug information                                                                                                                               |
-| `:Lazy health`            | `require("lazy").health()`       | Run `:checkhealth lazy`                                                                                                                              |
-| `:Lazy help`              | `require("lazy").help()`         | Toggle this help page                                                                                                                                |
-| `:Lazy home`              | `require("lazy").home()`         | Go back to plugin list                                                                                                                               |
-| `:Lazy install [plugins]` | `require("lazy").install(opts?)` | Install missing plugins                                                                                                                              |
-| `:Lazy load {plugins}`    | `require("lazy").load(opts)`     | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`. Use `:Lazy! load` to skip `cond` checks.              |
-| `:Lazy log [plugins]`     | `require("lazy").log(opts?)`     | Show recent updates                                                                                                                                  |
-| `:Lazy profile`           | `require("lazy").profile()`      | Show detailed profiling                                                                                                                              |
-| `:Lazy reload {plugins}`  | `require("lazy").reload(opts)`   | Reload a plugin (experimental!!)                                                                                                                     |
+| Command | Lua | Description |
+| --- | --- | --- |
+| `:Lazy build {plugins}` | `require("lazy").build(opts)` | Rebuild a plugin |
+| `:Lazy check [plugins]` | `require("lazy").check(opts?)` | Check for updates and show the log (git fetch) |
+| `:Lazy clean [plugins]` | `require("lazy").clean(opts?)` | Clean plugins that are no longer needed |
+| `:Lazy clear` | `require("lazy").clear()` | Clear finished tasks |
+| `:Lazy debug` | `require("lazy").debug()` | Show debug information |
+| `:Lazy health` | `require("lazy").health()` | Run `:checkhealth lazy` |
+| `:Lazy help` | `require("lazy").help()` | Toggle this help page |
+| `:Lazy home` | `require("lazy").home()` | Go back to plugin list |
+| `:Lazy install [plugins]` | `require("lazy").install(opts?)` | Install missing plugins |
+| `:Lazy load {plugins}` | `require("lazy").load(opts)` | Load a plugin that has not been loaded yet. Similar to `:packadd`. Like `:Lazy load foo.nvim`. Use `:Lazy! load` to skip `cond` checks. |
+| `:Lazy log [plugins]` | `require("lazy").log(opts?)` | Show recent updates |
+| `:Lazy profile` | `require("lazy").profile()` | Show detailed profiling |
+| `:Lazy reload {plugins}` | `require("lazy").reload(opts)` | Reload a plugin (experimental!!) |
 | `:Lazy restore [plugins]` | `require("lazy").restore(opts?)` | Updates all plugins to the state in the lockfile. For a single plugin: restore it to the state in the lockfile or to a given commit under the cursor |
-| `:Lazy sync [plugins]`    | `require("lazy").sync(opts?)`    | Run install, clean and update                                                                                                                        |
-| `:Lazy update [plugins]`  | `require("lazy").update(opts?)`  | Update plugins. This will also update the lockfile                                                                                                   |
+| `:Lazy sync [plugins]` | `require("lazy").sync(opts?)` | Run install, clean and update |
+| `:Lazy update [plugins]` | `require("lazy").update(opts?)` | Update plugins. This will also update the lockfile |
 
 Any command can have a **bang** to make the command wait till it finished. For example,
 if you want to sync lazy from the cmdline, you can use:
@@ -970,4 +970,3 @@ or create a file `build.lua` or `build/init.lua` in the root of your repo.
 This file will be loaded when the plugin is installed or updated.
 
 This makes it easier for users, as they no longer need to specify a `build` command.
-
