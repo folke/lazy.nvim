@@ -6,42 +6,28 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 1. 🚀 Getting Started                       |lazy.nvim-🚀-getting-started|
   - ✨ Features                 |lazy.nvim-🚀-getting-started-✨-features|
   - ⚡️ Requirements   |lazy.nvim-🚀-getting-started-⚡️-requirements|
-2. 🛠️ Installation                       |lazy.nvim-🛠️-installation|
-  - Structured Setup         |lazy.nvim-🛠️-installation-structured-setup|
-  - Single File Setup       |lazy.nvim-🛠️-installation-single-file-setup|
-3. 🔌 Plugin Spec                               |lazy.nvim-🔌-plugin-spec|
+  - Structured Setup         |lazy.nvim-🚀-getting-started-structured-setup|
+  - Single File Setup       |lazy.nvim-🚀-getting-started-single-file-setup|
+2. 🔌 Plugin Spec                               |lazy.nvim-🔌-plugin-spec|
   - Source                                 |lazy.nvim-🔌-plugin-spec-source|
   - Loading                               |lazy.nvim-🔌-plugin-spec-loading|
   - Setup                                   |lazy.nvim-🔌-plugin-spec-setup|
   - Lazy Loading                     |lazy.nvim-🔌-plugin-spec-lazy-loading|
   - Versioning                         |lazy.nvim-🔌-plugin-spec-versioning|
   - Advanced                             |lazy.nvim-🔌-plugin-spec-advanced|
-4. Examples                                               |lazy.nvim-examples|
-5. Lazy Loading                                       |lazy.nvim-lazy-loading|
-  - 🌈 Colorschemes               |lazy.nvim-lazy-loading-🌈-colorschemes|
-  - ⌨️ Lazy Key Mappings |lazy.nvim-lazy-loading-⌨️-lazy-key-mappings|
-6. Versioning                                           |lazy.nvim-versioning|
-  - Examples                                   |lazy.nvim-versioning-examples|
-7. 📦 Packages                                     |lazy.nvim-📦-packages|
-  - Lazy                                        |lazy.nvim-📦-packages-lazy|
-  - Rockspec                                |lazy.nvim-📦-packages-rockspec|
-  - Packspec                                |lazy.nvim-📦-packages-packspec|
-8. ⚙️ Configuration                       |lazy.nvim-⚙️-configuration|
-9. 🌈 Highlight Groups                     |lazy.nvim-🌈-highlight-groups|
-10. 🚀 Usage                                          |lazy.nvim-🚀-usage|
+  - Examples                             |lazy.nvim-🔌-plugin-spec-examples|
+  - Lazy Loading                     |lazy.nvim-🔌-plugin-spec-lazy-loading|
+  - Versioning                         |lazy.nvim-🔌-plugin-spec-versioning|
+  - Lazy                                     |lazy.nvim-🔌-plugin-spec-lazy|
+  - Rockspec                             |lazy.nvim-🔌-plugin-spec-rockspec|
+  - Packspec                             |lazy.nvim-🔌-plugin-spec-packspec|
+  - 🌈 Highlight Groups   |lazy.nvim-🔌-plugin-spec-🌈-highlight-groups|
+3. 🚀 Usage                                           |lazy.nvim-🚀-usage|
   - ▶️ Startup Sequence     |lazy.nvim-🚀-usage-▶️-startup-sequence|
   - 🚀 Commands                         |lazy.nvim-🚀-usage-🚀-commands|
   - 📆 User Events                   |lazy.nvim-🚀-usage-📆-user-events|
   - ❌ Uninstalling                   |lazy.nvim-🚀-usage-❌-uninstalling|
-11. 🔒 Lockfile                                    |lazy.nvim-🔒-lockfile|
-12. 📦 Migration Guide                      |lazy.nvim-📦-migration-guide|
-  - packer.nvim                   |lazy.nvim-📦-migration-guide-packer.nvim|
-  - paq-nvim                         |lazy.nvim-📦-migration-guide-paq-nvim|
-13. ⚡ Profiling & Debug                    |lazy.nvim-⚡-profiling-&-debug|
-  - 🐛 Debug                    |lazy.nvim-⚡-profiling-&-debug-🐛-debug|
-14. 📂 Structuring Your Plugins    |lazy.nvim-📂-structuring-your-plugins|
-15. 📚 Plugin Developers                  |lazy.nvim-📚-plugin-developers|
-16. Links                                                    |lazy.nvim-links|
+4. Links                                                     |lazy.nvim-links|
 
 ==============================================================================
 1. 🚀 Getting Started                       *lazy.nvim-🚀-getting-started*
@@ -75,10 +61,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Git >= **2.19.0** (for partial clones support)
 - a Nerd Font <https://www.nerdfonts.com/> **(optional)**
-
-
-==============================================================================
-2. 🛠️ Installation                       *lazy.nvim-🛠️-installation*
+    # 🛠️ Installation
 
 import Tabs from "@theme/Tabs"; import TabItem from "@theme/TabItem";
 
@@ -92,7 +75,7 @@ all available options.
 
 
 
-STRUCTURED SETUP             *lazy.nvim-🛠️-installation-structured-setup*
+STRUCTURED SETUP             *lazy.nvim-🚀-getting-started-structured-setup*
 
 >lua
     require("config.lazy")
@@ -135,7 +118,7 @@ file should return a table with the plugins you want to install.
 For more info see Structuring Your Plugins </usage/structuring>
 
 
-SINGLE FILE SETUP           *lazy.nvim-🛠️-installation-single-file-setup*
+SINGLE FILE SETUP           *lazy.nvim-🚀-getting-started-single-file-setup*
 
 >lua
     -- Bootstrap lazy.nvim
@@ -169,7 +152,7 @@ SINGLE FILE SETUP           *lazy.nvim-🛠️-installation-single-file-setup*
 
 
 ==============================================================================
-3. 🔌 Plugin Spec                               *lazy.nvim-🔌-plugin-spec*
+2. 🔌 Plugin Spec                               *lazy.nvim-🔌-plugin-spec*
 
 
 SOURCE                                     *lazy.nvim-🔌-plugin-spec-source*
@@ -326,8 +309,7 @@ ADVANCED                                 *lazy.nvim-🔌-plugin-spec-advanced*
   import     string?    Import the given spec module.
   ----------------------------------------------------------------------------------------
 
-==============================================================================
-4. Examples                                               *lazy.nvim-examples*
+EXAMPLES                                 *lazy.nvim-🔌-plugin-spec-examples*
 
 >lua
     return {
@@ -420,8 +402,7 @@ ADVANCED                                 *lazy.nvim-🔌-plugin-spec-advanced*
 <
 
 
-==============================================================================
-5. Lazy Loading                                       *lazy.nvim-lazy-loading*
+LAZY LOADING                         *lazy.nvim-🔌-plugin-spec-lazy-loading*
 
 **lazy.nvim** automagically lazy-loads Lua modules. This means that if you have
 a plugin `A` that is lazy-loaded and a plugin `B` that requires a module of
@@ -438,14 +419,14 @@ Plugins will be lazy-loaded when one of the following is `true`:
 - `config.defaults.lazy == true`
 
 
-🌈 COLORSCHEMES                   *lazy.nvim-lazy-loading-🌈-colorschemes*
+🌈 COLORSCHEMES ~
 
 Colorscheme plugins can be configured with `lazy=true`. The plugin will
 automagically load when doing `colorscheme foobar`.
 
 
 
-⌨️ LAZY KEY MAPPINGS     *lazy.nvim-lazy-loading-⌨️-lazy-key-mappings*
+⌨️ LAZY KEY MAPPINGS ~
 
 The `keys` property can be a `string` or `string[]` for simple normal-mode
 mappings, or it can be a `LazyKeysSpec` table with the following key-value
@@ -476,8 +457,7 @@ function.
 <
 
 
-==============================================================================
-6. Versioning                                           *lazy.nvim-versioning*
+VERSIONING                             *lazy.nvim-🔌-plugin-spec-versioning*
 
 If you want to install a specific revision of a plugin, you can use `commit`,
 `tag`, `branch`, `version`.
@@ -486,7 +466,7 @@ The `version` property supports Semver <https://semver.org/> ranges.
 
 
 
-EXAMPLES                                       *lazy.nvim-versioning-examples*
+EXAMPLES ~
 
 - `*`: latest stable version (this excludes pre-release versions)
 - `1.2.x`: any version that starts with `1.2`, such as `1.2.0`, `1.2.3`, etc.
@@ -496,10 +476,7 @@ EXAMPLES                                       *lazy.nvim-versioning-examples*
 - `>=1.2.3`: any version that is greater than or equal to `1.2.3`, such as `1.2.3`, `1.3.0`, `1.4.5`, etc.
 - `<1.2.3`: any version that is less than `1.2.3`, such as `1.1.0`, `1.0.5`, etc.
 - `<=1.2.3`: any version that is less than or equal to `1.2.3`, such as `1.2.3`, `1.1.0`, `1.0.5`, etc
-
-
-==============================================================================
-7. 📦 Packages                                     *lazy.nvim-📦-packages*
+    # 📦 Packages
 
 **lazy.nvim** supports three ways for plugins to define their dependencies and
 configuration.
@@ -514,28 +491,24 @@ finds a package will be used.
 
 
 
-LAZY                                            *lazy.nvim-📦-packages-lazy*
+LAZY                                         *lazy.nvim-🔌-plugin-spec-lazy*
 
 Using a `lazy.lua` file is the recommended way to define your plugin
 dependencies and configuration. Syntax is the same as any plugin spec.
 
 
-ROCKSPEC                                    *lazy.nvim-📦-packages-rockspec*
+ROCKSPEC                                 *lazy.nvim-🔌-plugin-spec-rockspec*
 
 When a plugin contains a `*-scm-1.rockspec` file, **lazy.nvim** will
 automatically load its `rocks` </spec#setup> dependencies.
 
 
-PACKSPEC                                    *lazy.nvim-📦-packages-packspec*
+PACKSPEC                                 *lazy.nvim-🔌-plugin-spec-packspec*
 
 Supports the pkg.json
 <https://github.com/nvim-lua/nvim-package-specification/issues/41> format, with
 a lazy extension in `lazy`. `lazy` can contain any valid lazy spec fields. They
-will be added to the plugin’s spec.
-
-
-==============================================================================
-8. ⚙️ Configuration                       *lazy.nvim-⚙️-configuration*
+will be added to the plugin’s spec. # ⚙️ Configuration
 
 **lazy.nvim** comes with the following defaults:
 
@@ -763,8 +736,7 @@ If you don’t want to use a Nerd Font, you can replace the icons with Unicode s
 <
 
 
-==============================================================================
-9. 🌈 Highlight Groups                     *lazy.nvim-🌈-highlight-groups*
+🌈 HIGHLIGHT GROUPS       *lazy.nvim-🔌-plugin-spec-🌈-highlight-groups*
 
   -----------------------------------------------------------------------
   Highlight Group         Default Group           Description
@@ -839,7 +811,7 @@ If you don’t want to use a Nerd Font, you can replace the icons with Unicode s
   -----------------------------------------------------------------------
 
 ==============================================================================
-10. 🚀 Usage                                          *lazy.nvim-🚀-usage*
+3. 🚀 Usage                                           *lazy.nvim-🚀-usage*
 
 
 ▶️ STARTUP SEQUENCE         *lazy.nvim-🚀-usage-▶️-startup-sequence*
@@ -1013,11 +985,7 @@ directories:
 - **lockfile**: `~/.config/nvim/lazy-lock.json`
 
 
-  Paths can differ if you changed `XDG` environment variables.
-
-==============================================================================
-11. 🔒 Lockfile                                    *lazy.nvim-🔒-lockfile*
-
+  Paths can differ if you changed `XDG` environment variables. ## 🔒 Lockfile
 After every **update**, the local lockfile (`lazy-lock.json`) is updated with
 the installed revisions. It is recommended to have this file under version
 control.
@@ -1026,14 +994,10 @@ If you use your Neovim config on multiple machines, using the lockfile, you can
 ensure that the same version of every plugin is installed.
 
 If you are on another machine, you can do `:Lazy restore`, to update all your
-plugins to the version from the lockfile.
+plugins to the version from the lockfile. ## 📦 Migration Guide
 
 
-==============================================================================
-12. 📦 Migration Guide                      *lazy.nvim-📦-migration-guide*
-
-
-PACKER.NVIM                       *lazy.nvim-📦-migration-guide-packer.nvim*
+PACKER.NVIM ~
 
 - `setup` ➡️ `init`
 - `requires` ➡️ `dependencies`
@@ -1065,15 +1029,12 @@ as `dependencies` will always be lazy-loaded and loaded when the plugin is
 loaded.
 
 
-PAQ-NVIM                             *lazy.nvim-📦-migration-guide-paq-nvim*
+PAQ-NVIM ~
 
 - `as` ➡️ `name`
 - `opt` ➡️ `lazy`
 - `run` ➡️ `build`
-
-
-==============================================================================
-13. ⚡ Profiling & Debug                    *lazy.nvim-⚡-profiling-&-debug*
+    ## ⚡ Profiling & Debug
 
 Great care has been taken to make the startup code (`lazy.core`) as efficient
 as possible. During startup, all Lua files used before `VimEnter` or
@@ -1088,14 +1049,12 @@ improve performance. The profiling view shows you why and how long it took to
 load your plugins.
 
 
-🐛 DEBUG                        *lazy.nvim-⚡-profiling-&-debug-🐛-debug*
+🐛 DEBUG ~
 
 See an overview of active lazy-loading handlers and what’s in the module
 cache.
 
-
-==============================================================================
-14. 📂 Structuring Your Plugins    *lazy.nvim-📂-structuring-your-plugins*
+## 📂 Structuring Your Plugins
 
 Some users may want to split their plugin specs in multiple files. Instead of
 passing a spec table to `setup()`, you can use a Lua module. The specs from the
@@ -1135,7 +1094,7 @@ For a real-life example, you can check LazyVim
 - lazyvim.plugins <https://github.com/LazyVim/LazyVim/tree/main/lua/lazyvim/plugins> contains all the plugin specs that will be loaded
 
 
-↩️ IMPORTING SPECS, CONFIG & OPTS ~
+↩️ IMPORTING SPECS, CONFIG & OPTS
 
 As part of a spec, you can add `import` statements to import additional plugin
 modules. Both of the `setup()` calls are equivalent:
@@ -1164,11 +1123,7 @@ same plugin to your local specs, adding any keys you want to override / merge.
 
 `opts`, `dependencies`, `cmd`, `event`, `ft` and `keys` are always merged with
 the parent spec. Any other property will override the property from the parent
-spec.
-
-
-==============================================================================
-15. 📚 Plugin Developers                  *lazy.nvim-📚-plugin-developers*
+spec. # 📚 Plugin Developers
 
 To make it easier for users to install your plugin, you can include a package
 spec </packages> in your repo.
@@ -1181,7 +1136,7 @@ This makes it easier for users, as they no longer need to specify a `build`
 command.
 
 ==============================================================================
-16. Links                                                    *lazy.nvim-links*
+4. Links                                                     *lazy.nvim-links*
 
 1. *image*: https://user-images.githubusercontent.com/292349/208301737-68fb279c-ba70-43ef-a369-8c3e8367d6b1.png
 2. *@theme/Tabs*: 
