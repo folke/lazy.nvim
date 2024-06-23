@@ -120,6 +120,11 @@ function M.readme()
   end)
   local text = ""
   for _, md in ipairs(mds) do
+    local _, level = md:gsub("/", "")
+    level = level - 1
+    if md:match("index") then
+      level = level - 1
+    end
     local t = Util.read_file(md) .. "\n\n"
     -- remove frontmatter
     t = t:gsub("^%-%-%-.-%-%-%-\n", "")
@@ -134,7 +139,10 @@ function M.readme()
     t = t:gsub('[ \t]*<TabItem value="([^"]+)" label="([^"]+)">', "## %2")
     t = t:gsub("</?TabItem>", "")
     t = t:gsub("\n%s*\n", "\n\n")
-    text = text .. t
+    t = "\n" .. t
+    -- fix headings
+    t = t:gsub("\n#", "\n" .. ("#"):rep(level + 1))
+    text = text .. "\n" .. vim.trim(t)
   end
   text = vim.trim(text)
   Util.write_file("README.md", text)

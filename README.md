@@ -29,7 +29,6 @@
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Git >= **2.19.0** (for partial clones support)
 - a [Nerd Font](https://www.nerdfonts.com/) **_(optional)_**
-
 # 🛠️ Installation
 
 import Tabs from "@theme/Tabs";
@@ -140,7 +139,6 @@ require("lazy").setup({
   checker = { enabled = true },
 })
 ```
-
 # 🔌 Plugin Spec
 
 ## Source
@@ -208,8 +206,7 @@ Refer to the [Versioning](./versioning.md) section for more information.
 | **specs**    | `LazySpec` | A list of plugin specs defined in the scope of the plugin. This is mainly useful for Neovim distros, to allow setting options on plugins that may/may not be part of the user's plugins. When the plugin is disabled, none of the scoped specs will be included in the final spec. Similar to `dependencies` without the automatic loading of the specs. |
 | **module**   | `false?`   | Do not automatically load this Lua module when it's required somewhere                                                                                                                                                                                                                                                                                   |
 | **import**   | `string?`  | Import the given spec module.                                                                                                                                                                                                                                                                                                                            |
-
-# Examples
+## Examples
 
 ```lua
 return {
@@ -300,8 +297,7 @@ return {
   { "folke/noice.nvim", dev = true },
 }
 ```
-
-# Lazy Loading
+## Lazy Loading
 
 **lazy.nvim** automagically lazy-loads Lua modules. This means that if
 you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
@@ -324,7 +320,7 @@ Plugins will be lazy-loaded when one of the following is `true`:
 - It has an `event`, `cmd`, `ft` or `keys` key
 - `config.defaults.lazy == true`
 
-## 🌈 Colorschemes
+### 🌈 Colorschemes
 
 Colorscheme plugins can be configured with `lazy=true`. The plugin will automagically load
 when doing `colorscheme foobar`.
@@ -337,7 +333,7 @@ To ensure this you can use the `priority=1000` field. **_(see the [examples](./e
 
 :::
 
-## ⌨️ Lazy Key Mappings
+### ⌨️ Lazy Key Mappings
 
 The `keys` property can be a `string` or `string[]` for simple normal-mode mappings, or it
 can be a `LazyKeysSpec` table with the following key-value pairs:
@@ -364,8 +360,7 @@ When `[2]` is `nil`, then the real mapping has to be created by the `config()` f
     end,
 }
 ```
-
-# Versioning
+## Versioning
 
 If you want to install a specific revision of a plugin, you can use `commit`,
 `tag`, `branch`, `version`.
@@ -379,7 +374,7 @@ version of plugins that support Semver.
 
 :::
 
-## Examples
+### Examples
 
 - `*`: latest stable version (this excludes pre-release versions)
 - `1.2.x`: any version that starts with `1.2`, such as `1.2.0`, `1.2.3`, etc.
@@ -389,7 +384,6 @@ version of plugins that support Semver.
 - `>=1.2.3`: any version that is greater than or equal to `1.2.3`, such as `1.2.3`, `1.3.0`, `1.4.5`, etc.
 - `<1.2.3`: any version that is less than `1.2.3`, such as `1.1.0`, `1.0.5`, etc.
 - `<=1.2.3`: any version that is less than or equal to `1.2.3`, such as `1.2.3`, `1.1.0`, `1.0.5`, etc
-
 # 📦 Packages
 
 **lazy.nvim** supports three ways for plugins to define their dependencies and configuration.
@@ -422,7 +416,6 @@ When a plugin contains a `*-scm-1.rockspec` file, **lazy.nvim** will automatical
 Supports the [pkg.json](https://github.com/nvim-lua/nvim-package-specification/issues/41) format,
 with a lazy extension in `lazy`.
 `lazy` can contain any valid lazy spec fields. They will be added to the plugin's spec.
-
 # ⚙️ Configuration
 
 **lazy.nvim** comes with the following defaults:
@@ -652,8 +645,7 @@ with a lazy extension in `lazy`.
 ```
 
 </details>
-
-# 🌈 Highlight Groups
+## 🌈 Highlight Groups
 
 | Highlight Group | Default Group | Description |
 | --- | --- | --- |
@@ -689,7 +681,6 @@ with a lazy extension in `lazy`.
 | **LazyTaskOutput** | ***MsgArea*** | task output |
 | **LazyUrl** | ***@markup.link*** | url |
 | **LazyValue** | ***@string*** | value of a property |
-
 # 🚀 Usage
 
 ## ▶️ Startup Sequence
@@ -826,8 +817,7 @@ To uninstall **lazy.nvim**, you need to remove the following files and directori
 - **lockfile**: `~/.config/nvim/lazy-lock.json`
 
 > Paths can differ if you changed `XDG` environment variables.
-
-# 🔒 Lockfile
+## 🔒 Lockfile
 
 After every **update**, the local lockfile (`lazy-lock.json`) is updated with the installed revisions.
 It is recommended to have this file under version control.
@@ -837,10 +827,9 @@ ensure that the same version of every plugin is installed.
 
 If you are on another machine, you can do `:Lazy restore`, to update all your plugins to
 the version from the lockfile.
+## 📦 Migration Guide
 
-# 📦 Migration Guide
-
-## [packer.nvim](https://github.com/wbthomason/packer.nvim)
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 - `setup` ➡️ `init`
 - `requires` ➡️ `dependencies`
@@ -869,13 +858,12 @@ With lazy, this isn't needed for most of the Lua dependencies. They can be insta
 The `dependencies` key can be used to group those required plugins with the one that requires them.
 The plugins which are added as `dependencies` will always be lazy-loaded and loaded when the plugin is loaded.
 
-## [paq-nvim](https://github.com/savq/paq-nvim)
+### [paq-nvim](https://github.com/savq/paq-nvim)
 
 - `as` ➡️ `name`
 - `opt` ➡️ `lazy`
 - `run` ➡️ `build`
-
-# ⚡ Profiling & Debug
+## ⚡ Profiling & Debug
 
 Great care has been taken to make the startup code (`lazy.core`) as efficient as possible.
 During startup, all Lua files used before `VimEnter` or `BufReadPre` are byte-compiled and cached,
@@ -888,13 +876,12 @@ The profiling view shows you why and how long it took to load your plugins.
 
 ![image](https://user-images.githubusercontent.com/292349/208301766-5c400561-83c3-4811-9667-1ec4bb3c43b8.png)
 
-## 🐛 Debug
+### 🐛 Debug
 
 See an overview of active lazy-loading handlers and what's in the module cache.
 
 ![image](https://user-images.githubusercontent.com/292349/208301790-7eedbfa5-d202-4e70-852e-de68aa47233b.png)
-
-# 📂 Structuring Your Plugins
+## 📂 Structuring Your Plugins
 
 Some users may want to split their plugin specs in multiple files.
 Instead of passing a spec table to `setup()`, you can use a Lua module.
@@ -931,7 +918,7 @@ For a real-life example, you can check [LazyVim](https://github.com/LazyVim/Lazy
 
 - [lazyvim.plugins](https://github.com/LazyVim/LazyVim/tree/main/lua/lazyvim/plugins) contains all the plugin specs that will be loaded
 
-### ↩️ Importing Specs, `config` & `opts`
+#### ↩️ Importing Specs, `config` & `opts`
 
 As part of a spec, you can add `import` statements to import additional plugin modules.
 Both of the `setup()` calls are equivalent:
@@ -960,7 +947,6 @@ specs, adding any keys you want to override / merge.
 
 `opts`, `dependencies`, `cmd`, `event`, `ft` and `keys` are always merged with the parent spec.
 Any other property will override the property from the parent spec.
-
 # 📚 Plugin Developers
 
 To make it easier for users to install your plugin, you can include a [package spec](/packages) in your repo.
