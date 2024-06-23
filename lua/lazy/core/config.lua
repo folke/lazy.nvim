@@ -7,8 +7,13 @@ local M = {}
 M.defaults = {
   root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
   defaults = {
+    -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
+    -- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
     lazy = false, -- should plugins be lazy-loaded?
-    version = nil,
+    -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
+    -- have outdated releases, which may break your Neovim install.
+    version = nil, -- always use the latest git commit
+    -- version = "*", -- try installing the latest stable version for plugins that support semver
     -- default `cond` you can use to globally disable a lot of plugins
     -- when running inside vscode for example
     cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
