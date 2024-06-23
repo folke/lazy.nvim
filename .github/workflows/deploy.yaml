@@ -43,6 +43,39 @@ jobs:
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
+  sync-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout docs branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs
+
+      - name: Copy docs and README.md
+        run: |
+          mkdir -p temp-docs
+          cp -r doc/ temp-docs/
+          cp README.md temp-docs/
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: pkg
+
+      - name: Copy to main branch
+        run: |
+          cp -r temp-docs/doc/ .
+          cp temp-docs/README.md .
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add doc/ README.md
+          git commit -m 'docs: update docs and README.md from docs branch'
+          git push
+
   docusaurus:
     name: Build Docusaurus
     needs: build
