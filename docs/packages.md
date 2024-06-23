@@ -9,6 +9,9 @@ sidebar_position: 4
 - **Rockspec**: [luarocks](https://luarocks.org/) `*-scm-1.rockspec` [file](https://github.com/luarocks/luarocks/wiki/Rockspec-format)
 - **Packspec**: `pkg.json` (experimental, since the [format](https://github.com/neovim/packspec/issues/41) is not quite there yet)
 
+You can enable/disable package sources with [`config.pkg.sources`](/configuration).
+The order of sources is important, as the first source that finds a package will be used.
+
 :::info
 
 Package specs are always loaded in the scope of the plugin (using [specs](/spec#advanced)),
