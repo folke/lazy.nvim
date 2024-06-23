@@ -48,6 +48,7 @@ function M.update()
     end
   end
   local code = "return " .. Util.dump({ version = M.VERSION, specs = M.cache })
+  vim.fn.mkdir(vim.fn.fnamemodify(Config.options.pkg.cache, ":h"), "p")
   Util.write_file(Config.options.pkg.cache, code)
   M.dirty = false
   M.cache = nil
