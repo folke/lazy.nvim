@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.24.3](https://github.com/folke/lazy.nvim/compare/v10.24.2...v10.24.3) (2024-06-23)
+
+
+### Bug Fixes
+
+* **util:** dump ([025520d](https://github.com/folke/lazy.nvim/commit/025520d083c61baa7cd1f45807f5fe1ac9fbb50d))
+
 ## [10.24.2](https://github.com/folke/lazy.nvim/compare/v10.24.1...v10.24.2) (2024-06-16)
 
 
