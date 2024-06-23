@@ -29,24 +29,27 @@ function M.get(plugin)
   end
 
   ---@type RockSpec?
+  ---@diagnostic disable-next-line: missing-fields
   local rockspec = {}
-  local ret, err = loadfile(rockspec_file, "t", rockspec)
-  if not ret then
+  local load, err = loadfile(rockspec_file, "t", rockspec)
+  if not load then
     error(err)
   end
-  ret()
-  return rockspec
-      and rockspec.package
+  load()
+
+  ---@param dep string
+  local rocks = vim.tbl_filter(function(dep)
+    local name = dep:gsub("%s.*", "")
+    return not vim.tbl_contains(M.skip, name)
+  end, rockspec and rockspec.dependencies or {})
+
+  return #rocks > 0
       and {
         source = "rockspec",
         file = rockspec_file,
         spec = {
-          dir = plugin.dir,
-          url = plugin.url,
-          rocks = vim.tbl_filter(function(dep)
-            local name = dep:gsub("%s.*", "")
-            return not vim.tbl_contains(M.skip, name)
-          end, rockspec.dependencies),
+          plugin.name,
+          rocks = rocks,
         },
       }
     or nil

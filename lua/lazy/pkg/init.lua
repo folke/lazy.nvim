@@ -7,6 +7,7 @@ local M = {}
 
 ---@class LazyPkg
 ---@field source string
+---@field name string
 ---@field file string
 ---@field spec? LazySpec
 ---@field chunk? string|fun():LazySpec
@@ -30,6 +31,7 @@ function M.update()
     for _, source in ipairs(sources) do
       local spec = source.get(plugin)
       if spec then
+        spec.name = plugin.name
         if type(spec.chunk) == "function" then
           spec.chunk = string.dump(spec.chunk)
         end
@@ -76,6 +78,25 @@ function M.get(plugin)
     end
     ret.spec = ret.chunk()
     ret.chunk = nil
+  end
+
+  return ret
+end
+
+function M.spec()
+  if not M.cache then
+    _load()
+  end
+  ---@type table<string,LazyPluginSpec>
+  local ret = {}
+
+  for dir in pairs(M.cache) do
+    local pkg = M.get({ dir = dir })
+    local spec = pkg and pkg.spec
+    if pkg and spec then
+      spec = type(spec) == "table" and vim.deepcopy(spec) or spec
+      ret[dir] = { pkg.name, specs = spec }
+    end
   end
 
   return ret
