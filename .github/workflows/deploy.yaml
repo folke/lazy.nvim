@@ -69,13 +69,13 @@ jobs:
           cp -r /tmp/temp-docs/doc/ .
           cp /tmp/temp-docs/README.md .
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add doc/ README.md
-          git commit -m 'docs: update docs and README.md from docs branch'
-          git push
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(build): auto-generate docs"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
   docusaurus:
     name: Build Docusaurus
