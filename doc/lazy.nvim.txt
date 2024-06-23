@@ -1,307 +1,324 @@
-*lazy.nvim.txt*          For Neovim >= 0.8.0         Last change: 2024 June 23
+*lazy.nvim.txt*                             A modern plugin manager for Neovim
 
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
 
-1. lazy.nvim                                             |lazy.nvim-lazy.nvim|
-  - Features                                    |lazy.nvim-lazy.nvim-features|
-  - Requirements                            |lazy.nvim-lazy.nvim-requirements|
-  - Installation                            |lazy.nvim-lazy.nvim-installation|
-  - Plugin Spec                              |lazy.nvim-lazy.nvim-plugin-spec|
-  - Configuration                          |lazy.nvim-lazy.nvim-configuration|
-  - Usage                                          |lazy.nvim-lazy.nvim-usage|
-  - Lockfile lazy-lock.json      |lazy.nvim-lazy.nvim-lockfile-lazy-lock.json|
-  - Performance                              |lazy.nvim-lazy.nvim-performance|
-  - Debug                                          |lazy.nvim-lazy.nvim-debug|
-  - Startup Sequence                    |lazy.nvim-lazy.nvim-startup-sequence|
-  - Structuring Your Plugins    |lazy.nvim-lazy.nvim-structuring-your-plugins|
-  - Migration Guide                      |lazy.nvim-lazy.nvim-migration-guide|
-  - Uninstalling                            |lazy.nvim-lazy.nvim-uninstalling|
-  - Highlight Groups                    |lazy.nvim-lazy.nvim-highlight-groups|
-  - Plugin Authors                        |lazy.nvim-lazy.nvim-plugin-authors|
-  - Other Neovim Plugin Managers in Lua|lazy.nvim-lazy.nvim-other-neovim-plugin-managers-in-lua|
-2. Links                                                     |lazy.nvim-links|
+1. 🚀 Getting Started                       |lazy.nvim-🚀-getting-started|
+  - ✨ Features                 |lazy.nvim-🚀-getting-started-✨-features|
+  - ⚡️ Requirements   |lazy.nvim-🚀-getting-started-⚡️-requirements|
+2. 🛠️ Installation                       |lazy.nvim-🛠️-installation|
+  - Structured Setup         |lazy.nvim-🛠️-installation-structured-setup|
+  - Single File Setup       |lazy.nvim-🛠️-installation-single-file-setup|
+3. 🔌 Plugin Spec                               |lazy.nvim-🔌-plugin-spec|
+  - Spec Source                       |lazy.nvim-🔌-plugin-spec-spec-source|
+  - Spec Loading                     |lazy.nvim-🔌-plugin-spec-spec-loading|
+  - Spec Setup                         |lazy.nvim-🔌-plugin-spec-spec-setup|
+  - Spec Lazy Loading           |lazy.nvim-🔌-plugin-spec-spec-lazy-loading|
+  - Spec Versioning               |lazy.nvim-🔌-plugin-spec-spec-versioning|
+  - Spec Advanced                   |lazy.nvim-🔌-plugin-spec-spec-advanced|
+  - Examples                             |lazy.nvim-🔌-plugin-spec-examples|
+  - Lazy Loading                     |lazy.nvim-🔌-plugin-spec-lazy-loading|
+  - Versioning                         |lazy.nvim-🔌-plugin-spec-versioning|
+4. 📦 Packages                                     |lazy.nvim-📦-packages|
+  - Lazy                                        |lazy.nvim-📦-packages-lazy|
+  - Rockspec                                |lazy.nvim-📦-packages-rockspec|
+  - Packspec                                |lazy.nvim-📦-packages-packspec|
+5. ⚙️ Configuration                       |lazy.nvim-⚙️-configuration|
+  - 🌈 Highlight Groups|lazy.nvim-⚙️-configuration-🌈-highlight-groups|
+6. 🚀 Usage                                           |lazy.nvim-🚀-usage|
+  - ▶️ Startup Sequence     |lazy.nvim-🚀-usage-▶️-startup-sequence|
+  - 🚀 Commands                         |lazy.nvim-🚀-usage-🚀-commands|
+  - 📆 User Events                   |lazy.nvim-🚀-usage-📆-user-events|
+  - ❌ Uninstalling                   |lazy.nvim-🚀-usage-❌-uninstalling|
+  - 🔒 Lockfile                         |lazy.nvim-🚀-usage-🔒-lockfile|
+  - 📦 Migration Guide           |lazy.nvim-🚀-usage-📦-migration-guide|
+  - ⚡ Profiling & Debug         |lazy.nvim-🚀-usage-⚡-profiling-&-debug|
+  - 📂 Structuring Your Plugins|lazy.nvim-🚀-usage-📂-structuring-your-plugins|
+7. 📚 Plugin Developers                   |lazy.nvim-📚-plugin-developers|
+8. Links                                                     |lazy.nvim-links|
 
 ==============================================================================
-1. lazy.nvim                                             *lazy.nvim-lazy.nvim*
+1. 🚀 Getting Started                       *lazy.nvim-🚀-getting-started*
 
 **lazy.nvim** is a modern plugin manager for Neovim.
 
 
-FEATURES                                        *lazy.nvim-lazy.nvim-features*
+✨ FEATURES                     *lazy.nvim-🚀-getting-started-✨-features*
 
-- Manage all your Neovim plugins with a powerful UI
-- Fast startup times thanks to automatic caching and bytecode compilation of Lua modules
-- Partial clones instead of shallow clones
-- Automatic lazy-loading of Lua modules and lazy-loading on events, commands, filetypes, and key mappings
-- Automatically install missing plugins before starting up Neovim, allowing you to start using it right away
-- Async execution for improved performance
-- No need to manually compile plugins
-- Correct sequencing of dependencies
-- Configurable in multiple files
-- Generates helptags of the headings in `README.md` files for plugins that don’t have vimdocs
-- Dev options and patterns for using local plugins
-- Profiling tools to optimize performance
-- Lockfile `lazy-lock.json` to keep track of installed plugins
-- Automatically check for updates
-- Commit, branch, tag, version, and full Semver <https://devhints.io/semver> support
-- Statusline component to see the number of pending updates
-- Automatically lazy-loads colorschemes
+- 📦 Manage all your Neovim plugins with a powerful UI
+- 🚀 Fast startup times thanks to automatic caching and bytecode compilation of Lua modules
+- 💾 Partial clones instead of shallow clones
+- 🔌 Automatic lazy-loading of Lua modules and lazy-loading on events, commands, filetypes, and key mappings
+- ⏳ Automatically install missing plugins before starting up Neovim, allowing you to start using it right away
+- 💪 Async execution for improved performance
+- 🛠️ No need to manually compile plugins
+- 🧪 Correct sequencing of dependencies
+- 📁 Configurable in multiple files
+- 📚 Generates helptags of the headings in `README.md` files for plugins that don’t have vimdocs
+- 💻 Dev options and patterns for using local plugins
+- 📊 Profiling tools to optimize performance
+- 🔒 Lockfile `lazy-lock.json` to keep track of installed plugins
+- 🔎 Automatically check for updates
+- 📋 Commit, branch, tag, version, and full Semver <https://devhints.io/semver> support
+- 📈 Statusline component to see the number of pending updates
+- 🎨 Automatically lazy-loads colorschemes
 
 
-REQUIREMENTS                                *lazy.nvim-lazy.nvim-requirements*
+⚡️ REQUIREMENTS       *lazy.nvim-🚀-getting-started-⚡️-requirements*
 
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Git >= **2.19.0** (for partial clones support)
 - a Nerd Font <https://www.nerdfonts.com/> **(optional)**
 
 
-INSTALLATION                                *lazy.nvim-lazy.nvim-installation*
+==============================================================================
+2. 🛠️ Installation                       *lazy.nvim-🛠️-installation*
 
-You can add the following Lua code to your `init.lua` to bootstrap
-**lazy.nvim**
+There are multiple ways to install **lazy.nvim**. The **Structured Setup** is
+the recommended way, but you can also use the **Single File Setup** if you
+prefer to keep everything in your `init.lua`.
+
+Please refer to the Configuration </configuration> section for an overview of
+all available options.
+
+
+
+
+STRUCTURED SETUP             *lazy.nvim-🛠️-installation-structured-setup*
 
 >lua
+    require("config.lazy")
+<
+
+>lua
+    -- Bootstrap lazy.nvim
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
     if not (vim.uv or vim.loop).fs_stat(lazypath) then
-      vim.fn.system({
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- latest stable release
-        lazypath,
-      })
+      local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+      vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
     end
     vim.opt.rtp:prepend(lazypath)
-<
-
-Nextstep is to add **lazy.nvim** below the code added in the prior step in
-`init.lua`
-
->lua
-    require("lazy").setup(plugins, opts)
-<
-
-- **plugins**this should be a `table` or a `string`
-    - `table`a list with your |lazy.nvim-plugin-spec|
-    - `string`a Lua module name that contains your |lazy.nvim-plugin-spec|. See |lazy.nvim-structuring-your-plugins|
-- **opts**see |lazy.nvim-configuration| **(optional)**
-
->lua
-    -- Example using a list of specs with the default options
-    vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
-    vim.g.maplocalleader = "\\" -- Same for `maplocalleader`
     
+    -- Make sure to setup `mapleader` and `maplocalleader` before
+    -- loading lazy.nvim so that mappings are correct.
+    -- This is also a good place to setup other settings (vim.opt)
+    vim.g.mapleader = " "
+    vim.g.maplocalleader = "\\"
+    
+    -- Setup lazy.nvim
     require("lazy").setup({
-      "folke/which-key.nvim",
-      { "folke/neoconf.nvim", cmd = "Neoconf" },
-      "folke/neodev.nvim",
+      -- highlight-start
+      spec = {
+        -- import your plugins
+        { import = "plugins" },
+      },
+      -- highlight-end
+      -- Configure any other settings here. See the documentation for more details.
+      -- colorscheme that will be used when installing plugins.
+      install = { colorscheme = { "habamax" } },
+      -- automatically check for plugin updates
+      checker = { enabled = true },
     })
 <
 
-It is recommended to run `:checkhealth lazy` after installation.
+You can then create your plugin specs in `~/.config/nvim/lua/plugins/`. Each
+file should return a table with the plugins you want to install.
+
+For more info see Structuring Your Plugins </usage/structuring>
 
 
-PLUGIN SPEC                                  *lazy.nvim-lazy.nvim-plugin-spec*
-
-  ------------------------------------------------------------------------------------------------------------------------------------
-  Property       Type                                                             Description
-  -------------- ---------------------------------------------------------------- ----------------------------------------------------
-  [1]            string?                                                          Short plugin url. Will be expanded using
-                                                                                  config.git.url_format
-
-  dir            string?                                                          A directory pointing to a local plugin
-
-  url            string?                                                          A custom git url where the plugin is hosted
-
-  name           string?                                                          A custom name for the plugin used for the local
-                                                                                  plugin directory and as the display name
-
-  dev            boolean?                                                         When true, a local plugin directory will be used
-                                                                                  instead. See config.dev
-
-  lazy           boolean?                                                         When true, the plugin will only be loaded when
-                                                                                  needed. Lazy-loaded plugins are automatically loaded
-                                                                                  when their Lua modules are required, or when one of
-                                                                                  the lazy-loading handlers triggers
-
-  enabled        boolean? or fun():boolean                                        When false, or if the function returns false, then
-                                                                                  this plugin will not be included in the spec
-
-  cond           boolean? or fun(LazyPlugin):boolean                              When false, or if the function returns false, then
-                                                                                  this plugin will not be loaded. Useful to disable
-                                                                                  some plugins in vscode, or firenvim for example.
-
-  dependencies   LazySpec[]                                                       A list of plugin names or plugin specs that should
-                                                                                  be loaded when the plugin loads. Dependencies are
-                                                                                  always lazy-loaded unless specified otherwise. When
-                                                                                  specifying a name, make sure the plugin spec has
-                                                                                  been defined somewhere else.
-
-  init           fun(LazyPlugin)                                                  init functions are always executed during startup
-
-  opts           table or fun(LazyPlugin, opts:table)                             opts should be a table (will be merged with parent
-                                                                                  specs), return a table (replaces parent specs) or
-                                                                                  should change a table. The table will be passed to
-                                                                                  the Plugin.config() function. Setting this value
-                                                                                  will imply Plugin.config()
-
-  config         fun(LazyPlugin, opts:table) or true                              config is executed when the plugin loads. The
-                                                                                  default implementation will automatically run
-                                                                                  require(MAIN).setup(opts) if opts or config = true
-                                                                                  is set. Lazy uses several heuristics to determine
-                                                                                  the plugin’s MAIN module automatically based on the
-                                                                                  plugin’s name. See also opts. To use the default
-                                                                                  implementation without opts set config to true.
-
-  main           string?                                                          You can specify the main module to use for config()
-                                                                                  and opts(), in case it can not be determined
-                                                                                  automatically. See config()
-
-  build          fun(LazyPlugin) or string or a list of build commands            build is executed when a plugin is installed or
-                                                                                  updated. Before running build, a plugin is first
-                                                                                  loaded. If it’s a string it will be run as a shell
-                                                                                  command. When prefixed with : it is a Neovim
-                                                                                  command. You can also specify a list to executed
-                                                                                  multiple build commands. Some plugins provide their
-                                                                                  own build.lua which is automatically used by lazy.
-                                                                                  So no need to specify a build step for those
-                                                                                  plugins.
-
-  branch         string?                                                          Branch of the repository
-
-  tag            string?                                                          Tag of the repository
-
-  commit         string?                                                          Commit of the repository
-
-  version        string? or false to override the default                         Version to use from the repository. Full Semver
-                                                                                  ranges are supported
-
-  pin            boolean?                                                         When true, this plugin will not be included in
-                                                                                  updates
-
-  submodules     boolean?                                                         When false, git submodules will not be fetched.
-                                                                                  Defaults to true
-
-  event          string? or string[] or                                           Lazy-load on event. Events can be specified as
-                 fun(self:LazyPlugin, event:string[]):string[] or                 BufEnter or with a pattern like BufEnter *.lua
-                 {event:string[]\|string, pattern?:string[]\|string}              
-
-  cmd            string? or string[] or                                           Lazy-load on command
-                 fun(self:LazyPlugin, cmd:string[]):string[]                      
-
-  ft             string? or string[] or                                           Lazy-load on filetype
-                 fun(self:LazyPlugin, ft:string[]):string[]                       
-
-  keys           string? or string[] or LazyKeysSpec[] or                         Lazy-load on key mapping
-                 fun(self:LazyPlugin, keys:string[]):(string \| LazyKeysSpec)[]   
-
-  module         false?                                                           Do not automatically load this Lua module when it’s
-                                                                                  required somewhere
-
-  priority       number?                                                          Only useful for start plugins (lazy=false) to force
-                                                                                  loading certain plugins first. Default priority is
-                                                                                  50. It’s recommended to set this to a high number
-                                                                                  for colorschemes.
-
-  optional       boolean?                                                         When a spec is tagged optional, it will only be
-                                                                                  included in the final spec, when the same plugin has
-                                                                                  been specified at least once somewhere else without
-                                                                                  optional. This is mainly useful for Neovim distros,
-                                                                                  to allow setting options on plugins that may/may not
-                                                                                  be part of the user’s plugins
-  ------------------------------------------------------------------------------------------------------------------------------------
-
-LAZY LOADING ~
-
-**lazy.nvim** automagically lazy-loads Lua modules, so it is not needed to
-specify `module=...` everywhere in your plugin specification. This means that
-if you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
-module of plugin `A`, then plugin `A` will be loaded on demand as expected.
-
-If you don’t want this behavior for a certain plugin, you can specify that
-with `module=false`. You can then manually load the plugin with `:Lazy load
-foobar.nvim`.
-
-You can configure **lazy.nvim** to lazy-load all plugins by default with
-`config.defaults.lazy = true`.
-
-Additionally, you can also lazy-load on **events**, **commands**, **file
-types** and **key mappings**.
-
-Plugins will be lazy-loaded when one of the following is `true`
-
-- Theplugin only exists as a dependency in your spec
-- It has an `event`, `cmd`, `ft` or `keys` key
-- `config.defaults.lazy == true`
-
-
-COLORSCHEMES
-
-Colorscheme plugins can be configured with `lazy=true`. The plugin will
-automagically load when doing `colorscheme foobar`.
-
-
-  **NOTE:** since **start** plugins can possibly change existing highlight
-  groups, it’s important to make sure that your main **colorscheme** is loaded
-  first. To ensure this you can use the `priority=1000` field. **(see the
-  examples)**
-
-LAZY KEY MAPPINGS
-
-The `keys` property can be a `string` or `string[]` for simple normal-mode
-mappings, or it can be a `LazyKeysSpec` table with the following key-value
-pairs:
-
-- **[1]**(`string`) lhs **(required)**
-- **[2]**(`string|fun()`) rhs **(optional)**
-- **mode**(`string|string[]`) mode **(optional, defaults to "n")**
-- **ft**(`string|string[]`) `filetype` for buffer-local keymaps **(optional)**
-- any other option valid for `vim.keymap.set`
-
-Key mappings will load the plugin the first time they get executed.
-
-When `[2]` is `nil`, then the real mapping has to be created by the `config()`
-function.
+SINGLE FILE SETUP           *lazy.nvim-🛠️-installation-single-file-setup*
 
 >lua
-    -- Example for neo-tree.nvim
-    {
-      "nvim-neo-tree/neo-tree.nvim",
-        keys = {
-          { "<leader>ft", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
-        },
-        config = function()
-          require("neo-tree").setup()
-        end,
-    }
+    -- Bootstrap lazy.nvim
+    local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+    if not (vim.uv or vim.loop).fs_stat(lazypath) then
+      local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+      vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+    end
+    vim.opt.rtp:prepend(lazypath)
+    
+    -- Make sure to setup `mapleader` and `maplocalleader` before
+    -- loading lazy.nvim so that mappings are correct.
+    -- This is also a good place to setup other settings (vim.opt)
+    vim.g.mapleader = " "
+    vim.g.maplocalleader = "\\"
+    
+    -- Setup lazy.nvim
+    require("lazy").setup({
+      -- highlight-start
+      spec = {
+        -- add your plugins here
+      },
+      -- highlight-end
+      -- Configure any other settings here. See the documentation for more details.
+      -- colorscheme that will be used when installing plugins.
+      install = { colorscheme = { "habamax" } },
+      -- automatically check for plugin updates
+      checker = { enabled = true },
+    })
 <
 
 
-VERSIONING ~
-
-If you want to install a specific revision of a plugin, you can use `commit`,
-`tag`, `branch`, `version`.
-
-The `version` property supports Semver <https://semver.org/> ranges.
-
-Click to see some examples ~
-
-- `*`latest stable version (this excludes pre-release versions)
-- `1.2.x`any version that starts with `1.2`, such as `1.2.0`, `1.2.3`, etc.
-- `^1.2.3`any version that is compatible with `1.2.3`, such as `1.3.0`, `1.4.5`, etc., but not `2.0.0`.
-- `~1.2.3`any version that is compatible with `1.2.3`, such as `1.2.4`, `1.2.5`, but not `1.3.0`.
-- `>1.2.3`any version that is greater than `1.2.3`, such as `1.3.0`, `1.4.5`, etc.
-- `>=1.2.3`any version that is greater than or equal to `1.2.3`, such as `1.2.3`, `1.3.0`, `1.4.5`, etc.
-- `<1.2.3`any version that is less than `1.2.3`, such as `1.1.0`, `1.0.5`, etc.
-- `<=1.2.3`any version that is less than or equal to `1.2.3`, such as `1.2.3`, `1.1.0`, `1.0.5`, etc
-
-You can set `config.defaults.version = "*"` to install the latest stable
-version of plugins that support Semver.
+==============================================================================
+3. 🔌 Plugin Spec                               *lazy.nvim-🔌-plugin-spec*
 
 
-EXAMPLES ~
+SPEC SOURCE                           *lazy.nvim-🔌-plugin-spec-spec-source*
+
+  -----------------------------------------------------------------------------------
+  Property   Type       Description
+  ---------- ---------- -------------------------------------------------------------
+  [1]        string?    Short plugin url. Will be expanded using
+                        config.git.url_format. Can also be a url or dir.
+
+  dir        string?    A directory pointing to a local plugin
+
+  url        string?    A custom git url where the plugin is hosted
+
+  name       string?    A custom name for the plugin used for the local plugin
+                        directory and as the display name
+
+  dev        boolean?   When true, a local plugin directory will be used instead. See
+                        config.dev
+  -----------------------------------------------------------------------------------
+A valid spec should define one of `[1]`, `dir` or `url`.
+
+
+SPEC LOADING                         *lazy.nvim-🔌-plugin-spec-spec-loading*
+
+  --------------------------------------------------------------------------------------------------
+  Property       Type                      Description
+  -------------- ------------------------- ---------------------------------------------------------
+  dependencies   LazySpec[]                A list of plugin names or plugin specs that should be
+                                           loaded when the plugin loads. Dependencies are always
+                                           lazy-loaded unless specified otherwise. When specifying a
+                                           name, make sure the plugin spec has been defined
+                                           somewhere else.
+
+  enabled        boolean? or fun():boolean When false, or if the function returns false, then this
+                                           plugin will not be included in the spec
+
+  cond           boolean? or               Behaves the same as enabled, but won’t uninstall the
+                 fun(LazyPlugin):boolean   plugin when the condition is false. Useful to disable
+                                           some plugins in vscode, or firenvim for example.
+
+  priority       number?                   Only useful for start plugins (lazy=false) to force
+                                           loading certain plugins first. Default priority is 50.
+                                           It’s recommended to set this to a high number for
+                                           colorschemes.
+  --------------------------------------------------------------------------------------------------
+
+SPEC SETUP                             *lazy.nvim-🔌-plugin-spec-spec-setup*
+
+  -----------------------------------------------------------------------------------------------------
+  Property   Type                          Description
+  ---------- ----------------------------- ------------------------------------------------------------
+  init       fun(LazyPlugin)               init functions are always executed during startup
+
+  opts       table or                      opts should be a table (will be merged with parent specs),
+             fun(LazyPlugin, opts:table)   return a table (replaces parent specs) or should change a
+                                           table. The table will be passed to the Plugin.config()
+                                           function. Setting this value will imply Plugin.config()
+
+  config     fun(LazyPlugin, opts:table)   config is executed when the plugin loads. The default
+             or true                       implementation will automatically run
+                                           require(MAIN).setup(opts) if opts or config = true is set.
+                                           Lazy uses several heuristics to determine the plugin’s MAIN
+                                           module automatically based on the plugin’s name. See also
+                                           opts. To use the default implementation without opts set
+                                           config to true.
+
+  main       string?                       You can specify the main module to use for config() and
+                                           opts(), in case it can not be determined automatically. See
+                                           config()
+
+  build      fun(LazyPlugin) or string or  build is executed when a plugin is installed or updated.
+             a list of build commands      Before running build, a plugin is first loaded. If it’s a
+                                           string it will be run as a shell command. When prefixed with
+                                           : it is a Neovim command. You can also specify a list to
+                                           executed multiple build commands. Some plugins provide their
+                                           own build.lua which is automatically used by lazy. So no
+                                           need to specify a build step for those plugins.
+
+  rocks      string[]?                     Add any luarocks dependencies.
+  -----------------------------------------------------------------------------------------------------
+
+SPEC LAZY LOADING               *lazy.nvim-🔌-plugin-spec-spec-lazy-loading*
+
+  --------------------------------------------------------------------------------------------------------------------
+  Property   Type                                                             Description
+  ---------- ---------------------------------------------------------------- ----------------------------------------
+  lazy       boolean?                                                         When true, the plugin will only be
+                                                                              loaded when needed. Lazy-loaded plugins
+                                                                              are automatically loaded when their Lua
+                                                                              modules are required, or when one of the
+                                                                              lazy-loading handlers triggers
+
+  event      string? or string[] or                                           Lazy-load on event. Events can be
+             fun(self:LazyPlugin, event:string[]):string[] or                 specified as BufEnter or with a pattern
+             {event:string[]\|string, pattern?:string[]\|string}              like BufEnter *.lua
+
+  cmd        string? or string[] or                                           Lazy-load on command
+             fun(self:LazyPlugin, cmd:string[]):string[]                      
+
+  ft         string? or string[] or                                           Lazy-load on filetype
+             fun(self:LazyPlugin, ft:string[]):string[]                       
+
+  keys       string? or string[] or LazyKeysSpec[] or                         Lazy-load on key mapping
+             fun(self:LazyPlugin, keys:string[]):(string \| LazyKeysSpec)[]   
+  --------------------------------------------------------------------------------------------------------------------
+Refer to the Lazy Loading <./lazy_loading.md> section for more information.
+
+
+SPEC VERSIONING                   *lazy.nvim-🔌-plugin-spec-spec-versioning*
+
+  ------------------------------------------------------------------------------
+  Property     Type                 Description
+  ------------ -------------------- --------------------------------------------
+  branch       string?              Branch of the repository
+
+  tag          string?              Tag of the repository
+
+  commit       string?              Commit of the repository
+
+  version      string? or false to  Version to use from the repository. Full
+               override the default Semver ranges are supported
+
+  pin          boolean?             When true, this plugin will not be included
+                                    in updates
+
+  submodules   boolean?             When false, git submodules will not be
+                                    fetched. Defaults to true
+  ------------------------------------------------------------------------------
+Refer to the Versioning <./versioning.md> section for more information.
+
+
+SPEC ADVANCED                       *lazy.nvim-🔌-plugin-spec-spec-advanced*
+
+  ----------------------------------------------------------------------------------------
+  Property   Type       Description
+  ---------- ---------- ------------------------------------------------------------------
+  optional   boolean?   When a spec is tagged optional, it will only be included in the
+                        final spec, when the same plugin has been specified at least once
+                        somewhere else without optional. This is mainly useful for Neovim
+                        distros, to allow setting options on plugins that may/may not be
+                        part of the user’s plugins.
+
+  specs      LazySpec   A list of plugin specs defined in the scope of the plugin. This is
+                        mainly useful for Neovim distros, to allow setting options on
+                        plugins that may/may not be part of the user’s plugins. When the
+                        plugin is disabled, none of the scoped specs will be included in
+                        the final spec. Similar to dependencies without the automatic
+                        loading of the specs.
+
+  module     false?     Do not automatically load this Lua module when it’s required
+                        somewhere
+
+  import     string?    Import the given spec module.
+  ----------------------------------------------------------------------------------------
+
+EXAMPLES                                 *lazy.nvim-🔌-plugin-spec-examples*
 
 >lua
     return {
@@ -394,7 +411,120 @@ EXAMPLES ~
 <
 
 
-CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
+LAZY LOADING                         *lazy.nvim-🔌-plugin-spec-lazy-loading*
+
+**lazy.nvim** automagically lazy-loads Lua modules. This means that if you have
+a plugin `A` that is lazy-loaded and a plugin `B` that requires a module of
+plugin `A`, then plugin `A` will be loaded on demand as expected.
+
+
+Additionally, you can also lazy-load on **events**, **commands**, **file
+types** and **key mappings**.
+
+Plugins will be lazy-loaded when one of the following is `true`:
+
+- The plugin only exists as a dependency in your spec
+- It has an `event`, `cmd`, `ft` or `keys` key
+- `config.defaults.lazy == true`
+
+
+🌈 COLORSCHEMES ~
+
+Colorscheme plugins can be configured with `lazy=true`. The plugin will
+automagically load when doing `colorscheme foobar`.
+
+
+
+⌨️ LAZY KEY MAPPINGS ~
+
+The `keys` property can be a `string` or `string[]` for simple normal-mode
+mappings, or it can be a `LazyKeysSpec` table with the following key-value
+pairs:
+
+- **[1]**: (`string`) lhs **(required)**
+- **[2]**: (`string|fun()`) rhs **(optional)**
+- **mode**: (`string|string[]`) mode **(optional, defaults to "n")**
+- **ft**: (`string|string[]`) `filetype` for buffer-local keymaps **(optional)**
+- any other option valid for `vim.keymap.set`
+
+Key mappings will load the plugin the first time they get executed.
+
+When `[2]` is `nil`, then the real mapping has to be created by the `config()`
+function.
+
+>lua
+    -- Example for neo-tree.nvim
+    {
+      "nvim-neo-tree/neo-tree.nvim",
+        keys = {
+          { "<leader>ft", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
+        },
+        config = function()
+          require("neo-tree").setup()
+        end,
+    }
+<
+
+
+VERSIONING                             *lazy.nvim-🔌-plugin-spec-versioning*
+
+If you want to install a specific revision of a plugin, you can use `commit`,
+`tag`, `branch`, `version`.
+
+The `version` property supports Semver <https://semver.org/> ranges.
+
+
+
+EXAMPLES ~
+
+- `*`: latest stable version (this excludes pre-release versions)
+- `1.2.x`: any version that starts with `1.2`, such as `1.2.0`, `1.2.3`, etc.
+- `^1.2.3`: any version that is compatible with `1.2.3`, such as `1.3.0`, `1.4.5`, etc., but not `2.0.0`.
+- `~1.2.3`: any version that is compatible with `1.2.3`, such as `1.2.4`, `1.2.5`, but not `1.3.0`.
+- `>1.2.3`: any version that is greater than `1.2.3`, such as `1.3.0`, `1.4.5`, etc.
+- `>=1.2.3`: any version that is greater than or equal to `1.2.3`, such as `1.2.3`, `1.3.0`, `1.4.5`, etc.
+- `<1.2.3`: any version that is less than `1.2.3`, such as `1.1.0`, `1.0.5`, etc.
+- `<=1.2.3`: any version that is less than or equal to `1.2.3`, such as `1.2.3`, `1.1.0`, `1.0.5`, etc
+
+
+==============================================================================
+4. 📦 Packages                                     *lazy.nvim-📦-packages*
+
+**lazy.nvim** supports three ways for plugins to define their dependencies and
+configuration.
+
+- **Lazy**: `lazy.lua` file
+- **Rockspec**: luarocks <https://luarocks.org/> `*-scm-1.rockspec` file <https://github.com/luarocks/luarocks/wiki/Rockspec-format>
+- **Packspec**: `pkg.json` (experimental, since the format <https://github.com/neovim/packspec/issues/41> is not quite there yet)
+
+You can enable/disable package sources with `config.pkg.sources`
+</configuration>. The order of sources is important, as the first source that
+finds a package will be used.
+
+
+
+LAZY                                            *lazy.nvim-📦-packages-lazy*
+
+Using a `lazy.lua` file is the recommended way to define your plugin
+dependencies and configuration. Syntax is the same as any plugin spec.
+
+
+ROCKSPEC                                    *lazy.nvim-📦-packages-rockspec*
+
+When a plugin contains a `*-scm-1.rockspec` file, **lazy.nvim** will
+automatically load its `rocks` </spec#setup> dependencies.
+
+
+PACKSPEC                                    *lazy.nvim-📦-packages-packspec*
+
+Supports the pkg.json
+<https://github.com/nvim-lua/nvim-package-specification/issues/41> format, with
+a lazy extension in `lazy`. `lazy` can contain any valid lazy spec fields. They
+will be added to the plugin’s spec.
+
+
+==============================================================================
+5. ⚙️ Configuration                       *lazy.nvim-⚙️-configuration*
 
 **lazy.nvim** comes with the following defaults:
 
@@ -402,8 +532,13 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
     {
       root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
       defaults = {
+        -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
+        -- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
         lazy = false, -- should plugins be lazy-loaded?
-        version = nil,
+        -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
+        -- have outdated releases, which may break your Neovim install.
+        version = nil, -- always use the latest git commit
+        -- version = "*", -- try installing the latest stable version for plugins that support semver
         -- default `cond` you can use to globally disable a lot of plugins
         -- when running inside vscode for example
         cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
@@ -425,6 +560,21 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
         -- then set the below to false. This should work, but is NOT supported and will
         -- increase downloads a lot.
         filter = true,
+      },
+      pkg = {
+        enabled = true,
+        cache = vim.fn.stdpath("state") .. "/lazy/pkg-cache.lua",
+        versions = true, -- Honor versions in pkg sources
+        -- the first package source that is found for a plugin will be used.
+        sources = {
+          "lazy",
+          "rockspec",
+          "packspec",
+        },
+      },
+      rocks = {
+        root = vim.fn.stdpath("data") .. "/lazy-rocks",
+        server = "https://nvim-neorocks.github.io/rocks-binaries/",
       },
       dev = {
         ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
@@ -455,6 +605,7 @@ CONFIGURATION                              *lazy.nvim-lazy.nvim-configuration*
           cmd = " ",
           config = "",
           event = " ",
+          favorite = " ",
           ft = " ",
           init = " ",
           import = " ",
@@ -601,7 +752,101 @@ If you don’t want to use a Nerd Font, you can replace the icons with Unicode s
 <
 
 
-USAGE                                              *lazy.nvim-lazy.nvim-usage*
+🌈 HIGHLIGHT GROUPS   *lazy.nvim-⚙️-configuration-🌈-highlight-groups*
+
+  -----------------------------------------------------------------------
+  Highlight Group         Default Group           Description
+  ----------------------- ----------------------- -----------------------
+  LazyButton              CursorLine              
+
+  LazyButtonActive        Visual                  
+
+  LazyComment             Comment                 
+
+  LazyCommit              @variable.builtin       commit ref
+
+  LazyCommitIssue         Number                  
+
+  LazyCommitScope         Italic                  conventional commit
+                                                  scope
+
+  LazyCommitType          Title                   conventional commit
+                                                  type
+
+  LazyDimmed              Conceal                 property
+
+  LazyDir                 @markup.link            directory
+
+  LazyH1                  IncSearch               home button
+
+  LazyH2                  Bold                    titles
+
+  LazyLocal               Constant                
+
+  LazyNoCond              DiagnosticWarn          unloaded icon for a
+                                                  plugin where cond() was
+                                                  false
+
+  LazyNormal              NormalFloat             
+
+  LazyProgressDone        Constant                progress bar done
+
+  LazyProgressTodo        LineNr                  progress bar todo
+
+  LazyProp                Conceal                 property
+
+  LazyReasonCmd           Operator                
+
+  LazyReasonEvent         Constant                
+
+  LazyReasonFt            Character               
+
+  LazyReasonImport        Identifier              
+
+  LazyReasonKeys          Statement               
+
+  LazyReasonPlugin        Special                 
+
+  LazyReasonRequire       @variable.parameter     
+
+  LazyReasonRuntime       @macro                  
+
+  LazyReasonSource        Character               
+
+  LazyReasonStart         @variable.member        
+
+  LazySpecial             @punctuation.special    
+
+  LazyTaskError           ErrorMsg                task errors
+
+  LazyTaskOutput          MsgArea                 task output
+
+  LazyUrl                 @markup.link            url
+
+  LazyValue               @string                 value of a property
+  -----------------------------------------------------------------------
+
+==============================================================================
+6. 🚀 Usage                                           *lazy.nvim-🚀-usage*
+
+
+▶️ STARTUP SEQUENCE         *lazy.nvim-🚀-usage-▶️-startup-sequence*
+
+**lazy.nvim** does **NOT** use Neovim packages and even disables plugin loading
+completely (`vim.go.loadplugins = false`). It takes over the complete startup
+sequence for more flexibility and better performance.
+
+In practice this means that step 10 of |Neovim Initialization| is done by Lazy:
+
+1. All the plugins’ `init()` functions are executed
+2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
+3. All files from `/plugin` and `/ftdetect` directories in your rtp are sourced (excluding `/after`)
+4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
+
+Files from runtime directories are always sourced in alphabetical order.
+
+
+🚀 COMMANDS                             *lazy.nvim-🚀-usage-🚀-commands*
 
 Plugins are managed with the `:Lazy` command. Open the help with `<?>` to see
 all the key mappings.
@@ -616,14 +861,17 @@ enabled with `config.checker.enabled = true`.
 Any operation can be started from the UI, with a sub command or an API
 function:
 
-  --------------------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------
   Command                   Lua                              Description
-  ------------------------- -------------------------------- ---------------------------------------------------
+  ------------------------- -------------------------------- -----------------------
   :Lazy build {plugins}     require("lazy").build(opts)      Rebuild a plugin
 
-  :Lazy check [plugins]     require("lazy").check(opts?)     Check for updates and show the log (git fetch)
+  :Lazy check [plugins]     require("lazy").check(opts?)     Check for updates and
+                                                             show the log (git
+                                                             fetch)
 
-  :Lazy clean [plugins]     require("lazy").clean(opts?)     Clean plugins that are no longer needed
+  :Lazy clean [plugins]     require("lazy").clean(opts?)     Clean plugins that are
+                                                             no longer needed
 
   :Lazy clear               require("lazy").clear()          Clear finished tasks
 
@@ -637,24 +885,36 @@ function:
 
   :Lazy install [plugins]   require("lazy").install(opts?)   Install missing plugins
 
-  :Lazy load {plugins}      require("lazy").load(opts)       Load a plugin that has not been loaded yet. Similar
-                                                             to :packadd. Like :Lazy load foo.nvim. Use
-                                                             :Lazy! load to skip cond checks.
+  :Lazy load {plugins}      require("lazy").load(opts)       Load a plugin that has
+                                                             not been loaded yet.
+                                                             Similar to :packadd.
+                                                             Like
+                                                             :Lazy load foo.nvim.
+                                                             Use :Lazy! load to skip
+                                                             cond checks.
 
   :Lazy log [plugins]       require("lazy").log(opts?)       Show recent updates
 
   :Lazy profile             require("lazy").profile()        Show detailed profiling
 
-  :Lazy reload {plugins}    require("lazy").reload(opts)     Reload a plugin (experimental!!)
+  :Lazy reload {plugins}    require("lazy").reload(opts)     Reload a plugin
+                                                             (experimental!!)
 
-  :Lazy restore [plugins]   require("lazy").restore(opts?)   Updates all plugins to the state in the lockfile.
-                                                             For a single plugin: restore it to the state in the
-                                                             lockfile or to a given commit under the cursor
+  :Lazy restore [plugins]   require("lazy").restore(opts?)   Updates all plugins to
+                                                             the state in the
+                                                             lockfile. For a single
+                                                             plugin: restore it to
+                                                             the state in the
+                                                             lockfile or to a given
+                                                             commit under the cursor
 
-  :Lazy sync [plugins]      require("lazy").sync(opts?)      Run install, clean and update
+  :Lazy sync [plugins]      require("lazy").sync(opts?)      Run install, clean and
+                                                             update
 
-  :Lazy update [plugins]    require("lazy").update(opts?)    Update plugins. This will also update the lockfile
-  --------------------------------------------------------------------------------------------------------------
+  :Lazy update [plugins]    require("lazy").update(opts?)    Update plugins. This
+                                                             will also update the
+                                                             lockfile
+  ----------------------------------------------------------------------------------
 Any command can have a **bang** to make the command wait till it finished. For
 example, if you want to sync lazy from the cmdline, you can use:
 
@@ -664,10 +924,10 @@ example, if you want to sync lazy from the cmdline, you can use:
 
 `opts` is a table with the following key-values:
 
-- **wait**when true, then the call will wait till the operation completed
-- **show**when false, the UI will not be shown
-- **plugins**a list of plugin names to run the operation on
-- **concurrency**limit the `number` of concurrently running tasks
+- **wait**: when true, then the call will wait till the operation completed
+- **show**: when false, the UI will not be shown
+- **plugins**: a list of plugin names to run the operation on
+- **concurrency**: limit the `number` of concurrently running tasks
 
 Stats API (`require("lazy").stats()`):
 
@@ -707,34 +967,47 @@ Example of configuring lualine.nvim ~
 <
 
 
-USER EVENTS ~
+📆 USER EVENTS                       *lazy.nvim-🚀-usage-📆-user-events*
 
 The following user events will be triggered:
 
-- **LazyDone**when lazy has finished starting up and loaded your config
-- **LazySync**after running sync
-- **LazyInstall**after an install
-- **LazyUpdate**after an update
-- **LazyClean**after a clean
-- **LazyCheck**after checking for updates
-- **LazyLog**after running log
-- **LazyLoad**after loading a plugin. The `data` attribute will contain the plugin name.
-- **LazySyncPre**before running sync
-- **LazyInstallPre**before an install
-- **LazyUpdatePre**before an update
-- **LazyCleanPre**before a clean
-- **LazyCheckPre**before checking for updates
-- **LazyLogPre**before running log
-- **LazyReload**triggered by change detection after reloading plugin specs
-- **VeryLazy**triggered after `LazyDone` and processing `VimEnter` auto commands
-- **LazyVimStarted**triggered after `UIEnter` when `require("lazy").stats().startuptime` has been calculated.
+- **LazyDone**: when lazy has finished starting up and loaded your config
+- **LazySync**: after running sync
+- **LazyInstall**: after an install
+- **LazyUpdate**: after an update
+- **LazyClean**: after a clean
+- **LazyCheck**: after checking for updates
+- **LazyLog**: after running log
+- **LazyLoad**: after loading a plugin. The `data` attribute will contain the plugin name.
+- **LazySyncPre**: before running sync
+- **LazyInstallPre**: before an install
+- **LazyUpdatePre**: before an update
+- **LazyCleanPre**: before a clean
+- **LazyCheckPre**: before checking for updates
+- **LazyLogPre**: before running log
+- **LazyReload**: triggered by change detection after reloading plugin specs
+- **VeryLazy**: triggered after `LazyDone` and processing `VimEnter` auto commands
+- **LazyVimStarted**: triggered after `UIEnter` when `require("lazy").stats().startuptime` has been calculated.
     Useful to update the startuptime on your dashboard.
 
 
-LOCKFILE LAZY-LOCK.JSON          *lazy.nvim-lazy.nvim-lockfile-lazy-lock.json*
+❌ UNINSTALLING                       *lazy.nvim-🚀-usage-❌-uninstalling*
 
-After every **update**, the local lockfile is updated with the installed
-revisions. It is recommended to have this file under version control.
+To uninstall **lazy.nvim**, you need to remove the following files and
+directories:
+
+- **data**: `~/.local/share/nvim/lazy`
+- **state**: `~/.local/state/nvim/lazy`
+- **lockfile**: `~/.config/nvim/lazy-lock.json`
+
+
+  Paths can differ if you changed `XDG` environment variables.
+
+🔒 LOCKFILE                             *lazy.nvim-🚀-usage-🔒-lockfile*
+
+After every **update**, the local lockfile (`lazy-lock.json`) is updated with
+the installed revisions. It is recommended to have this file under version
+control.
 
 If you use your Neovim config on multiple machines, using the lockfile, you can
 ensure that the same version of every plugin is installed.
@@ -743,7 +1016,49 @@ If you are on another machine, you can do `:Lazy restore`, to update all your
 plugins to the version from the lockfile.
 
 
-PERFORMANCE                                  *lazy.nvim-lazy.nvim-performance*
+📦 MIGRATION GUIDE               *lazy.nvim-🚀-usage-📦-migration-guide*
+
+
+PACKER.NVIM ~
+
+- `setup` ➡️ `init`
+- `requires` ➡️ `dependencies`
+- `as` ➡️ `name`
+- `opt` ➡️ `lazy`
+- `run` ➡️ `build`
+- `lock` ➡️ `pin`
+- `disable=true` ➡️ `enabled = false`
+- `tag='*'` ➡️ `version="*"`
+- `after` is **not needed** for most use-cases. Use `dependencies` otherwise.
+- `wants` is **not needed** for most use-cases. Use `dependencies` otherwise.
+- `config` don’t support string type, use `fun(LazyPlugin)` instead.
+- `module` is auto-loaded. No need to specify
+- `keys` spec is |lazy.nvim-different|
+- `rtp` can be accomplished with:
+
+>lua
+    config = function(plugin)
+        vim.opt.rtp:append(plugin.dir .. "/custom-rtp")
+    end
+<
+
+With packer `wants`, `requires` and `after` can be used to manage dependencies.
+With lazy, this isn’t needed for most of the Lua dependencies. They can be
+installed just like normal plugins (even with `lazy=true`) and will be loaded
+when other plugins need them. The `dependencies` key can be used to group those
+required plugins with the one that requires them. The plugins which are added
+as `dependencies` will always be lazy-loaded and loaded when the plugin is
+loaded.
+
+
+PAQ-NVIM ~
+
+- `as` ➡️ `name`
+- `opt` ➡️ `lazy`
+- `run` ➡️ `build`
+
+
+⚡ PROFILING & DEBUG             *lazy.nvim-🚀-usage-⚡-profiling-&-debug*
 
 Great care has been taken to make the startup code (`lazy.core`) as efficient
 as possible. During startup, all Lua files used before `VimEnter` or
@@ -758,29 +1073,13 @@ improve performance. The profiling view shows you why and how long it took to
 load your plugins.
 
 
-DEBUG                                              *lazy.nvim-lazy.nvim-debug*
+🐛 DEBUG ~
 
 See an overview of active lazy-loading handlers and what’s in the module
 cache.
 
 
-STARTUP SEQUENCE                        *lazy.nvim-lazy.nvim-startup-sequence*
-
-**lazy.nvim** does **NOT** use Neovim packages and even disables plugin loading
-completely (`vim.go.loadplugins = false`). It takes over the complete startup
-sequence for more flexibility and better performance.
-
-In practice this means that step 10 of |Neovim Initialization| is done by Lazy:
-
-1. All the plugins’ `init()` functions are executed
-2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
-3. All files from `/plugin` and `/ftdetect` directories in your rtp are sourced (excluding `/after`)
-4. All `/after/plugin` files are sourced (this includes `/after` from plugins)
-
-Files from runtime directories are always sourced in alphabetical order.
-
-
-STRUCTURING YOUR PLUGINS        *lazy.nvim-lazy.nvim-structuring-your-plugins*
+📂 STRUCTURING YOUR PLUGINS*lazy.nvim-🚀-usage-📂-structuring-your-plugins*
 
 Some users may want to split their plugin specs in multiple files. Instead of
 passing a spec table to `setup()`, you can use a Lua module. The specs from the
@@ -820,7 +1119,7 @@ For a real-life example, you can check LazyVim
 - lazyvim.plugins <https://github.com/LazyVim/LazyVim/tree/main/lua/lazyvim/plugins> contains all the plugin specs that will be loaded
 
 
-IMPORTING SPECS, CONFIG & OPTS ~
+↩️ IMPORTING SPECS, CONFIG & OPTS
 
 As part of a spec, you can add `import` statements to import additional plugin
 modules. Both of the `setup()` calls are equivalent:
@@ -852,155 +1151,21 @@ the parent spec. Any other property will override the property from the parent
 spec.
 
 
-MIGRATION GUIDE                          *lazy.nvim-lazy.nvim-migration-guide*
+==============================================================================
+7. 📚 Plugin Developers                   *lazy.nvim-📚-plugin-developers*
 
+To make it easier for users to install your plugin, you can include a package
+spec </packages> in your repo.
 
-PACKER.NVIM ~
-
-- `setup` `init`
-- `requires` `dependencies`
-- `as` `name`
-- `opt` `lazy`
-- `run` `build`
-- `lock` `pin`
-- `disable=true` `enabled = false`
-- `tag='*'` `version="*"`
-- `after` is **not needed** for most use-cases. Use `dependencies` otherwise.
-- `wants` is **not needed** for most use-cases. Use `dependencies` otherwise.
-- `config` don’t support string type, use `fun(LazyPlugin)` instead.
-- `module` is auto-loaded. No need to specify
-- `keys` spec is |lazy.nvim-different|
-- `rtp` can be accomplished with:
-
->lua
-    config = function(plugin)
-        vim.opt.rtp:append(plugin.dir .. "/custom-rtp")
-    end
-<
-
-With packer `wants`, `requires` and `after` can be used to manage dependencies.
-With lazy, this isn’t needed for most of the Lua dependencies. They can be
-installed just like normal plugins (even with `lazy=true`) and will be loaded
-when other plugins need them. The `dependencies` key can be used to group those
-required plugins with the one that requires them. The plugins which are added
-as `dependencies` will always be lazy-loaded and loaded when the plugin is
-loaded.
-
-
-PAQ-NVIM ~
-
-- `as` `name`
-- `opt` `lazy`
-- `run` `build`
-
-
-UNINSTALLING                                *lazy.nvim-lazy.nvim-uninstalling*
-
-To uninstall **lazy.nvim**, you need to remove the following files and
-directories:
-
-- **data**`~/.local/share/nvim/lazy`
-- **state**`~/.local/state/nvim/lazy`
-- **lockfile**`~/.config/nvim/lazy-lock.json`
-
-
-  Paths can differ if you changed `XDG` environment variables.
-
-HIGHLIGHT GROUPS                        *lazy.nvim-lazy.nvim-highlight-groups*
-
-Click to see all highlight groups ~
-
-  ---------------------------------------------------------------------------------
-  Highlight Group     Default Group            Description
-  ------------------- ------------------------ ------------------------------------
-  LazyButton          CursorLine               
-
-  LazyButtonActive    Visual                   
-
-  LazyComment         Comment                  
-
-  LazyCommit          _@variable.builtin_      commitref
-
-  LazyCommitIssue     Number                   
-
-  LazyCommitScope     Italic                   conventional commit scope
-
-  LazyCommitType      Title                    conventional commit type
-
-  LazyDimmed          Conceal                  property
-
-  LazyDir             _@markup.link_           directory
-
-  LazyH1              IncSearch                homebutton
-
-  LazyH2              Bold                     titles
-
-  LazyLocal           Constant                 
-
-  LazyNoCond          DiagnosticWarn           unloaded icon for a plugin where
-                                               cond() was false
-
-  LazyNormal          NormalFloat              
-
-  LazyProgressDone    Constant                 progress bar done
-
-  LazyProgressTodo    LineNr                   progress bar todo
-
-  LazyProp            Conceal                  property
-
-  LazyReasonCmd       Operator                 
-
-  LazyReasonEvent     Constant                 
-
-  LazyReasonFt        Character                
-
-  LazyReasonImport    Identifier               
-
-  LazyReasonKeys      Statement                
-
-  LazyReasonPlugin    Special                  
-
-  LazyReasonRequire   _@variable.parameter_    
-
-  LazyReasonRuntime   _@macro_                 
-
-  LazyReasonSource    Character                
-
-  LazyReasonStart     _@variable.member_       
-
-  LazySpecial         _@punctuation.special_   
-
-  LazyTaskError       ErrorMsg                 taskerrors
-
-  LazyTaskOutput      MsgArea                  task output
-
-  LazyUrl             _@markup.link_           url
-
-  LazyValue           _@string_                valueof a property
-  ---------------------------------------------------------------------------------
-
-PLUGIN AUTHORS                            *lazy.nvim-lazy.nvim-plugin-authors*
-
-If your plugin needs a build step, you can create a file `build.lua` or
-`build/init.lua` in the root of your repo. This file will be loaded when the
-plugin is installed or updated.
+If your plugin needs a build step, you can specify this in your **package
+file**, or create a file `build.lua` or `build/init.lua` in the root of your
+repo. This file will be loaded when the plugin is installed or updated.
 
 This makes it easier for users, as they no longer need to specify a `build`
 command.
 
-
-OTHER NEOVIM PLUGIN MANAGERS IN LUA*lazy.nvim-lazy.nvim-other-neovim-plugin-managers-in-lua*
-
-- pckr.nvim <https://github.com/lewis6991/pckr.nvim>
-- packer.nvim <https://github.com/wbthomason/packer.nvim>
-- paq-nvim <https://github.com/savq/paq-nvim>
-- neopm <https://github.com/ii14/neopm>
-- dep <https://github.com/chiyadev/dep>
-- optpack.nvim <https://github.com/notomo/optpack.nvim>
-- pact.nvim <https://github.com/rktjmp/pact.nvim>
-
 ==============================================================================
-2. Links                                                     *lazy.nvim-links*
+8. Links                                                     *lazy.nvim-links*
 
 1. *image*: https://user-images.githubusercontent.com/292349/208301737-68fb279c-ba70-43ef-a369-8c3e8367d6b1.png
 2. *image*: https://user-images.githubusercontent.com/292349/208301766-5c400561-83c3-4811-9667-1ec4bb3c43b8.png
