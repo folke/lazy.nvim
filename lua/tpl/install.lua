@@ -28,19 +28,4 @@ require("lazy").setup({
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
   checker = { enabled = true }, -- automatically check for plugin updates
-  performance = {
-    rtp = {
-      -- uncomment the below to disable some rtp plugins
-      disabled_plugins = {
-        -- "gzip",
-        -- "matchit",
-        -- "matchparen",
-        -- "netrwPlugin",
-        -- "tarPlugin",
-        -- "tohtml",
-        -- "tutor",
-        -- "zipPlugin",
-      },
-    },
-  },
 })

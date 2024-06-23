@@ -21,6 +21,7 @@ It is recommended to run `:checkhealth lazy` after installation.
 :::note
 
 In what follows `~/.config/nvim` is your Neovim configuration directory.
+On Windows, this is usually `~\AppData\Local\nvim`.
 To know the correct path for your system, run `:echo stdpath('config')`.
 
 :::
@@ -68,27 +69,12 @@ require("lazy").setup({
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
   checker = { enabled = true }, -- automatically check for plugin updates
-  performance = {
-    rtp = {
-      -- uncomment the below to disable some rtp plugins
-      disabled_plugins = {
-        -- "gzip",
-        -- "matchit",
-        -- "matchparen",
-        -- "netrwPlugin",
-        -- "tarPlugin",
-        -- "tohtml",
-        -- "tutor",
-        -- "zipPlugin",
-      },
-    },
-  },
 })
 ```
 
 <!-- install_multi:end -->
 
-You can then create your plugin specs in `lua/plugins`.
+You can then create your plugin specs in `~/.config/nvim/lua/plugins/`.
 Each file should return a table with the plugins you want to install.
 
 For more info see [Structuring Your Plugins](/usage/structuring)
@@ -144,21 +130,6 @@ require("lazy").setup({
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
   checker = { enabled = true }, -- automatically check for plugin updates
-  performance = {
-    rtp = {
-      -- uncomment the below to disable some rtp plugins
-      disabled_plugins = {
-        -- "gzip",
-        -- "matchit",
-        -- "matchparen",
-        -- "netrwPlugin",
-        -- "tarPlugin",
-        -- "tohtml",
-        -- "tutor",
-        -- "zipPlugin",
-      },
-    },
-  },
 })
 ```
 
