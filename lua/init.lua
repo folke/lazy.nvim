@@ -14,7 +14,15 @@ else
   local lazypath = root .. "/plugins/lazy.nvim"
   if not vim.loop.fs_stat(lazypath) then
     print("Bootstrapping lazy.nvim")
-    vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", lazypath })
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      -- FIXME: remove this when the new version is released
+      "--branch=pkg",
+      "https://github.com/folke/lazy.nvim.git",
+      lazypath,
+    })
   end
   vim.opt.runtimepath:prepend(lazypath)
 end
