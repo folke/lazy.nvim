@@ -318,9 +318,13 @@ function M.setup(opts)
 
       -- useful for plugin developers when making changes to a packspec file
       vim.api.nvim_create_autocmd("BufWritePost", {
-        pattern = "lazy.lua",
+        pattern = { "lazy.lua", "pkg.json", "*.rockspec" },
         callback = function()
-          require("lazy.view.commands").cmd("pkg")
+          require("lazy").pkg({
+            plugins = {
+              require("lazy.core.plugin").find(vim.uv.cwd() .. "/lua/"),
+            },
+          })
         end,
       })
     end,
