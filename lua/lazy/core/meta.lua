@@ -1,4 +1,5 @@
 local Config = require("lazy.core.config")
+local Pkg = require("lazy.pkg")
 local Util = require("lazy.core.util")
 
 --- This class is used to manage the plugins.
@@ -10,6 +11,7 @@ local Util = require("lazy.core.util")
 ---@field dirty table<string, boolean>
 ---@field spec LazySpecLoader
 ---@field fragments LazyFragments
+---@field pkgs table<string, number>
 local M = {}
 
 ---@param spec LazySpecLoader
@@ -22,7 +24,28 @@ function M.new(spec)
   self.frag_to_meta = {}
   self.str_to_meta = {}
   self.dirty = {}
+  self.pkgs = {}
   return self
+end
+
+-- import package specs
+function M:load_pkgs()
+  if not Config.options.pkg.enabled then
+    return
+  end
+  local specs = Pkg.spec()
+  for dir, spec in pairs(specs) do
+    local meta, fragment = self:add(spec)
+    if meta and fragment then
+      -- tag all package fragments as optional
+      for _, fid in ipairs(meta._.frags) do
+        local frag = self.fragments:get(fid)
+        frag.spec.optional = true
+      end
+      -- keep track of the top-level package fragment
+      self.pkgs[dir] = fragment.id
+    end
+  end
 end
 
 --- Remove a plugin and all its fragments.
@@ -88,6 +111,7 @@ function M:add(plugin)
   self.plugins[meta.name] = meta
   self.frag_to_meta[fragment.id] = meta
   self.dirty[meta.name] = true
+  return meta, fragment
 end
 
 --- Rebuild all plugins based on dirty fragments,
@@ -101,6 +125,7 @@ function M:rebuild()
         self.dirty[meta.name] = true
       else
         -- fragment was deleted, so remove it from plugin
+        self.frag_to_meta[fid] = nil
         ---@param f number
         meta._.frags = vim.tbl_filter(function(f)
           return f ~= fid
@@ -260,10 +285,27 @@ function M:fix_disabled()
   return changes
 end
 
+--- Removes package fragments for plugins that no longer use the same directory.
+function M:fix_pkgs()
+  for dir, fid in pairs(self.pkgs) do
+    local plugin = self.frag_to_meta[fid]
+    plugin = plugin and self.plugins[plugin.name]
+    if plugin then
+      -- check if plugin is still in the same directory
+      if plugin.dir ~= dir then
+        self.fragments:del(fid)
+      end
+    end
+  end
+  self:rebuild()
+end
+
 --- Resolve all plugins, based on cond, enabled and optional.
 function M:resolve()
   Util.track("resolve plugins")
   self:rebuild()
+
+  self:fix_pkgs()
 
   self:fix_cond()
 

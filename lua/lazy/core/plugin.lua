@@ -1,6 +1,5 @@
 local Config = require("lazy.core.config")
 local Meta = require("lazy.core.meta")
-local Pkg = require("lazy.pkg")
 local Util = require("lazy.core.util")
 
 ---@class LazyCorePlugin
@@ -16,7 +15,6 @@ M.loading = false
 ---@field notifs {msg:string, level:number, file?:string}[]
 ---@field importing? string
 ---@field optional? boolean
----@field pkgs table<string, boolean>
 local Spec = {}
 M.Spec = Spec
 M.LOCAL_SPEC = ".lazy.lua"
@@ -30,8 +28,8 @@ function Spec.new(spec, opts)
   self.modules = {}
   self.notifs = {}
   self.ignore_installed = {}
-  self.pkgs = {}
   self.optional = opts and opts.optional
+  self.meta:load_pkgs()
   if spec then
     self:parse(spec)
   end
@@ -60,25 +58,6 @@ function Spec.get_name(pkg)
   name = name:sub(-1) == "/" and name:sub(1, -2) or name
   local slash = name:reverse():find("/", 1, true) --[[@as number?]]
   return slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
-end
-
----@param plugin LazyPluginSpec
-function Spec:add(plugin)
-  self.meta:add(plugin)
-
-  ---@diagnostic disable-next-line: cast-type-mismatch
-  ---@cast plugin LazyPlugin
-
-  -- import the plugin's spec
-  if Config.options.pkg.enabled and plugin.dir and not self.pkgs[plugin.dir] then
-    self.pkgs[plugin.dir] = true
-    local pkg = Pkg.get_spec(plugin)
-    if pkg then
-      self:normalize(pkg)
-    end
-  end
-
-  return plugin
 end
 
 function Spec:error(msg)
@@ -110,7 +89,7 @@ end
 ---@param spec LazySpec|LazySpecImport
 function Spec:normalize(spec)
   if type(spec) == "string" then
-    self:add({ spec })
+    self.meta:add({ spec })
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
@@ -118,11 +97,11 @@ function Spec:normalize(spec)
     end
   elseif spec[1] or spec.dir or spec.url then
     ---@cast spec LazyPluginSpec
-    local plugin = self:add(spec)
+    self.meta:add(spec)
     ---@diagnostic disable-next-line: cast-type-mismatch
-    ---@cast plugin LazySpecImport
-    if plugin and plugin.import then
-      self:import(plugin)
+    ---@cast spec LazySpecImport
+    if spec and spec.import then
+      self:import(spec)
     end
   elseif spec.import then
     ---@cast spec LazySpecImport

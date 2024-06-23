@@ -86,6 +86,7 @@
 
 ---@class LazyFragment
 ---@field id number
+---@field pkg? boolean
 ---@field pid? number
 ---@field deps? number[]
 ---@field frags? number[]
