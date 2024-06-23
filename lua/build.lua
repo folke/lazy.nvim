@@ -86,7 +86,9 @@ end
 
 ---@param readme? string
 ---@param mds? string[]
-function M.readme(readme, mds)
+---@param transform? fun(s:string):string
+function M.readme(readme, mds, transform)
+  local is_sorted = mds ~= nil
   readme = readme or "README.md"
   mds = mds
     or vim.fs.find(function(name, path)
@@ -101,27 +103,29 @@ function M.readme(readme, mds)
     "usage",
     "developers",
   }
-  table.sort(mds, function(a, b)
-    local aa = 0
-    local bb = 0
-    for i, name in ipairs(sorters) do
-      if a:match(name) then
-        aa = i
+  if not is_sorted then
+    table.sort(mds, function(a, b)
+      local aa = 0
+      local bb = 0
+      for i, name in ipairs(sorters) do
+        if a:match(name) then
+          aa = i
+        end
+        if b:match(name) then
+          bb = i
+        end
       end
-      if b:match(name) then
-        bb = i
+      if aa == bb then
+        if a:match("index") then
+          return true
+        elseif b:match("index") then
+          return false
+        end
+        return a < b
       end
-    end
-    if aa == bb then
-      if a:match("index") then
-        return true
-      elseif b:match("index") then
-        return false
-      end
-      return a < b
-    end
-    return aa < bb
-  end)
+      return aa < bb
+    end)
+  end
   local text = ""
   for _, md in ipairs(mds) do
     local _, level = md:gsub("/", "")
@@ -129,6 +133,7 @@ function M.readme(readme, mds)
     if md:match("index") then
       level = level - 1
     end
+    level = math.max(0, level)
     local t = Util.read_file(md) .. "\n\n"
     -- remove frontmatter
     t = t:gsub("^%-%-%-.-%-%-%-\n", "")
@@ -151,6 +156,7 @@ function M.readme(readme, mds)
     text = text .. "\n\n" .. vim.trim(t)
   end
   text = vim.trim(text)
+  text = transform and transform(text) or text
   Util.write_file(readme, text)
 end
 
@@ -159,9 +165,10 @@ function M.update()
   M.readme("README.md", {
     "README.header.md",
     "docs/intro.md",
-    -- "docs/installation.mdx",
     "README.footer.md",
-  })
+  }, function(s)
+    return s:gsub("\n# 🚀 Getting Started", "\n")
+  end)
   M.themes()
   M.docs()
   vim.cmd.checktime()
