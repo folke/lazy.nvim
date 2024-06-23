@@ -1,14 +1,16 @@
 # Lazy Loading
 
-**lazy.nvim** automagically lazy-loads Lua modules, so it is not needed to
-specify `module=...` everywhere in your plugin specification. This means that if
+**lazy.nvim** automagically lazy-loads Lua modules. This means that if
 you have a plugin `A` that is lazy-loaded and a plugin `B` that requires a
 module of plugin `A`, then plugin `A` will be loaded on demand as expected.
 
-If you don't want this behavior for a certain plugin, you can specify that with `module=false`.
-You can then manually load the plugin with `:Lazy load foobar.nvim`.
+:::tip
 
 You can configure **lazy.nvim** to lazy-load all plugins by default with `config.defaults.lazy = true`.
+Make sure you've configured lazy-loading, for your plugins to avoid unexpected behavior.
+Only do this if you know what you are doing, as it can lead to unexpected behavior.
+
+:::
 
 Additionally, you can also lazy-load on **events**, **commands**,
 **file types** and **key mappings**.
@@ -24,9 +26,13 @@ Plugins will be lazy-loaded when one of the following is `true`:
 Colorscheme plugins can be configured with `lazy=true`. The plugin will automagically load
 when doing `colorscheme foobar`.
 
-> **NOTE:** since **start** plugins can possibly change existing highlight groups,
-> it's important to make sure that your main **colorscheme** is loaded first.
-> To ensure this you can use the `priority=1000` field. **_(see the examples)_**
+:::warning
+
+since **start** plugins can possibly change existing highlight groups,
+it's important to make sure that your main **colorscheme** is loaded first.
+To ensure this you can use the `priority=1000` field. **_(see the [examples](./examples.md))_**
+
+:::
 
 ## ⌨️ Lazy Key Mappings
 

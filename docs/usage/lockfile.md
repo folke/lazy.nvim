@@ -1,6 +1,6 @@
-# 🔒 Lockfile `lazy-lock.json`
+# 🔒 Lockfile
 
-After every **update**, the local lockfile is updated with the installed revisions.
+After every **update**, the local lockfile (`lazy-lock.json`) is updated with the installed revisions.
 It is recommended to have this file under version control.
 
 If you use your Neovim config on multiple machines, using the lockfile, you can

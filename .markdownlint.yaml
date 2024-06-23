@@ -1,0 +1,14 @@
+MD013:
+  line_length: 120
+  tables: false
+MD033:
+  allowed_elements:
+    - "Tabs"
+    - "TabItem"
+    - "details"
+    - "summary"
+    - "b"
+    - "table"
+    - "tr"
+    - "td"
+    - "a"
