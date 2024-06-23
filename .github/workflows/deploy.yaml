@@ -44,6 +44,7 @@ jobs:
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
   sync-docs:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -54,9 +55,9 @@ jobs:
 
       - name: Copy docs and README.md
         run: |
-          mkdir -p temp-docs
+          mkdir -p /tmp/temp-docs
           cp -r doc/ temp-docs/
-          cp README.md temp-docs/
+          cp README.md /tmp/temp-docs/
 
       - name: Checkout main branch
         uses: actions/checkout@v4
@@ -65,8 +66,8 @@ jobs:
 
       - name: Copy to main branch
         run: |
-          cp -r temp-docs/doc/ .
-          cp temp-docs/README.md .
+          cp -r /tmp/temp-docs/doc/ .
+          cp /tmp/temp-docs/README.md .
 
       - name: Commit and push changes
         run: |
