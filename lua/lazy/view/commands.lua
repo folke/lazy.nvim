@@ -34,6 +34,7 @@ M.commands = {
   health = function()
     vim.cmd.checkhealth("lazy")
   end,
+  ---@param opts ManagerOpts
   pkg = function(opts)
     local Pkg = require("lazy.pkg")
     Pkg.update()
@@ -44,7 +45,7 @@ M.commands = {
       },
     })
     for _, plugin in pairs(opts and opts.plugins or {}) do
-      local spec = Pkg.get(plugin)
+      local spec = Pkg.get(plugin.dir)
       Util.info(vim.inspect(spec), { lang = "lua", title = plugin.name })
     end
   end,

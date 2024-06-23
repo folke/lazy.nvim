@@ -1,5 +1,6 @@
 local Config = require("lazy.core.config")
 local Meta = require("lazy.core.meta")
+local Pkg = require("lazy.pkg")
 local Util = require("lazy.core.util")
 
 ---@class LazyCorePlugin
@@ -332,6 +333,12 @@ function M.load()
   Util.track("state")
   M.update_state()
   Util.track()
+
+  if Config.options.pkg.enabled and Pkg.dirty then
+    Pkg.update()
+    return M.load()
+  end
+
   M.loading = false
   vim.api.nvim_exec_autocmds("User", { pattern = "LazyPlugins", modeline = false })
 end
