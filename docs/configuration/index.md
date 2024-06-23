@@ -39,6 +39,7 @@ sidebar_position: 5
     enabled = true,
     cache = vim.fn.stdpath("state") .. "/lazy/pkg-cache.lua",
     versions = true, -- Honor versions in pkg sources
+    -- the first package source that is found for a plugin will be used.
     sources = {
       "lazy",
       "rockspec",
