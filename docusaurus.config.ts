@@ -34,7 +34,7 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           editUrl: "https://github.com/folke/lazy.nvim/tree/docs/",
         },
-        blog: false,
+        // blog: false,
         theme: {
           customCss: "./src/css/custom.css",
         },
@@ -65,7 +65,11 @@ const config: Config = {
         alt: "lazy.nvim Logo",
         src: "img/icon.svg",
       },
-      items: [...require("./socials.ts")],
+      items: [
+        { to: "/", label: "Docs", position: "left" },
+        { to: "blog", label: "Blog", position: "left" },
+        ...require("./socials.ts"),
+      ],
     },
     footer: {
       style: "dark",
