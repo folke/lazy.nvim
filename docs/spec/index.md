@@ -3,7 +3,7 @@ sidebar_position: 3
 ---
 # 🔌 Plugin Spec
 
-## Source
+## Spec Source
 
 | Property  | Type       | Description                                                                                                          |
 | --------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
@@ -15,7 +15,7 @@ sidebar_position: 3
 
 A valid spec should define one of `[1]`, `dir` or `url`.
 
-## Loading
+## Spec Loading
 
 | Property         | Type                                    | Description                                                                                                                                                                                                                            |
 | ---------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -24,7 +24,7 @@ A valid spec should define one of `[1]`, `dir` or `url`.
 | **cond**         | `boolean?` or `fun(LazyPlugin):boolean` | Behaves the same as `enabled`, but won't uninstall the plugin when the condition is `false`. Useful to disable some plugins in vscode, or firenvim for example.                                                                        |
 | **priority**     | `number?`                               | Only useful for **start** plugins (`lazy=false`) to force loading certain plugins first. Default priority is `50`. It's recommended to set this to a high number for colorschemes.                                                     |
 
-## Setup
+## Spec Setup
 
 | Property   | Type                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ---------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -35,7 +35,7 @@ A valid spec should define one of `[1]`, `dir` or `url`.
 | **build**  | `fun(LazyPlugin)` or `string` or a list of build commands | `build` is executed when a plugin is installed or updated. Before running `build`, a plugin is first loaded. If it's a string it will be run as a shell command. When prefixed with `:` it is a Neovim command. You can also specify a list to executed multiple build commands. Some plugins provide their own `build.lua` which is automatically used by lazy. So no need to specify a build step for those plugins. |
 | **rocks**  | `string[]?`                                               | Add any [luarocks](https://luarocks.org/) dependencies.                                                                                                                                                                                                                                                                                                                                                                |
 
-## Lazy Loading
+## Spec Lazy Loading
 
 | Property  | Type                                                                                                                                | Description                                                                                                                                                                                    |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -47,7 +47,7 @@ A valid spec should define one of `[1]`, `dir` or `url`.
 
 Refer to the [Lazy Loading](./lazy_loading.md) section for more information.
 
-## Versioning
+## Spec Versioning
 
 | Property       | Type                                         | Description                                                                                        |
 | -------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------- |
@@ -60,7 +60,7 @@ Refer to the [Lazy Loading](./lazy_loading.md) section for more information.
 
 Refer to the [Versioning](./versioning.md) section for more information.
 
-## Advanced
+## Spec Advanced
 
 | Property     | Type       | Description                                                                                                                                                                                                                                                                                                                                              |
 | ------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
