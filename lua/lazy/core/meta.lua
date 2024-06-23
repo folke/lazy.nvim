@@ -66,6 +66,17 @@ function M:add(plugin)
 
   table.insert(meta._.frags, fragment.id)
 
+  if meta._ and meta._.rtp_loaded then
+    local old_dir = meta.dir
+    self:_rebuild(meta.name)
+    local new_dir = meta.dir
+    if old_dir ~= new_dir then
+      local msg = "Plugin `" .. meta.name .. "` changed `dir`:\n- from: `" .. old_dir .. "`\n- to: `" .. new_dir .. "`"
+      msg = msg .. "\n\nThis plugin was already partially loaded, so things may break.\nPlease fix your config."
+      self.spec:error(msg)
+    end
+  end
+
   if plugin.name then
     -- handle renames
     if meta.name ~= plugin.name then
