@@ -84,10 +84,14 @@ function M._old()
   })
 end
 
-function M.readme()
-  local mds = vim.fs.find(function(name, path)
-    return name:match(".*%.mdx?$")
-  end, { limit = math.huge, type = "file", path = "docs" })
+---@param readme? string
+---@param mds? string[]
+function M.readme(readme, mds)
+  readme = readme or "README.md"
+  mds = mds
+    or vim.fs.find(function(name, path)
+      return name:match(".*%.mdx?$")
+    end, { limit = math.huge, type = "file", path = "docs" })
   local sorters = {
     "intro",
     "installation",
@@ -138,18 +142,26 @@ function M.readme()
     -- <TabItem value="multiple" label="Structured Setup">
     t = t:gsub('[ \t]*<TabItem value="([^"]+)" label="([^"]+)">', "## %2")
     t = t:gsub("</?TabItem>", "")
+    t = t:gsub("\nimport .-\n", "\n")
+    t = t:gsub("\nimport .-\n", "\n")
     t = t:gsub("\n%s*\n", "\n\n")
     t = "\n" .. t
     -- fix headings
     t = t:gsub("\n#", "\n" .. ("#"):rep(level + 1))
-    text = text .. "\n" .. vim.trim(t)
+    text = text .. "\n\n" .. vim.trim(t)
   end
   text = vim.trim(text)
-  Util.write_file("README.md", text)
+  Util.write_file(readme, text)
 end
 
 function M.update()
-  M.readme()
+  M.readme("README.vim.md")
+  M.readme("README.md", {
+    "README.header.md",
+    "docs/intro.md",
+    -- "docs/installation.mdx",
+    "README.footer.md",
+  })
   M.themes()
   M.docs()
   vim.cmd.checktime()

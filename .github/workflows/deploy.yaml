@@ -32,6 +32,7 @@ jobs:
           vimdoc: lazy.nvim
           version: "Neovim >= 0.8.0"
           description: "A modern plugin manager for Neovim"
+          pandoc: "README.vim.md"
           demojify: false
           treesitter: true
       - name: Push changes
