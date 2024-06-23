@@ -118,11 +118,26 @@ function M.readme()
     end
     return aa < bb
   end)
-  local lines = {}
+  local text = ""
   for _, md in ipairs(mds) do
-    table.insert(lines, ("```{.include}\n%s\n```"):format(md))
+    local t = Util.read_file(md) .. "\n\n"
+    -- remove frontmatter
+    t = t:gsub("^%-%-%-.-%-%-%-\n", "")
+    -- remove code block titles
+    t = t:gsub("```lua.-\n", "```lua\n")
+    -- remove markdown comments
+    t = t:gsub("<!--.-\n", "")
+    -- remove <Tabs>
+    t = t:gsub("</?Tabs>", "")
+    -- replace tab item with ## title
+    -- <TabItem value="multiple" label="Structured Setup">
+    t = t:gsub('[ \t]*<TabItem value="([^"]+)" label="([^"]+)">', "## %2")
+    t = t:gsub("</?TabItem>", "")
+    t = t:gsub("\n%s*\n", "\n\n")
+    text = text .. t
   end
-  Util.write_file("README.md", vim.trim(table.concat(lines, "\n\n")))
+  text = vim.trim(text)
+  Util.write_file("README.md", text)
 end
 
 function M.update()
