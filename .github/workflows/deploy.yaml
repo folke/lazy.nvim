@@ -26,6 +26,14 @@ jobs:
           echo "/tmp/nvim/squashfs-root/usr/bin/" >> $GITHUB_PATH
       - name: Generate docs
         run: ./build.sh
+      - name: panvimdoc
+        uses: kdheepak/panvimdoc@main
+        with:
+          vimdoc: lazy.nvim
+          version: "Neovim >= 0.8.0"
+          description: "A modern plugin manager for Neovim"
+          demojify: false
+          treesitter: true
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

@@ -1,41 +1,59 @@
-# Website
-
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
-
-### Installation
-
-```
-$ yarn
+```{.include}
+docs/intro.md
 ```
 
-### Local Development
-
-```
-$ yarn start
+```{.include}
+docs/installation.mdx
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ yarn build
+```{.include}
+docs/spec/index.md
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
+```{.include}
+docs/spec/examples.md
 ```
 
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
+```{.include}
+docs/spec/lazy_loading.md
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+```{.include}
+docs/spec/versioning.md
+```
+
+```{.include}
+docs/packages.md
+```
+
+```{.include}
+docs/configuration/index.md
+```
+
+```{.include}
+docs/configuration/highlights.md
+```
+
+```{.include}
+docs/usage/index.md
+```
+
+```{.include}
+docs/usage/lockfile.md
+```
+
+```{.include}
+docs/usage/migration.md
+```
+
+```{.include}
+docs/usage/profiling.md
+```
+
+```{.include}
+docs/usage/structuring.md
+```
+
+```{.include}
+docs/developers.md
+```

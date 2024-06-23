@@ -84,9 +84,52 @@ function M._old()
   })
 end
 
+function M.readme()
+  local mds = vim.fs.find(function(name, path)
+    return name:match(".*%.mdx?$")
+  end, { limit = math.huge, type = "file", path = "docs" })
+  local sorters = {
+    "intro",
+    "installation",
+    "spec",
+    "packages",
+    "configuration",
+    "usage",
+    "developers",
+  }
+  table.sort(mds, function(a, b)
+    local aa = 0
+    local bb = 0
+    for i, name in ipairs(sorters) do
+      if a:match(name) then
+        aa = i
+      end
+      if b:match(name) then
+        bb = i
+      end
+    end
+    if aa == bb then
+      if a:match("index") then
+        return true
+      elseif b:match("index") then
+        return false
+      end
+      return a < b
+    end
+    return aa < bb
+  end)
+  local lines = {}
+  for _, md in ipairs(mds) do
+    table.insert(lines, ("```{.include}\n%s\n```"):format(md))
+  end
+  Util.write_file("README.md", vim.trim(table.concat(lines, "\n\n")))
+end
+
 function M.update()
+  M.readme()
   M.themes()
   M.docs()
+  vim.cmd.checktime()
 end
 
 return M
