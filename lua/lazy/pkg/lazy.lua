@@ -16,11 +16,12 @@ function M.get(plugin)
     end, "`" .. M.lazy_file .. "` for **" .. plugin.name .. "** has errors:")
     if not chunk then
       Util.error("Invalid `" .. M.lazy_file .. "` for **" .. plugin.name .. "**")
+      return
     end
     return {
       source = "lazy",
       file = M.lazy_file,
-      chunk = chunk,
+      code = "function()\n" .. Util.read_file(file) .. "\nend",
     }
   end
 end

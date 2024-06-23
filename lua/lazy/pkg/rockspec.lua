@@ -46,7 +46,7 @@ function M.get(plugin)
   return #rocks > 0
       and {
         source = "rockspec",
-        file = rockspec_file,
+        file = vim.fn.fnamemodify(rockspec_file, ":t"),
         spec = {
           plugin.name,
           rocks = rocks,
