@@ -56,7 +56,7 @@ jobs:
       - name: Copy docs and README.md
         run: |
           mkdir -p /tmp/temp-docs
-          cp -r doc/ temp-docs/
+          cp -r doc/ /tmp/temp-docs/
           cp README.md /tmp/temp-docs/
 
       - name: Checkout main branch
