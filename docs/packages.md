@@ -5,7 +5,7 @@ sidebar_position: 4
 
 **lazy.nvim** supports three ways for plugins to define their dependencies and configuration.
 
-- **Lazy**: `.lazy.lua` file
+- **Lazy**: `lazy.lua` file
 - **Rockspec**: [luarocks](https://luarocks.org/) `*-scm-1.rockspec` [file](https://github.com/luarocks/luarocks/wiki/Rockspec-format)
 - **Packspec**: `pkg.json` (experimental, since the [format](https://github.com/neovim/packspec/issues/41) is not quite there yet)
 
@@ -21,7 +21,7 @@ so that when the plugin is disabled, none of the specs are loaded.
 
 ## Lazy
 
-Using a `.lazy.lua` file is the recommended way to define your plugin dependencies and configuration.
+Using a `lazy.lua` file is the recommended way to define your plugin dependencies and configuration.
 Syntax is the same as any plugin spec.
 
 ## Rockspec
