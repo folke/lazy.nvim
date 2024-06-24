@@ -1,13 +1,5 @@
 local Config = require("lazy.core.config")
-
-local M = {}
-
-M._fid = 0
-
-local function next_id()
-  M._fid = M._fid + 1
-  return M._fid
-end
+local Util = require("lazy.core.util")
 
 --- This class is used to manage the fragments of a plugin spec.
 --- It keeps track of the fragments and their relations to other fragments.
@@ -17,30 +9,39 @@ end
 ---@field frag_stack number[]
 ---@field dep_stack number[]
 ---@field dirty table<number, boolean>
+---@field plugins table<LazyPlugin, number>
 ---@field spec LazySpecLoader
-local F = {}
+local M = {}
+
+M._fid = 0
+
+local function next_id()
+  M._fid = M._fid + 1
+  return M._fid
+end
 
 ---@param spec LazySpecLoader
 ---@return LazyFragments
 function M.new(spec)
-  local self = setmetatable({}, { __index = F })
+  local self = setmetatable({}, { __index = M })
   self.fragments = {}
   self.frag_stack = {}
   self.dep_stack = {}
   self.spec = spec
   self.dirty = {}
+  self.plugins = {}
   return self
 end
 
 ---@param id number
-function F:get(id)
+function M:get(id)
   return self.fragments[id]
 end
 
 --- Remove a fragment and all its children.
 --- This will also remove the fragment from its parent's children list.
 ---@param id number
-function F:del(id)
+function M:del(id)
   -- del fragment
   local fragment = self.fragments[id]
   if not fragment then
@@ -55,13 +56,13 @@ function F:del(id)
     local parent = self.fragments[pid]
     if parent.frags then
       ---@param fid number
-      parent.frags = vim.tbl_filter(function(fid)
+      parent.frags = Util.filter(function(fid)
         return fid ~= id
       end, parent.frags)
     end
     if parent.deps then
       ---@param fid number
-      parent.deps = vim.tbl_filter(function(fid)
+      parent.deps = Util.filter(function(fid)
         return fid ~= id
       end, parent.deps)
     end
@@ -81,8 +82,15 @@ end
 --- Add a fragment to the fragments list.
 --- This also resolves its name, url, dir, dependencies and child specs.
 ---@param plugin LazyPluginSpec
-function F:add(plugin)
+function M:add(plugin)
+  if self.plugins[plugin] then
+    return self.fragments[self.plugins[plugin]]
+  end
+
   local id = next_id()
+  setmetatable(plugin, nil)
+
+  self.plugins[plugin] = id
 
   local pid = self.frag_stack[#self.frag_stack]
 

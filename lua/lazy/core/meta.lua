@@ -33,8 +33,7 @@ function M:load_pkgs()
   if not Config.options.pkg.enabled then
     return
   end
-  local specs = Pkg.get()
-  for dir, pkg in pairs(specs) do
+  for _, pkg in ipairs(Pkg.get()) do
     local meta, fragment = self:add(pkg.spec)
     if meta and fragment then
       meta._.pkg = pkg
@@ -44,7 +43,7 @@ function M:load_pkgs()
         frag.spec.optional = true
       end
       -- keep track of the top-level package fragment
-      self.pkgs[dir] = fragment.id
+      self.pkgs[pkg.dir] = fragment.id
     end
   end
 end
@@ -128,7 +127,7 @@ function M:rebuild()
         -- fragment was deleted, so remove it from plugin
         self.frag_to_meta[fid] = nil
         ---@param f number
-        meta._.frags = vim.tbl_filter(function(f)
+        meta._.frags = Util.filter(function(f)
           return f ~= fid
         end, meta._.frags)
         -- if no fragments left, delete plugin
@@ -167,10 +166,10 @@ function M:_rebuild(name)
   assert(#plugin._.frags > 0, "no fragments found for plugin " .. name)
 
   ---@type table<number, boolean>
-  local done = {}
+  local added = {}
   for _, fid in ipairs(plugin._.frags) do
-    if not done[fid] then
-      done[fid] = true
+    if not added[fid] then
+      added[fid] = true
       local fragment = self.fragments:get(fid)
       assert(fragment, "fragment " .. fid .. " not found, for plugin " .. name)
       ---@diagnostic disable-next-line: no-unknown
