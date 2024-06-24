@@ -18,10 +18,12 @@ function M.check()
     error("'git' not installed?")
   end
 
-  if vim.fn.executable("luarocks") == 1 then
-    ok("'luarocks' installed")
-  else
-    warn("'luarocks' not installed")
+  if Config.options.rocks.enabled then
+    if vim.fn.executable("luarocks") == 1 then
+      ok("'luarocks' installed")
+    else
+      error("'luarocks' not installed. Either install it or set opts.rocks.enabled = false")
+    end
   end
 
   local sites = vim.opt.packpath:get()
