@@ -11,7 +11,7 @@ sidebar_position: 5
 {
   root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
   defaults = {
-    -- If you know what you're doing, you can set this to `true` to have all your plugins lazy-loaded by default.
+    -- Set this to `true` to have all your plugins lazy-loaded by default.
     -- Only do this if you know what you are doing, as it can lead to unexpected behavior.
     lazy = false, -- should plugins be lazy-loaded?
     -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
