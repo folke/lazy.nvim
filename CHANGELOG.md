@@ -1,5 +1,17 @@
 # Changelog
 
+## [11.2.0](https://github.com/folke/lazy.nvim/compare/v11.1.0...v11.2.0) (2024-06-24)
+
+
+### Features
+
+* rewrite some known plugins to lazy specs instead of luarocks (plenary.nvim). Closes [#1540](https://github.com/folke/lazy.nvim/issues/1540) ([a089d43](https://github.com/folke/lazy.nvim/commit/a089d43dba7438532c56e1c582c5974713bd48f8))
+
+
+### Performance Improvements
+
+* minimize meta rebuild when loading specs ([1446f6c](https://github.com/folke/lazy.nvim/commit/1446f6cfbb4ca0a7ee0baf3acc86ab5e4be5ab22))
+
 ## [11.1.0](https://github.com/folke/lazy.nvim/compare/v11.0.1...v11.1.0) (2024-06-24)
 
 
