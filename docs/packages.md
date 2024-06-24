@@ -28,6 +28,12 @@ Syntax is the same as any plugin spec.
 
 When a plugin contains a `*-1.rockspec` file, **lazy.nvim** will automatically build the rock and its dependencies.
 
+A **rockspec** will only be used if one of the following is true:
+
+- the package does not have a `/lua` directory
+- the package has a complex build step
+- the package has dependencies (excluding `lua`)
+
 ## Packspec
 
 Supports the [pkg.json](https://github.com/nvim-lua/nvim-package-specification/issues/41) format,
