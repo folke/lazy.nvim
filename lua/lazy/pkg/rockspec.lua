@@ -4,7 +4,7 @@ local Util = require("lazy.core.util")
 
 local M = {}
 
-M.dev_suffix = "-scm-1.rockspec"
+M.dev_suffix = "-1.rockspec"
 M.skip = { "lua" }
 
 ---@class RockSpec
@@ -14,7 +14,7 @@ M.skip = { "lua" }
 ---@field dependencies string[]
 
 ---@param plugin LazyPlugin
----@return LazyPkg?
+---@return LazyPkgSpec?
 function M.get(plugin)
   local rockspec_file ---@type string?
   Util.ls(plugin.dir, function(path, name, t)
@@ -43,13 +43,21 @@ function M.get(plugin)
     return not vim.tbl_contains(M.skip, name)
   end, rockspec and rockspec.dependencies or {})
 
-  return #rocks > 0
+  local use = #rocks > 0
+  use = true
+
+  local lazy = nil
+  if not vim.uv.fs_stat(plugin.dir .. "/lua") then
+    lazy = false
+  end
+
+  return use
       and {
-        source = "rockspec",
         file = vim.fn.fnamemodify(rockspec_file, ":t"),
         spec = {
           plugin.name,
-          rocks = rocks,
+          build = "rockspec",
+          lazy = lazy,
         },
       }
     or nil

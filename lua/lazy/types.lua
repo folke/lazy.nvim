@@ -8,6 +8,7 @@
 ---@field dep? boolean True if this plugin is only in the spec as a dependency
 ---@field dir? string Explicit dir or dev set for this plugin
 ---@field dirty? boolean
+---@field build? boolean
 ---@field frags? number[]
 ---@field handlers? LazyPluginHandlers
 ---@field installed? boolean
@@ -15,13 +16,12 @@
 ---@field kind? LazyPluginKind
 ---@field loaded? {[string]:string}|{time:number}
 ---@field outdated? boolean
----@field rocks? LazyRock[]
----@field rocks_installed? boolean
 ---@field rtp_loaded? boolean
 ---@field tasks? LazyTask[]
 ---@field updated? {from:string, to:string}
 ---@field updates? {from:GitInfo, to:GitInfo}
 ---@field working? boolean
+---@field pkg? LazyPkg
 
 ---@alias PluginOpts table|fun(self:LazyPlugin, opts:table):table?
 
@@ -29,7 +29,7 @@
 ---@field init? fun(self:LazyPlugin) Will always be run
 ---@field deactivate? fun(self:LazyPlugin) Unload/Stop a plugin
 ---@field config? fun(self:LazyPlugin, opts:table)|true Will be executed when loading the plugin
----@field build? string|fun(self:LazyPlugin)|(string|fun(self:LazyPlugin))[]
+---@field build? string|async fun(self:LazyPlugin)|(string|async fun(self:LazyPlugin))[]
 ---@field opts? PluginOpts
 
 ---@class LazyPluginHandlers

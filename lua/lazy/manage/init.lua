@@ -82,13 +82,12 @@ function M.install(opts)
     pipeline = {
       "git.clone",
       { "git.checkout", lockfile = opts.lockfile },
-      "rocks.install",
       "plugin.docs",
       "wait",
       "plugin.build",
     },
     plugins = function(plugin)
-      return plugin.url and not (plugin._.installed and plugin._.rocks_installed ~= false)
+      return plugin.url and not (plugin._.installed and not plugin._.build)
     end,
   }, opts):wait(function()
     require("lazy.manage.lock").update()
@@ -107,7 +106,6 @@ function M.update(opts)
       "git.fetch",
       "git.status",
       { "git.checkout", lockfile = opts.lockfile },
-      "rocks.install",
       "plugin.docs",
       "wait",
       "plugin.build",
@@ -224,7 +222,7 @@ function M.clear(plugins)
     if plugin._.tasks then
       ---@param task LazyTask
       plugin._.tasks = vim.tbl_filter(function(task)
-        return task:is_running()
+        return task:is_running() or task.error
       end, plugin._.tasks)
     end
   end
