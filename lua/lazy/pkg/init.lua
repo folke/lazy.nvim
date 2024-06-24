@@ -14,6 +14,7 @@ M.dirty = false
 
 ---@class LazyPkgSpec
 ---@field file string
+---@field source? string
 ---@field spec? LazySpec
 ---@field code? string
 
@@ -54,7 +55,7 @@ function M.update()
           local pkg = {
             name = plugin.name,
             dir = plugin.dir,
-            source = source.name,
+            source = spec.source or source.name,
             file = spec.file,
             spec = spec.spec or {},
           }

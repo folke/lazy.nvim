@@ -7,6 +7,10 @@ local M = {}
 M.dev_suffix = "-1.rockspec"
 M.skip = { "lua" }
 
+M.rewrites = {
+  ["plenary.nvim"] = { "nvim-lua/plenary.nvim", lazy = true },
+}
+
 ---@param plugin LazyPlugin
 function M.deps(plugin)
   local root = Config.options.rocks.root .. "/" .. plugin.name
@@ -32,6 +36,14 @@ end
 ---@param plugin LazyPlugin
 ---@return LazyPkgSpec?
 function M.get(plugin)
+  if M.rewrites[plugin.name] then
+    return {
+      file = "rewrite",
+      source = "lazy",
+      spec = M.rewrites[plugin.name],
+    }
+  end
+
   local rockspec_file ---@type string?
   Util.ls(plugin.dir, function(path, name, t)
     if t == "file" and name:sub(-#M.dev_suffix) == M.dev_suffix then
@@ -59,9 +71,16 @@ function M.get(plugin)
 
   local has_lua = not not vim.uv.fs_stat(plugin.dir .. "/lua")
 
+  ---@type LazyPluginSpec
+  local rewrites = {}
+
   ---@param dep string
   local rocks = vim.tbl_filter(function(dep)
     local name = dep:gsub("%s.*", "")
+    if M.rewrites[name] then
+      table.insert(rewrites, M.rewrites[name])
+      return false
+    end
     return not vim.tbl_contains(M.skip, name)
   end, rockspec.dependencies or {})
 
@@ -75,6 +94,12 @@ function M.get(plugin)
     )
 
   if not use then
+    if #rewrites > 0 then
+      return {
+        file = vim.fn.fnamemodify(rockspec_file, ":t"),
+        spec = rewrites,
+      }
+    end
     return
   end
 
@@ -90,7 +115,7 @@ function M.get(plugin)
       build = "rockspec",
       lazy = lazy,
     },
-  } or nil
+  }
 end
 
 return M
