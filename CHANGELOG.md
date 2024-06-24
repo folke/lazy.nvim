@@ -1,5 +1,35 @@
 # Changelog
 
+## [11.0.0](https://github.com/folke/lazy.nvim/compare/v10.24.3...v11.0.0) (2024-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* new docs for v11.0
+
+### Features
+
+* added support for plugin packages by lazy, rockspec and packspec ([3be55a4](https://github.com/folke/lazy.nvim/commit/3be55a46158cde17e2b853e531d260f3738a5346))
+* **build:** build files and functions are now async. use coroutine.yield to interrupt and report progress ([368747b](https://github.com/folke/lazy.nvim/commit/368747bc9a314b4f0745547ebdcc3fbc4d100c0a))
+* luarocks support ([f1ba2e3](https://github.com/folke/lazy.nvim/commit/f1ba2e3d057ae5c03d04134a9d538d0b2251f13b))
+* **meta:** check for dir changes for plugins already added to the rtp ([ee2ca39](https://github.com/folke/lazy.nvim/commit/ee2ca39f672a2d6f4cbb683b525e6b3d91f3fc0c))
+* new docs for v11.0 ([183f59e](https://github.com/folke/lazy.nvim/commit/183f59e2e85dea0c38ed7d16c7c7e543c0b739c7))
+* packspec ([8eba74c](https://github.com/folke/lazy.nvim/commit/8eba74c3fc41e1a364225f744022f8b3ff11d796))
+* **pkg:** import package specs in the scope of the plugin ([c1912e2](https://github.com/folke/lazy.nvim/commit/c1912e23481ba72a8d8f7a5c736f5e2547e6853e))
+* rewrite of spec resolving ([75ffe56](https://github.com/folke/lazy.nvim/commit/75ffe56f70faac43f077796b91178d2f1419f8ce))
+* spec.rocks is no longer needed & added support for installing any luarock ([fcfd548](https://github.com/folke/lazy.nvim/commit/fcfd54835da5af64c6046060f4db62c4626d209c))
+
+
+### Bug Fixes
+
+* **fragments:** prevent adding the same spec instance more than once ([dbffad6](https://github.com/folke/lazy.nvim/commit/dbffad6f44674a3c1b23c649a0abab299d7349d8))
+* **luarocks:** cleanup luarocks when deleting a plugin ([b73c57e](https://github.com/folke/lazy.nvim/commit/b73c57ed9ec8e63bbb867d21a3f3a865224b25d4))
+* **pkg:** automatically update pkgs when editing a pkg file ([7b6ddbf](https://github.com/folke/lazy.nvim/commit/7b6ddbfc137ad5d8b178a3bbf5a1338630f30625))
+* **pkg:** correctly pre-load package specs and remove them when needed during resolve ([4326d4b](https://github.com/folke/lazy.nvim/commit/4326d4b487d4facc19b375ca30cd633cf56d88ed))
+* **pkg:** make sure state dir exists ([3515cb5](https://github.com/folke/lazy.nvim/commit/3515cb518f61c02b41cd3a8d8135c9a5862a982f))
+* **pkg:** versioning and reload specs when pkg-cache is dirty ([fd8229d](https://github.com/folke/lazy.nvim/commit/fd8229d6e312e83d6bafda256adf0e650b13ca01))
+* **rocks:** only build rockspec when it has deps or an advanced build step ([9a6c219](https://github.com/folke/lazy.nvim/commit/9a6c21982638b6e2ea498514baee9186c0e60d82))
+
 ## [10.24.3](https://github.com/folke/lazy.nvim/compare/v10.24.2...v10.24.3) (2024-06-23)
 
 
