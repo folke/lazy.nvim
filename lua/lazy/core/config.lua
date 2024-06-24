@@ -46,7 +46,7 @@ M.defaults = {
     },
   },
   rocks = {
-    enabled = true,
+    enabled = vim.fn.executable("luarocks") == 1,
     root = vim.fn.stdpath("data") .. "/lazy-rocks",
     server = "https://nvim-neorocks.github.io/rocks-binaries/",
   },
