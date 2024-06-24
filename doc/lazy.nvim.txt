@@ -59,6 +59,29 @@ Table of Contents                                *lazy.nvim-table-of-contents*
     - **Lazy**: `lazy.lua` file
     - **Rockspec**: luarocks <https://luarocks.org/> `*-scm-1.rockspec` file <https://github.com/luarocks/luarocks/wiki/Rockspec-format>
     - **Packspec**: `pkg.json` (experimental, since the format <https://github.com/neovim/packspec/issues/41> is not quite there yet)
+    Related _lazy.nvim_ options:
+    >lua
+        {
+          pkg = {
+            enabled = true,
+            cache = vim.fn.stdpath("state") .. "/lazy/pkg-cache.lua",
+            -- the first package source that is found for a plugin will be used.
+            sources = {
+              "lazy",
+              "rockspec",
+              "packspec",
+            },
+          },
+          rocks = {
+            root = vim.fn.stdpath("data") .. "/lazy-rocks",
+            server = "https://nvim-neorocks.github.io/rocks-binaries/",
+          },
+        }
+    <
+- Installing neorg <https://github.com/nvim-neorg/neorg> is now as simple as:
+    >lua
+        { "nvim-neorg/neorg", opts = {} }
+    <
 - Packages are not limited to just Neovim plugins. You can install any
     **luarocks** package, like:
     >lua
