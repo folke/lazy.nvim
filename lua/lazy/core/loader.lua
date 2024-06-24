@@ -69,9 +69,8 @@ function M.install_missing()
   for _, plugin in pairs(Config.plugins) do
     local installed = plugin._.installed
     local has_errors = Plugin.has_errors(plugin)
-    local rocks_installed = plugin._.rocks_installed ~= false
 
-    if not has_errors and not (installed and rocks_installed) then
+    if not has_errors and not (installed and not plugin._.build) then
       for _, colorscheme in ipairs(Config.options.install.colorscheme) do
         if colorscheme == "default" then
           break
@@ -344,6 +343,10 @@ function M._load(plugin, reason, opts)
 
   M.add_to_rtp(plugin)
 
+  if plugin._.pkg and plugin._.pkg.source == "rockspec" then
+    M.add_to_luapath(plugin)
+  end
+
   if plugin.dependencies then
     Util.try(function()
       M.load(plugin.dependencies, {})
@@ -485,6 +488,15 @@ function M.add_to_rtp(plugin)
 
   ---@type vim.Option
   vim.opt.rtp = rtp
+end
+
+---@param plugin LazyPlugin
+function M.add_to_luapath(plugin)
+  local root = Config.options.rocks.root .. "/" .. plugin.name
+  local path = root .. "/share/lua/5.1"
+  local cpath = root .. "/lib/lua/5.1"
+  package.path = package.path .. ";" .. path .. "/?.lua;" .. path .. "/?/init.lua;"
+  package.cpath = package.cpath .. ";" .. cpath .. "/?." .. (jit.os:find("Windows") and "dll" or "so") .. ";"
 end
 
 function M.source(path)

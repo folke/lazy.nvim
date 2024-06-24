@@ -33,10 +33,11 @@ function M:load_pkgs()
   if not Config.options.pkg.enabled then
     return
   end
-  local specs = Pkg.spec()
-  for dir, spec in pairs(specs) do
-    local meta, fragment = self:add(spec)
+  local specs = Pkg.get()
+  for dir, pkg in pairs(specs) do
+    local meta, fragment = self:add(pkg.spec)
     if meta and fragment then
+      meta._.pkg = pkg
       -- tag all package fragments as optional
       for _, fid in ipairs(meta._.frags) do
         local frag = self.fragments:get(fid)
@@ -165,18 +166,23 @@ function M:_rebuild(name)
 
   assert(#plugin._.frags > 0, "no fragments found for plugin " .. name)
 
+  ---@type table<number, boolean>
+  local done = {}
   for _, fid in ipairs(plugin._.frags) do
-    local fragment = self.fragments:get(fid)
-    assert(fragment, "fragment " .. fid .. " not found, for plugin " .. name)
-    ---@diagnostic disable-next-line: no-unknown
-    super = setmetatable(fragment.spec, super and { __index = super } or nil)
-    plugin._.dep = plugin._.dep and fragment.dep
-    plugin.optional = plugin.optional and (rawget(fragment.spec, "optional") == true)
-    plugin.url = fragment.url or plugin.url
+    if not done[fid] then
+      done[fid] = true
+      local fragment = self.fragments:get(fid)
+      assert(fragment, "fragment " .. fid .. " not found, for plugin " .. name)
+      ---@diagnostic disable-next-line: no-unknown
+      super = setmetatable(fragment.spec, super and { __index = super } or nil)
+      plugin._.dep = plugin._.dep and fragment.dep
+      plugin.optional = plugin.optional and (rawget(fragment.spec, "optional") == true)
+      plugin.url = fragment.url or plugin.url
 
-    -- dependencies
-    for _, dep in ipairs(fragment.deps or {}) do
-      table.insert(plugin.dependencies, self.fragments:get(dep).name)
+      -- dependencies
+      for _, dep in ipairs(fragment.deps or {}) do
+        table.insert(plugin.dependencies, self.fragments:get(dep).name)
+      end
     end
   end
 

@@ -2,23 +2,28 @@ local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 
 local M = {}
-M.VERSION = 7
+M.VERSION = 8
 M.dirty = false
 
----@alias LazyPkgSpec LazySpec | fun():LazySpec
-
 ---@class LazyPkg
----@field source string
 ---@field name string
+---@field dir string
+---@field source "lazy" | "packspec" | "rockspec"
+---@field file string
+---@field spec LazyPluginSpec
+
+---@class LazyPkgSpec
 ---@field file string
 ---@field spec? LazySpec
-
----@class LazyPkgInput: LazyPkg
----@field spec? LazySpec|fun():LazySpec
 ---@field code? string
 
 ---@class LazyPkgSource
----@field get fun(plugin:LazyPlugin):LazyPkgInput?
+---@field name string
+---@field get fun(plugin:LazyPlugin):LazyPkgSpec?
+
+---@class LazyPkgCache
+---@field pkgs LazyPkg[]
+---@field version number
 
 ---@type table<string, LazyPkg>?
 M.cache = nil
@@ -27,27 +32,40 @@ function M.update()
   ---@type LazyPkgSource[]
   local sources = {}
   for _, s in ipairs(Config.options.pkg.sources) do
-    sources[#sources + 1] = require("lazy.pkg." .. s)
+    sources[#sources + 1] = {
+      name = s,
+      get = require("lazy.pkg." .. s).get,
+    }
   end
 
-  M.cache = {}
+  ---@type LazyPkgCache
+  local ret = {
+    version = M.VERSION,
+    pkgs = {},
+  }
   for _, plugin in pairs(Config.plugins) do
     if plugin._.installed then
       for _, source in ipairs(sources) do
         local spec = source.get(plugin)
         if spec then
-          spec.name = plugin.name
+          ---@type LazyPkg
+          local pkg = {
+            name = plugin.name,
+            dir = plugin.dir,
+            source = source.name,
+            file = spec.file,
+            spec = spec.spec or {},
+          }
           if type(spec.code) == "string" then
-            spec.spec = { _raw = spec.code }
-            spec.code = nil
+            pkg.spec = { _raw = spec.code }
           end
-          M.cache[plugin.dir] = spec
+          table.insert(ret.pkgs, pkg)
           break
         end
       end
     end
   end
-  local code = "return " .. Util.dump({ version = M.VERSION, specs = M.cache })
+  local code = "return " .. Util.dump(ret)
   vim.fn.mkdir(vim.fn.fnamemodify(Config.options.pkg.cache, ":h"), "p")
   Util.write_file(Config.options.pkg.cache, code)
   M.dirty = false
@@ -63,9 +81,18 @@ local function _load()
       if not chunk then
         error(err)
       end
+      ---@type LazyPkgCache?
       local ret = chunk()
       if ret and ret.version == M.VERSION then
-        M.cache = ret.specs
+        M.cache = {}
+        for _, pkg in ipairs(ret.pkgs) do
+          if type(pkg.spec) == "function" then
+            pkg.spec = pkg.spec()
+          end
+          -- wrap in the scope of the plugin
+          pkg.spec = { pkg.name, specs = pkg.spec }
+          M.cache[pkg.dir] = pkg
+        end
       end
     end, "Error loading pkg:")
   end
@@ -80,34 +107,12 @@ end
 
 ---@param dir string
 ---@return LazyPkg?
+---@overload fun():table<string, LazyPkg>
 function M.get(dir)
-  local ret = M.cache[dir]
-  if not ret then
-    return
+  if dir then
+    return M.cache[dir]
   end
-
-  if type(ret.spec) == "function" then
-    ret.spec = ret.spec()
-  end
-
-  return ret
-end
-
-function M.spec()
-  ---@type table<string,LazyPluginSpec>
-  local ret = {}
-
-  for dir in pairs(M.cache) do
-    local pkg = M.get(dir)
-    local spec = pkg and pkg.spec
-    if pkg and spec then
-      spec = type(spec) == "table" and vim.deepcopy(spec) or spec
-      ---@cast spec LazySpec
-      ret[dir] = { pkg.name, specs = spec }
-    end
-  end
-
-  return ret
+  return M.cache
 end
 
 return setmetatable(M, {

@@ -236,7 +236,7 @@ function M.update_state()
     installed[name] = nil
   end
 
-  require("lazy.manage.rocks").update_state()
+  M.update_rocks_state()
 
   Config.to_clean = {}
   for pack, dir_type in pairs(installed) do
@@ -250,6 +250,23 @@ function M.update_state()
         is_local = dir_type == "link",
       },
     })
+  end
+end
+
+function M.update_rocks_state()
+  local root = Config.options.rocks.root
+  ---@type table<string,string>
+  local installed = {}
+  Util.ls(root, function(_, name, type)
+    if type == "directory" then
+      installed[name] = name
+    end
+  end)
+
+  for _, plugin in pairs(Config.plugins) do
+    if plugin._.pkg and plugin._.pkg.source == "rockspec" then
+      plugin._.build = not installed[plugin.name]
+    end
   end
 end
 
@@ -321,11 +338,11 @@ function M.load()
   -- copy state. This wont do anything during startup
   for name, plugin in pairs(existing) do
     if Config.plugins[name] then
-      local dep = Config.plugins[name]._.dep
-      local frags = Config.plugins[name]._.frags
+      local new_state = Config.plugins[name]._
       Config.plugins[name]._ = plugin._
-      Config.plugins[name]._.dep = dep
-      Config.plugins[name]._.frags = frags
+      Config.plugins[name]._.dep = new_state.dep
+      Config.plugins[name]._.frags = new_state.frags
+      -- Config.plugins[name]._.tasks = new_state.tasks
     end
   end
   Util.track()
