@@ -525,7 +525,7 @@ end
 
 function M.auto_load(modname, modpath)
   local plugin = Plugin.find(modpath, { fast = not M.did_handlers })
-  if plugin and modpath:find(plugin.dir, 1, true) == 1 then
+  if plugin then
     plugin._.rtp_loaded = true
     -- don't load if:
     -- * handlers haven't been setup yet

@@ -1,5 +1,5 @@
 local Config = require("lazy.core.config")
-local Util = require("lazy.util")
+local Util = require("lazy.core.util")
 
 local M = {}
 M.VERSION = 10
@@ -71,9 +71,10 @@ function M.update()
   table.sort(ret.pkgs, function(a, b)
     return a.name < b.name
   end)
-  local code = "return " .. Util.dump(ret)
+  local U = require("lazy.util")
+  local code = "return " .. U.dump(ret)
   vim.fn.mkdir(vim.fn.fnamemodify(Config.options.pkg.cache, ":h"), "p")
-  Util.write_file(Config.options.pkg.cache, code)
+  U.write_file(Config.options.pkg.cache, code)
   M.dirty = false
   M.cache = nil
 end
