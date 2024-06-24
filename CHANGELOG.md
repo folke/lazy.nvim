@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.0.1](https://github.com/folke/lazy.nvim/compare/v11.0.0...v11.0.1) (2024-06-24)
+
+
+### Bug Fixes
+
+* **rocks:** dont trigger rebuild for luarocks when build is overriden ([146de4e](https://github.com/folke/lazy.nvim/commit/146de4e801f9169e79052a51365eaae789094611))
+
 ## [11.0.0](https://github.com/folke/lazy.nvim/compare/v10.24.3...v11.0.0) (2024-06-24)
 
 
