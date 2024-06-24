@@ -26,7 +26,7 @@ Syntax is the same as any plugin spec.
 
 ## Rockspec
 
-When a plugin contains a `*-scm-1.rockspec` file, **lazy.nvim** will automatically load its [`rocks`](/spec#setup) dependencies.
+When a plugin contains a `*-1.rockspec` file, **lazy.nvim** will automatically build the rock and its dependencies.
 
 ## Packspec
 
