@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.2.1](https://github.com/folke/lazy.nvim/compare/v11.2.0...v11.2.1) (2024-06-24)
+
+
+### Bug Fixes
+
+* **loader:** no need to check plugin.dir in auto_load ([62a47b9](https://github.com/folke/lazy.nvim/commit/62a47b921fbffb3c1c8088a731029ae234f98851))
+
 ## [11.2.0](https://github.com/folke/lazy.nvim/compare/v11.1.0...v11.2.0) (2024-06-24)
 
 
