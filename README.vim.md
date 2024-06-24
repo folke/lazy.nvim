@@ -3,19 +3,31 @@
 ## 11.x
 
 - **New Website**: There's a whole new website with a fresh look and improved documentation.
-  Check it out at [lazy.nvim](https://lazy.folke.io/).
+  Check it out at [https://lazy.folke.io](https://lazy.folke.io/).
   The GitHub `README.md` has been updated to point to the new website.
   The `vimdoc` contains all the information that is available on the website.
 
 - **Spec Resolution & Merging**: the code that resolves a final spec from a plugin's fragments has been rewritten.
   This should be a tiny bit faster, but more importantly, fixes some issues and is easier to maintain.
 
-- `rocks`: specs can now specify a list of rocks ([luarocks](https://luarocks.org/)) that should be installed.
-
 - [Packages](https://lazy.folke.io/packages) can now specify their dependencies and configuration using one of:
+
   - **Lazy**: `lazy.lua` file
   - **Rockspec**: [luarocks](https://luarocks.org/) `*-scm-1.rockspec` [file](https://github.com/luarocks/luarocks/wiki/Rockspec-format)
   - **Packspec**: `pkg.json` (experimental, since the [format](https://github.com/neovim/packspec/issues/41) is not quite there yet)
+
+- Packages are not limited to just Neovim plugins. You can install any **luarocks** package, like:
+
+  ```lua
+  { "https://github.com/lubyk/yaml" }
+  ```
+
+  Luarocks packages without a `/lua` directory are never lazy-loaded, since it's just a library.
+
+- `build` functions or `*.lua` build files (like `build.lua`) now run asynchronously.
+  You can use `coroutine.yield(status_msg)` to show progress.
+  Yielding will also schedule the next `resume` to run in the next tick,
+  so you can do long-running tasks without blocking Neovim.
 
 # 🚀 Getting Started
 
@@ -182,14 +194,13 @@ A valid spec should define one of `[1]`, `dir` or `url`.
 
 ## Spec Setup
 
-| Property   | Type                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ---------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **init**   | `fun(LazyPlugin)`                                         | `init` functions are always executed during startup                                                                                                                                                                                                                                                                                                                                                                    |
-| **opts**   | `table` or `fun(LazyPlugin, opts:table)`                  | `opts` should be a table (will be merged with parent specs), return a table (replaces parent specs) or should change a table. The table will be passed to the `Plugin.config()` function. Setting this value will imply `Plugin.config()`                                                                                                                                                                              |
-| **config** | `fun(LazyPlugin, opts:table)` or `true`                   | `config` is executed when the plugin loads. The default implementation will automatically run `require(MAIN).setup(opts)` if `opts` or `config = true` is set. Lazy uses several heuristics to determine the plugin's `MAIN` module automatically based on the plugin's **name**. See also `opts`. To use the default implementation without `opts` set `config` to `true`.                                            |
-| **main**   | `string?`                                                 | You can specify the `main` module to use for `config()` and `opts()`, in case it can not be determined automatically. See `config()`                                                                                                                                                                                                                                                                                   |
-| **build**  | `fun(LazyPlugin)` or `string` or a list of build commands | `build` is executed when a plugin is installed or updated. Before running `build`, a plugin is first loaded. If it's a string it will be run as a shell command. When prefixed with `:` it is a Neovim command. You can also specify a list to executed multiple build commands. Some plugins provide their own `build.lua` which is automatically used by lazy. So no need to specify a build step for those plugins. |
-| **rocks**  | `string[]?`                                               | Add any [luarocks](https://luarocks.org/) dependencies.                                                                                                                                                                                                                                                                                                                                                                |
+| Property   | Type                                                      | Description                                                                                                                                                                                                                                                                                                                                                                 |
+| ---------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **init**   | `fun(LazyPlugin)`                                         | `init` functions are always executed during startup                                                                                                                                                                                                                                                                                                                         |
+| **opts**   | `table` or `fun(LazyPlugin, opts:table)`                  | `opts` should be a table (will be merged with parent specs), return a table (replaces parent specs) or should change a table. The table will be passed to the `Plugin.config()` function. Setting this value will imply `Plugin.config()`                                                                                                                                   |
+| **config** | `fun(LazyPlugin, opts:table)` or `true`                   | `config` is executed when the plugin loads. The default implementation will automatically run `require(MAIN).setup(opts)` if `opts` or `config = true` is set. Lazy uses several heuristics to determine the plugin's `MAIN` module automatically based on the plugin's **name**. See also `opts`. To use the default implementation without `opts` set `config` to `true`. |
+| **main**   | `string?`                                                 | You can specify the `main` module to use for `config()` and `opts()`, in case it can not be determined automatically. See `config()`                                                                                                                                                                                                                                        |
+| **build**  | `fun(LazyPlugin)` or `string` or a list of build commands | `build` is executed when a plugin is installed or updated. See [Building](/developers#building) for more information.                                                                                                                                                                                                                                                       |
 
 ## Spec Lazy Loading
 
@@ -431,7 +442,7 @@ Syntax is the same as any plugin spec.
 
 ## Rockspec
 
-When a plugin contains a `*-scm-1.rockspec` file, **lazy.nvim** will automatically load its [`rocks`](/spec#setup) dependencies.
+When a plugin contains a `*-1.rockspec` file, **lazy.nvim** will automatically build the rock and its dependencies.
 
 ## Packspec
 
@@ -976,12 +987,78 @@ specs, adding any keys you want to override / merge.
 `opts`, `dependencies`, `cmd`, `event`, `ft` and `keys` are always merged with the parent spec.
 Any other property will override the property from the parent spec.
 
-# 📚 Plugin Developers
+# 🔥 Developers
 
 To make it easier for users to install your plugin, you can include a [package spec](/packages) in your repo.
 
-If your plugin needs a build step, you can specify this in your **package file**,
-or create a file `build.lua` or `build/init.lua` in the root of your repo.
-This file will be loaded when the plugin is installed or updated.
+## Best Practices
 
-This makes it easier for users, as they no longer need to specify a `build` command.
+- If your plugin needs `setup()`, then create a simple `lazy.lua` file like this:
+
+  ```lua
+    return { "me/my-plugin", opts = {} }
+  ```
+
+- Plugins that are pure lua libraries should be lazy-loaded with `lazy = true`.
+
+  ```lua
+  { "nvim-lua/plenary.nvim", lazy = true }
+  ```
+
+- Only use `dependencies` if a plugin needs the dep to be installed **AND** loaded.
+  Lua plugins/libraries are automatically loaded when they are `require()`d,
+  so they don't need to be in `dependencies`.
+
+  :::tip[GOOD]
+
+  ```lua
+  { "folke/todo-comments.nvim", opts = {} },
+  { "nvim-lua/plenary.nvim", lazy = true },
+  ```
+
+  :::
+
+  :::danger[BAD]
+
+  ```lua
+  {
+    "folke/todo-comments.nvim",
+    opts = {},
+    -- This will always load plenary as soon as todo-comments loads,
+    -- even when todo-comments doesn't use it.
+    dependencies = { "nvim-lua/plenary.nvim", lazy = true },
+  },
+  ```
+
+  :::
+
+- Inside a `build` function or `*.lua` build file, use `coroutine.yield(status_msg)` to show progress.
+
+- Don't change the `cwd` in your build function, since builds run in parallel and changing the `cwd` will affect other builds.
+
+## Building
+
+The spec **build** property can be one of the following:
+
+- `fun(plugin: LazyPlugin)`: a function that builds the plugin.
+- `*.lua`: a Lua file that builds the plugin (like `build.lua`)
+- `":Command"`: a Neovim command
+- `"rockspec"`: this will run `luarocks make` in the plugin's directory
+  This is automatically set by the `rockspec` [package](/packages) source.
+- any other **string** will be run as a shell command
+- a `list` of any of the above to run multiple build steps
+- if no `build` is specified, but a `build.lua` file exists, that will be used instead.
+
+Build functions and `*.lua` files run asynchronously in a coroutine.
+Use `coroutine.yield(status_msg)` to show progress.
+Yielding will also schedule the next `coroutine.resume()` to run in the next tick, so you can do long-running tasks without blocking Neovim.
+
+:::tip
+
+If you need to know the directory of your build lua file, you can use:
+
+```lua
+local dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h")
+```
+
+:::
