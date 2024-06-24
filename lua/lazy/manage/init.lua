@@ -83,7 +83,13 @@ function M.install(opts)
       "git.clone",
       { "git.checkout", lockfile = opts.lockfile },
       "plugin.docs",
-      "wait",
+      {
+        "wait",
+        sync = function()
+          require("lazy.pkg").update()
+          Plugin.load()
+        end,
+      },
       "plugin.build",
     },
     plugins = function(plugin)
@@ -92,7 +98,6 @@ function M.install(opts)
   }, opts):wait(function()
     require("lazy.manage.lock").update()
     require("lazy.help").update()
-    require("lazy.pkg").update()
   end)
 end
 
@@ -107,7 +112,13 @@ function M.update(opts)
       "git.status",
       { "git.checkout", lockfile = opts.lockfile },
       "plugin.docs",
-      "wait",
+      {
+        "wait",
+        sync = function()
+          require("lazy.pkg").update()
+          Plugin.load()
+        end,
+      },
       "plugin.build",
       { "git.log", updated = true },
     },
@@ -117,7 +128,6 @@ function M.update(opts)
   }, opts):wait(function()
     require("lazy.manage.lock").update()
     require("lazy.help").update()
-    require("lazy.pkg").update()
   end)
 end
 --

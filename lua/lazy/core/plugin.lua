@@ -342,6 +342,7 @@ function M.load()
       Config.plugins[name]._ = plugin._
       Config.plugins[name]._.dep = new_state.dep
       Config.plugins[name]._.frags = new_state.frags
+      Config.plugins[name]._.pkg = new_state.pkg
     end
   end
   Util.track()

@@ -12,14 +12,14 @@ function M.deps(plugin)
   local root = Config.options.rocks.root .. "/" .. plugin.name
   local manifest_file = root .. "/lib/luarocks/rocks-5.1/manifest"
   local manifest = {}
-  local ok = pcall(function()
+  pcall(function()
     local load, err = loadfile(manifest_file, "t", manifest)
     if not load then
       error(err)
     end
     load()
   end)
-  return manifest and vim.tbl_keys(manifest.repository or {})
+  return vim.tbl_keys(manifest.repository or {})
 end
 
 ---@class RockSpec

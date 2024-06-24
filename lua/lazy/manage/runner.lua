@@ -8,13 +8,15 @@ local Util = require("lazy.util")
 ---@field concurrency? number
 
 ---@alias PipelineStep {task:string, opts?:TaskOptions}
----@alias LazyRunnerTask {co:thread, status: {task?:LazyTask, waiting?:boolean}, plugin: LazyPlugin}
+---@alias LazyRunnerTask {co:thread, status: {task?:LazyTask, waiting?:boolean}, plugin: string}
 
 ---@class Runner
----@field _plugins LazyPlugin[]
+---@field _plugins string[]
 ---@field _running LazyRunnerTask[]
 ---@field _pipeline PipelineStep[]
+---@field _sync PipelineStep[]
 ---@field _on_done fun()[]
+---@field _syncing boolean
 ---@field _opts RunnerOpts
 local Runner = {}
 
@@ -24,13 +26,11 @@ function Runner.new(opts)
   self._opts = opts or {}
 
   local plugins = self._opts.plugins
-  if type(plugins) == "function" then
-    self._plugins = vim.tbl_filter(plugins, Config.plugins)
-  else
-    self._plugins = plugins or Config.plugins
-  end
+  self._plugins = vim.tbl_map(function(plugin)
+    return plugin.name
+  end, type(plugins) == "function" and vim.tbl_filter(plugins, Config.plugins) or plugins or Config.plugins)
   table.sort(self._plugins, function(a, b)
-    return a.name < b.name
+    return a < b
   end)
   self._running = {}
   self._on_done = {}
@@ -39,6 +39,10 @@ function Runner.new(opts)
   self._pipeline = vim.tbl_map(function(step)
     return type(step) == "string" and { task = step } or { task = step[1], opts = step }
   end, self._opts.pipeline)
+
+  self._sync = vim.tbl_filter(function(step)
+    return step.task == "wait"
+  end, self._pipeline)
 
   return self
 end
@@ -57,14 +61,31 @@ function Runner:_resume(entry)
 end
 
 function Runner:resume(waiting)
+  if self._syncing then
+    return true
+  end
   if waiting then
-    for _, entry in ipairs(self._running) do
-      if entry.status then
-        if entry.status.waiting then
-          entry.status.waiting = false
-          entry.plugin._.working = true
+    local sync = self._sync[1]
+    table.remove(self._sync, 1)
+    if sync then
+      self._syncing = true
+      vim.schedule(function()
+        if sync.opts and type(sync.opts.sync) == "function" then
+          sync.opts.sync(self)
         end
-      end
+        for _, entry in ipairs(self._running) do
+          if entry.status then
+            if entry.status.waiting then
+              entry.status.waiting = false
+              local plugin = Config.plugins[entry.plugin]
+              if plugin then
+                plugin._.working = true
+              end
+            end
+          end
+        end
+        self._syncing = false
+      end)
     end
   end
   local running = 0
@@ -78,7 +99,7 @@ function Runner:resume(waiting)
       end
     end
   end
-  return running > 0 or (not waiting and self:resume(true))
+  return self._syncing or running > 0 or (not waiting and self:resume(true))
 end
 
 function Runner:start()
@@ -88,7 +109,7 @@ function Runner:start()
     if ok then
       table.insert(self._running, { co = co, status = {}, plugin = plugin })
     else
-      Util.error("Could not start tasks for " .. plugin.name .. "\n" .. err)
+      Util.error("Could not start tasks for " .. plugin .. "\n" .. err)
     end
   end
 
@@ -107,8 +128,9 @@ function Runner:start()
 end
 
 ---@async
----@param plugin LazyPlugin
-function Runner:run_pipeline(plugin)
+---@param name string
+function Runner:run_pipeline(name)
+  local plugin = Config.plugins[name]
   plugin._.working = true
   coroutine.yield()
   for _, step in ipairs(self._pipeline) do
@@ -117,6 +139,7 @@ function Runner:run_pipeline(plugin)
       coroutine.yield({ waiting = true })
       plugin._.working = true
     else
+      plugin = Config.plugins[name] or plugin
       local task = self:queue(plugin, step.task, step.opts)
       if task then
         coroutine.yield({ task = task })
