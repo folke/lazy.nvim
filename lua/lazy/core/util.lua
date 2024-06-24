@@ -28,6 +28,20 @@ function M.track(data, time)
   end
 end
 
+---@generic T
+---@param list T[]
+---@param fn fun(v: T):boolean?
+---@return T[]
+function M.filter(fn, list)
+  local ret = {}
+  for _, v in ipairs(list) do
+    if fn(v) then
+      table.insert(ret, v)
+    end
+  end
+  return ret
+end
+
 ---@generic F: fun()
 ---@param data (string|{[string]:string})?
 ---@param fn F

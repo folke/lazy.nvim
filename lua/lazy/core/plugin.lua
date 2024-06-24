@@ -170,10 +170,10 @@ function Spec:import(spec)
         self.importing = nil
         return self:error(
           "Invalid spec module: `"
-            .. modname
-            .. "`\nExpected a `table` of specs, but a `"
-            .. type(mod)
-            .. "` was returned instead"
+          .. modname
+          .. "`\nExpected a `table` of specs, but a `"
+          .. type(mod)
+          .. "` was returned instead"
         )
       end
       self:normalize(mod)
@@ -216,11 +216,11 @@ function M.update_state()
     plugin._ = plugin._ or {}
     if plugin.lazy == nil then
       local lazy = plugin._.dep
-        or Config.options.defaults.lazy
-        or plugin.event
-        or plugin.keys
-        or plugin.ft
-        or plugin.cmd
+          or Config.options.defaults.lazy
+          or plugin.event
+          or plugin.keys
+          or plugin.ft
+          or plugin.cmd
       plugin.lazy = lazy and true or false
     end
     if plugin.dir:find(Config.options.root, 1, true) == 1 then
@@ -342,7 +342,6 @@ function M.load()
       Config.plugins[name]._ = plugin._
       Config.plugins[name]._.dep = new_state.dep
       Config.plugins[name]._.frags = new_state.frags
-      -- Config.plugins[name]._.tasks = new_state.tasks
     end
   end
   Util.track()

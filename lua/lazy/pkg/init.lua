@@ -25,7 +25,7 @@ M.dirty = false
 ---@field pkgs LazyPkg[]
 ---@field version number
 
----@type table<string, LazyPkg>?
+---@type LazyPkg[]?
 M.cache = nil
 
 function M.update()
@@ -65,6 +65,9 @@ function M.update()
       end
     end
   end
+  table.sort(ret.pkgs, function(a, b)
+    return a.name < b.name
+  end)
   local code = "return " .. Util.dump(ret)
   vim.fn.mkdir(vim.fn.fnamemodify(Config.options.pkg.cache, ":h"), "p")
   Util.write_file(Config.options.pkg.cache, code)
@@ -91,8 +94,8 @@ local function _load()
           end
           -- wrap in the scope of the plugin
           pkg.spec = { pkg.name, specs = pkg.spec }
-          M.cache[pkg.dir] = pkg
         end
+        M.cache = ret.pkgs
       end
     end, "Error loading pkg:")
   end
@@ -107,10 +110,15 @@ end
 
 ---@param dir string
 ---@return LazyPkg?
----@overload fun():table<string, LazyPkg>
+---@overload fun():LazyPkg[]
 function M.get(dir)
   if dir then
-    return M.cache[dir]
+    for _, pkg in ipairs(M.cache) do
+      if pkg.dir == dir then
+        return pkg
+      end
+    end
+    return
   end
   return M.cache
 end
