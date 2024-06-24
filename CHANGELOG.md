@@ -1,5 +1,21 @@
 # Changelog
 
+## [11.1.0](https://github.com/folke/lazy.nvim/compare/v11.0.1...v11.1.0) (2024-06-24)
+
+
+### Features
+
+* make it easier to disable luarocks ([07c067a](https://github.com/folke/lazy.nvim/commit/07c067a1a82bb0988179e1887bba9df4721b3ea7))
+* show rockspec deps in plugin details ([656d3d1](https://github.com/folke/lazy.nvim/commit/656d3d1f5b5910e50af3d67286999ff7088ebfb6))
+
+
+### Bug Fixes
+
+* **health:** added luarocks check to health ([0f45c0d](https://github.com/folke/lazy.nvim/commit/0f45c0d0623b4850716898a5e399c844466690f6))
+* **health:** only check for luarocks when luarocks is enabled. ([ae4881d](https://github.com/folke/lazy.nvim/commit/ae4881d36e7f589124f8eb7febfc6a8b58f8e027))
+* **health:** show missing luarocks as warning ([e3ee51b](https://github.com/folke/lazy.nvim/commit/e3ee51b6680a116649da56f6c651d53c3e47be4e))
+* **runner:** sync package specs after installing and before building ([105d480](https://github.com/folke/lazy.nvim/commit/105d4805ad58875d0b0fafe1185679539b8bc69a))
+
 ## [11.0.1](https://github.com/folke/lazy.nvim/compare/v11.0.0...v11.0.1) (2024-06-24)
 
 
