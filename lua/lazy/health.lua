@@ -13,9 +13,15 @@ function M.check()
   start("lazy.nvim")
 
   if vim.fn.executable("git") == 1 then
-    ok("Git installed")
+    ok("'git' installed")
   else
-    error("Git not installed?")
+    error("'git' not installed?")
+  end
+
+  if vim.fn.executable("luarocks") == 1 then
+    ok("'luarocks' installed")
+  else
+    error("'luarocks' not installed")
   end
 
   local sites = vim.opt.packpath:get()
