@@ -3,13 +3,15 @@
 ==============================================================================
 Table of Contents                                *lazy.nvim-table-of-contents*
 
-1. 🚀 Getting Started                       |lazy.nvim-🚀-getting-started|
+1. 📰 What’s new?                           |lazy.nvim-📰-what’s-new?|
+  - 11.x                                   |lazy.nvim-📰-what’s-new?-11.x|
+2. 🚀 Getting Started                       |lazy.nvim-🚀-getting-started|
   - ✨ Features                 |lazy.nvim-🚀-getting-started-✨-features|
   - ⚡️ Requirements   |lazy.nvim-🚀-getting-started-⚡️-requirements|
-2. 🛠️ Installation                       |lazy.nvim-🛠️-installation|
+3. 🛠️ Installation                       |lazy.nvim-🛠️-installation|
   - Structured Setup         |lazy.nvim-🛠️-installation-structured-setup|
   - Single File Setup       |lazy.nvim-🛠️-installation-single-file-setup|
-3. 🔌 Plugin Spec                               |lazy.nvim-🔌-plugin-spec|
+4. 🔌 Plugin Spec                               |lazy.nvim-🔌-plugin-spec|
   - Spec Source                       |lazy.nvim-🔌-plugin-spec-spec-source|
   - Spec Loading                     |lazy.nvim-🔌-plugin-spec-spec-loading|
   - Spec Setup                         |lazy.nvim-🔌-plugin-spec-spec-setup|
@@ -19,13 +21,13 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Examples                             |lazy.nvim-🔌-plugin-spec-examples|
   - Lazy Loading                     |lazy.nvim-🔌-plugin-spec-lazy-loading|
   - Versioning                         |lazy.nvim-🔌-plugin-spec-versioning|
-4. 📦 Packages                                     |lazy.nvim-📦-packages|
+5. 📦 Packages                                     |lazy.nvim-📦-packages|
   - Lazy                                        |lazy.nvim-📦-packages-lazy|
   - Rockspec                                |lazy.nvim-📦-packages-rockspec|
   - Packspec                                |lazy.nvim-📦-packages-packspec|
-5. ⚙️ Configuration                       |lazy.nvim-⚙️-configuration|
+6. ⚙️ Configuration                       |lazy.nvim-⚙️-configuration|
   - 🌈 Highlight Groups|lazy.nvim-⚙️-configuration-🌈-highlight-groups|
-6. 🚀 Usage                                           |lazy.nvim-🚀-usage|
+7. 🚀 Usage                                           |lazy.nvim-🚀-usage|
   - ▶️ Startup Sequence     |lazy.nvim-🚀-usage-▶️-startup-sequence|
   - 🚀 Commands                         |lazy.nvim-🚀-usage-🚀-commands|
   - 📆 User Events                   |lazy.nvim-🚀-usage-📆-user-events|
@@ -34,11 +36,33 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - 📦 Migration Guide           |lazy.nvim-🚀-usage-📦-migration-guide|
   - ⚡ Profiling & Debug         |lazy.nvim-🚀-usage-⚡-profiling-&-debug|
   - 📂 Structuring Your Plugins|lazy.nvim-🚀-usage-📂-structuring-your-plugins|
-7. 📚 Plugin Developers                   |lazy.nvim-📚-plugin-developers|
-8. Links                                                     |lazy.nvim-links|
+8. 📚 Plugin Developers                   |lazy.nvim-📚-plugin-developers|
+9. Links                                                     |lazy.nvim-links|
 
 ==============================================================================
-1. 🚀 Getting Started                       *lazy.nvim-🚀-getting-started*
+1. 📰 What’s new?                           *lazy.nvim-📰-what’s-new?*
+
+
+11.X                                       *lazy.nvim-📰-what’s-new?-11.x*
+
+- **New Website**: There’s a whole new website with a fresh look and improved
+    documentation. Check it out at lazy.nvim <https://lazy.folke.io/>. The GitHub
+    `README.md` has been updated to point to the new website. The `vimdoc` contains
+    all the information that is available on the website.
+- **Spec Resolution & Merging**: the code that resolves a final spec from a
+    plugin’s fragments has been rewritten. This should be a tiny bit faster, but
+    more importantly, fixes some issues and is easier to maintain.
+- `rocks`: specs can now specify a list of rocks (luarocks
+    <https://luarocks.org/>) that should be installed.
+- Packages <https://lazy.folke.io/packages> can now specify their dependencies
+    and configuration using one of:
+    - **Lazy**: `lazy.lua` file
+    - **Rockspec**: luarocks <https://luarocks.org/> `*-scm-1.rockspec` file <https://github.com/luarocks/luarocks/wiki/Rockspec-format>
+    - **Packspec**: `pkg.json` (experimental, since the format <https://github.com/neovim/packspec/issues/41> is not quite there yet)
+
+
+==============================================================================
+2. 🚀 Getting Started                       *lazy.nvim-🚀-getting-started*
 
 **lazy.nvim** is a modern plugin manager for Neovim.
 
@@ -72,7 +96,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 
 
 ==============================================================================
-2. 🛠️ Installation                       *lazy.nvim-🛠️-installation*
+3. 🛠️ Installation                       *lazy.nvim-🛠️-installation*
 
 There are multiple ways to install **lazy.nvim**. The **Structured Setup** is
 the recommended way, but you can also use the **Single File Setup** if you
@@ -161,7 +185,7 @@ SINGLE FILE SETUP           *lazy.nvim-🛠️-installation-single-file-setup*
 
 
 ==============================================================================
-3. 🔌 Plugin Spec                               *lazy.nvim-🔌-plugin-spec*
+4. 🔌 Plugin Spec                               *lazy.nvim-🔌-plugin-spec*
 
 
 SPEC SOURCE                           *lazy.nvim-🔌-plugin-spec-spec-source*
@@ -488,7 +512,7 @@ EXAMPLES ~
 
 
 ==============================================================================
-4. 📦 Packages                                     *lazy.nvim-📦-packages*
+5. 📦 Packages                                     *lazy.nvim-📦-packages*
 
 **lazy.nvim** supports three ways for plugins to define their dependencies and
 configuration.
@@ -524,7 +548,7 @@ will be added to the plugin’s spec.
 
 
 ==============================================================================
-5. ⚙️ Configuration                       *lazy.nvim-⚙️-configuration*
+6. ⚙️ Configuration                       *lazy.nvim-⚙️-configuration*
 
 **lazy.nvim** comes with the following defaults:
 
@@ -826,7 +850,7 @@ If you don’t want to use a Nerd Font, you can replace the icons with Unicode s
   -----------------------------------------------------------------------
 
 ==============================================================================
-6. 🚀 Usage                                           *lazy.nvim-🚀-usage*
+7. 🚀 Usage                                           *lazy.nvim-🚀-usage*
 
 
 ▶️ STARTUP SEQUENCE         *lazy.nvim-🚀-usage-▶️-startup-sequence*
@@ -1151,7 +1175,7 @@ spec.
 
 
 ==============================================================================
-7. 📚 Plugin Developers                   *lazy.nvim-📚-plugin-developers*
+8. 📚 Plugin Developers                   *lazy.nvim-📚-plugin-developers*
 
 To make it easier for users to install your plugin, you can include a package
 spec </packages> in your repo.
@@ -1164,7 +1188,7 @@ This makes it easier for users, as they no longer need to specify a `build`
 command.
 
 ==============================================================================
-8. Links                                                     *lazy.nvim-links*
+9. Links                                                     *lazy.nvim-links*
 
 1. *image*: https://user-images.githubusercontent.com/292349/208301737-68fb279c-ba70-43ef-a369-8c3e8367d6b1.png
 2. *image*: https://user-images.githubusercontent.com/292349/208301766-5c400561-83c3-4811-9667-1ec4bb3c43b8.png
