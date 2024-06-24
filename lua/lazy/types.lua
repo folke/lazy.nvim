@@ -29,7 +29,7 @@
 ---@field init? fun(self:LazyPlugin) Will always be run
 ---@field deactivate? fun(self:LazyPlugin) Unload/Stop a plugin
 ---@field config? fun(self:LazyPlugin, opts:table)|true Will be executed when loading the plugin
----@field build? string|async fun(self:LazyPlugin)|(string|async fun(self:LazyPlugin))[]
+---@field build? false|string|async fun(self:LazyPlugin)|(string|async fun(self:LazyPlugin))[]
 ---@field opts? PluginOpts
 
 ---@class LazyPluginHandlers
