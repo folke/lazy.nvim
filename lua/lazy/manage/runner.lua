@@ -11,7 +11,7 @@ local Util = require("lazy.util")
 ---@alias LazyRunnerTask {co:thread, status: {task?:LazyTask, waiting?:boolean}, plugin: string}
 
 ---@class Runner
----@field _plugins string[]
+---@field _plugins table<string,LazyPlugin>
 ---@field _running LazyRunnerTask[]
 ---@field _pipeline PipelineStep[]
 ---@field _sync PipelineStep[]
@@ -26,12 +26,17 @@ function Runner.new(opts)
   self._opts = opts or {}
 
   local plugins = self._opts.plugins
-  self._plugins = vim.tbl_map(function(plugin)
-    return plugin.name
-  end, type(plugins) == "function" and vim.tbl_filter(plugins, Config.plugins) or plugins or Config.plugins)
-  table.sort(self._plugins, function(a, b)
-    return a < b
-  end)
+  ---@type LazyPlugin[]
+  local pp = {}
+  if type(plugins) == "function" then
+    pp = vim.tbl_filter(plugins, Config.plugins)
+  else
+    pp = plugins or Config.plugins
+  end
+  self._plugins = {}
+  for _, plugin in ipairs(pp) do
+    self._plugins[plugin.name] = plugin
+  end
   self._running = {}
   self._on_done = {}
 
@@ -45,6 +50,10 @@ function Runner.new(opts)
   end, self._pipeline)
 
   return self
+end
+
+function Runner:plugin(name)
+  return Config.plugins[name] or self._plugins[name]
 end
 
 ---@param entry LazyRunnerTask
@@ -77,7 +86,7 @@ function Runner:resume(waiting)
           if entry.status then
             if entry.status.waiting then
               entry.status.waiting = false
-              local plugin = Config.plugins[entry.plugin]
+              local plugin = self:plugin(entry.plugin)
               if plugin then
                 plugin._.working = true
               end
@@ -103,13 +112,16 @@ function Runner:resume(waiting)
 end
 
 function Runner:start()
-  for _, plugin in pairs(self._plugins) do
+  ---@type string[]
+  local names = vim.tbl_keys(self._plugins)
+  table.sort(names)
+  for _, name in pairs(names) do
     local co = coroutine.create(self.run_pipeline)
-    local ok, err = coroutine.resume(co, self, plugin)
+    local ok, err = coroutine.resume(co, self, name)
     if ok then
-      table.insert(self._running, { co = co, status = {}, plugin = plugin })
+      table.insert(self._running, { co = co, status = {}, plugin = name })
     else
-      Util.error("Could not start tasks for " .. plugin .. "\n" .. err)
+      Util.error("Could not start tasks for " .. name .. "\n" .. err)
     end
   end
 
@@ -130,7 +142,7 @@ end
 ---@async
 ---@param name string
 function Runner:run_pipeline(name)
-  local plugin = Config.plugins[name]
+  local plugin = self:plugin(name)
   plugin._.working = true
   coroutine.yield()
   for _, step in ipairs(self._pipeline) do
@@ -139,7 +151,7 @@ function Runner:run_pipeline(name)
       coroutine.yield({ waiting = true })
       plugin._.working = true
     else
-      plugin = Config.plugins[name] or plugin
+      plugin = self:plugin(name)
       local task = self:queue(plugin, step.task, step.opts)
       if task then
         coroutine.yield({ task = task })
