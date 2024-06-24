@@ -62,7 +62,7 @@ jobs:
       - name: Checkout main branch
         uses: actions/checkout@v4
         with:
-          ref: pkg
+          ref: main
 
       - name: Copy to main branch
         run: |
