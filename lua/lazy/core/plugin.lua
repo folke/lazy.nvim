@@ -170,10 +170,10 @@ function Spec:import(spec)
         self.importing = nil
         return self:error(
           "Invalid spec module: `"
-          .. modname
-          .. "`\nExpected a `table` of specs, but a `"
-          .. type(mod)
-          .. "` was returned instead"
+            .. modname
+            .. "`\nExpected a `table` of specs, but a `"
+            .. type(mod)
+            .. "` was returned instead"
         )
       end
       self:normalize(mod)
@@ -216,11 +216,11 @@ function M.update_state()
     plugin._ = plugin._ or {}
     if plugin.lazy == nil then
       local lazy = plugin._.dep
-          or Config.options.defaults.lazy
-          or plugin.event
-          or plugin.keys
-          or plugin.ft
-          or plugin.cmd
+        or Config.options.defaults.lazy
+        or plugin.event
+        or plugin.keys
+        or plugin.ft
+        or plugin.cmd
       plugin.lazy = lazy and true or false
     end
     if plugin.dir:find(Config.options.root, 1, true) == 1 then
@@ -264,7 +264,7 @@ function M.update_rocks_state()
   end)
 
   for _, plugin in pairs(Config.plugins) do
-    if plugin._.pkg and plugin._.pkg.source == "rockspec" then
+    if plugin._.pkg and plugin._.pkg.source == "rockspec" and plugin.build == "rockspec" then
       plugin._.build = not installed[plugin.name]
     end
   end
