@@ -18,8 +18,6 @@ else
       "git",
       "clone",
       "--filter=blob:none",
-      -- FIXME: remove this when the new version is released
-      "--branch=pkg",
       "https://github.com/folke/lazy.nvim.git",
       lazypath,
     })
