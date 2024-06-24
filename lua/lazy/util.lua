@@ -231,6 +231,18 @@ function M.markdown(msg, opts)
   )
 end
 
+---@async
+---@param ms number
+function M.sleep(ms)
+  local continue = false
+  vim.defer_fn(function()
+    continue = true
+  end, ms)
+  while not continue do
+    coroutine.yield()
+  end
+end
+
 function M._dump(value, result)
   local t = type(value)
   if t == "number" or t == "boolean" then

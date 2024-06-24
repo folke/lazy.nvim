@@ -8,11 +8,51 @@ local M = {}
 ---@param plugin LazyPlugin
 local function get_build_file(plugin)
   for _, path in ipairs({ "build.lua", "build/init.lua" }) do
-    path = plugin.dir .. "/" .. path
-    if Util.file_exists(path) then
+    if Util.file_exists(plugin.dir .. "/" .. path) then
       return path
     end
   end
+end
+
+local B = {}
+
+---@param task LazyTask
+function B.rockspec(task)
+  local root = Config.options.rocks.root .. "/" .. task.plugin.name
+  vim.fn.mkdir(root, "p")
+  task:spawn("luarocks", {
+    args = {
+      "--tree",
+      root,
+      "--server",
+      Config.options.rocks.server,
+      "--dev",
+      "--lua-version",
+      "5.1",
+      "make",
+      "--force-fast",
+    },
+    cwd = task.plugin.dir,
+  })
+end
+
+---@param task LazyTask
+---@param build string
+function B.cmd(task, build)
+  local cmd = vim.api.nvim_parse_cmd(build:sub(2), {}) --[[@as vim.api.keyset.cmd]]
+  task.output = vim.api.nvim_cmd(cmd, { output = true })
+end
+
+---@param task LazyTask
+---@param build string
+function B.shell(task, build)
+  local shell = vim.env.SHELL or vim.o.shell
+  local shell_args = shell:find("cmd.exe", 1, true) and "/c" or "-c"
+
+  task:spawn(shell, {
+    args = { shell_args, build },
+    cwd = task.plugin.dir,
+  })
 end
 
 M.build = {
@@ -21,12 +61,14 @@ M.build = {
     if opts and opts.force then
       return false
     end
-    return not (plugin._.dirty and (plugin.build or get_build_file(plugin)))
+    return not ((plugin._.dirty or plugin._.build) and (plugin.build or get_build_file(plugin)))
   end,
   run = function(self)
     vim.cmd([[silent! runtime plugin/rplugin.vim]])
 
-    Loader.load(self.plugin, { task = "build" })
+    if self.plugin.build ~= "rockspec" then
+      Loader.load(self.plugin, { task = "build" })
+    end
 
     local builders = self.plugin.build
 
@@ -35,39 +77,29 @@ M.build = {
       return
     end
 
-    local build_file = get_build_file(self.plugin)
-    if build_file then
-      if builders then
-        if Config.options.build.warn_on_override then
-          Util.warn(
-            ("Plugin **%s** provides its own build script, but you also defined a `build` command.\nThe `build.lua` file will not be used"):format(
-              self.plugin.name
-            )
-          )
-        end
-      else
-        builders = function()
-          Loader.source(build_file)
-        end
-      end
-    end
+    builders = builders or get_build_file(self.plugin)
+
     if builders then
       builders = type(builders) == "table" and builders or { builders }
       ---@cast builders (string|fun(LazyPlugin))[]
       for _, build in ipairs(builders) do
-        if type(build) == "string" and build:sub(1, 1) == ":" then
-          local cmd = vim.api.nvim_parse_cmd(build:sub(2), {})
-          self.output = vim.api.nvim_cmd(cmd, { output = true })
-        elseif type(build) == "function" then
-          build(self.plugin)
+        if type(build) == "function" then
+          self:async(function()
+            build(self.plugin)
+          end)
+        elseif build == "rockspec" then
+          B.rockspec(self)
+        elseif build:sub(1, 1) == ":" then
+          B.cmd(self, build)
+        elseif build:match("%.lua$") then
+          local file = self.plugin.dir .. "/" .. build
+          local chunk, err = loadfile(file)
+          if not chunk or err then
+            error(err)
+          end
+          self:async(chunk)
         else
-          local shell = vim.env.SHELL or vim.o.shell
-          local shell_args = shell:find("cmd.exe", 1, true) and "/c" or "-c"
-
-          self:spawn(shell, {
-            args = { shell_args, build },
-            cwd = self.plugin.dir,
-          })
+          B.shell(self, build)
         end
       end
     end
