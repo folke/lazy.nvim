@@ -2,7 +2,7 @@ local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 
 local M = {}
-M.VERSION = 8
+M.VERSION = 10
 M.dirty = false
 
 ---@class LazyPkg
