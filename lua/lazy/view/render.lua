@@ -511,6 +511,11 @@ function M:details(plugin)
       table.insert(props, { "commit", git.commit:sub(1, 7), "LazyCommit" })
     end
   end
+  local rocks = require("lazy.pkg.rockspec").deps(plugin)
+  if not vim.tbl_isempty(rocks) then
+    table.insert(props, { "rocks", vim.inspect(rocks) })
+  end
+
   if Util.file_exists(plugin.dir .. "/README.md") then
     table.insert(props, { "readme", "README.md" })
   end

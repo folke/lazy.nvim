@@ -1,11 +1,26 @@
 --# selene:allow(incorrect_standard_library_use)
-
-local Util = require("lazy.core.util")
+local Config = require("lazy.core.config")
+local Util = require("lazy.util")
 
 local M = {}
 
 M.dev_suffix = "-1.rockspec"
 M.skip = { "lua" }
+
+---@param plugin LazyPlugin
+function M.deps(plugin)
+  local root = Config.options.rocks.root .. "/" .. plugin.name
+  local manifest_file = root .. "/lib/luarocks/rocks-5.1/manifest"
+  local manifest = {}
+  local ok = pcall(function()
+    local load, err = loadfile(manifest_file, "t", manifest)
+    if not load then
+      error(err)
+    end
+    load()
+  end)
+  return manifest and vim.tbl_keys(manifest.repository or {})
+end
 
 ---@class RockSpec
 ---@field rockspec_format string
