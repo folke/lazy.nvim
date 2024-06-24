@@ -12,6 +12,7 @@ M.skip = { "lua" }
 ---@field package string
 ---@field version string
 ---@field dependencies string[]
+---@field build? {build_type?: string, modules?: any[]}
 
 ---@param plugin LazyPlugin
 ---@return LazyPkgSpec?
@@ -37,30 +38,44 @@ function M.get(plugin)
   end
   load()
 
+  if not rockspec then
+    return
+  end
+
+  local has_lua = not not vim.uv.fs_stat(plugin.dir .. "/lua")
+
   ---@param dep string
   local rocks = vim.tbl_filter(function(dep)
     local name = dep:gsub("%s.*", "")
     return not vim.tbl_contains(M.skip, name)
-  end, rockspec and rockspec.dependencies or {})
+  end, rockspec.dependencies or {})
 
-  local use = #rocks > 0
-  use = true
+  local use = not has_lua
+    or #rocks > 0
+    or (
+      rockspec.build
+      and rockspec.build.build_type
+      and rockspec.build.build_type ~= "none"
+      and not (rockspec.build.build_type == "builtin" and not rockspec.build.modules)
+    )
+
+  if not use then
+    return
+  end
 
   local lazy = nil
-  if not vim.uv.fs_stat(plugin.dir .. "/lua") then
+  if not has_lua then
     lazy = false
   end
 
-  return use
-      and {
-        file = vim.fn.fnamemodify(rockspec_file, ":t"),
-        spec = {
-          plugin.name,
-          build = "rockspec",
-          lazy = lazy,
-        },
-      }
-    or nil
+  return {
+    file = vim.fn.fnamemodify(rockspec_file, ":t"),
+    spec = {
+      plugin.name,
+      build = "rockspec",
+      lazy = lazy,
+    },
+  } or nil
 end
 
 return M
