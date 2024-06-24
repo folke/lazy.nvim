@@ -238,18 +238,33 @@ function M.walkmods(root, fn, modname)
 end
 
 ---@param modname string
-function M.get_unloaded_rtp(modname)
-  modname = modname:gsub("/", ".")
-  local idx = modname:find(".", 1, true)
-  local topmod = idx and modname:sub(1, idx - 1) or modname
-  topmod = M.normname(topmod)
+---@return string
+function M.topmod(modname)
+  return modname:match("^[^./]+") or modname
+end
 
+---@type table<string, string[]>
+M.unloaded_cache = {}
+
+---@param modname string
+---@param opts? {cache?:boolean}
+function M.get_unloaded_rtp(modname, opts)
+  opts = opts or {}
+
+  local topmod = M.topmod(modname)
+  if opts.cache and M.unloaded_cache[topmod] then
+    return M.unloaded_cache[topmod], true
+  end
+
+  local norm = M.normname(topmod)
+
+  ---@type string[]
   local rtp = {}
   local Config = require("lazy.core.config")
   if Config.spec then
     for _, plugin in pairs(Config.spec.plugins) do
       if not (plugin._.loaded or plugin.module == false) then
-        if topmod == M.normname(plugin.name) then
+        if norm == M.normname(plugin.name) then
           table.insert(rtp, 1, plugin.dir)
         else
           table.insert(rtp, plugin.dir)
@@ -257,15 +272,27 @@ function M.get_unloaded_rtp(modname)
       end
     end
   end
-  return rtp
+  M.unloaded_cache[topmod] = rtp
+  return rtp, false
 end
 
 function M.find_root(modname)
+  local paths, cached = M.get_unloaded_rtp(modname, { cache = true })
+
   local ret = require("lazy.core.cache").find(modname, {
     rtp = true,
-    paths = M.get_unloaded_rtp(modname),
+    paths = paths,
     patterns = { "", ".lua" },
   })[1]
+
+  if not ret and cached then
+    paths = M.get_unloaded_rtp(modname)
+    ret = require("lazy.core.cache").find(modname, {
+      rtp = false,
+      paths = paths,
+      patterns = { "", ".lua" },
+    })[1]
+  end
   if ret then
     local root = ret.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
     return root

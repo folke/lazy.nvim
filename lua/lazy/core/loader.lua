@@ -524,7 +524,7 @@ function M.colorscheme(name)
 end
 
 function M.auto_load(modname, modpath)
-  local plugin = Plugin.find(modpath)
+  local plugin = Plugin.find(modpath, { fast = not M.did_handlers })
   if plugin and modpath:find(plugin.dir, 1, true) == 1 then
     plugin._.rtp_loaded = true
     -- don't load if:
@@ -545,8 +545,14 @@ end
 
 ---@param modname string
 function M.loader(modname)
-  local paths = Util.get_unloaded_rtp(modname)
+  local paths, cached = Util.get_unloaded_rtp(modname, { cache = true })
   local ret = Cache.find(modname, { rtp = false, paths = paths })[1]
+
+  if not ret and cached then
+    paths = Util.get_unloaded_rtp(modname)
+    ret = Cache.find(modname, { rtp = false, paths = paths })[1]
+  end
+
   if ret then
     M.auto_load(modname, ret.modpath)
     local mod = package.loaded[modname]

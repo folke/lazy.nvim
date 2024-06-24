@@ -117,6 +117,14 @@ end
 --- Rebuild all plugins based on dirty fragments,
 --- or dirty plugins. Will remove plugins that no longer have fragments.
 function M:rebuild()
+  local frag_count = vim.tbl_count(self.fragments.dirty)
+  local plugin_count = vim.tbl_count(self.dirty)
+  if frag_count == 0 and plugin_count == 0 then
+    return
+  end
+  if Config.options.debug then
+    Util.track("rebuild plugins frags=" .. frag_count .. " plugins=" .. plugin_count)
+  end
   for fid in pairs(self.fragments.dirty) do
     local meta = self.frag_to_meta[fid]
     if meta then
@@ -143,6 +151,9 @@ function M:rebuild()
   for n, _ in pairs(self.dirty) do
     self:_rebuild(n)
   end
+  if Config.options.debug then
+    Util.track()
+  end
 end
 
 --- Rebuild a single plugin.
@@ -150,6 +161,10 @@ end
 --- This also resolves dependencies, dep, optional, dir, dev, and url.
 ---@param name string
 function M:_rebuild(name)
+  if not self.dirty[name] then
+    return
+  end
+  self.dirty[name] = nil
   local plugin = self.plugins[name]
   if not plugin or #plugin._.frags == 0 then
     self.plugins[name] = nil
@@ -225,7 +240,6 @@ function M:_rebuild(name)
 
   setmetatable(plugin, { __index = super })
 
-  self.dirty[plugin.name] = nil
   return plugin
 end
 
