@@ -124,7 +124,7 @@ function M:add(plugin)
   fragment.name = fragment.name
     or fragment.url and self.spec.get_name(fragment.url)
     or fragment.dir and self.spec.get_name(fragment.dir)
-  if not fragment.name then
+  if not fragment.name or fragment.name == "" then
     return self.spec:error("Invalid plugin spec " .. vim.inspect(plugin))
   end
 
