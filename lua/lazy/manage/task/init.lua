@@ -74,6 +74,32 @@ function Task:start()
   self:_check()
 end
 
+---@param fn async fun()
+function Task:async(fn)
+  local co = coroutine.create(fn)
+  local check = vim.uv.new_check()
+  check:start(vim.schedule_wrap(function()
+    local status = coroutine.status(co)
+    if status == "dead" then
+      check:stop()
+      self:_check()
+    elseif status == "suspended" then
+      local ok, res = coroutine.resume(co)
+      if not ok then
+        error(res)
+      elseif res then
+        self.status = res
+        self.output = self.output .. "\n" .. res
+        vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+      end
+    end
+  end))
+
+  table.insert(self._running, function()
+    return check:is_active()
+  end)
+end
+
 ---@private
 function Task:_check()
   for _, state in ipairs(self._running) do
