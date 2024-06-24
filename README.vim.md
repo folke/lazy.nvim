@@ -60,6 +60,8 @@
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 - Git >= **2.19.0** (for partial clones support)
 - a [Nerd Font](https://www.nerdfonts.com/) **_(optional)_**
+- [luarocks](https://luarocks.org/) to install rockspecs.
+  You can remove `rockspec` from `opts.pkg.sources` to disable this feature.
 
 # 🛠️ Installation
 
