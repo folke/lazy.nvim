@@ -444,6 +444,12 @@ Syntax is the same as any plugin spec.
 
 When a plugin contains a `*-1.rockspec` file, **lazy.nvim** will automatically build the rock and its dependencies.
 
+A **rockspec** will only be used if one of the following is true:
+
+- the package does not have a `/lua` directory
+- the package has a complex build step
+- the package has dependencies (excluding `lua`)
+
 ## Packspec
 
 Supports the [pkg.json](https://github.com/nvim-lua/nvim-package-specification/issues/41) format,
@@ -634,12 +640,6 @@ with a lazy extension in `lazy`.
     skip_if_doc_exists = true,
   },
   state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
-  build = {
-    -- Plugins can provide a `build.lua` file that will be executed when the plugin is installed
-    -- or updated. When the plugin spec also has a `build` command, the plugin's `build.lua` not be
-    -- executed. In this case, a warning message will be shown.
-    warn_on_override = true,
-  },
   -- Enable profiling of lazy.nvim. This will add some overhead,
   -- so only enable this when you are debugging lazy.nvim
   profiling = {
