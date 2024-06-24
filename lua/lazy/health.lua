@@ -21,7 +21,7 @@ function M.check()
   if vim.fn.executable("luarocks") == 1 then
     ok("'luarocks' installed")
   else
-    error("'luarocks' not installed")
+    warn("'luarocks' not installed")
   end
 
   local sites = vim.opt.packpath:get()
