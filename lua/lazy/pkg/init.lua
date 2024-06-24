@@ -32,10 +32,12 @@ function M.update()
   ---@type LazyPkgSource[]
   local sources = {}
   for _, s in ipairs(Config.options.pkg.sources) do
-    sources[#sources + 1] = {
-      name = s,
-      get = require("lazy.pkg." .. s).get,
-    }
+    if s ~= "rockspec" or Config.options.rocks.enabled then
+      sources[#sources + 1] = {
+        name = s,
+        get = require("lazy.pkg." .. s).get,
+      }
+    end
   end
 
   ---@type LazyPkgCache
