@@ -129,7 +129,26 @@ function M.check()
     else
       info("checking `luarocks` installation")
     end
-    require("lazy.pkg.rockspec").check({ error = error, warn = warn, ok = ok })
+    local need_luarocks = {}
+    for _, plugin in pairs(spec.plugins) do
+      if plugin.build == "rockspec" then
+        table.insert(need_luarocks, plugin.name)
+      end
+    end
+    if #need_luarocks == 0 then
+      ok("no plugins require `luarocks`, so you can ignore any warnings below")
+    else
+      local lines = vim.tbl_map(function(name)
+        return "  * `" .. name .. "`"
+      end, need_luarocks)
+
+      info("you have some plugins that require `luarocks`:\n" .. table.concat(lines, "\n"))
+    end
+    require("lazy.pkg.rockspec").check({
+      error = #need_luarocks > 0 and error or warn,
+      warn = warn,
+      ok = ok,
+    })
   else
     ok("luarocks disabled")
   end
