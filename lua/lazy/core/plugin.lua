@@ -335,6 +335,20 @@ function M.load()
     lazy._.loaded = {}
   end
 
+  -- add hererocks when enabled and needed
+  if Config.options.rocks.hererocks then
+    for _, plugin in pairs(Config.spec.plugins) do
+      if plugin.build == "rockspec" then
+        Config.spec.meta:add({
+          "luarocks/hererocks",
+          build = "rockspec",
+          lazy = true,
+        })
+        break
+      end
+    end
+  end
+
   local existing = Config.plugins
   Config.plugins = Config.spec.plugins
   -- copy state. This wont do anything during startup

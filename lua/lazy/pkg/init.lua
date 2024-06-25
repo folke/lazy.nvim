@@ -112,32 +112,6 @@ local function _load()
   Util.track()
 end
 
----@return LazyPluginSpec?, string?
-function M.hererocks()
-  if not (Config.options.rocks.enabled and Config.options.rocks.hererocks) then
-    return
-  end
-
-  local root = Config.options.rocks.root .. "/hererocks"
-
-  local cmd = {
-    "python",
-    "hererocks.py",
-    "--verbose",
-    "-l",
-    "5.1",
-    "-r",
-    "latest",
-    root,
-  }
-
-  return {
-    "luarocks/hererocks",
-    lazy = true,
-    build = table.concat(cmd, " "),
-  }, root
-end
-
 ---@param dir string
 ---@return LazyPkg?
 ---@overload fun():LazyPkg[]

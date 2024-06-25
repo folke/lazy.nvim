@@ -8,23 +8,62 @@ local start = vim.health.start or vim.health.report_start
 local ok = vim.health.ok or vim.health.report_ok
 local warn = vim.health.warn or vim.health.report_warn
 local error = vim.health.error or vim.health.report_error
+local info = vim.health.info or vim.health.report_info
+
+---@class LazyHealth
+---@field error? fun(msg:string)
+---@field warn? fun(msg:string)
+---@field ok? fun(msg:string)
+
+---@class LazyHealthHave : LazyHealth
+---@field version? string
+---@field version_pattern? string
+---@field optional? boolean
+
+---@param cmd string|string[]
+---@param opts? LazyHealthHave
+function M.have(cmd, opts)
+  opts = vim.tbl_extend("force", {
+    error = error,
+    warn = warn,
+    ok = ok,
+    version = "--version",
+  }, opts or {})
+
+  cmd = type(cmd) == "table" and cmd or { cmd }
+  ---@cast cmd string[]
+  ---@type string?
+  local found
+  for _, c in ipairs(cmd) do
+    if vim.fn.executable(c) == 1 then
+      local version = vim.fn.system(c .. " " .. opts.version) or ""
+      version = vim.trim(vim.split(version, "\n")[1])
+      version = version:gsub("^%s*" .. vim.pesc(c) .. "%s*", "")
+      if opts.version_pattern and not version:find(opts.version_pattern, 1, true) then
+        opts.warn(("`%s` version `%s` needed, but found `%s`"):format(c, opts.version_pattern, version))
+      else
+        found = ("{%s} `%s`"):format(c, version)
+        break
+      end
+    end
+  end
+  if found then
+    opts.ok(found)
+    return true
+  else
+    (opts.optional and opts.warn or opts.error)(
+      ("{%s} %snot installed"):format(
+        table.concat(cmd, "} or {"),
+        opts.version_pattern and "version `" .. opts.version_pattern .. "` " or ""
+      )
+    )
+  end
+end
 
 function M.check()
   start("lazy.nvim")
 
-  if vim.fn.executable("git") == 1 then
-    ok("'git' installed")
-  else
-    error("'git' not installed?")
-  end
-
-  if Config.options.rocks.enabled then
-    if vim.fn.executable("luarocks") == 1 then
-      ok("'luarocks' installed")
-    else
-      error("'luarocks' not installed. Either install it or set opts.rocks.enabled = false")
-    end
-  end
+  M.have("git")
 
   local sites = vim.opt.packpath:get()
   local default_site = vim.fn.stdpath("data") .. "/site"
@@ -45,7 +84,7 @@ function M.check()
     ok("no existing packages found by other package managers")
   end
 
-  for _, name in ipairs({ "packer", "plugged", "paq" }) do
+  for _, name in ipairs({ "packer", "plugged", "paq", "pckr", "mini.deps" }) do
     for _, path in ipairs(vim.opt.rtp:get()) do
       if path:find(name, 1, true) then
         error("Found paths on the rtp from another plugin manager `" .. name .. "`")
@@ -81,6 +120,18 @@ function M.check()
         end
       end
     end
+  end
+
+  start("luarocks")
+  if Config.options.rocks.enabled then
+    if Config.options.rocks.hererocks then
+      info("checking `hererocks` installation")
+    else
+      info("checking `luarocks` installation")
+    end
+    require("lazy.pkg.rockspec").check({ error = error, warn = warn, ok = ok })
+  else
+    ok("luarocks disabled")
   end
 end
 

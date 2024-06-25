@@ -464,10 +464,8 @@ function M.add_to_rtp(plugin)
   local rtp = vim.api.nvim_get_runtime_file("", true)
   local idx_dir, idx_after
 
-  local is_win = jit.os:find("Windows")
-
   for i, path in ipairs(rtp) do
-    if is_win then
+    if Util.is_win then
       path = Util.norm(path)
     end
     if path == Config.me then

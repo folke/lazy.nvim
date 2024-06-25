@@ -1,5 +1,6 @@
 local Config = require("lazy.core.config")
 local Loader = require("lazy.core.loader")
+local Rocks = require("lazy.pkg.rockspec")
 local Util = require("lazy.util")
 
 ---@type table<string, LazyTaskDef>
@@ -15,52 +16,6 @@ local function get_build_file(plugin)
 end
 
 local B = {}
-
----@param task LazyTask
-function B.rockspec(task)
-  ---@type table<string, string>
-  local env = {}
-
-  local luarocks = "luarocks"
-  if Config.options.rocks.hererocks then
-    local is_win = jit.os:find("Windows")
-    local sep = is_win and ";" or ":"
-    local hererocks = Config.options.rocks.root .. "/hererocks/bin"
-    if is_win then
-      hererocks = hererocks:gsub("/", "\\")
-    end
-    local path = vim.split(vim.env.PATH, sep)
-    table.insert(path, 1, hererocks)
-    env = {
-      PATH = table.concat(path, sep),
-    }
-    if is_win then
-      luarocks = luarocks .. ".bat"
-    end
-    local plugin = Config.plugins.hererocks
-    -- hererocks is still building, so skip for now
-    if plugin and plugin._.build then
-      return
-    end
-  end
-
-  local root = Config.options.rocks.root .. "/" .. task.plugin.name
-  task:spawn(luarocks, {
-    args = {
-      "--tree",
-      root,
-      "--server",
-      Config.options.rocks.server,
-      "--dev",
-      "--lua-version",
-      "5.1",
-      "make",
-      "--force-fast",
-    },
-    cwd = task.plugin.dir,
-    env = env,
-  })
-end
 
 ---@param task LazyTask
 ---@param build string
@@ -114,7 +69,7 @@ M.build = {
             build(self.plugin)
           end)
         elseif build == "rockspec" then
-          B.rockspec(self)
+          Rocks.build(self)
         elseif build:sub(1, 1) == ":" then
           B.cmd(self, build)
         elseif build:match("%.lua$") then

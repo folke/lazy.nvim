@@ -1,30 +1,7 @@
 --# selene:allow(incorrect_standard_library_use)
 local Config = require("lazy.core.config")
+local Health = require("lazy.health")
 local Util = require("lazy.util")
-
-local M = {}
-
-M.dev_suffix = "-1.rockspec"
-M.skip = { "lua" }
-
-M.rewrites = {
-  ["plenary.nvim"] = { "nvim-lua/plenary.nvim", lazy = true },
-}
-
----@param plugin LazyPlugin
-function M.deps(plugin)
-  local root = Config.options.rocks.root .. "/" .. plugin.name
-  local manifest_file = root .. "/lib/luarocks/rocks-5.1/manifest"
-  local manifest = {}
-  pcall(function()
-    local load, err = loadfile(manifest_file, "t", manifest)
-    if not load then
-      error(err)
-    end
-    load()
-  end)
-  return vim.tbl_keys(manifest.repository or {})
-end
 
 ---@class RockSpec
 ---@field rockspec_format string
@@ -32,6 +9,190 @@ end
 ---@field version string
 ---@field dependencies string[]
 ---@field build? {build_type?: string, modules?: any[]}
+
+---@class RockManifest
+---@field repository table<string, any>
+
+local M = {}
+
+M.dev_suffix = "-1.rockspec"
+M.skip = { "lua" }
+M.rewrites = {
+  ["plenary.nvim"] = { "nvim-lua/plenary.nvim", lazy = true },
+}
+M.python = { "python3", "python" }
+
+---@class HereRocks
+M.hererocks = {}
+
+---@param task LazyTask
+function M.hererocks.build(task)
+  local root = Config.options.rocks.root .. "/hererocks"
+
+  ---@param p string
+  local python = vim.tbl_filter(function(p)
+    return vim.fn.executable(p) == 1
+  end, M.python)[1]
+
+  task:spawn(python, {
+    args = {
+      "hererocks.py",
+      "--verbose",
+      "-l",
+      "5.1",
+      "-r",
+      "latest",
+      root,
+    },
+    cwd = task.plugin.dir,
+  })
+end
+
+---@param bin string
+function M.hererocks.bin(bin)
+  local hererocks = Config.options.rocks.root .. "/hererocks/bin"
+  if Util.is_win then
+    bin = bin .. ".bat"
+  end
+  return Util.norm(hererocks .. "/" .. bin)
+end
+
+-- check if hererocks is building
+---@return boolean?
+function M.hererocks.building()
+  return vim.tbl_get(Config.plugins.hererocks or {}, "_", "build")
+end
+
+---@param opts? LazyHealth
+function M.check(opts)
+  opts = vim.tbl_extend("force", {
+    error = Util.error,
+    warn = Util.warn,
+    ok = function() end,
+  }, opts or {})
+
+  local ok = false
+  if Config.options.rocks.hererocks then
+    if M.hererocks.building() then
+      ok = true
+    else
+      ok = Health.have(M.python, opts)
+      ok = Health.have(M.hererocks.bin("luarocks")) and ok
+      ok = Health.have(
+        M.hererocks.bin("lua"),
+        vim.tbl_extend("force", opts, {
+          version = "-v",
+          version_pattern = "5.1",
+        })
+      ) and ok
+    end
+  else
+    ok = Health.have("luarocks", opts)
+    ok = (
+      Health.have(
+        { "lua5.1", "lua" },
+        vim.tbl_extend("force", opts, {
+          version = "-v",
+          version_pattern = "5.1",
+        })
+      )
+    ) and ok
+  end
+  return ok
+end
+
+---@param task LazyTask
+function M.build(task)
+  if
+    not M.check({
+      error = function(msg)
+        task:notify_error(msg:gsub("[{}]", "`"))
+      end,
+      warn = function(msg)
+        task:notify_warn(msg)
+      end,
+      ok = function(msg) end,
+    })
+  then
+    task:notify_warn({
+      "",
+      "This plugin requires `luarocks`. Try one of the following:",
+      " - fix your `luarocks` installation",
+      Config.options.rocks.hererocks and " - disable *hererocks* with `opts.rocks.hererocks = false`"
+        or " - enable `hererocks` with `opts.rocks.hererocks = true`",
+      " - disable `luarocks` support completely with `opts.rocks.enabled = false`",
+    })
+    return
+  end
+
+  if task.plugin.name == "hererocks" then
+    return M.hererocks.build(task)
+  end
+
+  local env = {}
+  local luarocks = "luarocks"
+  if Config.options.rocks.hererocks then
+    -- hererocks is still building, so skip for now
+    -- a new build will happen in the next round
+    if M.hererocks.building() then
+      return
+    end
+
+    local sep = Util.is_win and ";" or ":"
+    local hererocks = Config.options.rocks.root .. "/hererocks/bin"
+    if Util.is_win then
+      hererocks = hererocks:gsub("/", "\\")
+    end
+    local path = vim.split(vim.env.PATH, sep)
+    table.insert(path, 1, hererocks)
+    env = {
+      PATH = table.concat(path, sep),
+    }
+    if Util.is_win then
+      luarocks = luarocks .. ".bat"
+    end
+  end
+
+  local root = Config.options.rocks.root .. "/" .. task.plugin.name
+  task:spawn(luarocks, {
+    args = {
+      "--tree",
+      root,
+      "--server",
+      Config.options.rocks.server,
+      "--dev",
+      "--lua-version",
+      "5.1",
+      "make",
+      "--force-fast",
+    },
+    cwd = task.plugin.dir,
+    env = env,
+  })
+end
+
+---@param file string
+---@return table?
+function M.parse(file)
+  local ret = {}
+  return pcall(function()
+    loadfile(file, "t", ret)()
+  end) and ret or nil
+end
+
+---@param plugin LazyPlugin
+function M.deps(plugin)
+  local root = Config.options.rocks.root .. "/" .. plugin.name
+  ---@type RockManifest?
+  local manifest = M.parse(root .. "/lib/luarocks/rocks-5.1/manifest")
+  return manifest and vim.tbl_keys(manifest.repository or {})
+end
+
+---@param file string
+---@return RockSpec?
+function M.rockspec(file)
+  return M.parse(file)
+end
 
 ---@param plugin LazyPlugin
 ---@return LazyPkgSpec?
@@ -56,14 +217,7 @@ function M.get(plugin)
     return
   end
 
-  ---@type RockSpec?
-  ---@diagnostic disable-next-line: missing-fields
-  local rockspec = {}
-  local load, err = loadfile(rockspec_file, "t", rockspec)
-  if not load then
-    error(err)
-  end
-  load()
+  local rockspec = M.rockspec(rockspec_file)
 
   if not rockspec then
     return

@@ -12,6 +12,7 @@ local Process = require("lazy.manage.process")
 ---@field output string
 ---@field status string
 ---@field error? string
+---@field warn? string
 ---@field private _task fun(task:LazyTask)
 ---@field private _running LazyPluginState[]
 ---@field private _started? number
@@ -72,6 +73,30 @@ function Task:start()
     self.error = err or "failed"
   end
   self:_check()
+end
+
+---@param msg string|string[]
+---@param severity? vim.diagnostic.Severity
+function Task:notify(msg, severity)
+  local var = severity == vim.diagnostic.severity.ERROR and "error"
+    or severity == vim.diagnostic.severity.WARN and "warn"
+    or "output"
+  msg = type(msg) == "table" and table.concat(msg, "\n") or msg
+  ---@cast msg string
+  ---@diagnostic disable-next-line: no-unknown
+  self[var] = self[var] and (self[var] .. "\n" .. msg) or msg
+  self.status = msg
+  vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+end
+
+---@param msg string|string[]
+function Task:notify_error(msg)
+  self:notify(msg, vim.diagnostic.severity.ERROR)
+end
+
+---@param msg string|string[]
+function Task:notify_warn(msg)
+  self:notify(msg, vim.diagnostic.severity.WARN)
 end
 
 ---@param fn async fun()

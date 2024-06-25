@@ -394,6 +394,11 @@ function M:diagnostics(plugin)
         message = task.name .. " failed",
         severity = vim.diagnostic.severity.ERROR,
       })
+    elseif task.warn then
+      self:diagnostic({
+        message = task.name .. " warning",
+        severity = vim.diagnostic.severity.WARN,
+      })
     end
   end
 end
@@ -434,6 +439,22 @@ function M:plugin(plugin)
     { name = plugin.name, from = plugin_start, to = self:row() - 1, kind = plugin._.kind }
 end
 
+---@param str string
+---@param hl? string|Extmark
+---@param opts? {indent?: number, prefix?: string, wrap?: boolean}
+function M:markdown(str, hl, opts)
+  local lines = vim.split(str, "\n")
+  for _, line in ipairs(lines) do
+    self:append(line, hl, opts):highlight({
+      ["`.-`"] = "@markup.raw.markdown_inline",
+      ["%*.-%*"] = "LazyItalic",
+      ["%*%*.-%*%*"] = "LazyBold",
+      ["^%s*-"] = "Special",
+    })
+    self:nl()
+  end
+end
+
 ---@param plugin LazyPlugin
 function M:tasks(plugin)
   for _, task in ipairs(plugin._.tasks or {}) do
@@ -443,13 +464,16 @@ function M:tasks(plugin)
       self:nl()
     end
     if task.error then
-      self:append(vim.trim(task.error), "LazyTaskError", { indent = 6 })
-      self:nl()
-    elseif task.name == "log" then
+      self:markdown(task.error, "LazyTaskError", { indent = 6 })
+    end
+    if task.warn then
+      self:markdown(task.warn, "LazyTaskWarning", { indent = 6 })
+    end
+    if not task.error and not task.warn and task.name == "log" then
       self:log(task)
-    elseif self.view:is_selected(plugin) and task.output ~= "" and task.output ~= task.error then
-      self:append(vim.trim(task.output), "LazyTaskOutput", { indent = 6 })
-      self:nl()
+    end
+    if self.view:is_selected(plugin) or (task.error or task.warn) then
+      self:markdown(vim.trim(task.output), "LazyTaskOutput", { indent = 6 })
     end
   end
 end
@@ -512,7 +536,7 @@ function M:details(plugin)
     end
   end
   local rocks = require("lazy.pkg.rockspec").deps(plugin)
-  if not vim.tbl_isempty(rocks) then
+  if rocks then
     table.insert(props, { "rocks", vim.inspect(rocks) })
   end
 

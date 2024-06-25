@@ -5,6 +5,7 @@ local M = {}
 
 ---@type LazyProfile[]
 M._profiles = { { name = "lazy" } }
+M.is_win = jit.os:find("Windows")
 
 ---@param data (string|{[string]:string})?
 ---@param time number?
