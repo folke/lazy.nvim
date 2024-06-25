@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.4.1](https://github.com/folke/lazy.nvim/compare/v11.4.0...v11.4.1) (2024-06-25)
+
+
+### Bug Fixes
+
+* **health:** show what plugins need luarocks and if none, use warnings instead of errors. See [#1551](https://github.com/folke/lazy.nvim/issues/1551) ([0d9fd63](https://github.com/folke/lazy.nvim/commit/0d9fd636beb9e3783edcdba2b31932280bdc05f7))
+
 ## [11.4.0](https://github.com/folke/lazy.nvim/compare/v11.3.0...v11.4.0) (2024-06-25)
 
 
