@@ -1,5 +1,21 @@
 # Changelog
 
+## [11.3.0](https://github.com/folke/lazy.nvim/compare/v11.2.1...v11.3.0) (2024-06-25)
+
+
+### Features
+
+* **rocks:** use hererocks to install luarocks when luarocks is not found ([d87da76](https://github.com/folke/lazy.nvim/commit/d87da7667939deff2ed8b5a3c198d9ea2e03fee4))
+
+
+### Bug Fixes
+
+* **fragments:** check for empty plugin names ([dea1f68](https://github.com/folke/lazy.nvim/commit/dea1f687fe6e15eb3098557a69d44231ebcb6cf5))
+* **meta:** no need to check for old_dir when frags were not built yet. Fixes [#1550](https://github.com/folke/lazy.nvim/issues/1550) ([24c8322](https://github.com/folke/lazy.nvim/commit/24c832213c505a0d7ca021c0e14bba43e0fef75c))
+* **rocks:** better errors / warnings when something goes wrong with luarocks ([7d3f691](https://github.com/folke/lazy.nvim/commit/7d3f69104fb39d3e6e12f808204b3a7b38f86916))
+* **rocks:** hererocks paths on windows ([45cd8d3](https://github.com/folke/lazy.nvim/commit/45cd8d3f0fab197e6e0391cffa38879bdda4c2cd))
+* **rocks:** windows ([4ca3e9a](https://github.com/folke/lazy.nvim/commit/4ca3e9aa51c03dda73b40ec9901deac5d4f11c69))
+
 ## [11.2.1](https://github.com/folke/lazy.nvim/compare/v11.2.0...v11.2.1) (2024-06-24)
 
 
