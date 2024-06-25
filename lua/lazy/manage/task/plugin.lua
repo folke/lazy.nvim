@@ -18,8 +18,25 @@ local B = {}
 
 ---@param task LazyTask
 function B.rockspec(task)
+  ---@type table<string, string>
+  local env = {}
+
+  if Config.options.rocks.hererocks then
+    local hererocks = Config.options.rocks.root .. "/hererocks"
+    local sep = jit.os:find("Windows") and ";" or ":"
+    local path = vim.split(vim.env.PATH, sep)
+    table.insert(path, 1, hererocks .. "/bin")
+    env = {
+      PATH = table.concat(path, sep),
+    }
+    local plugin = Config.plugins.hererocks
+    -- hererocks is still building, so skip for now
+    if plugin and plugin._.build then
+      return
+    end
+  end
+
   local root = Config.options.rocks.root .. "/" .. task.plugin.name
-  vim.fn.mkdir(root, "p")
   task:spawn("luarocks", {
     args = {
       "--tree",
@@ -33,6 +50,7 @@ function B.rockspec(task)
       "--force-fast",
     },
     cwd = task.plugin.dir,
+    env = env,
   })
 end
 

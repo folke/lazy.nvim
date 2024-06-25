@@ -33,7 +33,9 @@ function M:load_pkgs()
   if not Config.options.pkg.enabled then
     return
   end
+  local have_rockspec = false
   for _, pkg in ipairs(Pkg.get()) do
+    have_rockspec = have_rockspec or pkg.source == "rockspec"
     local meta, fragment = self:add(pkg.spec)
     if meta and fragment then
       meta._.pkg = pkg
@@ -44,6 +46,12 @@ function M:load_pkgs()
       end
       -- keep track of the top-level package fragment
       self.pkgs[pkg.dir] = fragment.id
+    end
+  end
+  if have_rockspec then
+    local hererocks = Pkg.hererocks()
+    if hererocks then
+      self:add(hererocks)
     end
   end
 end
