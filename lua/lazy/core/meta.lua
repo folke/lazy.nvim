@@ -34,13 +34,16 @@ function M:load_pkgs()
     return
   end
   for _, pkg in ipairs(Pkg.get()) do
+    local last_id = self.fragments._fid
     local meta, fragment = self:add(pkg.spec)
     if meta and fragment then
       meta._.pkg = pkg
-      -- tag all package fragments as optional
+      -- tag all top-level package fragments that were added as optional
       for _, fid in ipairs(meta._.frags) do
-        local frag = self.fragments:get(fid)
-        frag.spec.optional = true
+        if fid > last_id then
+          local frag = self.fragments:get(fid)
+          frag.spec.optional = true
+        end
       end
       -- keep track of the top-level package fragment
       self.pkgs[pkg.dir] = fragment.id
