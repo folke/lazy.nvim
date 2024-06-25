@@ -713,38 +713,38 @@ with a lazy extension in `lazy`.
 
 | Highlight Group | Default Group | Description |
 | --- | --- | --- |
-| **LazyButton** | _**CursorLine**_ |  |
-| **LazyButtonActive** | _**Visual**_ |  |
-| **LazyComment** | _**Comment**_ |  |
-| **LazyCommit** | _**@variable.builtin**_ | commit ref |
-| **LazyCommitIssue** | _**Number**_ |  |
-| **LazyCommitScope** | _**Italic**_ | conventional commit scope |
-| **LazyCommitType** | _**Title**_ | conventional commit type |
-| **LazyDimmed** | _**Conceal**_ | property |
-| **LazyDir** | _**@markup.link**_ | directory |
-| **LazyH1** | _**IncSearch**_ | home button |
-| **LazyH2** | _**Bold**_ | titles |
-| **LazyLocal** | _**Constant**_ |  |
-| **LazyNoCond** | _**DiagnosticWarn**_ | unloaded icon for a plugin where `cond()` was false |
-| **LazyNormal** | _**NormalFloat**_ |  |
-| **LazyProgressDone** | _**Constant**_ | progress bar done |
-| **LazyProgressTodo** | _**LineNr**_ | progress bar todo |
-| **LazyProp** | _**Conceal**_ | property |
-| **LazyReasonCmd** | _**Operator**_ |  |
-| **LazyReasonEvent** | _**Constant**_ |  |
-| **LazyReasonFt** | _**Character**_ |  |
-| **LazyReasonImport** | _**Identifier**_ |  |
-| **LazyReasonKeys** | _**Statement**_ |  |
-| **LazyReasonPlugin** | _**Special**_ |  |
-| **LazyReasonRequire** | _**@variable.parameter**_ |  |
-| **LazyReasonRuntime** | _**@macro**_ |  |
-| **LazyReasonSource** | _**Character**_ |  |
-| **LazyReasonStart** | _**@variable.member**_ |  |
-| **LazySpecial** | _**@punctuation.special**_ |  |
-| **LazyTaskError** | _**ErrorMsg**_ | task errors |
-| **LazyTaskOutput** | _**MsgArea**_ | task output |
-| **LazyUrl** | _**@markup.link**_ | url |
-| **LazyValue** | _**@string**_ | value of a property |
+| **LazyButton** | ***CursorLine*** |  |
+| **LazyButtonActive** | ***Visual*** |  |
+| **LazyComment** | ***Comment*** |  |
+| **LazyCommit** | ***@variable.builtin*** | commit ref |
+| **LazyCommitIssue** | ***Number*** |  |
+| **LazyCommitScope** | ***Italic*** | conventional commit scope |
+| **LazyCommitType** | ***Title*** | conventional commit type |
+| **LazyDimmed** | ***Conceal*** | property |
+| **LazyDir** | ***@markup.link*** | directory |
+| **LazyH1** | ***IncSearch*** | home button |
+| **LazyH2** | ***Bold*** | titles |
+| **LazyLocal** | ***Constant*** |  |
+| **LazyNoCond** | ***DiagnosticWarn*** | unloaded icon for a plugin where `cond()` was false |
+| **LazyNormal** | ***NormalFloat*** |  |
+| **LazyProgressDone** | ***Constant*** | progress bar done |
+| **LazyProgressTodo** | ***LineNr*** | progress bar todo |
+| **LazyProp** | ***Conceal*** | property |
+| **LazyReasonCmd** | ***Operator*** |  |
+| **LazyReasonEvent** | ***Constant*** |  |
+| **LazyReasonFt** | ***Character*** |  |
+| **LazyReasonImport** | ***Identifier*** |  |
+| **LazyReasonKeys** | ***Statement*** |  |
+| **LazyReasonPlugin** | ***Special*** |  |
+| **LazyReasonRequire** | ***@variable.parameter*** |  |
+| **LazyReasonRuntime** | ***@macro*** |  |
+| **LazyReasonSource** | ***Character*** |  |
+| **LazyReasonStart** | ***@variable.member*** |  |
+| **LazySpecial** | ***@punctuation.special*** |  |
+| **LazyTaskError** | ***ErrorMsg*** | task errors |
+| **LazyTaskOutput** | ***MsgArea*** | task output |
+| **LazyUrl** | ***@markup.link*** | url |
+| **LazyValue** | ***@string*** | value of a property |
 
 # 🚀 Usage
 
@@ -1092,4 +1092,3 @@ local dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h")
 ```
 
 :::
-
