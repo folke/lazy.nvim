@@ -525,19 +525,17 @@ with a lazy extension in `lazy`.
   pkg = {
     enabled = true,
     cache = vim.fn.stdpath("state") .. "/lazy/pkg-cache.lua",
+    versions = true, -- Honor versions in pkg sources
     -- the first package source that is found for a plugin will be used.
     sources = {
       "lazy",
-      "rockspec", -- will only be used when rocks.enabled is true
+      "rockspec",
       "packspec",
     },
   },
   rocks = {
-    enabled = true,
     root = vim.fn.stdpath("data") .. "/lazy-rocks",
     server = "https://nvim-neorocks.github.io/rocks-binaries/",
-    -- use hererocks to install luarocks.
-    hererocks = vim.fn.executable("luarocks") == 0,
   },
   dev = {
     ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
