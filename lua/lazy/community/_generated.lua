@@ -40,6 +40,10 @@ return
     url = "linrongbin16/ci-template.nvim",
     version = "8.1.0-1"
   }, {
+    name = "cmp-rg",
+    url = "lukas-reineke/cmp-rg",
+    version = "1.3.9-1"
+  }, {
     name = "colorbox.nvim",
     url = "linrongbin16/colorbox.nvim",
     version = "3.1.0-1"
