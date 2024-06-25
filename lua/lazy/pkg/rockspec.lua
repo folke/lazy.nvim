@@ -9,9 +9,10 @@ local Util = require("lazy.util")
 ---@field version string
 ---@field dependencies string[]
 ---@field build? {build_type?: string, modules?: any[]}
+---@field source? {url?: string}
 
 ---@class RockManifest
----@field repository table<string, any>
+---@field repository table<string, table<string,any>>
 
 local M = {}
 

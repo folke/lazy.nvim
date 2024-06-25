@@ -9,6 +9,7 @@ local M = {}
 ---@field patch number
 ---@field prerelease? string
 ---@field build? string
+---@field input? string
 local Semver = {}
 Semver.__index = Semver
 
@@ -90,6 +91,7 @@ function M.version(version)
       patch = patch == "" and 0 or tonumber(patch),
       prerelease = prerelease ~= "" and prerelease or nil,
       build = build ~= "" and build or nil,
+      input = version,
     }, Semver)
   end
 end
