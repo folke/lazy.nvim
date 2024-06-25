@@ -83,7 +83,7 @@ function M.build()
       end
     end
   end
-  Util.write_file("lua/lazy/community/rocks.lua", "return \n" .. vim.inspect(nvim_rocks))
+  Util.write_file("lua/lazy/community/_generated.lua", "return \n" .. vim.inspect(nvim_rocks))
 end
 
 M.build()
