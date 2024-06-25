@@ -570,7 +570,7 @@ return
   }, {
     name = "rocks-config.nvim",
     url = "nvim-neorocks/rocks-config.nvim",
-    version = "2.0.1-1"
+    version = "2.1.0-1"
   }, {
     name = "rocks-dev.nvim",
     url = "nvim-neorocks/rocks-dev.nvim",
