@@ -14,6 +14,7 @@ describe("semver version", function()
     ["1.2.3+build"] = { major = 1, minor = 2, patch = 3, build = "build" },
   }
   for input, output in pairs(tests) do
+    output.input = input
     it("correctly parses " .. input, function()
       assert.same(output, v(input))
     end)
