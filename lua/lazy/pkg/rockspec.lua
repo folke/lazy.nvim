@@ -1,4 +1,6 @@
 --# selene:allow(incorrect_standard_library_use)
+local Community = require("lazy.community")
+
 local Config = require("lazy.core.config")
 local Health = require("lazy.health")
 local Util = require("lazy.util")
@@ -16,11 +18,11 @@ local Util = require("lazy.util")
 
 local M = {}
 
-M.dev_suffix = "-1.rockspec"
 M.skip = { "lua" }
 M.rewrites = {
   ["plenary.nvim"] = { "nvim-lua/plenary.nvim", lazy = true },
 }
+
 M.python = { "python3", "python" }
 
 ---@class HereRocks
@@ -151,6 +153,15 @@ function M.build(task)
     end
   end
 
+  local pkg = task.plugin._.pkg
+  assert(pkg, "missing rockspec pkg for " .. task.plugin.name .. "\nThis shouldn't happen, please report.")
+
+  local rockspec = M.rockspec(task.plugin.dir .. "/" .. pkg.file) or {}
+  assert(
+    rockspec.package,
+    "missing rockspec package name for " .. task.plugin.name .. "\nThis shouldn't happen, please report."
+  )
+
   local root = Config.options.rocks.root .. "/" .. task.plugin.name
   task:spawn(luarocks, {
     args = {
@@ -161,8 +172,11 @@ function M.build(task)
       "--dev",
       "--lua-version",
       "5.1",
-      "make",
+      "install", -- use install so that we can make use of pre-built rocks
       "--force-fast",
+      "--deps-mode",
+      "one",
+      rockspec.package,
     },
     cwd = task.plugin.dir,
     env = env,
@@ -193,30 +207,35 @@ function M.rockspec(file)
 end
 
 ---@param plugin LazyPlugin
+function M.find_rockspec(plugin)
+  local rockspec_file ---@type string?
+  Util.ls(plugin.dir, function(path, name, t)
+    if t == "file" then
+      for _, suffix in ipairs({ "scm", "git", "dev" }) do
+        suffix = suffix .. "-1.rockspec"
+        if name:sub(-#suffix) == suffix then
+          rockspec_file = path
+          return false
+        end
+      end
+    end
+  end)
+  return rockspec_file
+end
+
+---@param plugin LazyPlugin
 ---@return LazyPkgSpec?
 function M.get(plugin)
-  if M.rewrites[plugin.name] then
+  if Community.get_spec(plugin.name) then
     return {
-      file = "rewrite",
+      file = "community",
       source = "lazy",
-      spec = M.rewrites[plugin.name],
+      spec = Community.get_spec(plugin.name),
     }
   end
 
-  local rockspec_file ---@type string?
-  Util.ls(plugin.dir, function(path, name, t)
-    if t == "file" and name:sub(-#M.dev_suffix) == M.dev_suffix then
-      rockspec_file = path
-      return false
-    end
-  end)
-
-  if not rockspec_file then
-    return
-  end
-
-  local rockspec = M.rockspec(rockspec_file)
-
+  local rockspec_file = M.find_rockspec(plugin)
+  local rockspec = rockspec_file and M.rockspec(rockspec_file)
   if not rockspec then
     return
   end
@@ -224,20 +243,34 @@ function M.get(plugin)
   local has_lua = not not vim.uv.fs_stat(plugin.dir .. "/lua")
 
   ---@type LazyPluginSpec
-  local rewrites = {}
+  local specs = {}
 
   ---@param dep string
   local rocks = vim.tbl_filter(function(dep)
     local name = dep:gsub("%s.*", "")
-    if M.rewrites[name] then
-      table.insert(rewrites, M.rewrites[name])
+    local url = Community.get_url(name)
+    local spec = Community.get_spec(name)
+
+    if spec then
+      -- community spec
+      table.insert(specs, spec)
+      return false
+    elseif url then
+      -- Neovim plugin rock
+      table.insert(specs, { url, lazy = true })
       return false
     end
     return not vim.tbl_contains(M.skip, name)
   end, rockspec.dependencies or {})
 
-  local use = not has_lua
+  local use =
+    -- package without a /lua directory
+    not has_lua
+    -- has dependencies that are not skipped, 
+    -- not in community specs, 
+    -- and don't have a rockspec mapping
     or #rocks > 0
+    -- has a complex build process
     or (
       rockspec.build
       and rockspec.build.build_type
@@ -246,13 +279,17 @@ function M.get(plugin)
     )
 
   if not use then
-    if #rewrites > 0 then
-      return {
-        file = vim.fn.fnamemodify(rockspec_file, ":t"),
-        spec = rewrites,
-      }
-    end
-    return
+    -- community specs only
+    return #specs > 0
+        and {
+          file = vim.fn.fnamemodify(rockspec_file, ":t"),
+          spec = {
+            plugin.name,
+            specs = specs,
+            build = false,
+          },
+        }
+      or nil
   end
 
   local lazy = nil

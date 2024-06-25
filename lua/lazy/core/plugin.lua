@@ -287,7 +287,7 @@ function M.find_local_spec()
     return
   end
   local path = vim.uv.cwd()
-  while path ~= "" do
+  while path and path ~= "" do
     local file = path .. "/" .. M.LOCAL_SPEC
     if vim.fn.filereadable(file) == 1 then
       return {

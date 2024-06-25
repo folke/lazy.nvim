@@ -21,4 +21,8 @@ function M.get_url(rock)
   return load()[rock]
 end
 
+function M.get_spec(name)
+  return require("lazy.community.specs")[name]
+end
+
 return M
