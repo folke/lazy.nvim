@@ -22,7 +22,7 @@ end
 ---@return RockManifest?
 function M.fetch_manifest()
   local manifest_file = "build/manifest.lua"
-  M.fetch("https://luarocks.org/manifest", manifest_file)
+  M.fetch("https://luarocks.org/manifest-5.1", manifest_file)
   return Rocks.parse(manifest_file)
 end
 
