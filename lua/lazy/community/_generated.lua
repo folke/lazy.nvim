@@ -288,13 +288,25 @@ return
     url = "ray-x/lsp_signature.nvim",
     version = "0.3.1-1"
   }, {
+    name = "ltreesitter",
+    url = "euclidianAce/ltreesitter",
+    version = "0.0.7-1"
+  }, {
     name = "lua-obfuscator.nvim",
     url = "git+ssh://git@github.com/kdssoftware/lua-obfuscator.nvim.git",
     version = "1.0.1-1"
   }, {
+    name = "lua-tree-sitter",
+    url = "xcb-xwii/lua-tree-sitter",
+    version = "0.1.0-1"
+  }, {
     name = "lua-utils.nvim",
     url = "nvim-neorg/lua-utils.nvim",
     version = "1.0.2-1"
+  }, {
+    name = "luarocks-build-treesitter-parser",
+    url = "nvim-neorocks/luarocks-build-treesitter-parser",
+    version = "4.1.0-1"
   }, {
     name = "mapx.nvim",
     url = "b0o/mapx.nvim",
@@ -659,6 +671,18 @@ return
     name = "tokyonight.nvim",
     url = "folke/tokyonight.nvim",
     version = "3.0.1-1"
+  }, {
+    name = "tree-sitter-norg",
+    url = "nvim-neorg/tree-sitter-norg",
+    version = "0.2.4-1"
+  }, {
+    name = "tree-sitter-norg-meta",
+    url = "nvim-neorg/tree-sitter-norg-meta",
+    version = "0.1.0-1"
+  }, {
+    name = "tree-sitter-orgmode",
+    url = "nvim-orgmode/tree-sitter-org",
+    version = "1.3.2-1"
   }, {
     name = "trouble.nvim",
     url = "folke/trouble.nvim",
