@@ -161,6 +161,8 @@ function M.readme(readme, mds, transform)
 end
 
 function M.update()
+  M.themes()
+  M.docs()
   M.readme("README.vim.md")
   M.readme("README.md", {
     "README.header.md",
@@ -169,8 +171,6 @@ function M.update()
   }, function(s)
     return s:gsub("\n# 🚀 Getting Started", "\n")
   end)
-  M.themes()
-  M.docs()
   vim.cmd.checktime()
 end
 
