@@ -3,23 +3,22 @@ local M = {}
 ---@type table<string, string>
 local mapping = nil
 
-local function _load()
-  if mapping then
-    return
+local function load()
+  if not mapping then
+    mapping = {}
+    ---@type {name:string, url:string, version:string}[]
+    local gen = require("lazy.community._generated")
+    for _, rock in ipairs(gen) do
+      mapping[rock.name] = rock.url
+    end
   end
-  mapping = {}
-  ---@type {name:string, url:string, version:string}[]
-  local gen = require("lazy.community._generated")
-  for _, rock in ipairs(gen) do
-    mapping[rock.name] = rock.url
-  end
+  return mapping
 end
 
 ---@param rock string
 ---@return string?
 function M.get_url(rock)
-  _load()
-  return mapping[rock]
+  return load()[rock]
 end
 
 return M
