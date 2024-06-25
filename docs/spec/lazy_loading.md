@@ -28,7 +28,7 @@ when doing `colorscheme foobar`.
 
 :::warning
 
-since **start** plugins can possibly change existing highlight groups,
+since **start** plugins (`lazy=false`) can possibly change existing highlight groups,
 it's important to make sure that your main **colorscheme** is loaded first.
 To ensure this you can use the `priority=1000` field. **_(see the [examples](./examples.md))_**
 
