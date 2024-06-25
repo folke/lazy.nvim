@@ -5,6 +5,8 @@ local Util = require("lazy.util")
 
 local M = {}
 
+M.patterns = { "nvim", "treesitter", "tree-sitter" }
+
 function M.fetch(url, file, prefix)
   if not vim.uv.fs_stat(file) then
     print((prefix or "") .. "Fetching " .. url .. " to " .. file .. "\n")
@@ -36,7 +38,14 @@ function M.build()
   ---@type {name:string, version:string, url:string}[]
   local nvim_rocks = {}
   for rock, vv in pairs(manifest.repository or {}) do
-    if rock:find("nvim", 1, true) then
+    local matches = false
+    for _, pattern in ipairs(M.patterns) do
+      if rock:find(pattern, 1, true) then
+        matches = true
+        break
+      end
+    end
+    if matches then
       local versions = vim.tbl_map(Semver.version, vim.tbl_keys(vv))
       versions = vim.tbl_filter(function(v)
         return not not v
