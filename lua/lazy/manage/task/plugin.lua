@@ -21,14 +21,22 @@ function B.rockspec(task)
   ---@type table<string, string>
   local env = {}
 
+  local luarocks = "luarocks"
   if Config.options.rocks.hererocks then
-    local hererocks = Config.options.rocks.root .. "/hererocks"
-    local sep = jit.os:find("Windows") and ";" or ":"
+    local is_win = jit.os:find("Windows")
+    local sep = is_win and ";" or ":"
+    local hererocks = Config.options.rocks.root .. "/hererocks/bin"
+    if is_win then
+      hererocks = hererocks:gsub("/", "\\")
+    end
     local path = vim.split(vim.env.PATH, sep)
-    table.insert(path, 1, hererocks .. "/bin")
+    table.insert(path, 1, hererocks)
     env = {
       PATH = table.concat(path, sep),
     }
+    if is_win then
+      luarocks = luarocks .. ".bat"
+    end
     local plugin = Config.plugins.hererocks
     -- hererocks is still building, so skip for now
     if plugin and plugin._.build then
@@ -37,7 +45,7 @@ function B.rockspec(task)
   end
 
   local root = Config.options.rocks.root .. "/" .. task.plugin.name
-  task:spawn("luarocks", {
+  task:spawn(luarocks, {
     args = {
       "--tree",
       root,
