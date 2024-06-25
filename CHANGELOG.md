@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.4.0](https://github.com/folke/lazy.nvim/compare/v11.3.0...v11.4.0) (2024-06-25)
+
+
+### Features
+
+* **pkg:** utils to get rock to url mappings ([be74a8a](https://github.com/folke/lazy.nvim/commit/be74a8a535fea6a480143fb52b4d6958d9e2da94))
+* **rocks:** simple rockspecs are now fully resolved by lazy without luarocks. See [#1548](https://github.com/folke/lazy.nvim/issues/1548) ([6b8bf58](https://github.com/folke/lazy.nvim/commit/6b8bf58ebf9114f8f31fb78cbf057e452cb0e540))
+
+
+### Bug Fixes
+
+* **meta:** only tag new top-level pkg fragment as optional ([25981e1](https://github.com/folke/lazy.nvim/commit/25981e1f3927ee0b22aefea122ebac1cddafdca6))
+
 ## [11.3.0](https://github.com/folke/lazy.nvim/compare/v11.2.1...v11.3.0) (2024-06-25)
 
 
