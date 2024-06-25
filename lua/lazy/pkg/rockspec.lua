@@ -51,9 +51,6 @@ end
 ---@param bin string
 function M.hererocks.bin(bin)
   local hererocks = Config.options.rocks.root .. "/hererocks/bin"
-  if Util.is_win then
-    bin = bin .. ".bat"
-  end
   return Util.norm(hererocks .. "/" .. bin)
 end
 
