@@ -373,7 +373,7 @@ return
     version = "1.5.2-1"
   }, {
     name = "nui.nvim",
-    url = "git+https://github.com/MunifTanjim/nui.nvim.git",
+    url = "MunifTanjim/nui.nvim",
     version = "0.3.0-1"
   }, {
     name = "nvim-client",
@@ -570,7 +570,7 @@ return
   }, {
     name = "rocks-config.nvim",
     url = "nvim-neorocks/rocks-config.nvim",
-    version = "2.1.0-1"
+    version = "2.0.1-1"
   }, {
     name = "rocks-dev.nvim",
     url = "nvim-neorocks/rocks-dev.nvim",

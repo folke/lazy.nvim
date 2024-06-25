@@ -68,10 +68,11 @@ function M.build()
     if rockspec then
       local url = rockspec.source and rockspec.source.url
       -- parse github short url
-      if url and url:find("^%a+://github.com/") then
-        url = url:gsub("^%a+://github.com/", "")
+      if url and url:find("://github.com/") then
+        url = url:gsub("^.*://github.com/", "")
         local parts = vim.split(url, "/")
         url = parts[1] .. "/" .. parts[2]
+        url = url:gsub("%.git$", "")
       end
       if url then
         rock.url = url
