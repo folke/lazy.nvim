@@ -89,7 +89,7 @@ function M:add(plugin)
 
   table.insert(meta._.frags, fragment.id)
 
-  if meta._ and meta._.rtp_loaded then
+  if meta._ and meta._.rtp_loaded and meta.dir then
     local old_dir = meta.dir
     self:_rebuild(meta.name)
     local new_dir = meta.dir
