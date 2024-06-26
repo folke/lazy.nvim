@@ -1,10 +1,8 @@
+---@module 'luassert'
+
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")
-
-local assert = require("luassert")
-
-Config.setup()
 
 local function inspect(obj)
   return vim.inspect(obj):gsub("%s+", " ")
