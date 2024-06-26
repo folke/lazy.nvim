@@ -472,7 +472,7 @@ function M:tasks(plugin)
     if not task.error and not task.warn and task.name == "log" then
       self:log(task)
     end
-    if self.view:is_selected(plugin) or (task.error or task.warn) then
+    if (self.view:is_selected(plugin) or (task.error or task.warn)) and task.output ~= task.error then
       self:markdown(vim.trim(task.output), "LazyTaskOutput", { indent = 6 })
     end
   end
@@ -485,27 +485,31 @@ function M:log(task)
     local lines = vim.split(log, "\n")
     for _, line in ipairs(lines) do
       local ref, msg, time = line:match("^(%w+) (.*) (%(.*%))$")
-      if msg:find("^%S+!:") then
-        self:diagnostic({ message = "Breaking Changes", severity = vim.diagnostic.severity.WARN })
-      end
-      self:append(ref:sub(1, 7) .. " ", "LazyCommit", { indent = 6 })
-
-      local dimmed = false
-      for _, dim in ipairs(ViewConfig.dimmed_commits) do
-        if msg:find("^" .. dim) then
-          dimmed = true
+      if msg then
+        if msg:find("^%S+!:") then
+          self:diagnostic({ message = "Breaking Changes", severity = vim.diagnostic.severity.WARN })
         end
+        self:append(ref:sub(1, 7) .. " ", "LazyCommit", { indent = 6 })
+
+        local dimmed = false
+        for _, dim in ipairs(ViewConfig.dimmed_commits) do
+          if msg:find("^" .. dim) then
+            dimmed = true
+          end
+        end
+        self:append(vim.trim(msg), dimmed and "LazyDimmed" or nil):highlight({
+          ["#%d+"] = "LazyCommitIssue",
+          ["^%S+:"] = dimmed and "Bold" or "LazyCommitType",
+          ["^%S+(%(.*%))!?:"] = "LazyCommitScope",
+          ["`.-`"] = "@markup.raw.markdown_inline",
+          ["%*.-%*"] = "Italic",
+          ["%*%*.-%*%*"] = "Bold",
+        })
+        self:append(" " .. time, "LazyComment")
+        self:nl()
+        -- else
+        --   self:append(line, "LazyTaskOutput", { indent = 6 }):nl()
       end
-      self:append(vim.trim(msg), dimmed and "LazyDimmed" or nil):highlight({
-        ["#%d+"] = "LazyCommitIssue",
-        ["^%S+:"] = dimmed and "Bold" or "LazyCommitType",
-        ["^%S+(%(.*%))!?:"] = "LazyCommitScope",
-        ["`.-`"] = "@markup.raw.markdown_inline",
-        ["%*.-%*"] = "Italic",
-        ["%*%*.-%*%*"] = "Bold",
-      })
-      self:append(" " .. time, "LazyComment")
-      self:nl()
     end
     self:nl()
   end
