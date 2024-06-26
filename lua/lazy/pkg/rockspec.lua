@@ -183,6 +183,12 @@ function M.build(task)
   })
 end
 
+---@param rockspec RockSpec
+function M.is_simple_build(rockspec)
+  local type = vim.tbl_get(rockspec, "build", "type")
+  return type == nil or type == "none" or (type == "builtin" and not rockspec.build.modules)
+end
+
 ---@param file string
 ---@return table?
 function M.parse(file)
@@ -271,12 +277,7 @@ function M.get(plugin)
     -- and don't have a rockspec mapping
     or #rocks > 0
     -- has a complex build process
-    or (
-      rockspec.build
-      and rockspec.build.type
-      and rockspec.build.type ~= "none"
-      and not (rockspec.build.type == "builtin" and not rockspec.build.modules)
-    )
+    or not M.is_simple_build(rockspec)
 
   if not use then
     -- community specs only
