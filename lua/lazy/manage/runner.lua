@@ -81,7 +81,7 @@ function Runner:_start()
 
   ---@param resume? boolean
   local function continue(resume)
-    active = #names
+    active = 0
     waiting = 0
     wait_step = nil
     for _, name in ipairs(names) do
@@ -90,19 +90,18 @@ function Runner:_start()
       local running = s.task and s.task:is_running()
       local step = self._pipeline[s.step]
 
-      if step and step.task == "wait" and not resume then
+      if s.task and s.task:has_errors() then
+        local ignore = true
+      elseif step and step.task == "wait" and not resume then
         waiting = waiting + 1
-        active = active - 1
         wait_step = s.step
       elseif not running then
         local plugin = self:plugin(name)
-        if s.task and s.task:has_errors() then
-          active = active - 1
-        elseif s.step == #self._pipeline then
+        if s.step == #self._pipeline then
           s.task = nil
-          active = active - 1
           plugin._.working = false
         elseif s.step < #self._pipeline then
+          active = active + 1
           s.step = s.step + 1
           step = self._pipeline[s.step]
           if step.task == "wait" then
@@ -112,6 +111,8 @@ function Runner:_start()
             plugin._.working = not not s.task
           end
         end
+      else
+        active = active + 1
       end
     end
   end

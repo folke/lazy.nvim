@@ -182,7 +182,7 @@ function Task:spawn(cmd, opts)
   local running = true
   ---@param output string
   function opts.on_exit(ok, output)
-    self:log(output, ok and vim.log.levels.DEBUG or vim.log.levels.ERROR)
+    self:log(vim.trim(output), ok and vim.log.levels.DEBUG or vim.log.levels.ERROR)
     if on_exit then
       pcall(on_exit, ok, output)
     end
