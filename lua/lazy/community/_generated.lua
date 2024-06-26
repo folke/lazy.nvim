@@ -364,9 +364,33 @@ return
     url = "folke/neodev.nvim",
     version = "3.0.0-1"
   }, {
+    name = "neogen",
+    url = "danymat/neogen",
+    version = "2.17.1-1"
+  }, {
+    name = "neogit",
+    url = "NeogitOrg/neogit",
+    version = "1.0.0-1"
+  }, {
+    name = "neorg",
+    url = "nvim-neorg/neorg",
+    version = "8.7.1-1"
+  }, {
+    name = "neorg-telescope",
+    url = "nvim-neorg/neorg-telescope",
+    version = "1.1.0-1"
+  }, {
     name = "neoscroll.nvim",
     url = "karb94/neoscroll.nvim",
     version = "0.2.0-1"
+  }, {
+    name = "neotest",
+    url = "nvim-neotest/neotest",
+    version = "5.3.3-1"
+  }, {
+    name = "neotest-haskell",
+    url = "mrcjkb/neotest-haskell",
+    version = "2.0.0-1"
   }, {
     name = "nightfox.nvim",
     url = "EdenEast/nightfox.nvim",
