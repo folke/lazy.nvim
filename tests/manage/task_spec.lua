@@ -4,20 +4,18 @@ local Task = require("lazy.manage.task")
 describe("task", function()
   local plugin = { name = "test", _ = {} }
 
-  local done = false
-  ---@type string?
-  local error
+  ---@type {done?:boolean, error:string?}
+  local task_result = {}
 
   local opts = {
+    ---@param task LazyTask
     on_done = function(task)
-      done = true
-      error = task.error
+      task_result = { done = true, error = task.error }
     end,
   }
 
   before_each(function()
-    done = false
-    error = nil
+    task_result = {}
   end)
 
   it("simple function", function()
@@ -25,9 +23,10 @@ describe("task", function()
     assert(not task:has_started())
     assert(not task:is_running())
     task:start()
+    task:wait()
     assert(not task:is_running())
     assert(task:is_done())
-    assert(done)
+    assert(task_result.done)
   end)
 
   it("detects errors", function()
@@ -37,18 +36,19 @@ describe("task", function()
     assert(not task:has_started())
     assert(not task:is_running())
     task:start()
+    task:wait()
     assert(task:is_done())
     assert(not task:is_running())
-    assert(done)
-    assert(error)
+    assert(task_result.done)
+    assert(task_result.error)
     assert(task.error and task.error:find("test"))
   end)
 
-  it("schedule", function()
-    local running = false
+  it("async", function()
+    local running = true
     local task = Task.new(plugin, "test", function(task)
-      running = true
-      task:schedule(function()
+      task:async(function()
+        coroutine.yield()
         running = false
       end)
     end, opts)
@@ -56,25 +56,26 @@ describe("task", function()
     assert(not task:has_started())
     task:start()
     assert(running)
-    assert(#task._running == 1)
     assert(task:is_running())
     assert(not task:is_done())
     task:wait()
+    assert(not running)
     assert(task:is_done())
     assert(not task:is_running())
-    assert(done)
+    assert(task_result.done)
     assert(not task.error)
   end)
 
   it("spawn errors", function()
-    local task = Task.new(plugin, "test", function(task)
+    local task = Task.new(plugin, "spawn_errors", function(task)
       task:spawn("foobar")
     end, opts)
     assert(not task:is_running())
     task:start()
+    task:wait()
     assert(not task:is_running())
-    assert(done)
-    assert(task.error and task.error:find("Failed to spawn"))
+    assert(task_result.done)
+    assert(task.error and task.error:find("Failed to spawn"), task.output)
   end)
 
   it("spawn", function()
@@ -89,7 +90,7 @@ describe("task", function()
     task:wait()
     assert(task:is_done())
     assert.same(task.output, "foo\n")
-    assert(done)
+    assert(task_result.done)
     assert(not task.error)
   end)
 
@@ -103,7 +104,7 @@ describe("task", function()
     assert(task:is_running())
     task:wait()
     assert(task.output == "foo\nbar\n" or task.output == "bar\nfoo\n", task.output)
-    assert(done)
+    assert(task_result.done)
     assert(not task.error)
   end)
 end)

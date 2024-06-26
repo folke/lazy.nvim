@@ -195,7 +195,6 @@ function Task:spawn(cmd, opts)
   local on_exit = opts.on_exit
 
   function opts.on_line(line)
-    self:notify(line)
     self.status = line
     if on_line then
       pcall(on_line, line)
