@@ -136,7 +136,7 @@ function Runner:_start()
           wait_step = s.step
         else
           s.task = self:queue(plugin, step)
-          plugin._.working = not not s.task
+          plugin._.working = true
           active = active + 1
         end
       end
