@@ -1,5 +1,9 @@
 local Async = require("lazy.async")
+local Config = require("lazy.core.config")
 local Process = require("lazy.manage.process")
+local Terminal = require("lazy.terminal")
+
+local colors = Config.options.headless.colors
 
 ---@class LazyTaskDef
 ---@field skip? fun(plugin:LazyPlugin, opts?:TaskOptions):any?
@@ -96,6 +100,10 @@ function Task:_start(task)
   assert(not self:has_started(), "task already started")
   assert(not self:has_ended(), "task already done")
 
+  if Config.headless() and Config.options.headless.task then
+    self:log("Running task " .. self.name, vim.log.levels.INFO)
+  end
+
   self._started = vim.uv.hrtime()
   ---@async
   self._running = Async.run(function()
@@ -122,6 +130,27 @@ function Task:log(msg, level)
   ---@cast msg string
   table.insert(self._log, { msg = msg, level = level })
   vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+  if Config.headless() then
+    self:headless()
+  end
+end
+
+function Task:headless()
+  if not Config.options.headless.log then
+    return
+  end
+  local msg = self._log[#self._log]
+  if not msg or msg.level == vim.log.levels.TRACE then
+    return
+  end
+  local map = {
+    [vim.log.levels.ERROR] = Terminal.red,
+    [vim.log.levels.WARN] = Terminal.yellow,
+    [vim.log.levels.INFO] = Terminal.blue,
+  }
+  local color = Config.options.headless.colors and map[msg.level]
+  io.write(Terminal.prefix(color and color(msg.msg) or msg.msg, self:prefix()))
+  io.write("\n")
 end
 
 ---@param msg string|string[]
@@ -143,6 +172,10 @@ function Task:_done()
     return
   end
 
+  if Config.headless() and Config.options.headless.task then
+    local ms = math.floor(self:time() + 0.5)
+    self:log("Finished task " .. self.name .. " in " .. ms .. "ms", vim.log.levels.INFO)
+  end
   self._ended = vim.uv.hrtime()
   if self._opts.on_done then
     self._opts.on_done(self)
@@ -172,8 +205,12 @@ function Task:spawn(cmd, opts)
   local on_line = opts.on_line
   local on_exit = opts.on_exit
 
+  local headless = Config.headless() and Config.options.headless.process
+
   function opts.on_line(line)
-    self:log(line, vim.log.levels.TRACE)
+    if not headless then
+      return self:log(line, vim.log.levels.TRACE)
+    end
     if on_line then
       pcall(on_line, line)
     end
@@ -182,16 +219,34 @@ function Task:spawn(cmd, opts)
   local running = true
   ---@param output string
   function opts.on_exit(ok, output)
-    self:log(vim.trim(output), ok and vim.log.levels.DEBUG or vim.log.levels.ERROR)
+    if not headless then
+      self:log(vim.trim(output), ok and vim.log.levels.DEBUG or vim.log.levels.ERROR)
+    end
     if on_exit then
       pcall(on_exit, ok, output)
     end
     running = false
   end
+
+  if headless then
+    opts.on_data = function(data)
+      -- prefix with plugin name
+      local prefix = self:prefix()
+      io.write(Terminal.prefix(data, prefix))
+    end
+  end
   Process.spawn(cmd, opts)
   while running do
     coroutine.yield()
   end
+end
+
+function Task:prefix()
+  local plugin = "[" .. self.plugin.name .. "] "
+  local task = string.rep(" ", 20 - #(self.name .. self.plugin.name)) .. self.name
+
+  return colors and Terminal.magenta(plugin) .. Terminal.cyan(task) .. Terminal.bright_black(" | ")
+    or plugin .. " " .. task .. " | "
 end
 
 function Task:wait()

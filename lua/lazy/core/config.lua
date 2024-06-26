@@ -130,6 +130,17 @@ M.defaults = {
       },
     },
   },
+  -- Output options for headless mode
+  headless = {
+    -- show the output from process commands like git
+    process = true,
+    -- show log messages
+    log = true,
+    -- show task start/end
+    task = true,
+    -- use ansi colors
+    colors = true,
+  },
   diff = {
     -- diff command <d> can be one of:
     -- * browser: opens the github compare view. Note that this is always mapped to <K> as well,

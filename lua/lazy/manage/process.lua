@@ -48,6 +48,7 @@ local uv = vim.uv
 ---@field cwd? string
 ---@field on_line? fun(string)
 ---@field on_exit? fun(ok:boolean, output:string)
+---@field on_data? fun(string)
 ---@field timeout? number
 ---@field env? table<string,string>
 
@@ -145,6 +146,11 @@ function M.spawn(cmd, opts)
     assert(not err, err)
 
     if data then
+      if opts.on_data then
+        vim.schedule(function()
+          opts.on_data(data)
+        end)
+      end
       output = output .. data:gsub("\r\n", "\n")
       local lines = vim.split(vim.trim(output:gsub("\r$", "")):gsub("[^\n\r]+\r", ""), "\n")
 

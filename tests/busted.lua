@@ -6,21 +6,21 @@ for _, name in ipairs({ "config", "data", "state", "cache" }) do
   vim.env[("XDG_%s_HOME"):format(name:upper())] = root .. "/" .. name
 end
 
--- -- Bootstrap lazy.nvim
--- local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
--- if not (vim.uv or vim.loop).fs_stat(lazypath) then
---   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
---   vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
--- end
--- vim.opt.rtp:prepend(lazypath)
 vim.opt.rtp:prepend(".")
 
 vim.o.loadplugins = true -- enable since nvim -l disables plugins
 
 -- Setup lazy.nvim
 require("lazy").setup({
-  "lunarmodules/busted", -- add busted
+  spec = {
+    "lunarmodules/busted", -- add busted
+  },
+  rocks = { hererocks = true },
 })
+
+local Config = require("lazy.core.config")
+-- disable termnial output for the tests
+Config.options.headless = {}
 
 -- run busted
 return pcall(require("busted.runner"), {
