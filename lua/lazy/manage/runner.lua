@@ -49,7 +49,14 @@ function Runner.new(opts)
 end
 
 function Runner:plugin(name)
-  return Config.plugins[name] or self._plugins[name]
+  return self._plugins[name]
+end
+
+--- Update plugins
+function Runner:update()
+  for name in pairs(self._plugins) do
+    self._plugins[name] = Config.plugins[name] or self._plugins[name]
+  end
 end
 
 function Runner:start()

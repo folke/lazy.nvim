@@ -85,9 +85,11 @@ function M.install(opts)
       "plugin.docs",
       {
         "wait",
-        sync = function()
+        ---@param runner Runner
+        sync = function(runner)
           require("lazy.pkg").update()
           Plugin.load()
+          runner:update()
         end,
       },
       "plugin.build",
@@ -114,9 +116,11 @@ function M.update(opts)
       "plugin.docs",
       {
         "wait",
-        sync = function()
+        ---@param runner Runner
+        sync = function(runner)
           require("lazy.pkg").update()
           Plugin.load()
+          runner:update()
         end,
       },
       "plugin.build",
