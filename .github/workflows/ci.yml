@@ -25,7 +25,7 @@ jobs:
         run: |
           nvim --version
           [ ! -d tests ] && exit 0
-          nvim -l tests/busted.lua tests
+          nvim -l tests/busted.lua tests -o utfTerminal
   community:
     runs-on: ubuntu-latest
     steps:
