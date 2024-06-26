@@ -30,8 +30,9 @@ M.colors = {
   Button = "CursorLine",
   ButtonActive = "Visual",
   TaskOutput = "MsgArea", -- task output
-  TaskError = "ErrorMsg", -- task errors
-  TaskWarning = "WarningMsg", -- task errors
+  Error = "DiagnosticError", -- task errors
+  Warning = "DiagnosticWarn", -- task errors
+  Info = "DiagnosticInfo", -- task errors
   Dir = "@markup.link", -- directory
   Url = "@markup.link", -- url
   Bold = { bold = true },

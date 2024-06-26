@@ -1,4 +1,3 @@
-local Config = require("lazy.core.config")
 local Loader = require("lazy.core.loader")
 local Rocks = require("lazy.pkg.rockspec")
 local Util = require("lazy.util")
@@ -21,9 +20,10 @@ local B = {}
 ---@param build string
 function B.cmd(task, build)
   local cmd = vim.api.nvim_parse_cmd(build:sub(2), {}) --[[@as vim.api.keyset.cmd]]
-  task.output = vim.api.nvim_cmd(cmd, { output = true })
+  task:log(vim.api.nvim_cmd(cmd, { output = true }))
 end
 
+---@async
 ---@param task LazyTask
 ---@param build string
 function B.shell(task, build)
@@ -44,6 +44,7 @@ M.build = {
     end
     return not ((plugin._.dirty or plugin._.build) and (plugin.build or get_build_file(plugin)))
   end,
+  ---@async
   run = function(self)
     vim.cmd([[silent! runtime plugin/rplugin.vim]])
 
@@ -92,7 +93,7 @@ M.docs = {
   run = function(self)
     local docs = self.plugin.dir .. "/doc/"
     if Util.file_exists(docs) then
-      self.output = vim.api.nvim_cmd({ cmd = "helptags", args = { docs } }, { output = true })
+      self:log(vim.api.nvim_cmd({ cmd = "helptags", args = { docs } }, { output = true }))
     end
   end,
 }

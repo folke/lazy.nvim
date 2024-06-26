@@ -17,7 +17,7 @@ return {
   {
     filter = function(plugin)
       return has_task(plugin, function(task)
-        return task.error ~= nil
+        return task:has_errors()
       end)
     end,
     title = "Failed",
@@ -39,8 +39,7 @@ return {
         if task.name ~= "log" then
           return
         end
-        local lines = vim.split(task.output, "\n")
-        for _, line in ipairs(lines) do
+        for _, line in ipairs(vim.split(task:output(), "\n")) do
           if line:find("^%w+ %S+!:") then
             return true
           end
@@ -71,7 +70,7 @@ return {
   {
     filter = function(plugin)
       return has_task(plugin, function(task)
-        return task.name == "log" and vim.trim(task.output) ~= ""
+        return task.name == "log" and vim.trim(task:output()) ~= ""
       end)
     end,
     title = "Log",
@@ -89,7 +88,7 @@ return {
     title = "Not Installed",
   },
   {
-    filter = function (plugin)
+    filter = function(plugin)
       return plugin._.outdated
     end,
     title = "Outdated",

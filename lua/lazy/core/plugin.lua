@@ -403,7 +403,7 @@ end
 ---@param plugin LazyPlugin
 function M.has_errors(plugin)
   for _, task in ipairs(plugin._.tasks or {}) do
-    if task.error then
+    if task:has_errors() then
       return true
     end
   end

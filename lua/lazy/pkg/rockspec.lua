@@ -106,15 +106,15 @@ function M.build(task)
   if
     not M.check({
       error = function(msg)
-        task:notify_error(msg:gsub("[{}]", "`"))
+        task:error(msg:gsub("[{}]", "`"))
       end,
       warn = function(msg)
-        task:notify_warn(msg)
+        task:warn(msg)
       end,
       ok = function(msg) end,
     })
   then
-    task:notify_warn({
+    task:log({
       "",
       "This plugin requires `luarocks`. Try one of the following:",
       " - fix your `luarocks` installation",

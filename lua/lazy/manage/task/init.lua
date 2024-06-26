@@ -3,21 +3,23 @@ local Process = require("lazy.manage.process")
 
 ---@class LazyTaskDef
 ---@field skip? fun(plugin:LazyPlugin, opts?:TaskOptions):any?
----@field run fun(task:LazyTask, opts:TaskOptions)
+---@field run async fun(task:LazyTask, opts:TaskOptions)
 
 ---@alias LazyTaskFn async fun(task:LazyTask, opts:TaskOptions)
+
+---@class LazyMsg
+---@field msg string
+---@field level? number
 
 ---@class LazyTask
 ---@field plugin LazyPlugin
 ---@field name string
----@field output string
----@field status string
----@field error? string
----@field warn? string
+---@field private _log LazyMsg[]
 ---@field private _started? number
 ---@field private _ended? number
 ---@field private _opts TaskOptions
 ---@field private _running Async
+---@field private _level number
 local Task = {}
 
 ---@class TaskOptions: {[string]:any}
@@ -30,10 +32,10 @@ local Task = {}
 function Task.new(plugin, name, task, opts)
   local self = setmetatable({}, { __index = Task })
   self._opts = opts or {}
+  self._log = {}
+  self._level = vim.log.levels.TRACE
   self.plugin = plugin
   self.name = name
-  self.output = ""
-  self.status = ""
   ---@param other LazyTask
   plugin._.tasks = vim.tbl_filter(function(other)
     return other.name ~= name or other:is_running()
@@ -41,6 +43,31 @@ function Task.new(plugin, name, task, opts)
   table.insert(plugin._.tasks, self)
   self:_start(task)
   return self
+end
+
+---@param level? number
+---@return LazyMsg[]
+function Task:get_log(level)
+  level = level or vim.log.levels.DEBUG
+  return vim.tbl_filter(function(msg)
+    return msg.level >= level
+  end, self._log)
+end
+
+---@param level? number
+function Task:output(level)
+  return table.concat(
+    ---@param m LazyMsg
+    vim.tbl_map(function(m)
+      return m.msg
+    end, self:get_log(level)),
+    "\n"
+  )
+end
+
+function Task:status()
+  local ret = self._log[#self._log]
+  return ret and ret.msg or ""
 end
 
 function Task:has_started()
@@ -53,6 +80,14 @@ end
 
 function Task:is_running()
   return not self:has_ended()
+end
+
+function Task:has_errors()
+  return self._level >= vim.log.levels.ERROR
+end
+
+function Task:has_warnings()
+  return self._level >= vim.log.levels.WARN
 end
 
 ---@private
@@ -70,36 +105,33 @@ function Task:_start(task)
       self:_done()
     end,
     on_error = function(err)
-      self:notify_error(err)
+      self:error(err)
     end,
     on_yield = function(res)
-      self:notify(res)
+      self:log(res)
     end,
   })
 end
 
 ---@param msg string|string[]
----@param severity? vim.diagnostic.Severity
-function Task:notify(msg, severity)
-  local var = severity == vim.diagnostic.severity.ERROR and "error"
-    or severity == vim.diagnostic.severity.WARN and "warn"
-    or "output"
+---@param level? number
+function Task:log(msg, level)
+  level = level or vim.log.levels.DEBUG
+  self._level = math.max(self._level or 0, level or 0)
   msg = type(msg) == "table" and table.concat(msg, "\n") or msg
   ---@cast msg string
-  ---@diagnostic disable-next-line: no-unknown
-  self[var] = self[var] and (self[var] .. "\n" .. msg) or msg
-  self.status = msg
+  table.insert(self._log, { msg = msg, level = level })
   vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
 end
 
 ---@param msg string|string[]
-function Task:notify_error(msg)
-  self:notify(msg, vim.diagnostic.severity.ERROR)
+function Task:error(msg)
+  self:log(msg, vim.log.levels.ERROR)
 end
 
 ---@param msg string|string[]
-function Task:notify_warn(msg)
-  self:notify(msg, vim.diagnostic.severity.WARN)
+function Task:warn(msg)
+  self:log(msg, vim.log.levels.WARN)
 end
 
 ---@private
@@ -141,20 +173,16 @@ function Task:spawn(cmd, opts)
   local on_exit = opts.on_exit
 
   function opts.on_line(line)
-    self.status = line
+    self:log(line, vim.log.levels.TRACE)
     if on_line then
       pcall(on_line, line)
     end
-    vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
   end
 
   local running = true
   ---@param output string
   function opts.on_exit(ok, output)
-    self.output = self.output .. output
-    if not ok then
-      self.error = self.error and (self.error .. "\n" .. output) or output
-    end
+    self:log(output, ok and vim.log.levels.DEBUG or vim.log.levels.ERROR)
     if on_exit then
       pcall(on_exit, ok, output)
     end

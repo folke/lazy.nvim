@@ -18,6 +18,7 @@ M.log = {
     local stat = vim.uv.fs_stat(plugin.dir .. "/.git")
     return not (stat and stat.type == "directory")
   end,
+  ---@async
   ---@param opts {args?: string[], updated?:boolean, check?:boolean}
   run = function(self, opts)
     local args = {
@@ -68,6 +69,7 @@ M.clone = {
   skip = function(plugin)
     return plugin._.installed or plugin._.is_local
   end,
+  ---@async
   run = function(self)
     local args = {
       "clone",
@@ -129,6 +131,7 @@ M.branch = {
     local branch = assert(Git.get_branch(plugin))
     return Git.get_commit(plugin.dir, branch, true)
   end,
+  ---@async
   run = function(self)
     local args = {
       "remote",
@@ -154,14 +157,17 @@ M.origin = {
     local origin = Git.get_origin(plugin.dir)
     return origin == plugin.url
   end,
+  ---@async
   ---@param opts {check?:boolean}
   run = function(self, opts)
     if opts.check then
       local origin = Git.get_origin(self.plugin.dir)
-      self.error = "Origin has changed:\n"
-      self.error = self.error .. "  * old: " .. origin .. "\n"
-      self.error = self.error .. "  * new: " .. self.plugin.url .. "\n"
-      self.error = self.error .. "Please run update to fix"
+      self:error({
+        "Origin has changed:",
+        "  * old: " .. origin,
+        "  * new: " .. self.plugin.url,
+        "Please run update to fix",
+      })
       return
     end
     require("lazy.manage.task.fs").clean.run(self, opts)
@@ -173,6 +179,7 @@ M.status = {
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
   end,
+  ---@async
   run = function(self)
     self:spawn("git", {
       args = { "ls-files", "-d", "-m" },
@@ -180,6 +187,7 @@ M.status = {
       on_exit = function(ok, output)
         if ok then
           local lines = vim.split(output, "\n")
+          ---@type string[]
           lines = vim.tbl_filter(function(line)
             -- Fix doc/tags being marked as modified
             if line:gsub("[\\/]", "/") == "doc/tags" then
@@ -190,12 +198,13 @@ M.status = {
             return line ~= ""
           end, lines)
           if #lines > 0 then
-            self.error = "You have local changes in `" .. self.plugin.dir .. "`:\n"
+            local msg = { "You have local changes in `" .. self.plugin.dir .. "`:" }
             for _, line in ipairs(lines) do
-              self.error = self.error .. "  * " .. line .. "\n"
+              msg[#msg + 1] = "  * " .. line
             end
-            self.error = self.error .. "Please remove them to update.\n"
-            self.error = self.error .. "You can also press `x` to remove the plugin and then `I` to install it again."
+            msg[#msg + 1] = "Please remove them to update."
+            msg[#msg + 1] = "You can also press `x` to remove the plugin and then `I` to install it again."
+            self:error(msg)
           end
         end
       end,
@@ -209,6 +218,7 @@ M.fetch = {
     return not plugin._.installed or plugin._.is_local
   end,
 
+  ---@async
   run = function(self)
     local args = {
       "fetch",
@@ -236,6 +246,7 @@ M.checkout = {
     return not plugin._.installed or plugin._.is_local
   end,
 
+  ---@async
   ---@param opts {lockfile?:boolean}
   run = function(self, opts)
     local info = assert(Git.info(self.plugin.dir))

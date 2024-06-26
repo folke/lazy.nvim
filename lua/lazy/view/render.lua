@@ -354,6 +354,31 @@ end
 
 ---@param plugin LazyPlugin
 function M:diagnostics(plugin)
+  local skip = false
+  for _, task in ipairs(plugin._.tasks or {}) do
+    if task:is_running() then
+      self:diagnostic({
+        severity = vim.diagnostic.severity.WARN,
+        message = task.name .. (task:status() and (": " .. task:status()) or ""),
+      })
+      skip = true
+    elseif task:has_errors() then
+      self:diagnostic({
+        message = task.name .. " failed",
+        severity = vim.diagnostic.severity.ERROR,
+      })
+      skip = true
+    elseif task:has_warnings() then
+      self:diagnostic({
+        message = task.name .. " warning",
+        severity = vim.diagnostic.severity.WARN,
+      })
+      skip = true
+    end
+  end
+  if skip then
+    return
+  end
   if plugin._.updated then
     if plugin._.updated.from == plugin._.updated.to then
       self:diagnostic({
@@ -380,24 +405,6 @@ function M:diagnostics(plugin)
     else
       self:diagnostic({
         message = "updates available",
-      })
-    end
-  end
-  for _, task in ipairs(plugin._.tasks or {}) do
-    if task:is_running() then
-      self:diagnostic({
-        severity = vim.diagnostic.severity.WARN,
-        message = task.name .. (task.status == "" and "" or (": " .. task.status)),
-      })
-    elseif task.error then
-      self:diagnostic({
-        message = task.name .. " failed",
-        severity = vim.diagnostic.severity.ERROR,
-      })
-    elseif task.warn then
-      self:diagnostic({
-        message = task.name .. " warning",
-        severity = vim.diagnostic.severity.WARN,
       })
     end
   end
@@ -463,24 +470,27 @@ function M:tasks(plugin)
       self:append(" " .. math.floor((task:time()) * 100) / 100 .. "ms", "Bold")
       self:nl()
     end
-    if task.error then
-      self:markdown(task.error, "LazyTaskError", { indent = 6 })
-    end
-    if task.warn then
-      self:markdown(task.warn, "LazyTaskWarning", { indent = 6 })
-    end
-    if not task.error and not task.warn and task.name == "log" then
+
+    if not task:has_warnings() and task.name == "log" then
       self:log(task)
-    end
-    if (self.view:is_selected(plugin) or (task.error or task.warn)) and task.output ~= task.error then
-      self:markdown(vim.trim(task.output), "LazyTaskOutput", { indent = 6 })
+    else
+      local hls = {
+        [vim.log.levels.ERROR] = "LazyError",
+        [vim.log.levels.WARN] = "LazyWarning",
+        [vim.log.levels.INFO] = "LazyInfo",
+      }
+      for _, msg in ipairs(task:get_log()) do
+        if task:has_warnings() or self.view:is_selected(plugin) then
+          self:markdown(msg.msg, hls[msg.level] or "LazyTaskOutput", { indent = 6 })
+        end
+      end
     end
   end
 end
 
 ---@param task LazyTask
 function M:log(task)
-  local log = vim.trim(task.output)
+  local log = vim.trim(task:output())
   if log ~= "" then
     local lines = vim.split(log, "\n")
     for _, line in ipairs(lines) do

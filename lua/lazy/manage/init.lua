@@ -232,7 +232,7 @@ function M.clear(plugins)
     if plugin._.tasks then
       ---@param task LazyTask
       plugin._.tasks = vim.tbl_filter(function(task)
-        return task:is_running() or task.error
+        return task:is_running() or task:has_errors()
       end, plugin._.tasks)
     end
   end

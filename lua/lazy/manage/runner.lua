@@ -96,7 +96,7 @@ function Runner:_start()
         wait_step = s.step
       elseif not running then
         local plugin = self:plugin(name)
-        if s.task and s.task.error then
+        if s.task and s.task:has_errors() then
           active = active - 1
         elseif s.step == #self._pipeline then
           s.task = nil
