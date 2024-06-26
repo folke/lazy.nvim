@@ -10,7 +10,7 @@ local Util = require("lazy.util")
 ---@field package string
 ---@field version string
 ---@field dependencies string[]
----@field build? {build_type?: string, modules?: any[]}
+---@field build? {type?: string, modules?: any[]}
 ---@field source? {url?: string}
 
 ---@class RockManifest
@@ -273,9 +273,9 @@ function M.get(plugin)
     -- has a complex build process
     or (
       rockspec.build
-      and rockspec.build.build_type
-      and rockspec.build.build_type ~= "none"
-      and not (rockspec.build.build_type == "builtin" and not rockspec.build.modules)
+      and rockspec.build.type
+      and rockspec.build.type ~= "none"
+      and not (rockspec.build.type == "builtin" and not rockspec.build.modules)
     )
 
   if not use then
