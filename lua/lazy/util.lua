@@ -74,27 +74,25 @@ end
 ---@return F
 function M.throttle(ms, fn)
   local timer = vim.uv.new_timer()
-  local running = false
-  local first = true
+  local pending = false
 
-  return function(...)
-    local args = { ... }
-    local wrapped = function()
-      fn(unpack(args))
+  return function()
+    if timer:is_active() then
+      pending = true
+      return
     end
-    if not running then
-      if first then
-        wrapped()
-        first = false
-      end
-
-      timer:start(ms, 0, function()
-        running = false
-        vim.schedule(wrapped)
+    timer:start(
+      0,
+      ms,
+      vim.schedule_wrap(function()
+        fn()
+        if pending then
+          pending = false
+        else
+          timer:stop()
+        end
       end)
-
-      running = true
-    end
+    )
   end
 end
 

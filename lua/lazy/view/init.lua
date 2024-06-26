@@ -67,7 +67,10 @@ function M.create()
   self.state = vim.deepcopy(default_state)
 
   self.render = Render.new(self)
-  self.update = Util.throttle(Config.options.ui.throttle, self.update)
+  local update = self.update
+  self.update = Util.throttle(Config.options.ui.throttle, function()
+    update(self)
+  end)
 
   for _, pattern in ipairs({ "LazyRender", "LazyFloatResized" }) do
     self:on({ "User" }, function()
