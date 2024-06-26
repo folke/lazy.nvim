@@ -264,10 +264,8 @@ function M.update_rocks_state()
   end)
 
   for _, plugin in pairs(Config.plugins) do
-    if plugin.build == "rockspec" then
+    if plugin.build == "rockspec" or plugin.name == "hererocks" then
       plugin._.build = not installed[plugin.name]
-    elseif plugin.name == "hererocks" then
-      plugin._.build = not vim.uv.fs_stat(Config.options.rocks.root .. "/hererocks")
     end
   end
 end
