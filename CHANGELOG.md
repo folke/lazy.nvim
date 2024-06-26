@@ -1,5 +1,23 @@
 # Changelog
 
+## [11.4.2](https://github.com/folke/lazy.nvim/compare/v11.4.1...v11.4.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **config:** dont start checker/change_detection when running headless ([2aa8e06](https://github.com/folke/lazy.nvim/commit/2aa8e061f22579b0cabc74f05a90f7344d92195c))
+* **git:** fetch commit from origin or local to check if branch was changed. See [#1549](https://github.com/folke/lazy.nvim/issues/1549) ([28e435b](https://github.com/folke/lazy.nvim/commit/28e435b7f34eecd8b90bc87ac71c70b79fcb03b3))
+* **rocks:** build.type instead of build.build_type ([aa1c957](https://github.com/folke/lazy.nvim/commit/aa1c9572aa1916e582f9b9c3d43e272b4f23b326))
+* **rockspec:** dont lazy-load rock deps ([4733611](https://github.com/folke/lazy.nvim/commit/473361139cc05936cd5afb08ab68e5bee1ebb5b3))
+* **runner:** bring concurrency back ([56075b5](https://github.com/folke/lazy.nvim/commit/56075b57c421fc5e751c1da7a7f1bf18ec1499a7))
+* **ui:** don't show output when it's the same as error ([e79805d](https://github.com/folke/lazy.nvim/commit/e79805d706f815a62467260cb307844c368c3dba))
+
+
+### Performance Improvements
+
+* tasks are now fully async ([0614ca6](https://github.com/folke/lazy.nvim/commit/0614ca6ca629704cb1846c0d6f9a250b526900b9))
+* **util:** improve impl of throttle ([3695215](https://github.com/folke/lazy.nvim/commit/36952153ecb5b196c74e2d9a28eb0e01a9eb02fe))
+
 ## [11.4.1](https://github.com/folke/lazy.nvim/compare/v11.4.0...v11.4.1) (2024-06-25)
 
 
