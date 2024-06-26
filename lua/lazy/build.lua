@@ -5,7 +5,7 @@ local Util = require("lazy.util")
 
 local M = {}
 
-M.patterns = { "nvim", "treesitter", "tree-sitter", "cmp" }
+M.patterns = { "nvim", "treesitter", "tree-sitter", "cmp", "neo" }
 
 function M.fetch(url, file, prefix)
   if not vim.uv.fs_stat(file) then
