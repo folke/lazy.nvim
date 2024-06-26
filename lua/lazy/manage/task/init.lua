@@ -71,7 +71,8 @@ end
 
 function Task:status()
   local ret = self._log[#self._log]
-  return ret and ret.msg or ""
+  local msg = ret and vim.trim(ret.msg) or ""
+  return msg ~= "" and msg or nil
 end
 
 function Task:has_started()
