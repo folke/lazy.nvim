@@ -257,7 +257,7 @@ function M.get(plugin)
       return false
     elseif url then
       -- Neovim plugin rock
-      table.insert(specs, { url, lazy = true })
+      table.insert(specs, { url })
       return false
     end
     return not vim.tbl_contains(M.skip, name)
