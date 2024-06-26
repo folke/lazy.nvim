@@ -64,7 +64,7 @@ describe("runner", function()
     local runner = Runner.new({ plugins = plugins, pipeline = { "test.test1", "test.skip", "test.test2" } })
     runner:start()
     runner:wait()
-    assert.equal(4, #runs)
+    assert.equal(4, #runs, runs)
   end)
 
   it("handles opts", function()

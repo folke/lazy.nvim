@@ -91,37 +91,53 @@ function Runner:_start()
     active = 0
     waiting = 0
     wait_step = nil
+    local next = {} ---@type string[]
+
+    -- check running tasks
     for _, name in ipairs(names) do
       state[name] = state[name] or { step = 0 }
       local s = state[name]
-      local running = s.task and s.task:is_running()
+      local is_running = s.task and s.task:is_running()
       local step = self._pipeline[s.step]
 
+      -- selene:allow(empty_if)
       if s.task and s.task:has_errors() then
-        local ignore = true
+        -- don't continue tasks if there are errors
       elseif step and step.task == "wait" and not resume then
+        -- waiting for sync
         waiting = waiting + 1
         wait_step = s.step
-      elseif not running then
-        if not self._opts.concurrency or active < self._opts.concurrency then
-          local plugin = self:plugin(name)
-          if s.step == #self._pipeline then
-            s.task = nil
-            plugin._.working = false
-          elseif s.step < #self._pipeline then
-            active = active + 1
-            s.step = s.step + 1
-            step = self._pipeline[s.step]
-            if step.task == "wait" then
-              plugin._.working = false
-            else
-              s.task = self:queue(plugin, step)
-              plugin._.working = not not s.task
-            end
-          end
-        end
-      else
+      elseif is_running then
+        -- still running
         active = active + 1
+      else
+        next[#next + 1] = name
+      end
+    end
+
+    -- schedule next tasks
+    for _, name in ipairs(next) do
+      if self._opts.concurrency and active >= self._opts.concurrency then
+        break
+      end
+      local s = state[name]
+      local plugin = self:plugin(name)
+      if s.step == #self._pipeline then
+        -- done
+        s.task = nil
+        plugin._.working = false
+      elseif s.step < #self._pipeline then
+        -- next
+        s.step = s.step + 1
+        local step = self._pipeline[s.step]
+        if step.task == "wait" then
+          plugin._.working = false
+          waiting = waiting + 1
+        else
+          s.task = self:queue(plugin, step)
+          plugin._.working = not not s.task
+          active = active + 1
+        end
       end
     end
   end
