@@ -5,7 +5,7 @@ local Process = require("lazy.manage.process")
 ---@field skip? fun(plugin:LazyPlugin, opts?:TaskOptions):any?
 ---@field run fun(task:LazyTask, opts:TaskOptions)
 
----@alias LazyTaskState {task:LazyTask, thread:thread}
+---@alias LazyTaskFn async fun(task:LazyTask, opts:TaskOptions)
 
 ---@class LazyTask
 ---@field plugin LazyPlugin
@@ -14,11 +14,10 @@ local Process = require("lazy.manage.process")
 ---@field status string
 ---@field error? string
 ---@field warn? string
----@field private _task fun(task:LazyTask, opts:TaskOptions)
 ---@field private _started? number
 ---@field private _ended? number
 ---@field private _opts TaskOptions
----@field private _running Async[]
+---@field private _running Async
 local Task = {}
 
 ---@class TaskOptions: {[string]:any}
@@ -27,15 +26,10 @@ local Task = {}
 ---@param plugin LazyPlugin
 ---@param name string
 ---@param opts? TaskOptions
----@param task fun(task:LazyTask)
+---@param task LazyTaskFn
 function Task.new(plugin, name, task, opts)
-  local self = setmetatable({}, {
-    __index = Task,
-  })
+  local self = setmetatable({}, { __index = Task })
   self._opts = opts or {}
-  self._running = {}
-  self._task = task
-  self._started = nil
   self.plugin = plugin
   self.name = name
   self.output = ""
@@ -45,6 +39,7 @@ function Task.new(plugin, name, task, opts)
     return other.name ~= name or other:is_running()
   end, plugin._.tasks or {})
   table.insert(plugin._.tasks, self)
+  self:_start(task)
   return self
 end
 
@@ -56,22 +51,31 @@ function Task:has_ended()
   return self._ended ~= nil
 end
 
-function Task:is_done()
-  return self:has_started() and self:has_ended()
-end
-
 function Task:is_running()
-  return self:has_started() and not self:has_ended()
+  return not self:has_ended()
 end
 
-function Task:start()
+---@private
+---@param task LazyTaskFn
+function Task:_start(task)
   assert(not self:has_started(), "task already started")
   assert(not self:has_ended(), "task already done")
 
   self._started = vim.uv.hrtime()
-  self:async(function()
-    self._task(self, self._opts)
-  end)
+  ---@async
+  self._running = Async.run(function()
+    task(self, self._opts)
+  end, {
+    on_done = function()
+      self:_done()
+    end,
+    on_error = function(err)
+      self:notify_error(err)
+    end,
+    on_yield = function(res)
+      self:notify(res)
+    end,
+  })
 end
 
 ---@param msg string|string[]
@@ -98,31 +102,13 @@ function Task:notify_warn(msg)
   self:notify(msg, vim.diagnostic.severity.WARN)
 end
 
----@param fn async fun()
-function Task:async(fn)
-  local async = Async.run(fn, {
-    on_done = function()
-      self:_done()
-    end,
-    on_error = function(err)
-      self:notify_error(err)
-    end,
-    on_yield = function(res)
-      self:notify(res)
-    end,
-  })
-  table.insert(self._running, async)
-end
-
 ---@private
 function Task:_done()
   assert(self:has_started(), "task not started")
   assert(not self:has_ended(), "task already done")
 
-  for _, t in ipairs(self._running) do
-    if t:running() then
-      return
-    end
+  if self._running and self._running:running() then
+    return
   end
 
   self._ended = vim.uv.hrtime()
@@ -178,16 +164,6 @@ function Task:spawn(cmd, opts)
   while running do
     coroutine.yield()
   end
-end
-
----@param tasks (LazyTask?)[]
-function Task.all_done(tasks)
-  for _, task in ipairs(tasks) do
-    if task and not task:is_done() then
-      return false
-    end
-  end
-  return true
 end
 
 function Task:wait()

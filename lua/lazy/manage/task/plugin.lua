@@ -65,9 +65,7 @@ M.build = {
       ---@cast builders (string|fun(LazyPlugin))[]
       for _, build in ipairs(builders) do
         if type(build) == "function" then
-          self:async(function()
-            build(self.plugin)
-          end)
+          build(self.plugin)
         elseif build == "rockspec" then
           Rocks.build(self)
         elseif build:sub(1, 1) == ":" then
@@ -78,7 +76,7 @@ M.build = {
           if not chunk or err then
             error(err)
           end
-          self:async(chunk)
+          chunk()
         else
           B.shell(self, build)
         end

@@ -30,12 +30,11 @@ describe("runner", function()
       end,
     }
     package.loaded["lazy.manage.task.test"]["async" .. i] = {
+      ---@async
       ---@param task LazyTask
       run = function(task)
-        task:async(function()
-          coroutine.yield()
-          table.insert(runs, { plugin = task.plugin.name, task = task.name })
-        end)
+        coroutine.yield()
+        table.insert(runs, { plugin = task.plugin.name, task = task.name })
       end,
     }
   end
