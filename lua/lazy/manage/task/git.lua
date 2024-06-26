@@ -127,7 +127,7 @@ M.branch = {
       return true
     end
     local branch = assert(Git.get_branch(plugin))
-    return Git.get_commit(plugin.dir, branch)
+    return Git.get_commit(plugin.dir, branch, true)
   end,
   run = function(self)
     local args = {
