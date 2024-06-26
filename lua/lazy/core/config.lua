@@ -272,10 +272,6 @@ function M.setup(opts)
   M.mapleader = vim.g.mapleader
   M.maplocalleader = vim.g.maplocalleader
 
-  if M.headless() then
-    require("lazy.view.commands").setup()
-  end
-
   vim.api.nvim_create_autocmd("UIEnter", {
     once = true,
     callback = function()
@@ -283,33 +279,37 @@ function M.setup(opts)
     end,
   })
 
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "VeryLazy",
-    once = true,
-    callback = function()
-      require("lazy.view.commands").setup()
-      if M.options.change_detection.enabled then
-        require("lazy.manage.reloader").enable()
-      end
-      if M.options.checker.enabled then
-        vim.defer_fn(function()
-          require("lazy.manage.checker").start()
-        end, 10)
-      end
+  if M.headless() then
+    require("lazy.view.commands").setup()
+  else
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "VeryLazy",
+      once = true,
+      callback = function()
+        require("lazy.view.commands").setup()
+        if M.options.change_detection.enabled then
+          require("lazy.manage.reloader").enable()
+        end
+        if M.options.checker.enabled then
+          vim.defer_fn(function()
+            require("lazy.manage.checker").start()
+          end, 10)
+        end
 
-      -- useful for plugin developers when making changes to a packspec file
-      vim.api.nvim_create_autocmd("BufWritePost", {
-        pattern = { "lazy.lua", "pkg.json", "*.rockspec" },
-        callback = function()
-          require("lazy").pkg({
-            plugins = {
-              require("lazy.core.plugin").find(vim.uv.cwd() .. "/lua/"),
-            },
-          })
-        end,
-      })
-    end,
-  })
+        -- useful for plugin developers when making changes to a packspec file
+        vim.api.nvim_create_autocmd("BufWritePost", {
+          pattern = { "lazy.lua", "pkg.json", "*.rockspec" },
+          callback = function()
+            require("lazy").pkg({
+              plugins = {
+                require("lazy.core.plugin").find(vim.uv.cwd() .. "/lua/"),
+              },
+            })
+          end,
+        })
+      end,
+    })
+  end
 
   Util.very_lazy()
 end
