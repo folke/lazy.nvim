@@ -4,7 +4,45 @@ local Process = require("lazy.manage.process")
 ---@field skip? fun(plugin:LazyPlugin, opts?:TaskOptions):any?
 ---@field run fun(task:LazyTask, opts:TaskOptions)
 
----@alias LazyTaskState fun():boolean?
+---@alias LazyTaskState {task:LazyTask, thread:thread}
+
+local Scheduler = {}
+---@type LazyTaskState[]
+Scheduler._queue = {}
+Scheduler._executor = assert(vim.loop.new_check())
+Scheduler._running = false
+
+function Scheduler.step()
+  Scheduler._running = true
+  local budget = 1 * 1e6
+  local start = vim.loop.hrtime()
+  local count = #Scheduler._queue
+  local i = 0
+  while #Scheduler._queue > 0 and vim.loop.hrtime() - start < budget do
+    ---@type LazyTaskState
+    local state = table.remove(Scheduler._queue, 1)
+    state.task:_step(state.thread)
+    if coroutine.status(state.thread) ~= "dead" then
+      table.insert(Scheduler._queue, state)
+    end
+    i = i + 1
+    if i >= count then
+      break
+    end
+  end
+  Scheduler._running = false
+  if #Scheduler._queue == 0 then
+    return Scheduler._executor:stop()
+  end
+end
+
+---@param state LazyTaskState
+function Scheduler.add(state)
+  table.insert(Scheduler._queue, state)
+  if not Scheduler._executor:is_active() then
+    Scheduler._executor:start(vim.schedule_wrap(Scheduler.step))
+  end
+end
 
 ---@class LazyTask
 ---@field plugin LazyPlugin
@@ -13,11 +51,11 @@ local Process = require("lazy.manage.process")
 ---@field status string
 ---@field error? string
 ---@field warn? string
----@field private _task fun(task:LazyTask)
----@field private _running LazyPluginState[]
+---@field private _task fun(task:LazyTask, opts:TaskOptions)
 ---@field private _started? number
 ---@field private _ended? number
 ---@field private _opts TaskOptions
+---@field private _threads thread[]
 local Task = {}
 
 ---@class TaskOptions: {[string]:any}
@@ -32,18 +70,17 @@ function Task.new(plugin, name, task, opts)
     __index = Task,
   })
   self._opts = opts or {}
-  self._running = {}
+  self._threads = {}
   self._task = task
   self._started = nil
   self.plugin = plugin
   self.name = name
   self.output = ""
   self.status = ""
-  plugin._.tasks = plugin._.tasks or {}
   ---@param other LazyTask
   plugin._.tasks = vim.tbl_filter(function(other)
     return other.name ~= name or other:is_running()
-  end, plugin._.tasks)
+  end, plugin._.tasks or {})
   table.insert(plugin._.tasks, self)
   return self
 end
@@ -52,27 +89,26 @@ function Task:has_started()
   return self._started ~= nil
 end
 
+function Task:has_ended()
+  return self._ended ~= nil
+end
+
 function Task:is_done()
-  return self:has_started() and not self:is_running()
+  return self:has_started() and self:has_ended()
 end
 
 function Task:is_running()
-  return self:has_started() and self._ended == nil
+  return self:has_started() and not self:has_ended()
 end
 
 function Task:start()
-  if vim.in_fast_event() then
-    return vim.schedule(function()
-      self:start()
-    end)
-  end
+  assert(not self:has_started(), "task already started")
+  assert(not self:has_ended(), "task already done")
+
   self._started = vim.uv.hrtime()
-  ---@type boolean, string|any
-  local ok, err = pcall(self._task, self, self._opts)
-  if not ok then
-    self.error = err or "failed"
-  end
-  self:_check()
+  self:async(function()
+    self._task(self, self._opts)
+  end)
 end
 
 ---@param msg string|string[]
@@ -102,36 +138,33 @@ end
 ---@param fn async fun()
 function Task:async(fn)
   local co = coroutine.create(fn)
-  local check = vim.uv.new_check()
-  check:start(vim.schedule_wrap(function()
-    local status = coroutine.status(co)
-    if status == "dead" then
-      check:stop()
-      self:_check()
-    elseif status == "suspended" then
-      local ok, res = coroutine.resume(co)
-      if not ok then
-        error(res)
-      elseif res then
-        self.status = res
-        self.output = self.output .. "\n" .. res
-        vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
-      end
-    end
-  end))
-
-  table.insert(self._running, function()
-    return check:is_active()
-  end)
+  table.insert(self._threads, co)
+  Scheduler.add({ task = self, thread = co })
 end
 
----@private
-function Task:_check()
-  for _, state in ipairs(self._running) do
-    if state() then
+---@param co thread
+function Task:_step(co)
+  local status = coroutine.status(co)
+  if status == "suspended" then
+    local ok, res = coroutine.resume(co)
+    if not ok then
+      self:notify_error(tostring(res))
+    elseif res then
+      self:notify(tostring(res))
+    end
+  end
+  for _, t in ipairs(self._threads) do
+    if coroutine.status(t) ~= "dead" then
       return
     end
   end
+  self:_done()
+end
+
+---@private
+function Task:_done()
+  assert(self:has_started(), "task not started")
+  assert(not self:has_ended(), "task already done")
   self._ended = vim.uv.hrtime()
   if self._opts.on_done then
     self._opts.on_done(self)
@@ -147,29 +180,13 @@ function Task:time()
   if not self:has_started() then
     return 0
   end
-  if not self:is_done() then
+  if not self:has_ended() then
     return (vim.uv.hrtime() - self._started) / 1e6
   end
   return (self._ended - self._started) / 1e6
 end
 
----@param fn fun()
-function Task:schedule(fn)
-  local done = false
-  table.insert(self._running, function()
-    return not done
-  end)
-  vim.schedule(function()
-    ---@type boolean, string|any
-    local ok, err = pcall(fn)
-    if not ok then
-      self.error = err or "failed"
-    end
-    done = true
-    self:_check()
-  end)
-end
-
+---@async
 ---@param cmd string
 ---@param opts? ProcessOpts
 function Task:spawn(cmd, opts)
@@ -178,6 +195,7 @@ function Task:spawn(cmd, opts)
   local on_exit = opts.on_exit
 
   function opts.on_line(line)
+    self:notify(line)
     self.status = line
     if on_line then
       pcall(on_line, line)
@@ -185,6 +203,7 @@ function Task:spawn(cmd, opts)
     vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
   end
 
+  local running = true
   ---@param output string
   function opts.on_exit(ok, output)
     self.output = self.output .. output
@@ -194,12 +213,12 @@ function Task:spawn(cmd, opts)
     if on_exit then
       pcall(on_exit, ok, output)
     end
-    self:_check()
+    running = false
   end
-  local proc = Process.spawn(cmd, opts)
-  table.insert(self._running, function()
-    return proc and not proc:is_closing()
-  end)
+  Process.spawn(cmd, opts)
+  while running do
+    coroutine.yield()
+  end
 end
 
 ---@param tasks (LazyTask?)[]
