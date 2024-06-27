@@ -311,11 +311,10 @@ function M.setup(opts)
         vim.api.nvim_create_autocmd("BufWritePost", {
           pattern = { "lazy.lua", "pkg.json", "*.rockspec" },
           callback = function()
-            require("lazy").pkg({
-              plugins = {
-                require("lazy.core.plugin").find(vim.uv.cwd() .. "/lua/"),
-              },
-            })
+            local plugin = require("lazy.core.plugin").find(vim.uv.cwd() .. "/lua/")
+            if plugin then
+              require("lazy").pkg({ plugins = { plugin } })
+            end
           end,
         })
       end,
