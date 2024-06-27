@@ -1,5 +1,36 @@
 # Changelog
 
+## [11.5.0](https://github.com/folke/lazy.nvim/compare/v11.4.2...v11.5.0) (2024-06-27)
+
+
+### Features
+
+* added `opts.headless` to control ansi output when running headless ([a0a51c0](https://github.com/folke/lazy.nvim/commit/a0a51c06c2fcddda925667142516c89777eb0c8e))
+* added localleader-i to inspect a plugin ([2e1167d](https://github.com/folke/lazy.nvim/commit/2e1167df4ab055e8327317ac38210b111cbaec83))
+* **health:** show steps to get luarocks working. See [#1570](https://github.com/folke/lazy.nvim/issues/1570) ([c0fd59b](https://github.com/folke/lazy.nvim/commit/c0fd59b020dc4efb91b226b0bbc4a22f28c12321))
+* **health:** show user's lazy.nvim version in checkhealth ([9c8e7a4](https://github.com/folke/lazy.nvim/commit/9c8e7a48406109458370f3b52f6f058943db40f4))
+* **ui:** keep cursor position when rendering view ([591ded8](https://github.com/folke/lazy.nvim/commit/591ded8309e45806ae3fb58b7b68fe58785a3ada))
+* **ui:** remap gx -&gt; K. Fixes [#1561](https://github.com/folke/lazy.nvim/issues/1561) ([e3e4314](https://github.com/folke/lazy.nvim/commit/e3e431480d6c9ab460cf08b1e35311c2ab2c05c4))
+* **ui:** show indication of plugins that need build. See [#1563](https://github.com/folke/lazy.nvim/issues/1563) ([53f314d](https://github.com/folke/lazy.nvim/commit/53f314d9e6ef594677acdf5f038a4a042a7f3e38))
+
+
+### Bug Fixes
+
+* **manage:** dont skip install for plugins that need a build, but dont have an url (like local plugins). Fixes [#1563](https://github.com/folke/lazy.nvim/issues/1563) ([a0391c3](https://github.com/folke/lazy.nvim/commit/a0391c3e21e063df9dee70f17ae7891497cdcec9))
+* **meta:** resolve deps from meta instead of fragments. Fixes [#1566](https://github.com/folke/lazy.nvim/issues/1566) ([6a42327](https://github.com/folke/lazy.nvim/commit/6a423278a10ff7b1a76795275111d01632851c48))
+* **pkg:** only show pkg changed when effectively changing a pkg file. Fixes [#1567](https://github.com/folke/lazy.nvim/issues/1567) ([24a86d5](https://github.com/folke/lazy.nvim/commit/24a86d5ca4652a77f0f2c78dd7c693a3c369ab68))
+* **rocks:** if installing with luarocks (binaries) fails, then build from source. Fixes [#1563](https://github.com/folke/lazy.nvim/issues/1563) ([8227632](https://github.com/folke/lazy.nvim/commit/82276321f5132c680a852bec0bb9b55694ab2a21))
+* **runner:** only check for errors when a task is no longer running ([e02c5b1](https://github.com/folke/lazy.nvim/commit/e02c5b1b5787210dfbf89681d94e7861b30aa139))
+* **runner:** only use Config.plugins when updated. Fixes [#1560](https://github.com/folke/lazy.nvim/issues/1560) ([97f4df0](https://github.com/folke/lazy.nvim/commit/97f4df0824da13b2b0d065f0dc43c49862581a01))
+* **runner:** properly do concurrency ([66a4170](https://github.com/folke/lazy.nvim/commit/66a4170f0e9ab238972f73a268582cf65026a017))
+* **runner:** wait_step ([93b3a77](https://github.com/folke/lazy.nvim/commit/93b3a77286c4212850e21a6b3e31d328b5a86df4))
+* **ui:** diagnostics without status ([249902a](https://github.com/folke/lazy.nvim/commit/249902ab3194226efec0dbc3e000e758c43b4714))
+
+
+### Performance Improvements
+
+* prevent active waiting in coroutines. suspend/resume instead ([68cee30](https://github.com/folke/lazy.nvim/commit/68cee30cdb1f7a29d10b44b00506aafa092b6cee))
+
 ## [11.4.2](https://github.com/folke/lazy.nvim/compare/v11.4.1...v11.4.2) (2024-06-26)
 
 
