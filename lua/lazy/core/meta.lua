@@ -198,7 +198,10 @@ function M:_rebuild(name)
 
       -- dependencies
       for _, dep in ipairs(fragment.deps or {}) do
-        table.insert(plugin.dependencies, self.fragments:get(dep).name)
+        local dep_meta = self.frag_to_meta[dep]
+        if dep_meta then
+          table.insert(plugin.dependencies, dep_meta.name)
+        end
       end
     end
   end

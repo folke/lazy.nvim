@@ -8,20 +8,27 @@ local function inspect(obj)
   return vim.inspect(obj):gsub("%s+", " ")
 end
 
----@param plugins LazyPlugin[]|LazyPlugin
+---@param plugin LazyPlugin
+local function resolve(plugin)
+  local meta = getmetatable(plugin)
+  local ret = meta and type(meta.__index) == "table" and resolve(meta.__index) or {}
+  for k, v in pairs(plugin) do
+    ret[k] = v
+  end
+  return ret
+end
+
+---@param plugins LazyPlugin[]
 local function clean(plugins)
-  local p = plugins
-  plugins = type(plugins) == "table" and plugins or { plugins }
-  for _, plugin in pairs(plugins) do
-    plugin._.fid = nil
-    plugin._.fpid = nil
-    plugin._.fdeps = nil
+  return vim.tbl_map(function(plugin)
+    plugin = resolve(plugin)
+    plugin[1] = nil
     plugin._.frags = nil
     if plugin._.dep == false then
       plugin._.dep = nil
     end
-  end
-  return p
+    return plugin
+  end, plugins)
 end
 
 describe("plugin spec url/name", function()
@@ -168,14 +175,12 @@ describe("plugin spec opt", function()
       end
       assert.same({
         bar = {
-          "foo/bar",
           _ = {},
           dependencies = { "dep1", "dep2" },
           name = "bar",
           url = "https://github.com/foo/bar.git",
         },
         dep1 = {
-          "foo/dep1",
           _ = {
             dep = true,
           },
@@ -183,7 +188,6 @@ describe("plugin spec opt", function()
           url = "https://github.com/foo/dep1.git",
         },
         dep2 = {
-          "foo/dep2",
           _ = {
             dep = true,
           },
@@ -198,13 +202,13 @@ describe("plugin spec opt", function()
     before_each(function()
       Handler.init()
     end)
-    it("handles dep names", function()
-      Config.options.defaults.lazy = false
-      local tests = {
-        { { "foo/bar", dependencies = { { "dep1" }, "foo/dep2" } }, "foo/dep1" },
-        { "foo/dep1", { "foo/bar", dependencies = { { "dep1" }, "foo/dep2" } } },
-      }
-      for _, test in ipairs(tests) do
+    Config.options.defaults.lazy = false
+    local tests = {
+      { { "foo/bar", dependencies = { { "dep1" }, "foo/dep2" } }, "foo/dep1" },
+      { "foo/dep1", { "foo/bar", dependencies = { { "dep1" }, "foo/dep2" } } },
+    }
+    for _, test in ipairs(tests) do
+      it("handles dep names " .. inspect(test), function()
         local spec = Plugin.Spec.new(vim.deepcopy(test))
         assert(#spec.notifs == 0)
         Config.plugins = spec.plugins
@@ -213,31 +217,74 @@ describe("plugin spec opt", function()
         for _, plugin in pairs(spec.plugins) do
           plugin.dir = nil
         end
-        assert.same(clean(spec.plugins), {
+        assert.same({
           bar = {
-            "foo/bar",
             _ = {},
             dependencies = { "dep1", "dep2" },
             name = "bar",
             url = "https://github.com/foo/bar.git",
           },
           dep1 = {
-            "foo/dep1",
             _ = {},
             name = "dep1",
             url = "https://github.com/foo/dep1.git",
           },
           dep2 = {
-            "foo/dep2",
             _ = {
               dep = true,
             },
             name = "dep2",
             url = "https://github.com/foo/dep2.git",
           },
-        })
-      end
-    end)
+        }, clean(spec.plugins))
+      end)
+    end
+
+    Config.options.defaults.lazy = false
+    local tests = {
+      {
+        { "foo/baz", name = "bar" },
+        { "foo/fee", dependencies = { "foo/baz" } },
+      },
+      {
+        { "foo/fee", dependencies = { "foo/baz" } },
+        { "foo/baz", name = "bar" },
+      },
+      -- {
+      --   { "foo/baz", name = "bar" },
+      --   { "foo/fee", dependencies = { "baz" } },
+      -- },
+      {
+        { "foo/baz", name = "bar" },
+        { "foo/fee", dependencies = { "bar" } },
+      },
+    }
+    for _, test in ipairs(tests) do
+      it("handles dep names " .. inspect(test), function()
+        local spec = Plugin.Spec.new(vim.deepcopy(test))
+        assert(#spec.notifs == 0)
+        Config.plugins = spec.plugins
+        Plugin.update_state()
+        spec = Plugin.Spec.new(test)
+        spec.meta:rebuild()
+        for _, plugin in pairs(spec.plugins) do
+          plugin.dir = nil
+        end
+        assert.same({
+          bar = {
+            _ = {},
+            name = "bar",
+            url = "https://github.com/foo/baz.git",
+          },
+          fee = {
+            _ = {},
+            name = "fee",
+            url = "https://github.com/foo/fee.git",
+            dependencies = { "bar" },
+          },
+        }, clean(spec.plugins))
+      end)
+    end
 
     it("handles opt from dep", function()
       Config.options.defaults.lazy = false
