@@ -379,7 +379,12 @@ function M:diagnostics(plugin)
   if skip then
     return
   end
-  if plugin._.updated then
+  if plugin._.build then
+    self:diagnostic({
+      message = "needs build",
+      severity = vim.diagnostic.severity.WARN,
+    })
+  elseif plugin._.updated then
     if plugin._.updated.from == plugin._.updated.to then
       self:diagnostic({
         message = "already up to date",

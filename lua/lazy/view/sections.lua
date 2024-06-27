@@ -35,6 +35,12 @@ return {
   },
   {
     filter = function(plugin)
+      return plugin._.build
+    end,
+    title = "Build",
+  },
+  {
+    filter = function(plugin)
       return has_task(plugin, function(task)
         if task.name ~= "log" then
           return
