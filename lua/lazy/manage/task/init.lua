@@ -217,16 +217,13 @@ function Task:spawn(cmd, opts)
   self._running:suspend()
 
   local running = true
-  local ret = true
+  local ret = { ok = true, output = "" }
   ---@param output string
   function opts.on_exit(ok, output)
     if not headless then
       self:log(vim.trim(output), ok and vim.log.levels.DEBUG or vim.log.levels.ERROR)
     end
-    if on_exit then
-      pcall(on_exit, ok, output)
-    end
-    ret = ok
+    ret = { ok = ok, output = output }
     running = false
     self._running:resume()
   end
@@ -241,7 +238,11 @@ function Task:spawn(cmd, opts)
   Process.spawn(cmd, opts)
   coroutine.yield()
   assert(not running, "process still running?")
-  return ret
+  if on_exit then
+    pcall(on_exit, ret.ok, ret.output)
+  end
+  coroutine.yield()
+  return ret.ok
 end
 
 function Task:prefix()

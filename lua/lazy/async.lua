@@ -37,6 +37,7 @@ function Async:sleep(ms)
   vim.defer_fn(function()
     self.sleeping = false
   end, ms)
+  coroutine.yield()
 end
 
 function Async:suspend()

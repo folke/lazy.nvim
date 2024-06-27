@@ -197,7 +197,21 @@ function M.exec(cmd, opts)
       lines = _lines
     end,
   })
-  vim.fn.jobwait({ job })
+
+  if job <= 0 then
+    error("Failed to start job: " .. vim.inspect(cmd))
+  end
+
+  local Async = require("lazy.async")
+  local async = Async.current
+  if async then
+    while vim.fn.jobwait({ job }, 0)[1] == -1 do
+      async:sleep(10)
+    end
+  else
+    vim.fn.jobwait({ job })
+  end
+
   return lines
 end
 
