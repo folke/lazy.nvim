@@ -100,16 +100,16 @@ function Runner:_start()
       local is_running = s.task and s.task:is_running()
       local step = self._pipeline[s.step]
 
+      if is_running then
+        -- still running
+        active = active + 1
       -- selene:allow(empty_if)
-      if s.task and s.task:has_errors() then
+      elseif s.task and s.task:has_errors() then
         -- don't continue tasks if there are errors
       elseif step and step.task == "wait" and not resume then
         -- waiting for sync
         waiting = waiting + 1
         wait_step = s.step
-      elseif is_running then
-        -- still running
-        active = active + 1
       else
         next[#next + 1] = name
       end
