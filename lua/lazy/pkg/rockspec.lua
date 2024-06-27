@@ -101,6 +101,7 @@ function M.check(opts)
   return ok
 end
 
+---@async
 ---@param task LazyTask
 function M.build(task)
   if
@@ -163,7 +164,7 @@ function M.build(task)
   )
 
   local root = Config.options.rocks.root .. "/" .. task.plugin.name
-  task:spawn(luarocks, {
+  local ok = task:spawn(luarocks, {
     args = {
       "--tree",
       root,
@@ -177,6 +178,30 @@ function M.build(task)
       "--deps-mode",
       "one",
       rockspec.package,
+    },
+    cwd = task.plugin.dir,
+    env = env,
+  })
+
+  if ok then
+    return
+  end
+
+  task:warn("Failed installing " .. rockspec.package .. " with `luarocks`.\nTrying to build from source.")
+
+  -- install failed, so try building from source
+  task:set_level() -- reset level
+  task:spawn(luarocks, {
+    args = {
+      "--tree",
+      root,
+      "--dev",
+      "--lua-version",
+      "5.1",
+      "make",
+      "--force-fast",
+      "--deps-mode",
+      "one",
     },
     cwd = task.plugin.dir,
     env = env,

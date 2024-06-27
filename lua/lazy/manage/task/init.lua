@@ -37,7 +37,7 @@ function Task.new(plugin, name, task, opts)
   local self = setmetatable({}, { __index = Task })
   self._opts = opts or {}
   self._log = {}
-  self._level = vim.log.levels.TRACE
+  self:set_level()
   self.plugin = plugin
   self.name = name
   ---@param other LazyTask
@@ -93,6 +93,11 @@ end
 
 function Task:has_warnings()
   return self._level >= vim.log.levels.WARN
+end
+
+---@param level? number
+function Task:set_level(level)
+  self._level = level or vim.log.levels.TRACE
 end
 
 ---@private
@@ -218,6 +223,7 @@ function Task:spawn(cmd, opts)
   end
 
   local running = true
+  local ret = true
   ---@param output string
   function opts.on_exit(ok, output)
     if not headless then
@@ -226,6 +232,7 @@ function Task:spawn(cmd, opts)
     if on_exit then
       pcall(on_exit, ok, output)
     end
+    ret = ok
     running = false
   end
 
@@ -240,6 +247,7 @@ function Task:spawn(cmd, opts)
   while running do
     coroutine.yield()
   end
+  return ret
 end
 
 function Task:prefix()
