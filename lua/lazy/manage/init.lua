@@ -95,7 +95,7 @@ function M.install(opts)
       "plugin.build",
     },
     plugins = function(plugin)
-      return plugin.url and not (plugin._.installed and not plugin._.build)
+      return not (plugin._.installed and not plugin._.build)
     end,
   }, opts):wait(function()
     require("lazy.manage.lock").update()
