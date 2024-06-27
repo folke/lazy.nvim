@@ -62,6 +62,7 @@ end
 
 function M.check()
   start("lazy.nvim")
+  info("{lazy.nvim} version `" .. Config.version .. "`")
 
   M.have("git")
 
