@@ -120,6 +120,16 @@ M.defaults = {
         desc = "Open lazygit log",
       },
 
+      ["<localleader>i"] = {
+        function(plugin)
+          Util.notify(vim.inspect(plugin), {
+            title = "Inspect " .. plugin.name,
+            lang = "lua",
+          })
+        end,
+        desc = "Inspect Plugin",
+      },
+
       ["<localleader>t"] = {
         function(plugin)
           require("lazy.util").float_term(nil, {
