@@ -11,9 +11,7 @@ local Util = require("lazy.util")
 local Text = {}
 
 function Text.new()
-  local self = setmetatable({}, {
-    __index = Text,
-  })
+  local self = setmetatable({}, { __index = Text })
   self._lines = {}
 
   return self
