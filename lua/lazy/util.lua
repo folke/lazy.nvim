@@ -229,14 +229,6 @@ function M.markdown(msg, opts)
   )
 end
 
----@async
----@param ms number
-function M.sleep(ms)
-  local async = require("lazy.async").current
-  assert(async, "Not in an async context")
-  async:sleep(ms)
-end
-
 function M._dump(value, result)
   local t = type(value)
   if t == "number" or t == "boolean" then
