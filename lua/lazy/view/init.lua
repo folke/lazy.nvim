@@ -86,6 +86,8 @@ function M.create()
     return ViewConfig.keys.abort
   end, { silent = true, buffer = self.buf, expr = true })
 
+  vim.keymap.set("n", "gx", "K", { buffer = self.buf, remap = true })
+
   -- plugin details
   self:on_key(ViewConfig.keys.details, function()
     local plugin = self.render:get_plugin()
