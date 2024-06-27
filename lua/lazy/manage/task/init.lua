@@ -222,6 +222,8 @@ function Task:spawn(cmd, opts)
     end
   end
 
+  self._running:suspend()
+
   local running = true
   local ret = true
   ---@param output string
@@ -234,6 +236,7 @@ function Task:spawn(cmd, opts)
     end
     ret = ok
     running = false
+    self._running:resume()
   end
 
   if headless then
@@ -244,9 +247,8 @@ function Task:spawn(cmd, opts)
     end
   end
   Process.spawn(cmd, opts)
-  while running do
-    coroutine.yield()
-  end
+  coroutine.yield()
+  assert(not running, "process still running?")
   return ret
 end
 

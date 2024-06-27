@@ -232,13 +232,9 @@ end
 ---@async
 ---@param ms number
 function M.sleep(ms)
-  local continue = false
-  vim.defer_fn(function()
-    continue = true
-  end, ms)
-  while not continue do
-    coroutine.yield()
-  end
+  local async = require("lazy.async").current
+  assert(async, "Not in an async context")
+  async:sleep(ms)
 end
 
 function M._dump(value, result)

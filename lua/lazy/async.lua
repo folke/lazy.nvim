@@ -9,10 +9,14 @@ local M = {}
 M._queue = {}
 M._executor = assert(vim.loop.new_check())
 M._running = false
+M.SLEEP = "sleep"
+---@type Async
+M.current = nil
 
 ---@class Async
 ---@field co thread
 ---@field opts AsyncOpts
+---@field sleeping? boolean
 local Async = {}
 
 ---@param fn async fun()
@@ -29,16 +33,38 @@ function Async:running()
   return coroutine.status(self.co) ~= "dead"
 end
 
+function Async:sleep(ms)
+  self.sleeping = true
+  vim.defer_fn(function()
+    self.sleeping = false
+  end, ms)
+end
+
+function Async:suspend()
+  self.sleeping = true
+end
+
+function Async:resume()
+  self.sleeping = false
+end
+
 function Async:step()
+  if self.sleeping then
+    return true
+  end
   local status = coroutine.status(self.co)
   if status == "suspended" then
+    M.current = self
     local ok, res = coroutine.resume(self.co)
+    M.current = nil
     if not ok then
       if self.opts.on_error then
         self.opts.on_error(tostring(res))
       end
     elseif res then
-      if self.opts.on_yield then
+      if res == M.SLEEP then
+        self.sleeping = true
+      elseif self.opts.on_yield then
         self.opts.on_yield(res)
       end
     end
