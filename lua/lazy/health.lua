@@ -145,11 +145,21 @@ function M.check()
 
       info("you have some plugins that require `luarocks`:\n" .. table.concat(lines, "\n"))
     end
-    require("lazy.pkg.rockspec").check({
+    local ok = require("lazy.pkg.rockspec").check({
       error = #need_luarocks > 0 and error or warn,
       warn = warn,
       ok = ok,
     })
+    if not ok then
+      warn(table.concat({
+        "Lazy won't be able to install plugins that require `luarocks`.",
+        "Here's what you can do:",
+        " - fix your `luarocks` installation",
+        Config.options.rocks.hererocks and " - disable *hererocks* with `opts.rocks.hererocks = false`"
+          or " - enable `hererocks` with `opts.rocks.hererocks = true`",
+        " - disable `luarocks` support completely with `opts.rocks.enabled = false`",
+      }, "\n"))
+    end
   else
     ok("luarocks disabled")
   end
