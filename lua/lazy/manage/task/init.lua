@@ -49,6 +49,7 @@ function Task.new(plugin, name, task, opts)
     return other.name ~= name or other:running()
   end, plugin._.tasks or {})
   table.insert(plugin._.tasks, self)
+  self:render()
   return self
 end
 
@@ -119,10 +120,16 @@ function Task:log(msg, level)
   msg = type(msg) == "table" and table.concat(msg, "\n") or msg
   ---@cast msg string
   table.insert(self._log, { msg = msg, level = level })
-  vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+  self:render()
   if Config.headless() then
     self:headless()
   end
+end
+
+function Task:render()
+  vim.schedule(function()
+    vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
+  end)
 end
 
 function Task:headless()
@@ -163,11 +170,13 @@ function Task:_done()
   if self._opts.on_done then
     self._opts.on_done(self)
   end
-  vim.api.nvim_exec_autocmds("User", { pattern = "LazyRender", modeline = false })
-  vim.api.nvim_exec_autocmds("User", {
-    pattern = "LazyPlugin" .. self.name:sub(1, 1):upper() .. self.name:sub(2),
-    data = { plugin = self.plugin.name },
-  })
+  vim.schedule(function()
+    self:render()
+    vim.api.nvim_exec_autocmds("User", {
+      pattern = "LazyPlugin" .. self.name:sub(1, 1):upper() .. self.name:sub(2),
+      data = { plugin = self.plugin.name },
+    })
+  end)
 end
 
 function Task:time()
