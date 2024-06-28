@@ -1,5 +1,19 @@
 # Changelog
 
+## [11.5.1](https://github.com/folke/lazy.nvim/compare/v11.5.0...v11.5.1) (2024-06-28)
+
+
+### Bug Fixes
+
+* **rocks:** lua-5.1. Closes [#1575](https://github.com/folke/lazy.nvim/issues/1575) ([4319846](https://github.com/folke/lazy.nvim/commit/4319846b8c8a05975c4139b0bc9f7e6e7a9e6e21))
+* **task:** run on_exit async. See [#1569](https://github.com/folke/lazy.nvim/issues/1569) ([60fe75c](https://github.com/folke/lazy.nvim/commit/60fe75c88db22025989600bb53dba247654d9ed5))
+
+
+### Performance Improvements
+
+* async render ([ab46edb](https://github.com/folke/lazy.nvim/commit/ab46edbd47fa9f380db65dbf0a7c35d18d810b19))
+* use timer instead of check for async executor ([f85575a](https://github.com/folke/lazy.nvim/commit/f85575ab23c81eb897fb2cb1240a0fa1cb41f7f4))
+
 ## [11.5.0](https://github.com/folke/lazy.nvim/compare/v11.4.2...v11.5.0) (2024-06-27)
 
 
