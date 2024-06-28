@@ -51,7 +51,7 @@ function M:update()
     if plugin._.tasks then
       for _, task in ipairs(plugin._.tasks) do
         self.progress.total = self.progress.total + 1
-        if not task:is_running() then
+        if not task:running() then
           self.progress.done = self.progress.done + 1
         end
       end
@@ -356,7 +356,7 @@ end
 function M:diagnostics(plugin)
   local skip = false
   for _, task in ipairs(plugin._.tasks or {}) do
-    if task:is_running() then
+    if task:running() then
       self:diagnostic({
         severity = vim.diagnostic.severity.WARN,
         message = task.name .. (task:status() and (": " .. task:status()) or ""),

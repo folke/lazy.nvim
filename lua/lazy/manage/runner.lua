@@ -16,7 +16,6 @@ local Task = require("lazy.manage.task")
 ---@class Runner
 ---@field _plugins table<string,LazyPlugin>
 ---@field _pipeline PipelineStep[]
----@field _on_done fun()[]
 ---@field _opts RunnerOpts
 ---@field _running? Async
 local Runner = {}
@@ -38,7 +37,6 @@ function Runner.new(opts)
   for _, plugin in ipairs(pp) do
     self._plugins[plugin.name] = plugin
   end
-  self._on_done = {}
 
   ---@param step string|(TaskOptions|{[1]:string})
   self._pipeline = vim.tbl_map(function(step)
@@ -61,15 +59,9 @@ end
 
 function Runner:start()
   ---@async
-  self._running = Async.run(function()
+  self._running = Async.new(function()
     self:_start()
-  end, {
-    on_done = function()
-      for _, cb in ipairs(self._on_done) do
-        cb()
-      end
-    end,
-  })
+  end)
 end
 
 ---@async
@@ -97,7 +89,7 @@ function Runner:_start()
     for _, name in ipairs(names) do
       state[name] = state[name] or { step = 0 }
       local s = state[name]
-      local is_running = s.task and s.task:is_running()
+      local is_running = s.task and s.task:running()
       local step = self._pipeline[s.step]
 
       if is_running then
@@ -185,14 +177,10 @@ function Runner:wait(cb)
     end
     return self
   end
-
   if cb then
-    table.insert(self._on_done, cb)
+    self._running:on("done", cb)
   else
-    -- sync wait
-    while self:is_running() do
-      vim.wait(10)
-    end
+    self._running:wait()
   end
   return self
 end

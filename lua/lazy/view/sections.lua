@@ -28,7 +28,7 @@ return {
         return true
       end
       return has_task(plugin, function(task)
-        return task:is_running()
+        return task:running()
       end)
     end,
     title = "Working",

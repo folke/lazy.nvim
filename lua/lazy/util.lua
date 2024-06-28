@@ -76,6 +76,13 @@ function M.throttle(ms, fn)
   local timer = vim.uv.new_timer()
   local pending = false
 
+  ---@type Async
+  local async
+
+  local function running()
+    return async and async:running()
+  end
+
   return function()
     if timer:is_active() then
       pending = true
@@ -85,7 +92,10 @@ function M.throttle(ms, fn)
       0,
       ms,
       vim.schedule_wrap(function()
-        fn()
+        if running() then
+          return
+        end
+        async = require("lazy.async").new(fn)
         if pending then
           pending = false
         else
