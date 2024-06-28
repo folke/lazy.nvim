@@ -46,7 +46,7 @@ To make it easier for users to install your plugin, you can include a [package s
 
   :::
 
-- Inside a `build` function or `*.lua` build file, use `coroutine.yield(status_msg)` to show progress.
+- Inside a `build` function or `*.lua` build file, use `coroutine.yield(msg:string|LazyMsg)` to show progress.
 
 - Don't change the `cwd` in your build function, since builds run in parallel and changing the `cwd` will affect other builds.
 
@@ -64,8 +64,17 @@ The spec **build** property can be one of the following:
 - if no `build` is specified, but a `build.lua` file exists, that will be used instead.
 
 Build functions and `*.lua` files run asynchronously in a coroutine.
-Use `coroutine.yield(status_msg)` to show progress.
+Use `coroutine.yield(msg:string|LazyMsg)` to show progress.
+
 Yielding will also schedule the next `coroutine.resume()` to run in the next tick, so you can do long-running tasks without blocking Neovim.
+
+```lua
+---@class LazyMsg
+---@field msg string
+---@field level? number vim.log.levels.XXX
+```
+
+Use `vim.log.levels.TRACE` to only show the message as a **status** message for the task.
 
 :::tip
 
