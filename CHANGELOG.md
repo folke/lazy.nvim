@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.5.2](https://github.com/folke/lazy.nvim/compare/v11.5.1...v11.5.2) (2024-06-28)
+
+
+### Bug Fixes
+
+* **git:** tagrefs ([2a6a2dc](https://github.com/folke/lazy.nvim/commit/2a6a2dce1b14f35e7eb7cbe8f25202ed83cba697))
+
 ## [11.5.1](https://github.com/folke/lazy.nvim/compare/v11.5.0...v11.5.1) (2024-06-28)
 
 
