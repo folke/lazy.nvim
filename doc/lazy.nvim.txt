@@ -1226,7 +1226,7 @@ BEST PRACTICES                      *lazy.nvim-🔥-developers-best-practices*
     loaded. Lua plugins/libraries are automatically loaded when they are
     `require()`d, so they don’t need to be in `dependencies`.
 - Inside a `build` function or `*.lua` build file, use
-    `coroutine.yield(status_msg)` to show progress.
+    `coroutine.yield(msg:string|LazyMsg)` to show progress.
 - Don’t change the `cwd` in your build function, since builds run in parallel
     and changing the `cwd` will affect other builds.
 
@@ -1245,9 +1245,19 @@ The spec **build** property can be one of the following:
 - if no `build` is specified, but a `build.lua` file exists, that will be used instead.
 
 Build functions and `*.lua` files run asynchronously in a coroutine. Use
-`coroutine.yield(status_msg)` to show progress. Yielding will also schedule the
-next `coroutine.resume()` to run in the next tick, so you can do long-running
-tasks without blocking Neovim.
+`coroutine.yield(msg:string|LazyMsg)` to show progress.
+
+Yielding will also schedule the next `coroutine.resume()` to run in the next
+tick, so you can do long-running tasks without blocking Neovim.
+
+>lua
+    ---@class LazyMsg
+    ---@field msg string
+    ---@field level? number vim.log.levels.XXX
+<
+
+Use `vim.log.levels.TRACE` to only show the message as a **status** message for
+the task.
 
 
 ==============================================================================
