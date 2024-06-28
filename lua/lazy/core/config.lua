@@ -218,7 +218,7 @@ M.defaults = {
   debug = false,
 }
 
-M.version = "11.5.1" -- x-release-please-version
+M.version = "11.5.2" -- x-release-please-version
 
 M.ns = vim.api.nvim_create_namespace("lazy")
 
