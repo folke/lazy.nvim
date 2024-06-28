@@ -90,7 +90,7 @@ function M.check(opts)
     ok = Health.have("luarocks", opts)
     ok = (
       Health.have(
-        { "lua5.1", "lua" },
+        { "lua5.1", "lua", "lua-5.1" },
         vim.tbl_extend("force", opts, {
           version = "-v",
           version_pattern = "5.1",
