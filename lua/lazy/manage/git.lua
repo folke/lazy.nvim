@@ -184,7 +184,12 @@ function M.get_tag_refs(repo, tagref)
   tagref = tagref or "--tags"
   ---@type table<string,string>
   local tags = {}
-  local lines = Process.exec({ "git", "show-ref", "-d", tagref }, { cwd = repo })
+  local ok, lines = pcall(function()
+    return Process.exec({ "git", "show-ref", "-d", tagref }, { cwd = repo })
+  end)
+  if not ok then
+    return {}
+  end
   for _, line in ipairs(lines) do
     local ref, tag = line:match("^(%w+) refs/tags/([^%^]+)%^?{?}?$")
     if ref then
