@@ -2,8 +2,10 @@ local M = {}
 
 ---@type Async[]
 M._queue = {}
-M._executor = assert(vim.loop.new_check())
-M._running = false
+M._executor = assert(vim.loop.new_timer())
+
+M.TIMER = 10
+M.BUDGET = 100
 
 ---@type table<thread, Async>
 M._threads = setmetatable({}, { __mode = "k" })
@@ -68,11 +70,10 @@ end
 
 ---@async
 function Async:sleep(ms)
-  self._suspended = true
   vim.defer_fn(function()
-    self._suspended = false
+    self:resume()
   end, ms)
-  coroutine.yield()
+  self:suspend()
 end
 
 ---@async
@@ -120,12 +121,11 @@ function Async:step()
 end
 
 function M.step()
-  M._running = true
-  local budget = 1 * 1e6
-  local start = vim.loop.hrtime()
+  local budget = M.BUDGET * 1e6
+  local start = vim.uv.hrtime()
   local count = #M._queue
   local i = 0
-  while #M._queue > 0 and vim.loop.hrtime() - start < budget do
+  while #M._queue > 0 and vim.uv.hrtime() - start < budget do
     ---@type Async
     local state = table.remove(M._queue, 1)
     if state:step() then
@@ -136,7 +136,6 @@ function M.step()
       break
     end
   end
-  M._running = false
   if #M._queue == 0 then
     return M._executor:stop()
   end
@@ -146,7 +145,7 @@ end
 function M.add(async)
   table.insert(M._queue, async)
   if not M._executor:is_active() then
-    M._executor:start(vim.schedule_wrap(M.step))
+    M._executor:start(1, M.TIMER, vim.schedule_wrap(M.step))
   end
   return async
 end
