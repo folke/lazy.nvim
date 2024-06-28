@@ -112,9 +112,13 @@ function Task:_run(task)
   task(self, self._opts)
 end
 
----@param msg string|string[]
+---@param msg string|string[]|LazyMsg
 ---@param level? number
 function Task:log(msg, level)
+  if type(msg) == "table" and msg.msg then
+    level = msg.level or level
+    msg = msg.msg
+  end
   level = level or vim.log.levels.DEBUG
   self._level = math.max(self._level or 0, level or 0)
   msg = type(msg) == "table" and table.concat(msg, "\n") or msg
@@ -170,8 +174,8 @@ function Task:_done()
   if self._opts.on_done then
     self._opts.on_done(self)
   end
+  self:render()
   vim.schedule(function()
-    self:render()
     vim.api.nvim_exec_autocmds("User", {
       pattern = "LazyPlugin" .. self.name:sub(1, 1):upper() .. self.name:sub(2),
       data = { plugin = self.plugin.name },
