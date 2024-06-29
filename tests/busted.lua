@@ -1,5 +1,7 @@
 #!/usr/bin/env -S nvim -l
 
+vim.env.LAZY_STDPATH = ".tests"
+
 vim.opt.rtp:prepend(".")
 
 -- Setup lazy.nvim
