@@ -78,6 +78,7 @@ function Runner:_start()
   ---@type number?
   local wait_step = nil
 
+  ---@async
   ---@param resume? boolean
   local function continue(resume)
     active = 0
@@ -114,22 +115,30 @@ function Runner:_start()
       end
       local s = state[name]
       local plugin = self:plugin(name)
-      if s.step == #self._pipeline then
-        -- done
-        s.task = nil
-        plugin._.working = false
-      elseif s.step < #self._pipeline then
-        -- next
-        s.step = s.step + 1
-        local step = self._pipeline[s.step]
-        if step.task == "wait" then
+      while s.step <= #self._pipeline do
+        if s.step == #self._pipeline then
+          -- done
+          s.task = nil
           plugin._.working = false
-          waiting = waiting + 1
-          wait_step = s.step
-        else
-          s.task = self:queue(plugin, step)
-          plugin._.working = true
-          active = active + 1
+          break
+        elseif s.step < #self._pipeline then
+          -- next
+          s.step = s.step + 1
+          local step = self._pipeline[s.step]
+          if step.task == "wait" then
+            plugin._.working = false
+            waiting = waiting + 1
+            wait_step = s.step
+            break
+          else
+            s.task = self:queue(plugin, step)
+            plugin._.working = true
+            if s.task then
+              active = active + 1
+              s.task:wake(false)
+              break
+            end
+          end
         end
       end
     end
