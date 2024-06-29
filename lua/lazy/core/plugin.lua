@@ -21,7 +21,7 @@ M.Spec = Spec
 M.LOCAL_SPEC = ".lazy.lua"
 
 ---@param spec? LazySpec
----@param opts? {optional?:boolean}
+---@param opts? {optional?:boolean, pkg?:boolean}
 function Spec.new(spec, opts)
   local self = setmetatable({}, Spec)
   self.meta = Meta.new(self)
@@ -30,7 +30,9 @@ function Spec.new(spec, opts)
   self.notifs = {}
   self.ignore_installed = {}
   self.optional = opts and opts.optional
-  self.meta:load_pkgs()
+  if not (opts and opts.pkg == false) then
+    self.meta:load_pkgs()
+  end
   if spec then
     self:parse(spec)
   end
