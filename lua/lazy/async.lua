@@ -153,9 +153,7 @@ end
 function M.running()
   local co = coroutine.running()
   if co then
-    local async = M._threads[co]
-    assert(async, "In coroutine without async context")
-    return async
+    return M._threads[co]
   end
 end
 
