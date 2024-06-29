@@ -39,6 +39,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
 8. 🔥 Developers                                 |lazy.nvim-🔥-developers|
   - Best Practices                  |lazy.nvim-🔥-developers-best-practices|
   - Building                              |lazy.nvim-🔥-developers-building|
+  - Minit (Minimal Init)      |lazy.nvim-🔥-developers-minit-(minimal-init)|
 9. Links                                                     |lazy.nvim-links|
 
 ==============================================================================
@@ -1259,6 +1260,90 @@ tick, so you can do long-running tasks without blocking Neovim.
 Use `vim.log.levels.TRACE` to only show the message as a **status** message for
 the task.
 
+
+
+MINIT (MINIMAL INIT)          *lazy.nvim-🔥-developers-minit-(minimal-init)*
+
+**lazy.nvim** comes with some built-in functionality to help you create a
+minimal init for your plugin.
+
+I mainly use this for testing and for users to create a `repro.lua`.
+
+When running in **headless** mode, **lazy.nvim** will log any messages to the
+terminal. See `opts.headless` for more info.
+
+**minit** will install/load all your specs and will always run an update as
+well.
+
+
+BOOTSTRAP ~
+
+>lua
+    -- setting this env will override all XDG paths
+    vim.env.LAZY_STDPATH = ".tests"
+    -- this will install lazy in your stdpath
+    load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
+<
+
+
+TESTING WITH BUSTED ~
+
+This will add `"lunarmodules/busted"`, configure `hererocks` and run `busted`.
+
+Below is an example of how I use **minit** to run tests with busted
+<https://olivinelabs.com/busted/> in **LazyVim**.
+
+>lua
+    #!/usr/bin/env -S nvim -l
+    
+    vim.env.LAZY_STDPATH = ".tests"
+    load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
+    
+    -- Setup lazy.nvim
+    require("lazy.minit").busted({
+      spec = {
+        "LazyVim/starter",
+        "williamboman/mason-lspconfig.nvim",
+        "williamboman/mason.nvim",
+        "nvim-treesitter/nvim-treesitter",
+      },
+    })
+<
+
+To use this, you can run:
+
+>sh
+    nvim -l ./tests/busted.lua tests
+<
+
+If you want to inspect the test environment, run:
+
+>sh
+    nvim -u ./tests/busted.lua
+<
+
+
+REPRO.LUA ~
+
+>lua
+    vim.env.LAZY_STDPATH = ".repro"
+    load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
+    
+    require("lazy.minit").repro({
+      spec = {
+        "stevearc/conform.nvim",
+        "nvim-neotest/nvim-nio",
+      },
+    })
+    
+    -- do anything else you need to do to reproduce the issue
+<
+
+Then run it with:
+
+>sh
+    nvim -u repro.lua
+<
 
 ==============================================================================
 9. Links                                                     *lazy.nvim-links*
