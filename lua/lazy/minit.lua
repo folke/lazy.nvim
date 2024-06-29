@@ -25,7 +25,9 @@ function M.extend(defaults, opts)
 end
 
 function M.setup(opts)
-  opts = M.extend({ spec = { { dir = vim.fn.expand(".") } } }, opts)
+  opts = M.extend({
+    change_detection = { enabled = false },
+  }, opts)
 
   -- set stdpaths to use .tests
   local root = opts.stdpath or ".minit"
@@ -36,11 +38,45 @@ function M.setup(opts)
 
   vim.o.loadplugins = true
   require("lazy").setup(opts)
+  require("lazy").update():wait()
+  if vim.bo.filetype == "lazy" then
+    local errors = false
+    for _, plugin in pairs(require("lazy.core.config").spec.plugins) do
+      errors = errors or require("lazy.core.plugin").has_errors(plugin)
+    end
+    if not errors then
+      vim.cmd.close()
+    end
+  end
+end
+
+function M.repro(opts)
+  opts = M.extend({
+    spec = {
+      {
+        "folke/tokyonight.nvim",
+        priority = 1000,
+        lazy = false,
+        config = function()
+          require("tokyonight").setup({ style = "moon" })
+          require("tokyonight").load()
+        end,
+      },
+    },
+    install = { colorscheme = { "tokyonight" } },
+  }, opts)
+  M.setup(opts)
 end
 
 ---@param opts LazyMinit
 function M.busted(opts)
-  opts = M.extend({ spec = { "lunarmodules/busted" }, rocks = { hererocks = true } }, opts)
+  opts = M.extend({
+    spec = {
+      "lunarmodules/busted",
+      { dir = vim.fn.fnamemodify(".", ":p") },
+    },
+    rocks = { hererocks = true },
+  }, opts)
 
   M.setup(opts)
 
