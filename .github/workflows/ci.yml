@@ -32,13 +32,16 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs
       - name: Generate Docs
         shell: bash
         run: gh workflow run "Deploy to Github Pages" --ref docs
   community:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Neovim
         shell: bash
         run: |
