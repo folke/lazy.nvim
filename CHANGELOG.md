@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.7.0](https://github.com/folke/lazy.nvim/compare/v11.6.0...v11.7.0) (2024-06-29)
+
+
+### Features
+
+* **minit:** fallback to habamax when no colorscheme set ([88f4d13](https://github.com/folke/lazy.nvim/commit/88f4d13e5f489eb30959db03a94ebfa10a78b47f))
+
 ## [11.6.0](https://github.com/folke/lazy.nvim/compare/v11.5.2...v11.6.0) (2024-06-29)
 
 
