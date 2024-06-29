@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.8.2](https://github.com/folke/lazy.nvim/compare/v11.8.1...v11.8.2) (2024-06-29)
+
+
+### Bug Fixes
+
+* **process:** deal with process errors ([a75d950](https://github.com/folke/lazy.nvim/commit/a75d950b8f356733ad2d20c4bdb794179e6d4ff1))
+* **ui:** save/restore view right before/after rendering ([5d334b9](https://github.com/folke/lazy.nvim/commit/5d334b9f579aacd09603dd9e19b6730fbfcf4c72))
+
+
+### Performance Improvements
+
+* **rocks:** `vim.fn.executable` is slow on WSL2, so only check for `luarocks` when needed. Closes [#1585](https://github.com/folke/lazy.nvim/issues/1585) ([9ab3061](https://github.com/folke/lazy.nvim/commit/9ab306169060eeab7ebca00653318683e72ab62d))
+
 ## [11.8.1](https://github.com/folke/lazy.nvim/compare/v11.8.0...v11.8.1) (2024-06-29)
 
 
