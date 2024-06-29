@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.6.0](https://github.com/folke/lazy.nvim/compare/v11.5.2...v11.6.0) (2024-06-29)
+
+
+### Features
+
+* **task:** build procs can now yield a LazyMsg for more control ([9cf7459](https://github.com/folke/lazy.nvim/commit/9cf745939d792204a18d7ad10a54d22386ececf3))
+
 ## [11.5.2](https://github.com/folke/lazy.nvim/compare/v11.5.1...v11.5.2) (2024-06-28)
 
 
