@@ -122,6 +122,15 @@ function M:get_plugin(row)
   end
 end
 
+---@param selected {name:string, kind?: LazyPluginKind}
+function M:get_row(selected)
+  for _, loc in ipairs(self.locations) do
+    if loc.kind == selected.kind and loc.name == selected.name then
+      return loc.from
+    end
+  end
+end
+
 function M:title()
   self:nl()
   local modes = vim.tbl_filter(function(c)

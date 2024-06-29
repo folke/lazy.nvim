@@ -96,7 +96,17 @@ function M.create()
         name = plugin.name,
         kind = plugin._.kind,
       }
-      self.state.plugin = not vim.deep_equal(self.state.plugin, selected) and selected or nil
+
+      local open = not vim.deep_equal(self.state.plugin, selected)
+
+      if not open then
+        local row = self.render:get_row(selected)
+        if row then
+          vim.api.nvim_win_set_cursor(self.view.win, { row, 8 })
+        end
+      end
+
+      self.state.plugin = open and selected or nil
       self:update()
     end
   end)
