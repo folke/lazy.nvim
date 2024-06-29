@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.8.0](https://github.com/folke/lazy.nvim/compare/v11.7.0...v11.8.0) (2024-06-29)
+
+
+### Features
+
+* **plugin:** allow loading specs without pkg ([695a058](https://github.com/folke/lazy.nvim/commit/695a05872a5b44e366e5532eb2fe38a64fae8357))
+
 ## [11.7.0](https://github.com/folke/lazy.nvim/compare/v11.6.0...v11.7.0) (2024-06-29)
 
 
