@@ -48,6 +48,9 @@ function M.busted(opts)
   -- disable termnial output for the tests
   Config.options.headless = {}
 
+  if not require("lazy.core.config").headless() then
+    return vim.notify("busted can only run in headless mode. Please run with `nvim -l`", vim.log.levels.WARN)
+  end
   -- run busted
   return pcall(require("busted.runner"), {
     standalone = false,
