@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.8.1](https://github.com/folke/lazy.nvim/compare/v11.8.0...v11.8.1) (2024-06-29)
+
+
+### Bug Fixes
+
+* **async:** remove debug assert ([3513227](https://github.com/folke/lazy.nvim/commit/3513227a9a41c8e6366e1719f4cefbe891ca73d2))
+
 ## [11.8.0](https://github.com/folke/lazy.nvim/compare/v11.7.0...v11.8.0) (2024-06-29)
 
 
