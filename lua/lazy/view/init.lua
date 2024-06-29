@@ -147,13 +147,7 @@ end
 
 function M:update()
   if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
-    vim.bo[self.buf].modifiable = true
-    local view = vim.api.nvim_win_call(self.view.win, vim.fn.winsaveview)
     self.render:update()
-    vim.api.nvim_win_call(self.view.win, function()
-      vim.fn.winrestview(view)
-    end)
-    vim.bo[self.buf].modifiable = false
     vim.cmd.redraw()
   end
 end

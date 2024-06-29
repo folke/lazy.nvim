@@ -74,7 +74,17 @@ function M:update()
   end
 
   self:trim()
+
+  vim.bo[self.view.buf].modifiable = true
+  local view = vim.api.nvim_win_call(self.view.win, vim.fn.winsaveview)
+
   self:render(self.view.buf)
+
+  vim.api.nvim_win_call(self.view.win, function()
+    vim.fn.winrestview(view)
+  end)
+  vim.bo[self.view.buf].modifiable = false
+
   vim.diagnostic.set(
     Config.ns,
     self.view.buf,
