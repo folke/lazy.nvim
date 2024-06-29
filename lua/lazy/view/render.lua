@@ -201,7 +201,15 @@ function M:help()
     :nl()
   self:append("or the plugin was just updated. Otherwise the plugin webpage will open."):nl():nl()
 
-  self:append("Use "):append("<d>", "LazySpecial"):append(" on a commit or plugin to open the diff view"):nl()
+  self:append("Use "):append("<d>", "LazySpecial"):append(" on a commit or plugin to open the diff view"):nl():nl()
+  self
+    :append("Use ")
+    :append("<]]>", "LazySpecial")
+    :append(" and ")
+    :append("<[[>", "LazySpecial")
+    :append(" to navigate between plugins")
+    :nl()
+    :nl()
   self:nl()
 
   self:append("Keyboard Shortcuts", "LazyH2"):nl()

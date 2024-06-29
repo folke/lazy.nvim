@@ -34,6 +34,8 @@ M.keys = {
   profile_sort = "<C-s>",
   profile_filter = "<C-f>",
   abort = "<C-c>",
+  next = "]]",
+  prev = "[[",
 }
 
 ---@type table<string,LazyViewCommand>

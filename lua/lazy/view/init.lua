@@ -111,6 +111,28 @@ function M.create()
     end
   end)
 
+  self:on_key(ViewConfig.keys.next, function()
+    local cursor = vim.api.nvim_win_get_cursor(self.view.win)
+    for l = 1, #self.render.locations, 1 do
+      local loc = self.render.locations[l]
+      if loc.from > cursor[1] then
+        vim.api.nvim_win_set_cursor(self.view.win, { loc.from, 8 })
+        return
+      end
+    end
+  end)
+
+  self:on_key(ViewConfig.keys.prev, function()
+    local cursor = vim.api.nvim_win_get_cursor(self.view.win)
+    for l = #self.render.locations, 1, -1 do
+      local loc = self.render.locations[l]
+      if loc.from < cursor[1] then
+        vim.api.nvim_win_set_cursor(self.view.win, { loc.from, 8 })
+        return
+      end
+    end
+  end)
+
   self:on_key(ViewConfig.keys.profile_sort, function()
     if self.state.mode == "profile" then
       self.state.profile.sort_time_taken = not self.state.profile.sort_time_taken
