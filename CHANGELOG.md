@@ -1,5 +1,17 @@
 # Changelog
 
+## [11.9.0](https://github.com/folke/lazy.nvim/compare/v11.8.2...v11.9.0) (2024-06-29)
+
+
+### Features
+
+* **ui:** use [[ & ]] to navigate between plugins. Fixes [#1463](https://github.com/folke/lazy.nvim/issues/1463) ([5e3c112](https://github.com/folke/lazy.nvim/commit/5e3c112cb32c9cb6e8622aab4446358e039def7c))
+
+
+### Bug Fixes
+
+* **ui:** when closing details, jump to plugin header. Closes [#1338](https://github.com/folke/lazy.nvim/issues/1338) ([3772914](https://github.com/folke/lazy.nvim/commit/37729140751577e87318c137d90d0e6bb00ceff1))
+
 ## [11.8.2](https://github.com/folke/lazy.nvim/compare/v11.8.1...v11.8.2) (2024-06-29)
 
 
