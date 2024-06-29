@@ -49,8 +49,11 @@ M.defaults = {
     enabled = true,
     root = vim.fn.stdpath("data") .. "/lazy-rocks",
     server = "https://nvim-neorocks.github.io/rocks-binaries/",
-    -- use hererocks to install luarocks.
-    hererocks = vim.fn.executable("luarocks") == 0,
+    -- use hererocks to install luarocks?
+    -- set to `nil` to use hererocks when luarocks is not found
+    -- set to `true` to always use hererocks
+    -- set to `false` to always use luarocks
+    hererocks = nil,
   },
   dev = {
     ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
@@ -217,6 +220,13 @@ M.defaults = {
   },
   debug = false,
 }
+
+function M.hererocks()
+  if M.options.rocks.hererocks == nil then
+    M.options.rocks.hererocks = vim.fn.executable("luarocks") == 0
+  end
+  return M.options.rocks.hererocks
+end
 
 M.version = "11.8.1" -- x-release-please-version
 

@@ -72,7 +72,7 @@ function M.check(opts)
   }, opts or {})
 
   local ok = false
-  if Config.options.rocks.hererocks then
+  if Config.hererocks() then
     if M.hererocks.building() then
       ok = true
     else
@@ -119,7 +119,7 @@ function M.build(task)
       "",
       "This plugin requires `luarocks`. Try one of the following:",
       " - fix your `luarocks` installation",
-      Config.options.rocks.hererocks and " - disable *hererocks* with `opts.rocks.hererocks = false`"
+      Config.hererocks() and " - disable *hererocks* with `opts.rocks.hererocks = false`"
         or " - enable `hererocks` with `opts.rocks.hererocks = true`",
       " - disable `luarocks` support completely with `opts.rocks.enabled = false`",
     })
@@ -132,7 +132,7 @@ function M.build(task)
 
   local env = {}
   local luarocks = "luarocks"
-  if Config.options.rocks.hererocks then
+  if Config.hererocks() then
     -- hererocks is still building, so skip for now
     -- a new build will happen in the next round
     if M.hererocks.building() then

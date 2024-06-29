@@ -336,16 +336,16 @@ function M.load()
   end
 
   -- add hererocks when enabled and needed
-  if Config.options.rocks.hererocks then
-    for _, plugin in pairs(Config.spec.plugins) do
-      if plugin.build == "rockspec" then
+  for _, plugin in pairs(Config.spec.plugins) do
+    if plugin.build == "rockspec" then
+      if Config.hererocks() then
         Config.spec.meta:add({
           "luarocks/hererocks",
           build = "rockspec",
           lazy = true,
         })
-        break
       end
+      break
     end
   end
 
