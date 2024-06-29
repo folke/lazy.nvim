@@ -13,8 +13,8 @@ function M.setup()
     end
   end
 
-  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazypath = vim.env.LAZY_PATH or vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  if not vim.env.LAZY_PATH and not (vim.uv or vim.loop).fs_stat(lazypath) then
     vim.api.nvim_echo({
       {
         "Cloning lazy.nvim\n\n",
