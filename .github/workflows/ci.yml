@@ -26,6 +26,13 @@ jobs:
           nvim --version
           [ ! -d tests ] && exit 0
           ./tests/run
+  docs:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Generate Docs
+        shell: bash
+        run: gh workflow run "Deploy to Github Pages" --ref docs
   community:
     runs-on: ubuntu-latest
     steps:
@@ -61,6 +68,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - tests
+      - docs
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
