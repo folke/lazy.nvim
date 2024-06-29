@@ -162,12 +162,21 @@ end
 ---@param opts? LazyCmdOptions|{filetype?:string}
 function M.float_cmd(cmd, opts)
   opts = opts or {}
+  local Process = require("lazy.manage.process")
+  local lines, code = Process.exec(cmd, { cwd = opts.cwd })
+  if code ~= 0 then
+    M.error({
+      "`" .. table.concat(cmd, " ") .. "`",
+      "",
+      "## Error",
+      table.concat(lines, "\n"),
+    }, { title = "Command Failed (" .. code .. ")" })
+    return
+  end
   local float = M.float(opts)
   if opts.filetype then
     vim.bo[float.buf].filetype = opts.filetype
   end
-  local Process = require("lazy.manage.process")
-  local lines = Process.exec(cmd, { cwd = opts.cwd })
   vim.api.nvim_buf_set_lines(float.buf, 0, -1, false, lines)
   vim.bo[float.buf].modifiable = false
   return float

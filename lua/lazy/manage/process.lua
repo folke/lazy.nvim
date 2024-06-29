@@ -42,8 +42,8 @@ function Process.new(cmd, opts)
   opts = opts or {}
   opts.args = opts.args or {}
   if type(cmd) == "table" then
-    self.cmd = table.remove(cmd, 1)
-    vim.list_extend(opts.args, cmd)
+    self.cmd = cmd[1]
+    vim.list_extend(opts.args, vim.list_slice(cmd, 2))
   else
     self.cmd = cmd
   end
@@ -233,10 +233,7 @@ function M.exec(cmd, opts)
   opts = opts or {}
   local proc = M.spawn(cmd, opts)
   proc:wait()
-  if proc.code ~= 0 then
-    error("Process failed with code " .. proc.code)
-  end
-  return vim.split(proc.data, "\n")
+  return vim.split(proc.data, "\n"), proc.code
 end
 
 return M
