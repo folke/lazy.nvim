@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.9.1](https://github.com/folke/lazy.nvim/compare/v11.9.0...v11.9.1) (2024-06-30)
+
+
+### Performance Improvements
+
+* automatically suspend the scheduler when all threads are waiting ([#1591](https://github.com/folke/lazy.nvim/issues/1591)) ([c7ed87f](https://github.com/folke/lazy.nvim/commit/c7ed87f9ca03ea412134d6a6ea55b43232eb6b0c))
+* suspend when tasks are active ([2f4ac03](https://github.com/folke/lazy.nvim/commit/2f4ac035bcc66292250de7134d73007b147f64e8))
+
 ## [11.9.0](https://github.com/folke/lazy.nvim/compare/v11.8.2...v11.9.0) (2024-06-29)
 
 
