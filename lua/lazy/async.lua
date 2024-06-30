@@ -152,10 +152,27 @@ function M.step()
     table.insert(state._suspended and M._suspended or M._active, state)
   end
 
-  -- print("step", #M._active, #M._suspended)
+  -- M.debug()
   if #M._active == 0 then
     return M._executor:stop()
   end
+end
+
+function M.debug()
+  local lines = {
+    "- active: " .. #M._active,
+    "- suspended: " .. #M._suspended,
+  }
+  for _, async in ipairs(M._active) do
+    local info = debug.getinfo(async._fn)
+    local file = vim.fn.fnamemodify(info.short_src:sub(1), ":~:.")
+    table.insert(lines, ("%s:%d"):format(file, info.linedefined))
+    if #lines > 10 then
+      break
+    end
+  end
+  local msg = table.concat(lines, "\n")
+  M._notif = vim.notify(msg, nil, { replace = M._notif })
 end
 
 ---@param async Async

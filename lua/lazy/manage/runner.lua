@@ -153,7 +153,9 @@ function Runner:_start()
       end
       continue(true)
     end
-    coroutine.yield()
+    if active > 0 then
+      self._running:suspend()
+    end
   end
 end
 
