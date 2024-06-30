@@ -1,3 +1,4 @@
+local Async = require("lazy.async")
 local Runner = require("lazy.manage.runner")
 
 describe("runner", function()
@@ -33,7 +34,7 @@ describe("runner", function()
       ---@async
       ---@param task LazyTask
       run = function(task)
-        coroutine.yield()
+        Async.yield()
         table.insert(runs, { plugin = task.plugin.name, task = task.name })
       end,
     }

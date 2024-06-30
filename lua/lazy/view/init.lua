@@ -83,6 +83,7 @@ function M.create()
 
   vim.keymap.set("n", ViewConfig.keys.abort, function()
     require("lazy.manage.process").abort()
+    require("lazy.async").abort()
     return ViewConfig.keys.abort
   end, { silent = true, buffer = self.buf, expr = true })
 

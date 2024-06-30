@@ -79,7 +79,7 @@ end
 function Async:suspend(yield)
   self._suspended = true
   if coroutine.running() == self._co and yield ~= false then
-    coroutine.yield()
+    M.yield()
   end
 end
 
@@ -132,12 +132,25 @@ function Async:step()
   return self:running()
 end
 
+function M.abort()
+  for _, async in ipairs(M._active) do
+    coroutine.resume(async._co, "abort")
+  end
+end
+
+function M.yield()
+  if coroutine.yield() == "abort" then
+    error("aborted", 2)
+  end
+end
+
 function M.step()
   local start = vim.uv.hrtime()
   for _ = 1, #M._active do
-    if vim.uv.hrtime() - start > M.BUDGET * 1e6 then
+    if Util.exiting() or vim.uv.hrtime() - start > M.BUDGET * 1e6 then
       break
     end
+
     local state = table.remove(M._active, 1)
     if state:step() then
       if state._suspended then
@@ -153,7 +166,7 @@ function M.step()
   end
 
   -- M.debug()
-  if #M._active == 0 then
+  if #M._active == 0 or Util.exiting() then
     return M._executor:stop()
   end
 end
@@ -183,7 +196,7 @@ function M.add(async)
 end
 
 function M._run()
-  if not M._executor:is_active() then
+  if not Util.exiting() and not M._executor:is_active() then
     M._executor:start(vim.schedule_wrap(M.step))
   end
 end

@@ -93,7 +93,7 @@ function Process:_run()
     end)
     self:suspend()
     while not (self.handle:is_closing() and stdout:is_closing() and stderr:is_closing()) do
-      coroutine.yield()
+      Async.yield()
     end
   else
     self.data = "Failed to spawn process " .. self.cmd .. " " .. vim.inspect(self.opts)

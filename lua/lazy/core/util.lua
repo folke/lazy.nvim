@@ -29,6 +29,10 @@ function M.track(data, time)
   end
 end
 
+function M.exiting()
+  return vim.v.exiting ~= vim.NIL
+end
+
 ---@generic T
 ---@param list T[]
 ---@param fn fun(v: T):boolean?
