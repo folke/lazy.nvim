@@ -21,6 +21,7 @@ M.log = {
   ---@async
   ---@param opts {args?: string[], updated?:boolean, check?:boolean}
   run = function(self, opts)
+    -- self:spawn({ "sleep", "5" })
     local args = {
       "log",
       "--pretty=format:%h %s (%cr)",
