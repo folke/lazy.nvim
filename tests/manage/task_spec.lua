@@ -1,4 +1,3 @@
----@module 'luassert'
 --# selene:allow(incorrect_standard_library_use)
 local Task = require("lazy.manage.task")
 

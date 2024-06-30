@@ -1,5 +1,3 @@
----@module 'luassert'
-
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
 local Plugin = require("lazy.core.plugin")

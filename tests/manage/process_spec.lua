@@ -1,4 +1,3 @@
----@module 'luassert'
 local Async = require("lazy.async")
 local Process = require("lazy.manage.process")
 

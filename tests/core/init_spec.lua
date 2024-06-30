@@ -1,4 +1,3 @@
----@module 'luassert'
 local Util = require("lazy.core.util")
 
 describe("init", function()
