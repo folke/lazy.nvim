@@ -28,6 +28,7 @@ jobs:
           ./tests/run
   docs:
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'folke' }}
     needs: tests
     env:
       GH_TOKEN: ${{ github.token }}
@@ -40,6 +41,7 @@ jobs:
         run: gh workflow run "Deploy to Github Pages" --ref docs
   community:
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'folke' }}
     steps:
       - uses: actions/checkout@v4
       - name: Install Neovim
@@ -70,7 +72,7 @@ jobs:
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
   release:
     name: release
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'folke' }}
     needs:
       - tests
       - docs
