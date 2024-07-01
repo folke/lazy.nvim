@@ -150,8 +150,11 @@ function Spec:import(spec)
   local modspecs = {}
 
   if type(import) == "string" then
-    Util.lsmod(import, function(modname)
+    Util.lsmod(import, function(modname, modpath)
       modspecs[#modspecs + 1] = modname
+      package.preload[modname] = function()
+        return loadfile(modpath)()
+      end
     end)
     table.sort(modspecs)
   else

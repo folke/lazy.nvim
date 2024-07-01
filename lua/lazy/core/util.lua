@@ -287,7 +287,7 @@ function M.find_root(modname)
   local ret = require("lazy.core.cache").find(modname, {
     rtp = true,
     paths = paths,
-    patterns = { "", ".lua" },
+    patterns = { ".lua", "" },
   })[1]
 
   if not ret and cached then
@@ -295,25 +295,27 @@ function M.find_root(modname)
     ret = require("lazy.core.cache").find(modname, {
       rtp = false,
       paths = paths,
-      patterns = { "", ".lua" },
+      patterns = { ".lua", "" },
     })[1]
   end
   if ret then
-    local root = ret.modpath:gsub("/init%.lua$", ""):gsub("%.lua$", "")
-    return root
+    return ret.modpath:gsub("%.lua$", ""), ret.modpath
   end
 end
 
 ---@param modname string
 ---@param fn fun(modname:string, modpath:string)
 function M.lsmod(modname, fn)
-  local root = M.find_root(modname)
+  local root, match = M.find_root(modname)
   if not root then
     return
   end
 
-  if vim.uv.fs_stat(root .. ".lua") then
-    fn(modname, root .. ".lua")
+  if match:sub(-4) == ".lua" then
+    fn(modname, match)
+    if not vim.uv.fs_stat(root) then
+      return
+    end
   end
 
   M.ls(root, function(path, name, type)
