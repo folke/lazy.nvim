@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.9.2](https://github.com/folke/lazy.nvim/compare/v11.9.1...v11.9.2) (2024-07-02)
+
+
+### Bug Fixes
+
+* **async:** make asyncs abortable ([1fad617](https://github.com/folke/lazy.nvim/commit/1fad61712bd3937dda925775a7736b8efbcbf1a7))
+* **health:** check for errors when executing commands. Closes [#1599](https://github.com/folke/lazy.nvim/issues/1599) ([d0921f5](https://github.com/folke/lazy.nvim/commit/d0921f5b9b3d2c5e09618da55a018228edcc4d16))
+
+
+### Performance Improvements
+
+* **plugin:** minor optim to resolve imports a bit faster ([a9d7ade](https://github.com/folke/lazy.nvim/commit/a9d7ade203b3f3ee3058c082c62afdf8e4bcb416))
+
 ## [11.9.1](https://github.com/folke/lazy.nvim/compare/v11.9.0...v11.9.1) (2024-06-30)
 
 
