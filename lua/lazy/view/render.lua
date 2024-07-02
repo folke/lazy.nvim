@@ -621,10 +621,25 @@ function M:handlers(plugin, types)
   types = type(types) == "string" and { types } or types
   types = types and types or vim.tbl_keys(Handler.types)
   for _, t in ipairs(types) do
-    for id, value in pairs(plugin._.handlers[t] or {}) do
-      value = t == "keys" and Keys.to_string(value) or id
-      self:reason({ [t] = value })
-      self:append(" ")
+    items = plugin._.handlers[t] or {}
+    if t == "keys" then
+      local last_key_val = nil
+      for id, value in vim.spairs(items) do
+        value = Keys.to_string(value) or id
+        local value_pat = vim.pesc(value)
+        if last_key_val and string.find(value_pat, "^" .. last_key_val) then
+            -- matches previous, shorter prefix - pass
+        else
+          self:reason({ [t] = value })
+          self:append(" ")
+          last_key_val = value_pat
+        end
+      end
+    else
+      for _, value in pairs(items) do
+        self:reason({ [t] = value })
+        self:append(" ")
+      end
     end
   end
 end
