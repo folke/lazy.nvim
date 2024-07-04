@@ -275,15 +275,6 @@ function M.update_rocks_state()
   end
 end
 
----@param path string
-function M.local_spec(path)
-  local file = vim.secure.read(path)
-  if file then
-    return loadstring(file)()
-  end
-  return {}
-end
-
 ---@return LazySpecImport?
 function M.find_local_spec()
   if not Config.options.local_spec then
@@ -298,7 +289,7 @@ function M.find_local_spec()
         import = function()
           local data = vim.secure.read(file)
           if data then
-            return loadstring(data)()
+            return loadstring(data, M.LOCAL_SPEC)()
           end
           return {}
         end,
