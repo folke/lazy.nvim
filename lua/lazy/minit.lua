@@ -20,10 +20,26 @@ function M.extend(defaults, opts)
   return vim.tbl_deep_extend("force", defaults, opts, { spec = spec })
 end
 
+---@param opts LazyConfig
 function M.setup(opts)
   opts = M.extend({
     change_detection = { enabled = false },
   }, opts)
+
+  local args = {}
+  local is_busted = false
+  for _, a in ipairs(_G.arg) do
+    if a == "--busted" then
+      is_busted = true
+    else
+      table.insert(args, a)
+    end
+  end
+  _G.arg = args
+
+  if is_busted then
+    opts = M.busted.setup(opts)
+  end
 
   -- set stdpaths to use .tests
   if vim.env.LAZY_STDPATH then
@@ -48,6 +64,10 @@ function M.setup(opts)
       vim.cmd.close()
     end
   end
+
+  if is_busted then
+    M.busted.run()
+  end
 end
 
 function M.repro(opts)
@@ -68,18 +88,9 @@ function M.repro(opts)
   M.setup(opts)
 end
 
----@param opts LazyConfig
-function M.busted(opts)
-  opts = M.extend({
-    spec = {
-      "lunarmodules/busted",
-      { dir = vim.fn.fnamemodify(".", ":p") },
-    },
-    rocks = { hererocks = true },
-  }, opts)
+M.busted = {}
 
-  M.setup(opts)
-
+function M.busted.run()
   local Config = require("lazy.core.config")
   -- disable termnial output for the tests
   Config.options.headless = {}
@@ -92,5 +103,37 @@ function M.busted(opts)
     standalone = false,
   }) or os.exit(1)
 end
+
+---@param opts LazyConfig
+function M.busted.setup(opts)
+  local args = table.concat(_G.arg, " ")
+  local json = args:find("--output[ =]json")
+
+  return M.extend({
+    spec = {
+      "lunarmodules/busted",
+      { dir = vim.uv.cwd() },
+    },
+    headless = {
+      process = not json,
+      log = not json,
+      task = not json,
+    },
+    rocks = { hererocks = true },
+  }, opts)
+end
+
+---@param opts LazyConfig
+function M.busted.init(opts)
+  opts = M.busted.setup(opts)
+  M.setup(opts)
+  M.busted.run()
+end
+
+setmetatable(M.busted, {
+  __call = function(_, opts)
+    M.busted.init(opts)
+  end,
+})
 
 return M
