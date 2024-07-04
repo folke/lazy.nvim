@@ -23,6 +23,7 @@ end
 ---@param opts LazyConfig
 function M.setup(opts)
   opts = M.extend({
+    local_spec = false,
     change_detection = { enabled = false },
   }, opts)
 
