@@ -26,8 +26,13 @@ function M.setup()
       },
     }, true, {})
     local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-    local ok, out =
-      pcall(vim.fn.system, { "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+    local ok, out = pcall(vim.fn.system, {
+      "git",
+      "clone",
+      "--filter=blob:none",
+      lazyrepo,
+      lazypath,
+    })
     if not ok or vim.v.shell_error ~= 0 then
       vim.api.nvim_echo({
         { "Failed to clone lazy.nvim\n", "ErrorMsg" },
