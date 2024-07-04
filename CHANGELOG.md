@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.10.0](https://github.com/folke/lazy.nvim/compare/v11.9.2...v11.10.0) (2024-07-04)
+
+
+### Features
+
+* **profiling:** merge VeryLazy stats and show startuptime in profile view ([0f2786b](https://github.com/folke/lazy.nvim/commit/0f2786bcc91347188627534471ee75c3f6f16b2d))
+
+
+### Bug Fixes
+
+* **config:** determine headless only during startup. Fixes [#1608](https://github.com/folke/lazy.nvim/issues/1608) ([6fdd904](https://github.com/folke/lazy.nvim/commit/6fdd904ee45b66d933c5d2f72bcec337e13744f8))
+* **plugin:** local spec name ([923e1aa](https://github.com/folke/lazy.nvim/commit/923e1aa7a49d945afa4c03da4f8ff052cd6d14a6))
+
 ## [11.9.2](https://github.com/folke/lazy.nvim/compare/v11.9.1...v11.9.2) (2024-07-02)
 
 
