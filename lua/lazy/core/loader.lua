@@ -181,21 +181,30 @@ function M.load(plugins, reason, opts)
   ---@diagnostic disable-next-line: cast-local-type
   plugins = (type(plugins) == "string" or plugins.name) and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
-
+  local queue = {}
   for _, plugin in pairs(plugins) do
     if type(plugin) == "string" then
       if Config.plugins[plugin] then
         plugin = Config.plugins[plugin]
       elseif Config.spec.disabled[plugin] then
-        plugin = nil
+        goto continue
       else
         Util.error("Plugin " .. plugin .. " not found")
-        plugin = nil
+        goto continue
       end
     end
-    if plugin and not plugin._.loaded then
-      M._load(plugin, reason, opts)
+    if not plugin._.loaded then
+      table.insert(queue, plugin)
     end
+    ::continue::
+  end
+
+  table.sort(queue,function (a,b)
+    return a.priority and b.priority and a.priority>b.priority
+  end)
+
+  for _,plugin in ipairs(queue) do
+    M._load(plugin, reason, opts)
   end
 end
 
