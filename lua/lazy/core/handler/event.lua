@@ -75,7 +75,9 @@ function M:_add(event)
       end
       -- HACK: work-around for https://github.com/neovim/neovim/issues/25526
       done = true
-      Util.track({ [self.type] = event.id })
+      if event.id ~= "VeryLazy" then
+        Util.track({ [self.type] = event.id })
+      end
 
       local state = M.get_state(ev.event, ev.buf, ev.data)
 
@@ -86,7 +88,9 @@ function M:_add(event)
       for _, s in ipairs(state) do
         M.trigger(s)
       end
-      Util.track()
+      if event.id ~= "VeryLazy" then
+        Util.track()
+      end
     end,
   })
 end
