@@ -253,8 +253,9 @@ M.mapleader = nil
 ---@type string
 M.maplocalleader = nil
 
+local headless = #vim.api.nvim_list_uis() == 0
 function M.headless()
-  return #vim.api.nvim_list_uis() == 0
+  return headless
 end
 
 ---@param opts? LazyConfig
