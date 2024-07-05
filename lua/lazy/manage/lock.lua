@@ -3,43 +3,43 @@ local Git = require("lazy.manage.git")
 
 local M = {}
 
----@type table<string, {commit:string, branch:string}>
+---@alias LazyLockfile table<string, {commit:string, branch:string}>
+---@type LazyLockfile
 M.lock = {}
 M._loaded = false
 
 function M.update()
+  M.load()
   vim.fn.mkdir(vim.fn.fnamemodify(Config.options.lockfile, ":p:h"), "p")
   local f = assert(io.open(Config.options.lockfile, "wb"))
   f:write("{\n")
-  M.lock = {}
 
-  ---@param plugin LazyPlugin
-  local plugins = vim.tbl_filter(function(plugin)
-    return not plugin._.is_local and plugin._.installed
-  end, Config.plugins)
+  -- keep disabled and cond plugins
+  for name in pairs(M.lock) do
+    if not (Config.spec.disabled[name] or Config.spec.ignore_installed[name]) then
+      M.lock[name] = nil
+    end
+  end
 
-  ---@param plugin LazyPlugin
+  for _, plugin in pairs(Config.plugins) do
+    if not plugin._.is_local and plugin._.installed then
+      local info = assert(Git.info(plugin.dir))
+      M.lock[plugin.name] = {
+        branch = info.branch or assert(Git.get_branch(plugin)),
+        commit = assert(info.commit, "commit is nil"),
+      }
+    end
+  end
+
   ---@type string[]
-  local names = vim.tbl_map(function(plugin)
-    return plugin.name
-  end, plugins)
+  local names = vim.tbl_keys(M.lock)
   table.sort(names)
 
   for n, name in ipairs(names) do
-    local plugin = Config.plugins[name]
-    if not plugin._.is_local and plugin._.installed then
-      local info = assert(Git.info(plugin.dir))
-      if not info.branch then
-        info.branch = assert(Git.get_branch(plugin))
-      end
-      info.commit = info.commit
-      -- f:write(([[  [%q] = { branch = %q, commit = %q },]]):format(name, info.branch, info.commit) .. "\n")
-      f:write(([[  %q: { "branch": %q, "commit": %q }]]):format(name, info.branch, info.commit))
-      if n ~= #names then
-        f:write(",\n")
-      end
-      ---@diagnostic disable-next-line: assign-type-mismatch
-      M.lock[plugin.name] = info
+    local info = M.lock[name]
+    f:write(([[  %q: { "branch": %q, "commit": %q }]]):format(name, info.branch, info.commit))
+    if n ~= #names then
+      f:write(",\n")
     end
   end
   f:write("\n}")
@@ -47,6 +47,9 @@ function M.update()
 end
 
 function M.load()
+  if M._loaded then
+    return
+  end
   M.lock = {}
   M._loaded = true
   local f = io.open(Config.options.lockfile, "r")
@@ -64,9 +67,7 @@ end
 ---@param plugin LazyPlugin
 ---@return {commit:string, branch:string}
 function M.get(plugin)
-  if not M._loaded then
-    M.load()
-  end
+  M.load()
   return M.lock[plugin.name]
 end
 
