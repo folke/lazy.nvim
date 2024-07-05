@@ -1,6 +1,7 @@
 ---
 sidebar_position: 7
 ---
+
 # 🔥 Developers
 
 To make it easier for users to install your plugin, you can include a [package spec](/packages) in your repo.
@@ -18,6 +19,29 @@ To make it easier for users to install your plugin, you can include a [package s
   ```lua
   { "nvim-lua/plenary.nvim", lazy = true }
   ```
+
+- Always use `opts` instead of `config` when possible. `config` is almost never needed.
+
+  :::tip[GOOD]
+
+  ```lua
+  { "folke/todo-comments.nvim", opts = {} },
+  ```
+
+  :::
+
+  :::danger[BAD]
+
+  ```lua
+  {
+    "folke/todo-comments.nvim",
+    config = function()
+      require("todo-comments").setup({})
+    end,
+  },
+  ```
+
+  :::
 
 - Only use `dependencies` if a plugin needs the dep to be installed **AND** loaded.
   Lua plugins/libraries are automatically loaded when they are `require()`d,
@@ -163,4 +187,3 @@ Then run it with:
 ```sh
 nvim -u repro.lua
 ```
-

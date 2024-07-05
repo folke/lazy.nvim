@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 ---
+
 # 🔌 Plugin Spec
 
 ## Spec Source
@@ -26,13 +27,36 @@ A valid spec should define one of `[1]`, `dir` or `url`.
 
 ## Spec Setup
 
-| Property   | Type                                                                 | Description                                                                                                                                                                                                                                                                                                                                                                 |
-| ---------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **init**   | `fun(LazyPlugin)`                                                    | `init` functions are always executed during startup                                                                                                                                                                                                                                                                                                                         |
-| **opts**   | `table` or `fun(LazyPlugin, opts:table)`                             | `opts` should be a table (will be merged with parent specs), return a table (replaces parent specs) or should change a table. The table will be passed to the `Plugin.config()` function. Setting this value will imply `Plugin.config()`                                                                                                                                   |
-| **config** | `fun(LazyPlugin, opts:table)` or `true`                              | `config` is executed when the plugin loads. The default implementation will automatically run `require(MAIN).setup(opts)` if `opts` or `config = true` is set. Lazy uses several heuristics to determine the plugin's `MAIN` module automatically based on the plugin's **name**. See also `opts`. To use the default implementation without `opts` set `config` to `true`. |
-| **main**   | `string?`                                                            | You can specify the `main` module to use for `config()` and `opts()`, in case it can not be determined automatically. See `config()`                                                                                                                                                                                                                                        |
-| **build**  | `fun(LazyPlugin)` or `string` or `false` or a list of build commands | `build` is executed when a plugin is installed or updated. See [Building](/developers#building) for more information.                                                                                                                                                                                                                                                       |
+| Property   | Type                                                                 | Description                                                                                                                                                                                                                                                                                                                               |
+| ---------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **init**   | `fun(LazyPlugin)`                                                    | `init` functions are always executed during. Mostly useful for setting `vim.g.*` configuration used by **Vim** plugins startup                                                                                                                                                                                                            |
+| **opts**   | `table` or `fun(LazyPlugin, opts:table)`                             | `opts` should be a table (will be merged with parent specs), return a table (replaces parent specs) or should change a table. The table will be passed to the `Plugin.config()` function. Setting this value will imply `Plugin.config()`                                                                                                 |
+| **config** | `fun(LazyPlugin, opts:table)` or `true`                              | `config` is executed when the plugin loads. The default implementation will automatically run `require(MAIN).setup(opts)` if `opts` or `config = true` is set. Lazy uses several heuristics to determine the plugin's `MAIN` module automatically based on the plugin's **name**. _(`opts` is the recommended way to configure plugins)_. |
+| **main**   | `string?`                                                            | You can specify the `main` module to use for `config()` and `opts()`, in case it can not be determined automatically. See `config()`                                                                                                                                                                                                      |
+| **build**  | `fun(LazyPlugin)` or `string` or `false` or a list of build commands | `build` is executed when a plugin is installed or updated. See [Building](/developers#building) for more information.                                                                                                                                                                                                                     |
+
+Always use `opts` instead of `config` when possible. `config` is almost never needed.
+
+:::tip[GOOD]
+
+```lua
+{ "folke/todo-comments.nvim", opts = {} },
+```
+
+:::
+
+:::danger[BAD]
+
+```lua
+{
+  "folke/todo-comments.nvim",
+  config = function()
+    require("todo-comments").setup({})
+  end,
+},
+```
+
+:::
 
 ## Spec Lazy Loading
 
@@ -67,4 +91,3 @@ Refer to the [Versioning](./versioning.md) section for more information.
 | **specs**    | `LazySpec` | A list of plugin specs defined in the scope of the plugin. This is mainly useful for Neovim distros, to allow setting options on plugins that may/may not be part of the user's plugins. When the plugin is disabled, none of the scoped specs will be included in the final spec. Similar to `dependencies` without the automatic loading of the specs. |
 | **module**   | `false?`   | Do not automatically load this Lua module when it's required somewhere                                                                                                                                                                                                                                                                                   |
 | **import**   | `string?`  | Import the given spec module.                                                                                                                                                                                                                                                                                                                            |
-
