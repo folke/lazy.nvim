@@ -1,0 +1,10 @@
+name: Stale Issues & PRs
+
+on:
+  schedule:
+    - cron: "30 1 * * *"
+
+jobs:
+  ci:
+    uses: folke/github/.github/workflows/stale.yml@main
+    secrets: inherit
