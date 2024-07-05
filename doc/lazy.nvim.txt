@@ -291,23 +291,25 @@ SPEC LOADING                         *lazy.nvim-🔌-plugin-spec-spec-loading*
 
 SPEC SETUP                             *lazy.nvim-🔌-plugin-spec-spec-setup*
 
-  ---------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------
   Property   Type                          Description
-  ---------- ----------------------------- ----------------------------------------------------------
-  init       fun(LazyPlugin)               init functions are always executed during startup
+  ---------- ----------------------------- ---------------------------------------------------------
+  init       fun(LazyPlugin)               init functions are always executed during. Mostly useful
+                                           for setting vim.g.* configuration used by Vim plugins
+                                           startup
 
-  opts       table or                      opts should be a table (will be merged with parent specs),
-             fun(LazyPlugin, opts:table)   return a table (replaces parent specs) or should change a
-                                           table. The table will be passed to the Plugin.config()
-                                           function. Setting this value will imply Plugin.config()
+  opts       table or                      opts should be a table (will be merged with parent
+             fun(LazyPlugin, opts:table)   specs), return a table (replaces parent specs) or should
+                                           change a table. The table will be passed to the
+                                           Plugin.config() function. Setting this value will imply
+                                           Plugin.config()
 
   config     fun(LazyPlugin, opts:table)   config is executed when the plugin loads. The default
              or true                       implementation will automatically run
-                                           require(MAIN).setup(opts) if opts or config = true is set.
-                                           Lazy uses several heuristics to determine the plugin’s
-                                           MAIN module automatically based on the plugin’s name. See
-                                           also opts. To use the default implementation without opts
-                                           set config to true.
+                                           require(MAIN).setup(opts) if opts or config = true is
+                                           set. Lazy uses several heuristics to determine the
+                                           plugin’s MAIN module automatically based on the plugin’s
+                                           name. (opts is the recommended way to configure plugins).
 
   main       string?                       You can specify the main module to use for config() and
                                            opts(), in case it can not be determined automatically.
@@ -316,7 +318,12 @@ SPEC SETUP                             *lazy.nvim-🔌-plugin-spec-spec-setup*
   build      fun(LazyPlugin) or string or  build is executed when a plugin is installed or updated.
              false or a list of build      See Building for more information.
              commands                      
-  ---------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------
+Always use `opts` instead of `config` when possible. `config` is almost never
+needed.
+
+
+
 
 SPEC LAZY LOADING               *lazy.nvim-🔌-plugin-spec-spec-lazy-loading*
 
@@ -1241,6 +1248,8 @@ BEST PRACTICES                      *lazy.nvim-🔥-developers-best-practices*
     >lua
         { "nvim-lua/plenary.nvim", lazy = true }
     <
+- Always use `opts` instead of `config` when possible. `config` is almost never
+    needed.
 - Only use `dependencies` if a plugin needs the dep to be installed **AND**
     loaded. Lua plugins/libraries are automatically loaded when they are
     `require()`d, so they don’t need to be in `dependencies`.
