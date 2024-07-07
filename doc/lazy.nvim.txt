@@ -294,9 +294,9 @@ SPEC SETUP                             *lazy.nvim-🔌-plugin-spec-spec-setup*
   --------------------------------------------------------------------------------------------------
   Property   Type                          Description
   ---------- ----------------------------- ---------------------------------------------------------
-  init       fun(LazyPlugin)               init functions are always executed during. Mostly useful
-                                           for setting vim.g.* configuration used by Vim plugins
-                                           startup
+  init       fun(LazyPlugin)               init functions are always executed during startup. Mostly
+                                           useful for setting vim.g.* configuration used by Vim
+                                           plugins startup
 
   opts       table or                      opts should be a table (will be merged with parent
              fun(LazyPlugin, opts:table)   specs), return a table (replaces parent specs) or should
