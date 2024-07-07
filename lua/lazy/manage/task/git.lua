@@ -32,11 +32,13 @@ M.log = {
       "--no-show-signature",
     }
 
+    local info, target
+
     if opts.updated then
       table.insert(args, self.plugin._.updated.from .. ".." .. (self.plugin._.updated.to or "HEAD"))
     elseif opts.check then
-      local info = assert(Git.info(self.plugin.dir))
-      local target = assert(self.plugin._.is_local and Git.get_local_target(self.plugin) or Git.get_target(self.plugin))
+      info = assert(Git.info(self.plugin.dir))
+      target = assert(self.plugin._.is_local and Git.get_local_target(self.plugin) or Git.get_target(self.plugin))
       if not target.commit then
         for k, v in pairs(target) do
           error(k .. " '" .. v .. "' not found")
@@ -44,15 +46,17 @@ M.log = {
         error("no target commit found")
       end
       assert(target.commit, self.plugin.name .. " " .. target.branch)
-      if Git.eq(info, target) then
-        if Config.options.checker.check_pinned then
-          local last_commit = Git.get_commit(self.plugin.dir, target.branch, true)
-          if not Git.eq(info, { commit = last_commit }) then
-            self.plugin._.outdated = true
+      if not self.plugin._.is_local then
+        if Git.eq(info, target) then
+          if Config.options.checker.check_pinned then
+            local last_commit = Git.get_commit(self.plugin.dir, target.branch, true)
+            if not Git.eq(info, { commit = last_commit }) then
+              self.plugin._.outdated = true
+            end
           end
+        else
+          self.plugin._.updates = { from = info, to = target }
         end
-      else
-        self.plugin._.updates = { from = info, to = target }
       end
       table.insert(args, info.commit .. ".." .. target.commit)
     else
@@ -63,6 +67,14 @@ M.log = {
       args = args,
       cwd = self.plugin.dir,
     })
+
+    -- for local plugins, mark as needing updates only if local is
+    -- behind upstream, i.e. if git log gave no output
+    if opts.check and self.plugin._.is_local then
+      if not vim.tbl_isempty(self:get_log()) then
+        self.plugin._.updates = { from = info, to = target }
+      end
+    end
   end,
 }
 
