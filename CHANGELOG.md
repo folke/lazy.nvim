@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.10.3](https://github.com/folke/lazy.nvim/compare/v11.10.2...v11.10.3) (2024-07-07)
+
+
+### Bug Fixes
+
+* **git:** local plugin fixes ([#1624](https://github.com/folke/lazy.nvim/issues/1624)) ([72c0dc9](https://github.com/folke/lazy.nvim/commit/72c0dc9462ab3bf1a68198afabc1eb4e2940d299))
+
 ## [11.10.2](https://github.com/folke/lazy.nvim/compare/v11.10.1...v11.10.2) (2024-07-07)
 
 
