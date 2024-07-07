@@ -38,7 +38,7 @@ M.log = {
       table.insert(args, self.plugin._.updated.from .. ".." .. (self.plugin._.updated.to or "HEAD"))
     elseif opts.check then
       info = assert(Git.info(self.plugin.dir))
-      target = assert(self.plugin._.is_local and Git.get_local_target(self.plugin) or Git.get_target(self.plugin))
+      target = assert(Git.get_target(self.plugin))
       if not target.commit then
         for k, v in pairs(target) do
           error(k .. " '" .. v .. "' not found")
