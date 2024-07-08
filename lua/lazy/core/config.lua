@@ -253,9 +253,10 @@ M.mapleader = nil
 ---@type string
 M.maplocalleader = nil
 
-local headless = #vim.api.nvim_list_uis() == 0
+M.suspended = false
+
 function M.headless()
-  return headless
+  return not M.suspended and #vim.api.nvim_list_uis() == 0
 end
 
 ---@param opts? LazyConfig
@@ -336,6 +337,12 @@ function M.setup(opts)
             if plugin then
               require("lazy").pkg({ plugins = { plugin } })
             end
+          end,
+        })
+
+        vim.api.nvim_create_autocmd({ "VimSuspend", "VimResume" }, {
+          callback = function(ev)
+            M.suspended = ev.event == "VimSuspend"
           end,
         })
       end,
