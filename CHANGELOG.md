@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.10.4](https://github.com/folke/lazy.nvim/compare/v11.10.3...v11.10.4) (2024-07-08)
+
+
+### Bug Fixes
+
+* **rocks:** try building anyway even when prerequisits have not been met. (will likely fail) ([f0324de](https://github.com/folke/lazy.nvim/commit/f0324defdd43be8aa14aaf3a794ff3d5581f36ba))
+* **ui:** don't treat suspended as headless. Closes [#1626](https://github.com/folke/lazy.nvim/issues/1626) ([2dfccd7](https://github.com/folke/lazy.nvim/commit/2dfccd7b948beb26d8bcff7f9113a3a5c85cbc4a))
+
 ## [11.10.3](https://github.com/folke/lazy.nvim/compare/v11.10.2...v11.10.3) (2024-07-07)
 
 
