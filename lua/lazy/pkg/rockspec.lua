@@ -78,25 +78,23 @@ function M.check(opts)
     else
       ok = Health.have(M.python, opts)
       ok = Health.have(M.hererocks.bin("luarocks")) and ok
-      ok = Health.have(
+      Health.have(
         M.hererocks.bin("lua"),
         vim.tbl_extend("force", opts, {
           version = "-v",
           version_pattern = "5.1",
         })
-      ) and ok
+      )
     end
   else
     ok = Health.have("luarocks", opts)
-    ok = (
-      Health.have(
-        { "lua5.1", "lua", "lua-5.1" },
-        vim.tbl_extend("force", opts, {
-          version = "-v",
-          version_pattern = "5.1",
-        })
-      )
-    ) and ok
+    Health.have(
+      { "lua5.1", "lua", "lua-5.1" },
+      vim.tbl_extend("force", opts, {
+        version = "-v",
+        version_pattern = "5.1",
+      })
+    )
   end
   return ok
 end
@@ -104,17 +102,17 @@ end
 ---@async
 ---@param task LazyTask
 function M.build(task)
-  if
-    not M.check({
-      error = function(msg)
-        task:error(msg:gsub("[{}]", "`"))
-      end,
-      warn = function(msg)
-        task:warn(msg)
-      end,
-      ok = function(msg) end,
-    })
-  then
+  M.check({
+    error = function(msg)
+      task:error(msg:gsub("[{}]", "`"))
+    end,
+    warn = function(msg)
+      task:warn(msg)
+    end,
+    ok = function(msg) end,
+  })
+
+  if task:has_warnings() then
     task:log({
       "",
       "This plugin requires `luarocks`. Try one of the following:",
@@ -123,7 +121,11 @@ function M.build(task)
         or " - enable `hererocks` with `opts.rocks.hererocks = true`",
       " - disable `luarocks` support completely with `opts.rocks.enabled = false`",
     })
-    return
+    task:warn("\nWill try building anyway, but will likely fail...")
+
+    task:warn("\n" .. string.rep("-", 80) .. "\n")
+
+    task:set_level(vim.log.levels.WARN)
   end
 
   if task.plugin.name == "hererocks" then
@@ -187,11 +189,13 @@ function M.build(task)
     return
   end
 
-  task:warn("Failed installing " .. rockspec.package .. " with `luarocks`.\nTrying to build from source.")
+  task:warn("Failed installing " .. rockspec.package .. " with `luarocks`.")
+  task:warn("\n" .. string.rep("-", 80) .. "\n")
+  task:warn("Trying to build from source.")
 
   -- install failed, so try building from source
   task:set_level() -- reset level
-  task:spawn(luarocks, {
+  ok = task:spawn(luarocks, {
     args = {
       "--tree",
       root,
@@ -206,6 +210,9 @@ function M.build(task)
     cwd = task.plugin.dir,
     env = env,
   })
+  if not ok then
+    require("lazy.manage.task.fs").clean.run(task, { rocks_only = true })
+  end
 end
 
 ---@param rockspec RockSpec
