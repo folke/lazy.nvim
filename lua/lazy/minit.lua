@@ -99,6 +99,7 @@ function M.busted.run()
   if not require("lazy.core.config").headless() then
     return vim.notify("busted can only run in headless mode. Please run with `nvim -l`", vim.log.levels.WARN)
   end
+  package.path = package.path .. ";" .. vim.uv.cwd() .. "/tests/?.lua"
   -- run busted
   return pcall(require("busted.runner"), {
     standalone = false,
