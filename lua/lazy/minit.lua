@@ -29,9 +29,12 @@ function M.setup(opts)
 
   local args = {}
   local is_busted = false
+  local is_minitest = false
   for _, a in ipairs(_G.arg) do
     if a == "--busted" then
       is_busted = true
+    elseif a == "--minitest" then
+      is_minitest = true
     else
       table.insert(args, a)
     end
@@ -40,6 +43,8 @@ function M.setup(opts)
 
   if is_busted then
     opts = M.busted.setup(opts)
+  elseif is_minitest then
+    opts = M.minitest.setup(opts)
   end
 
   -- set stdpaths to use .tests
@@ -49,7 +54,6 @@ function M.setup(opts)
       vim.env[("XDG_%s_HOME"):format(name:upper())] = root .. "/" .. name
     end
   end
-
   vim.o.loadplugins = true
   require("lazy").setup(opts)
   if vim.g.colors_name == nil then
@@ -68,6 +72,8 @@ function M.setup(opts)
 
   if is_busted then
     M.busted.run()
+  elseif is_minitest then
+    M.minitest.run()
   end
 end
 
@@ -87,6 +93,60 @@ function M.repro(opts)
     install = { colorscheme = { "tokyonight" } },
   }, opts)
   M.setup(opts)
+end
+
+M.minitest = {}
+
+function M.minitest.run()
+  local Config = require("lazy.core.config")
+  -- disable termnial output for the tests
+  Config.options.headless = {}
+
+  if not require("lazy.core.config").headless() then
+    return vim.notify("busted can only run in headless mode. Please run with `nvim -l`", vim.log.levels.WARN)
+  end
+  package.path = package.path .. ";" .. vim.uv.cwd() .. "/tests/?.lua"
+  local Test = require("mini.test")
+  local expect = Test.expect
+  local _assert = assert
+  local Assert = {
+    __call = function(_, ...)
+      return _assert(...)
+    end,
+    same = expect.equality,
+    equal = expect.equality,
+    are = {
+      equal = expect.equality,
+    },
+    is_not = {
+      same = expect.no_equality,
+    },
+  }
+  Assert.__index = Assert
+  -- assert = require("luassert")
+  assert = setmetatable({}, Assert)
+  require("mini.test").run()
+end
+
+---@param opts LazyConfig
+function M.minitest.setup(opts)
+  return M.extend({
+    spec = {
+      {
+        "echasnovski/mini.test",
+        opts = {
+          collect = {
+            find_files = function()
+              return vim.fn.globpath("tests", "**/*_spec.lua", true, true)
+            end,
+          },
+          -- script_path = "tests/minit.lua",
+        },
+      },
+      { dir = vim.uv.cwd() },
+    },
+    rocks = { hererocks = true },
+  }, opts)
 end
 
 M.busted = {}
