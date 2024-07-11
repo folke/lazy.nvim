@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.11.0](https://github.com/folke/lazy.nvim/compare/v11.10.4...v11.11.0) (2024-07-11)
+
+
+### Features
+
+* add plugin name to handlers.managed ([17473db](https://github.com/folke/lazy.nvim/commit/17473db1d79ea30e06126834be7fd95ca511557b))
+
+
+### Bug Fixes
+
+* **minit:** add tests to package.path when running busted (helpers.lua etc) ([fadebdc](https://github.com/folke/lazy.nvim/commit/fadebdc76b71a1d3658a88a025c6c8fb4749e0f8))
+* **util:** strip `-lua` in normname ([54b003c](https://github.com/folke/lazy.nvim/commit/54b003c650f07b771e61566f7be2629beb2b781f))
+
 ## [11.10.4](https://github.com/folke/lazy.nvim/compare/v11.10.3...v11.10.4) (2024-07-08)
 
 
