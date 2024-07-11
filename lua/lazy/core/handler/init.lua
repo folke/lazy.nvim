@@ -5,7 +5,7 @@ local Util = require("lazy.core.util")
 ---@field type LazyHandlerTypes
 ---@field extends? LazyHandler
 ---@field active table<string,table<string,string>>
----@field managed table<string,string>
+---@field managed table<string,string> mapping handler keys to plugin names
 ---@field super LazyHandler
 local M = {}
 
@@ -114,7 +114,7 @@ function M:add(plugin)
     if not self.active[key] then
       self.active[key] = {}
       self:_add(value)
-      self.managed[key] = key
+      self.managed[key] = plugin.name
     end
     self.active[key][plugin.name] = plugin.name
   end
