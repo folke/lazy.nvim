@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.11.1](https://github.com/folke/lazy.nvim/compare/v11.11.0...v11.11.1) (2024-07-13)
+
+
+### Bug Fixes
+
+* **config:** check for lib64. Fixes [#1343](https://github.com/folke/lazy.nvim/issues/1343) ([93499c5](https://github.com/folke/lazy.nvim/commit/93499c5deb37641c6cf71528a93f101d186b409f))
+* **lockfile:** ensure newline at EOF for lockfile ([#1639](https://github.com/folke/lazy.nvim/issues/1639)) ([7ed9f71](https://github.com/folke/lazy.nvim/commit/7ed9f7173cdec71a057053d7e6efc20c2c230b95))
+
 ## [11.11.0](https://github.com/folke/lazy.nvim/compare/v11.10.4...v11.11.0) (2024-07-11)
 
 
