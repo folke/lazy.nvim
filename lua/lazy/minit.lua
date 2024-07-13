@@ -25,6 +25,9 @@ function M.setup(opts)
   opts = M.extend({
     local_spec = false,
     change_detection = { enabled = false },
+    dev = {
+      patterns = vim.env.LAZY_DEV and vim.split(vim.env.LAZY_DEV, ",") or nil,
+    },
   }, opts)
 
   local args = {}
@@ -121,10 +124,19 @@ function M.minitest.run()
     is_not = {
       same = expect.no_equality,
     },
+    is_not_nil = function(a)
+      return expect.no_equality(nil, a)
+    end,
+    is_true = function(a)
+      return expect.equality(true, a)
+    end,
+    is_false = function(a)
+      return expect.equality(false, a)
+    end,
   }
   Assert.__index = Assert
-  -- assert = require("luassert")
   assert = setmetatable({}, Assert)
+  assert = require("luassert")
   require("mini.test").run()
 end
 
@@ -132,6 +144,7 @@ end
 function M.minitest.setup(opts)
   return M.extend({
     spec = {
+      "lunarmodules/luassert",
       {
         "echasnovski/mini.test",
         opts = {
