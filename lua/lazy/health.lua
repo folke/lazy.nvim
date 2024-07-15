@@ -36,7 +36,7 @@ function M.have(cmd, opts)
   local found
   for _, c in ipairs(cmd) do
     if vim.fn.executable(c) == 1 then
-      local version = vim.fn.system(c .. " " .. opts.version) or ""
+      local version = vim.fn.system([["]] .. c .. " " .. opts.version .. [["]]) or ""
       if vim.v.shell_error ~= 0 then
         opts.error(("failed to get version of {%s}\n%s"):format(c, version))
       else
