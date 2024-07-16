@@ -1,7 +1,44 @@
+local Async = require("lazy.async")
 local Config = require("lazy.core.config")
 local Git = require("lazy.manage.git")
 local Lock = require("lazy.manage.lock")
 local Util = require("lazy.util")
+
+local throttle = {}
+throttle.running = 0
+throttle.waiting = {} ---@type Async[]
+throttle.timer = vim.uv.new_timer()
+
+function throttle.next()
+  throttle.running = 0
+  while #throttle.waiting > 0 and throttle.running < Config.options.git.throttle.rate do
+    ---@type Async
+    local task = table.remove(throttle.waiting, 1)
+    task:resume()
+    throttle.running = throttle.running + 1
+  end
+  if throttle.running == 0 then
+    throttle.timer:stop()
+  end
+end
+
+function throttle.wait()
+  if not Config.options.git.throttle.enabled then
+    return
+  end
+  if not throttle.timer:is_active() then
+    throttle.timer:start(0, Config.options.git.throttle.duration, vim.schedule_wrap(throttle.next))
+  end
+  local running = Async.running()
+  if throttle.running < Config.options.git.throttle.rate then
+    throttle.running = throttle.running + 1
+  else
+    table.insert(throttle.waiting, running)
+    coroutine.yield("waiting")
+    running:suspend()
+    coroutine.yield("")
+  end
+end
 
 ---@type table<string, LazyTaskDef>
 local M = {}
@@ -84,6 +121,7 @@ M.clone = {
   end,
   ---@async
   run = function(self)
+    throttle.wait()
     local args = {
       "clone",
       self.plugin.url,
@@ -233,6 +271,7 @@ M.fetch = {
 
   ---@async
   run = function(self)
+    throttle.wait()
     local args = {
       "fetch",
       "--recurse-submodules",
@@ -262,6 +301,7 @@ M.checkout = {
   ---@async
   ---@param opts {lockfile?:boolean}
   run = function(self, opts)
+    throttle.wait()
     local info = assert(Git.info(self.plugin.dir))
     local target = assert(Git.get_target(self.plugin))
 

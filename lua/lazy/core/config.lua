@@ -34,6 +34,13 @@ M.defaults = {
     -- then set the below to false. This should work, but is NOT supported and will
     -- increase downloads a lot.
     filter = true,
+    -- rate of network related git operations (clone, fetch, checkout)
+    throttle = {
+      enabled = false, -- not enabled by default
+      -- max 2 ops every 5 seconds
+      rate = 2,
+      duration = 5 * 1000, -- in ms
+    },
   },
   pkg = {
     enabled = true,
