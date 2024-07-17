@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.12.0](https://github.com/folke/lazy.nvim/compare/v11.11.1...v11.12.0) (2024-07-16)
+
+
+### Features
+
+* **git:** added git network throttle to limit network related git ops per interval. Closes [#1635](https://github.com/folke/lazy.nvim/issues/1635) ([d731a6b](https://github.com/folke/lazy.nvim/commit/d731a6b005fd239e85e555bd57362382f6c1e461))
+
 ## [11.11.1](https://github.com/folke/lazy.nvim/compare/v11.11.0...v11.11.1) (2024-07-13)
 
 
