@@ -166,7 +166,7 @@ function M:mount()
     self:augroup(true)
   end, { win = true })
   self:focus()
-  self:on_key(ViewConfig.keys.close, self.close)
+  self:on_key(ViewConfig.keys.close, self.close, "Close")
   self:on({ "BufDelete", "BufHidden" }, self.close)
 
   if vim.bo[self.buf].buftype == "" then
