@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.13.0](https://github.com/folke/lazy.nvim/compare/v11.12.0...v11.13.0) (2024-07-17)
+
+
+### Features
+
+* **ui:** added mapping descriptions ([6ca90a2](https://github.com/folke/lazy.nvim/commit/6ca90a21202808796418e46d3cebfbb5a44e54a2))
+
 ## [11.12.0](https://github.com/folke/lazy.nvim/compare/v11.11.1...v11.12.0) (2024-07-16)
 
 
