@@ -50,7 +50,7 @@ Any operation can be started from the UI, with a sub command or an API function:
 | `:Lazy profile` | `require("lazy").profile()` | Show detailed profiling |
 | `:Lazy reload {plugins}` | `require("lazy").reload(opts)` | Reload a plugin (experimental!!) |
 | `:Lazy restore [plugins]` | `require("lazy").restore(opts?)` | Updates all plugins to the state in the lockfile. For a single plugin: restore it to the state in the lockfile or to a given commit under the cursor |
-| `:Lazy sync [plugins]` | `require("lazy").sync(opts?)` | Run clean, install and update commands |
+| `:Lazy sync [plugins]` | `require("lazy").sync(opts?)` | Run install, clean and update |
 | `:Lazy update [plugins]` | `require("lazy").update(opts?)` | Update plugins. This will also update the lockfile |
 
 <!-- commands:end -->
