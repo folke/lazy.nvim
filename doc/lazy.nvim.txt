@@ -988,8 +988,8 @@ function:
                                                              lockfile or to a given
                                                              commit under the cursor
 
-  :Lazy sync [plugins]      require("lazy").sync(opts?)      Run clean, install, and
-                                                             update commands
+  :Lazy sync [plugins]      require("lazy").sync(opts?)      Run install, clean and
+                                                             update
 
   :Lazy update [plugins]    require("lazy").update(opts?)    Update plugins. This
                                                              will also update the
