@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.13.1](https://github.com/folke/lazy.nvim/compare/v11.13.0...v11.13.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* **build:** only load the plugin before build for `:` build commands ([5bdb12a](https://github.com/folke/lazy.nvim/commit/5bdb12a038e5a72cc793f38893f1a9c9fb741759))
+
 ## [11.13.0](https://github.com/folke/lazy.nvim/compare/v11.12.0...v11.13.0) (2024-07-17)
 
 
