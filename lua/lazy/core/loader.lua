@@ -552,15 +552,16 @@ function M.loader(modname)
   end
 
   if ret then
-    M.auto_load(modname, ret.modpath)
     local mod = package.loaded[modname]
-    if type(mod) == "table" then
-      return function()
-        return mod
-      end
+    if type(mod) ~= "table" then
+      mod = loadfile(ret.modpath, nil, nil, ret.stat)()
     end
+    package.loaded[modname] = mod
+    M.auto_load(modname, ret.modpath)
     -- selene: allow(incorrect_standard_library_use)
-    return loadfile(ret.modpath, nil, nil, ret.stat)
+    return function()
+      return mod
+    end
   end
 end
 
