@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.13.3](https://github.com/folke/lazy.nvim/compare/v11.13.2...v11.13.3) (2024-07-21)
+
+
+### Reverts
+
+* fix(loader): add auto loaded module to package.loaded early to prevent require loops ([a692bf8](https://github.com/folke/lazy.nvim/commit/a692bf86883457f45fe3f773bfc8bc4d9e4b070c))
+
 ## [11.13.2](https://github.com/folke/lazy.nvim/compare/v11.13.1...v11.13.2) (2024-07-21)
 
 
