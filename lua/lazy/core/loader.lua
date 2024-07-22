@@ -552,6 +552,8 @@ function M.loader(modname)
   end
 
   if ret then
+    -- explicitly set to nil to prevent loading errors
+    package.loaded[modname] = nil
     M.auto_load(modname, ret.modpath)
     local mod = package.loaded[modname]
     if type(mod) == "table" then
