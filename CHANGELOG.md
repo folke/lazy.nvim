@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.13.5](https://github.com/folke/lazy.nvim/compare/v11.13.4...v11.13.5) (2024-07-22)
+
+
+### Bug Fixes
+
+* **health:** dont use vim.fn.system to get cmd versions ([7d29719](https://github.com/folke/lazy.nvim/commit/7d29719ade6f5a269e3b7d08b246641b5b079aaa))
+
 ## [11.13.4](https://github.com/folke/lazy.nvim/compare/v11.13.3...v11.13.4) (2024-07-22)
 
 
