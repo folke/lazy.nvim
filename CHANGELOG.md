@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.13.4](https://github.com/folke/lazy.nvim/compare/v11.13.3...v11.13.4) (2024-07-22)
+
+
+### Bug Fixes
+
+* **loader:** add plugins whose rtp got loaded early to start plugins ([34b0126](https://github.com/folke/lazy.nvim/commit/34b0126e5b3966f1dbe148d6f8450213115e76b2))
+* **loader:** explicitely set package.loaded.modname to nil to prevent recursive loading errors ([12f2c74](https://github.com/folke/lazy.nvim/commit/12f2c74244cc768d97c83972aa63722389b5d96d))
+
 ## [11.13.3](https://github.com/folke/lazy.nvim/compare/v11.13.2...v11.13.3) (2024-07-21)
 
 
