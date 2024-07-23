@@ -20,6 +20,7 @@
 ---@field tasks? LazyTask[]
 ---@field updated? {from:string, to:string}
 ---@field updates? {from:GitInfo, to:GitInfo}
+---@field last_check? number
 ---@field working? boolean
 ---@field pkg? LazyPkg
 
