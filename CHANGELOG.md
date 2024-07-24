@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.14.0](https://github.com/folke/lazy.nvim/compare/v11.13.5...v11.14.0) (2024-07-24)
+
+
+### Features
+
+* added `opts.git.cooldown` to allow updating plugins on slow connections. Fixes [#1656](https://github.com/folke/lazy.nvim/issues/1656) ([d5686ef](https://github.com/folke/lazy.nvim/commit/d5686efbd00942b3e38de7c08b8df69d961b02f0))
+* **plugin:** improve error handling and show better error message ([c02268a](https://github.com/folke/lazy.nvim/commit/c02268ac6e6aab92249d020d75efc588bd9d24fa))
+
+
+### Bug Fixes
+
+* **plugin:** make .lazy.lua work again ([b4a5a12](https://github.com/folke/lazy.nvim/commit/b4a5a1209e4c64fa67aedf721a383541a64056d1))
+
 ## [11.13.5](https://github.com/folke/lazy.nvim/compare/v11.13.4...v11.13.5) (2024-07-22)
 
 
