@@ -167,7 +167,7 @@ function Spec:import(spec)
       return a.modname < b.modname
     end)
   else
-    modspecs = { modname = import_name, load = spec.import }
+    modspecs = { { modname = import_name, load = spec.import } }
   end
 
   for _, modspec in ipairs(modspecs) do
@@ -203,7 +203,7 @@ function Spec:import(spec)
     Util.track()
   end
   if imported == 0 then
-    self:error("No specs found for module " .. spec.import)
+    self:error("No specs found for module " .. vim.inspect(spec.import))
   end
 end
 
