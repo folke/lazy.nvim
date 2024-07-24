@@ -215,8 +215,12 @@ function M:_rebuild(name)
     plugin.dir = Util.norm(plugin.dir)
   else
     if plugin.dev == nil and plugin.url then
+      local plain = Config.options.dev.plain
+      if plain == nil then
+        plain = true -- Default to true if not set
+      end
       for _, pattern in ipairs(Config.options.dev.patterns) do
-        if plugin.url:find(pattern, 1, true) then
+        if plugin.url:find(pattern, 1, plain) then
           plugin.dev = true
           break
         end

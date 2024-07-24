@@ -667,6 +667,7 @@ will be added to the plugin’s spec.
         path = "~/projects",
         ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
         patterns = {}, -- For example {"folke"}
+        plain = true, -- true uses plain string matching for the patterns, false uses Lua patterns
         fallback = false, -- Fallback to git when local plugin doesn't exist
       },
       install = {
