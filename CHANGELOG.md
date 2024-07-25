@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.14.1](https://github.com/folke/lazy.nvim/compare/v11.14.0...v11.14.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* **plugins:** "Vim:E150: Not a directory" on plugin update ([#1679](https://github.com/folke/lazy.nvim/issues/1679)) ([7108809](https://github.com/folke/lazy.nvim/commit/7108809ab18dc1b1e6f402b29e2e1d35a5d311d5))
+
 ## [11.14.0](https://github.com/folke/lazy.nvim/compare/v11.13.5...v11.14.0) (2024-07-24)
 
 
