@@ -172,7 +172,6 @@ function M.build(task)
       root,
       "--server",
       Config.options.rocks.server,
-      "--dev",
       "--lua-version",
       "5.1",
       "install", -- use install so that we can make use of pre-built rocks
