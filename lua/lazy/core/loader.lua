@@ -493,8 +493,11 @@ function M.add_to_luapath(plugin)
   local root = Config.options.rocks.root .. "/" .. plugin.name
   local path = root .. "/share/lua/5.1"
   local cpath = root .. "/lib/lua/5.1"
+  local cpath2 = root .. "/lib64/lua/5.1"
+
   package.path = package.path .. ";" .. path .. "/?.lua;" .. path .. "/?/init.lua;"
   package.cpath = package.cpath .. ";" .. cpath .. "/?." .. (jit.os:find("Windows") and "dll" or "so") .. ";"
+  package.cpath = package.cpath .. ";" .. cpath2 .. "/?." .. (jit.os:find("Windows") and "dll" or "so") .. ";"
 end
 
 function M.source(path)
