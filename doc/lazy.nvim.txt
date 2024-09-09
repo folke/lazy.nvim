@@ -26,7 +26,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - Rockspec                                |lazy.nvim-📦-packages-rockspec|
   - Packspec                                |lazy.nvim-📦-packages-packspec|
 6. ⚙️ Configuration                       |lazy.nvim-⚙️-configuration|
-  - 🌈 Highlight Groups|lazy.nvim-⚙️-configuration-🌈-highlight-groups|
+  - 🌈 Highlight Groups |lazy.nvim-⚙️-configuration-🌈-highlight-groups|
 7. 🚀 Usage                                           |lazy.nvim-🚀-usage|
   - ▶️ Startup Sequence     |lazy.nvim-🚀-usage-▶️-startup-sequence|
   - 🚀 Commands                         |lazy.nvim-🚀-usage-🚀-commands|
@@ -35,7 +35,7 @@ Table of Contents                                *lazy.nvim-table-of-contents*
   - 🔒 Lockfile                         |lazy.nvim-🚀-usage-🔒-lockfile|
   - 📦 Migration Guide           |lazy.nvim-🚀-usage-📦-migration-guide|
   - ⚡ Profiling & Debug         |lazy.nvim-🚀-usage-⚡-profiling-&-debug|
-  - 📂 Structuring Your Plugins|lazy.nvim-🚀-usage-📂-structuring-your-plugins|
+  - 📂 Structuring Your Plugins |lazy.nvim-🚀-usage-📂-structuring-your-plugins|
 8. 🔥 Developers                                 |lazy.nvim-🔥-developers|
   - Best Practices                  |lazy.nvim-🔥-developers-best-practices|
   - Building                              |lazy.nvim-🔥-developers-building|
@@ -1159,7 +1159,7 @@ See an overview of active lazy-loading handlers and what’s in the module
 cache.
 
 
-📂 STRUCTURING YOUR PLUGINS*lazy.nvim-🚀-usage-📂-structuring-your-plugins*
+📂 STRUCTURING YOUR PLUGINS *lazy.nvim-🚀-usage-📂-structuring-your-plugins*
 
 Some users may want to split their plugin specs in multiple files. Instead of
 passing a spec table to `setup()`, you can use a Lua module. The specs from the
