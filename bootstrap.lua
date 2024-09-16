@@ -1,4 +1,4 @@
--- Lay Bootstrapper
+-- Lazy Bootstrapper
 -- Usage:
 -- ```lua
 -- load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
@@ -7,7 +7,7 @@ local M = {}
 
 function M.setup()
   if vim.env.LAZY_STDPATH then
-    local root = vim.fn.fnamemodify(vim.env.LAZY_STDPATH, ":p")
+    local root = vim.fn.fnamemodify(vim.env.LAZY_STDPATH, ":p"):gsub("[\\/]$", "")
     for _, name in ipairs({ "config", "data", "state", "cache" }) do
       vim.env[("XDG_%s_HOME"):format(name:upper())] = root .. "/" .. name
     end
