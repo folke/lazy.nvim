@@ -795,7 +795,7 @@ with a lazy extension in `lazy`.
 completely (`vim.go.loadplugins = false`). It takes over the complete
 startup sequence for more flexibility and better performance.
 
-In practice this means that step 10 of [Neovim Initialization](https://neovim.io/doc/user/starting.html#initialization) is done by Lazy:
+In practice this means that step 10 of [Neovim Initialization](https://neovim.io/doc/user/starting.html#_initialization) is done by Lazy:
 
 1. All the plugins' `init()` functions are executed
 2. All plugins with `lazy=false` are loaded. This includes sourcing `/plugin` and `/ftdetect` files. (`/after` will not be sourced yet)
