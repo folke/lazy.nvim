@@ -184,6 +184,9 @@ function M:mount()
     Util.wo(self.win, "wrap", true)
     Util.wo(self.win, "winhighlight", "Normal:LazyNormal")
     Util.wo(self.win, "colorcolumn", "")
+    if vim.fn.exists('&winfixbuf') == 1 then
+      Util.wo(self.win, "winfixbuf", true)
+    end
   end
   opts()
 
