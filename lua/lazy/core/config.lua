@@ -218,7 +218,7 @@ M.defaults = {
     enabled = true,
     root = vim.fn.stdpath("state") .. "/lazy/readme",
     files = { "README.md", "lua/**/README.md" },
-    -- only generate markdown helptags for plugins that dont have docs
+    -- only generate markdown helptags for plugins that don't have docs
     skip_if_doc_exists = true,
   },
   state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
