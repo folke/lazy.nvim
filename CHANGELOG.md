@@ -1,5 +1,15 @@
 # Changelog
 
+## [11.14.2](https://github.com/folke/lazy.nvim/compare/v11.14.1...v11.14.2) (2024-10-22)
+
+
+### Bug Fixes
+
+* **bootstrap:** single forward slash. Fixes [#1747](https://github.com/folke/lazy.nvim/issues/1747) ([aca30f6](https://github.com/folke/lazy.nvim/commit/aca30f63619a7492ecdea8833a065cf83c80f764))
+* **completion:** check if command string is a prefix of Lazy ([#1760](https://github.com/folke/lazy.nvim/issues/1760)) ([e9fd76e](https://github.com/folke/lazy.nvim/commit/e9fd76e239cc18da289f9a3f80f35fa16b003175)), closes [#1758](https://github.com/folke/lazy.nvim/issues/1758)
+* **luarocks:** try to install from root manifest ([#1687](https://github.com/folke/lazy.nvim/issues/1687)) ([591ef40](https://github.com/folke/lazy.nvim/commit/591ef40f2da3a26fbcc0466988cd6fe45ca68cae))
+* **rocks:** add lib64 plugin directory to package.cpath ([#1717](https://github.com/folke/lazy.nvim/issues/1717)) ([80da254](https://github.com/folke/lazy.nvim/commit/80da254e645f579c28394ee0f08f75a9c9481744))
+
 ## [11.14.1](https://github.com/folke/lazy.nvim/compare/v11.14.0...v11.14.1) (2024-07-25)
 
 
