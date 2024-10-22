@@ -335,7 +335,7 @@ M.checkout = {
       end
     end
 
-    -- dont run checkout if target is already reached.
+    -- don't run checkout if target is already reached.
     -- unless we just cloned, since then we won't have any data yet
     if Git.eq(info, target) and info.branch == target.branch then
       self.plugin._.updated = {
