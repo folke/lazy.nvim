@@ -106,6 +106,9 @@ function M:add(plugin)
 
   -- short url / ref
   if plugin[1] then
+    if type(plugin[1]) ~= "string" then
+      return self.spec:error("Invalid plugin spec " .. vim.inspect(plugin))
+    end
     local slash = plugin[1]:find("/", 1, true)
     if slash then
       local prefix = plugin[1]:sub(1, 4)
