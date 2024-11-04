@@ -478,4 +478,22 @@ function M._values(root, plugin, prop, is_list)
   end
 end
 
+-- Collects super values associated with a property that are functions
+-- Used for init key
+---@param plugin LazyPlugin
+---@param prop string
+---@return fun(self: LazyPlugin)[]
+function M.super_functions(plugin, prop)
+  if not plugin[prop] then
+    return {}
+  end
+  local super = getmetatable(plugin)
+  local result = super and M.super_functions(super.__index, prop) or {}
+  local value = rawget(plugin, prop)
+  if type(value) == "function" then
+    table.insert(result, value)
+  end
+  return result
+end
+
 return M
