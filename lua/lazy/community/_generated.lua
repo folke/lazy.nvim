@@ -28,6 +28,10 @@ return
     url = "asiryk/auto-hlsearch.nvim",
     version = "1.1.0-1"
   }, {
+    name = "autosave.nvim",
+    url = "brianhuster/autosave.nvim",
+    version = "0.1.1-1"
+  }, {
     name = "banana.nvim",
     url = "CWood-sdf/banana.nvim",
     version = "0.1.0-1"
@@ -42,11 +46,11 @@ return
   }, {
     name = "better-escape.nvim",
     url = "max397574/better-escape.nvim",
-    version = "2.3.2-1"
+    version = "2.3.3-1"
   }, {
     name = "bufferline.nvim",
     url = "akinsho/bufferline.nvim",
-    version = "4.7.0-1"
+    version = "4.8.0-1"
   }, {
     name = "care.nvim",
     url = "max397574/care.nvim",
@@ -79,6 +83,10 @@ return
     name = "colortils.nvim",
     url = "nvim-colortils/colortils.nvim",
     version = "1.1.0-1"
+  }, {
+    name = "command.nvim",
+    url = "cultab/command.nvim",
+    version = "0.1.1-1"
   }, {
     name = "commander.nvim",
     url = "FeiyouG/commander.nvim",
@@ -114,11 +122,11 @@ return
   }, {
     name = "deadcolumn.nvim",
     url = "Bekaboo/deadcolumn.nvim",
-    version = "1.0.0-1"
+    version = "1.0.1-1"
   }, {
     name = "decasify.nvim",
     url = "alerque/decasify",
-    version = "0.7.3-1"
+    version = "0.8.0-1"
   }, {
     name = "decipher.nvim",
     url = "MisanthropicBit/decipher.nvim",
@@ -154,7 +162,7 @@ return
   }, {
     name = "dropbar.nvim",
     url = "Bekaboo/dropbar.nvim",
-    version = "8.6.1-1"
+    version = "9.0.0-1"
   }, {
     name = "duck.nvim",
     url = "tamton-aquib/duck.nvim",
@@ -178,7 +186,7 @@ return
   }, {
     name = "feed.nvim",
     url = "neo451/feed.nvim",
-    version = "1.5.1-1"
+    version = "1.6.3-1"
   }, {
     name = "feline.nvim",
     url = "freddiehaddad/feline.nvim",
@@ -238,7 +246,7 @@ return
   }, {
     name = "git.nvim",
     url = "Kibadda/git.nvim",
-    version = "5.0.1-1"
+    version = "5.1.0-1"
   }, {
     name = "github-nvim-theme",
     url = "projekt0n/github-nvim-theme",
@@ -274,7 +282,7 @@ return
   }, {
     name = "guard.nvim",
     url = "nvimdev/guard.nvim",
-    version = "1.0.1-1"
+    version = "1.0.3-1"
   }, {
     name = "hardhat.nvim",
     url = "TheSnakeWitcher/hardhat.nvim",
@@ -314,7 +322,7 @@ return
   }, {
     name = "hurl.nvim",
     url = "jellydn/hurl.nvim",
-    version = "1.7.1-1"
+    version = "1.8.0-1"
   }, {
     name = "hydra.nvim",
     url = "nvimtools/hydra.nvim",
@@ -330,7 +338,7 @@ return
   }, {
     name = "indent-blankline.nvim",
     url = "lukas-reineke/indent-blankline.nvim",
-    version = "3.8.2-1"
+    version = "3.8.3-1"
   }, {
     name = "kai.nvim",
     url = "Kamilcuk/kai.nvim",
@@ -354,7 +362,7 @@ return
   }, {
     name = "lean.nvim",
     url = "Julian/lean.nvim",
-    version = "2024.9.2-1"
+    version = "2024.10.1-1"
   }, {
     name = "leetcode.nvim",
     url = "kawre/leetcode.nvim",
@@ -367,6 +375,10 @@ return
     name = "live-command.nvim",
     url = "smjonas/live-command.nvim",
     version = "2.2.0-1"
+  }, {
+    name = "live-preview.nvim",
+    url = "brianhuster/live-preview.nvim",
+    version = "0.8.1-1"
   }, {
     name = "logging.nvim",
     url = "NTBBloodbath/logging.nvim",
@@ -412,9 +424,17 @@ return
     url = "nvim-neorocks/luarocks-build-treesitter-parser-cpp",
     version = "2.0.4-1"
   }, {
+    name = "mag-nvim-lsp",
+    url = "iguanacucumber/mag-nvim-lsp",
+    version = "0.1-1"
+  }, {
+    name = "mag-nvim-lua",
+    url = "iguanacucumber/mag-nvim-lua",
+    version = "0.1-1"
+  }, {
     name = "magazine.nvim",
     url = "iguanacucumber/magazine.nvim",
-    version = "0.1-1"
+    version = "0.2.1-1"
   }, {
     name = "mapx.nvim",
     url = "b0o/mapx.nvim",
@@ -522,7 +542,7 @@ return
   }, {
     name = "neotest-golang",
     url = "fredrikaverpil/neotest-golang",
-    version = "1.3.0-1"
+    version = "1.5.0-1"
   }, {
     name = "neotest-haskell",
     url = "mrcjkb/neotest-haskell",
@@ -530,7 +550,11 @@ return
   }, {
     name = "neotest-java",
     url = "rcasia/neotest-java",
-    version = "0.17.4-1"
+    version = "0.17.5-1"
+  }, {
+    name = "neotest-zig",
+    url = "lawrence-laz/neotest-zig",
+    version = "1.3.0-1"
   }, {
     name = "netman.nvim",
     url = "miversen33/netman.nvim",
@@ -546,7 +570,7 @@ return
   }, {
     name = "noice.nvim",
     url = "folke/noice.nvim",
-    version = "4.5.2-1"
+    version = "4.6.0-1"
   }, {
     name = "npackages.nvim",
     url = "diegofigs/npackages.nvim",
@@ -563,6 +587,10 @@ return
     name = "nvim-a2-pack",
     url = "dfgordon/nvim-a2-pack",
     version = "0.2.0-1"
+  }, {
+    name = "nvim-best-practices-plugin-template",
+    url = "ColinKennedy/nvim-best-practices-plugin-template",
+    version = "1.3.1-1"
   }, {
     name = "nvim-bqf",
     url = "kevinhwang91/nvim-bqf",
@@ -650,7 +678,7 @@ return
   }, {
     name = "nvim-possession",
     url = "gennaro-tedesco/nvim-possession",
-    version = "0.0.14-1"
+    version = "0.0.15-1"
   }, {
     name = "nvim-scrollview",
     url = "dstein64/nvim-scrollview",
@@ -702,7 +730,7 @@ return
   }, {
     name = "onedarkpro.nvim",
     url = "olimorris/onedarkpro.nvim",
-    version = "2.0.0-1"
+    version = "2.0.1-1"
   }, {
     name = "onenord.nvim",
     url = "rmehri01/onenord.nvim",
@@ -762,7 +790,7 @@ return
   }, {
     name = "quarry.nvim",
     url = "rudionrails/quarry.nvim",
-    version = "3.0.1-1"
+    version = "4.0.0-1"
   }, {
     name = "quicker.nvim",
     url = "stevearc/quicker.nvim",
@@ -770,7 +798,7 @@ return
   }, {
     name = "rainbow-delimiters.nvim",
     url = "HiPhish/rainbow-delimiters.nvim",
-    version = "0.6.2-1"
+    version = "0.7.0-1"
   }, {
     name = "remember.nvim",
     url = "vladdoster/remember.nvim",
@@ -802,7 +830,7 @@ return
   }, {
     name = "rocks-git.nvim",
     url = "nvim-neorocks/rocks-git.nvim",
-    version = "2.4.2-1"
+    version = "2.5.1-1"
   }, {
     name = "rocks-lazy.nvim",
     url = "nvim-neorocks/rocks-lazy.nvim",
@@ -814,7 +842,7 @@ return
   }, {
     name = "rocks.nvim",
     url = "nvim-neorocks/rocks.nvim",
-    version = "2.40.5-1"
+    version = "2.41.1-1"
   }, {
     name = "rtp.nvim",
     url = "nvim-neorocks/rtp.nvim",
@@ -822,11 +850,11 @@ return
   }, {
     name = "runt.nvim",
     url = "Julian/runt.nvim",
-    version = "2024.10.1-1"
+    version = "2024.10.2-1"
   }, {
     name = "rustaceanvim",
     url = "mrcjkb/rustaceanvim",
-    version = "5.13.0-1"
+    version = "5.13.1-1"
   }, {
     name = "schemastore.nvim",
     url = "b0o/SchemaStore.nvim",
@@ -855,6 +883,10 @@ return
     name = "smart-splits.nvim",
     url = "mrjones2014/smart-splits.nvim",
     version = "1.6.0-1"
+  }, {
+    name = "snippets.nvim",
+    url = "Kibadda/snippets.nvim",
+    version = "1.0.0-1"
   }, {
     name = "sos.nvim",
     url = "tmillr/sos.nvim",
@@ -914,7 +946,7 @@ return
   }, {
     name = "tokyonight.nvim",
     url = "folke/tokyonight.nvim",
-    version = "4.8.0-1"
+    version = "4.9.0-1"
   }, {
     name = "tree-sitter-ada",
     url = "briot/tree-sitter-ada",
@@ -950,11 +982,11 @@ return
   }, {
     name = "tree-sitter-awk",
     url = "Beaglefoot/tree-sitter-awk",
-    version = "0.0.29-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-bash",
     url = "tree-sitter/tree-sitter-bash",
-    version = "0.0.30-1"
+    version = "0.0.32-1"
   }, {
     name = "tree-sitter-bass",
     url = "vito/tree-sitter-bass",
@@ -962,7 +994,7 @@ return
   }, {
     name = "tree-sitter-beancount",
     url = "polarmutex/tree-sitter-beancount",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-bibtex",
     url = "latex-lsp/tree-sitter-bibtex",
@@ -986,7 +1018,7 @@ return
   }, {
     name = "tree-sitter-c",
     url = "tree-sitter/tree-sitter-c",
-    version = "0.0.32-1"
+    version = "0.0.33-1"
   }, {
     name = "tree-sitter-c_sharp",
     url = "tree-sitter/tree-sitter-c-sharp",
@@ -1052,6 +1084,10 @@ return
     url = "eonpatapon/tree-sitter-cue",
     version = "0.0.29-1"
   }, {
+    name = "tree-sitter-cylc",
+    url = "elliotfontaine/tree-sitter-cylc",
+    version = "0.0.1-1"
+  }, {
     name = "tree-sitter-d",
     url = "gdamore/tree-sitter-d",
     version = "0.0.33-1"
@@ -1059,6 +1095,10 @@ return
     name = "tree-sitter-dart",
     url = "UserNobody14/tree-sitter-dart",
     version = "0.0.32-1"
+  }, {
+    name = "tree-sitter-desktop",
+    url = "ValdezFOmar/tree-sitter-desktop",
+    version = "0.0.4-1"
   }, {
     name = "tree-sitter-devicetree",
     url = "joelspadin/tree-sitter-devicetree",
@@ -1094,7 +1134,7 @@ return
   }, {
     name = "tree-sitter-dtd",
     url = "tree-sitter-grammars/tree-sitter-xml",
-    version = "0.0.29-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-earthfile",
     url = "glehmann/tree-sitter-earthfile",
@@ -1110,7 +1150,7 @@ return
   }, {
     name = "tree-sitter-editorconfig",
     url = "ValdezFOmar/tree-sitter-editorconfig",
-    version = "0.0.34-1"
+    version = "0.0.37-1"
   }, {
     name = "tree-sitter-eds",
     url = "uyha/tree-sitter-eds",
@@ -1122,7 +1162,7 @@ return
   }, {
     name = "tree-sitter-elixir",
     url = "elixir-lang/tree-sitter-elixir",
-    version = "0.0.33-1"
+    version = "0.0.34-1"
   }, {
     name = "tree-sitter-elm",
     url = "elm-tooling/tree-sitter-elm",
@@ -1142,7 +1182,7 @@ return
   }, {
     name = "tree-sitter-erlang",
     url = "WhatsApp/tree-sitter-erlang",
-    version = "0.0.31-1"
+    version = "0.0.33-1"
   }, {
     name = "tree-sitter-facility",
     url = "FacilityApi/tree-sitter-facility",
@@ -1178,7 +1218,7 @@ return
   }, {
     name = "tree-sitter-fortran",
     url = "stadelmanma/tree-sitter-fortran",
-    version = "0.0.32-1"
+    version = "0.0.34-1"
   }, {
     name = "tree-sitter-fsh",
     url = "mgramigna/tree-sitter-fsh",
@@ -1206,7 +1246,7 @@ return
   }, {
     name = "tree-sitter-gdscript",
     url = "PrestonKnopp/tree-sitter-gdscript",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-gdshader",
     url = "GodOfAvacyn/tree-sitter-gdshader",
@@ -1226,7 +1266,7 @@ return
   }, {
     name = "tree-sitter-gitcommit",
     url = "gbprod/tree-sitter-gitcommit",
-    version = "0.0.32-1"
+    version = "0.0.33-1"
   }, {
     name = "tree-sitter-gitignore",
     url = "shunsambongi/tree-sitter-gitignore",
@@ -1234,7 +1274,7 @@ return
   }, {
     name = "tree-sitter-gleam",
     url = "gleam-lang/tree-sitter-gleam",
-    version = "0.0.31-1"
+    version = "0.0.32-1"
   }, {
     name = "tree-sitter-glimmer",
     url = "ember-tooling/tree-sitter-glimmer",
@@ -1302,7 +1342,7 @@ return
   }, {
     name = "tree-sitter-groovy",
     url = "murtaza64/tree-sitter-groovy",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-gstlaunch",
     url = "tree-sitter-grammars/tree-sitter-gstlaunch",
@@ -1330,11 +1370,11 @@ return
   }, {
     name = "tree-sitter-heex",
     url = "connorlay/tree-sitter-heex",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-helm",
     url = "ngalaiko/tree-sitter-go-template",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-hjson",
     url = "winston0410/tree-sitter-hjson",
@@ -1394,7 +1434,7 @@ return
   }, {
     name = "tree-sitter-ispc",
     url = "tree-sitter-grammars/tree-sitter-ispc",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-janet_simple",
     url = "sogaiu/tree-sitter-janet-simple",
@@ -1406,7 +1446,7 @@ return
   }, {
     name = "tree-sitter-javascript",
     url = "tree-sitter/tree-sitter-javascript",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-jq",
     url = "flurie/tree-sitter-jq",
@@ -1442,7 +1482,7 @@ return
   }, {
     name = "tree-sitter-just",
     url = "IndianBoy42/tree-sitter-just",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-kconfig",
     url = "tree-sitter-grammars/tree-sitter-kconfig",
@@ -1458,7 +1498,7 @@ return
   }, {
     name = "tree-sitter-koto",
     url = "koto-lang/tree-sitter-koto",
-    version = "0.0.30-1"
+    version = "0.0.33-1"
   }, {
     name = "tree-sitter-kusto",
     url = "Willem-J-an/tree-sitter-kusto",
@@ -1498,7 +1538,7 @@ return
   }, {
     name = "tree-sitter-lua",
     url = "tree-sitter-grammars/tree-sitter-lua",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-luadoc",
     url = "tree-sitter-grammars/tree-sitter-luadoc",
@@ -1522,11 +1562,11 @@ return
   }, {
     name = "tree-sitter-markdown",
     url = "tree-sitter-grammars/tree-sitter-markdown",
-    version = "0.0.34-1"
+    version = "0.0.35-1"
   }, {
     name = "tree-sitter-markdown_inline",
     url = "tree-sitter-grammars/tree-sitter-markdown",
-    version = "0.0.34-1"
+    version = "0.0.35-1"
   }, {
     name = "tree-sitter-matlab",
     url = "acristoffers/tree-sitter-matlab",
@@ -1546,7 +1586,7 @@ return
   }, {
     name = "tree-sitter-mlir",
     url = "artagnon/tree-sitter-mlir",
-    version = "0.0.34-1"
+    version = "0.0.35-1"
   }, {
     name = "tree-sitter-muttrc",
     url = "neomutt/tree-sitter-muttrc",
@@ -1578,7 +1618,7 @@ return
   }, {
     name = "tree-sitter-nix",
     url = "cstrahan/tree-sitter-nix",
-    version = "0.0.42-1"
+    version = "0.0.45-1"
   }, {
     name = "tree-sitter-norg",
     url = "nvim-neorg/tree-sitter-norg",
@@ -1674,7 +1714,7 @@ return
   }, {
     name = "tree-sitter-powershell",
     url = "airbus-cert/tree-sitter-powershell",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-printf",
     url = "tree-sitter-grammars/tree-sitter-printf",
@@ -1778,7 +1818,7 @@ return
   }, {
     name = "tree-sitter-regex",
     url = "tree-sitter/tree-sitter-regex",
-    version = "0.0.32-1"
+    version = "0.0.33-1"
   }, {
     name = "tree-sitter-rego",
     url = "FallenAngel97/tree-sitter-rego",
@@ -1814,15 +1854,15 @@ return
   }, {
     name = "tree-sitter-rst",
     url = "stsewd/tree-sitter-rst",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-ruby",
     url = "tree-sitter/tree-sitter-ruby",
-    version = "0.0.31-1"
+    version = "0.0.32-1"
   }, {
     name = "tree-sitter-rust",
     url = "tree-sitter/tree-sitter-rust",
-    version = "0.0.30-1"
+    version = "0.0.33-1"
   }, {
     name = "tree-sitter-scala",
     url = "tree-sitter/tree-sitter-scala",
@@ -1886,7 +1926,7 @@ return
   }, {
     name = "tree-sitter-sql",
     url = "derekstride/tree-sitter-sql",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-squirrel",
     url = "tree-sitter-grammars/tree-sitter-squirrel",
@@ -1906,7 +1946,7 @@ return
   }, {
     name = "tree-sitter-styled",
     url = "mskelton/tree-sitter-styled",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-supercollider",
     url = "madskjeldgaard/tree-sitter-supercollider",
@@ -1914,7 +1954,7 @@ return
   }, {
     name = "tree-sitter-superhtml",
     url = "kristoff-it/superhtml",
-    version = "0.0.6-1"
+    version = "0.0.9-1"
   }, {
     name = "tree-sitter-surface",
     url = "connorlay/tree-sitter-surface",
@@ -1926,7 +1966,7 @@ return
   }, {
     name = "tree-sitter-swift",
     url = "alex-pinkus/tree-sitter-swift",
-    version = "0.0.35-1"
+    version = "0.0.36-1"
   }, {
     name = "tree-sitter-sxhkdrc",
     url = "RaafatTurki/tree-sitter-sxhkdrc",
@@ -1941,8 +1981,8 @@ return
     version = "0.0.29-1"
   }, {
     name = "tree-sitter-t32",
-    url = "https://gitlab.com/xasc/tree-sitter-t32/-/archive/0f6a5b1e031c97ebf58d3c76eadb2c6bf1e4f780.zip",
-    version = "0.0.30-1"
+    url = "https://gitlab.com/xasc/tree-sitter-t32/-/archive/e455373021812abf4a0b5170caa0d882a9578bab.zip",
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-tablegen",
     url = "tree-sitter-grammars/tree-sitter-tablegen",
@@ -1962,7 +2002,7 @@ return
   }, {
     name = "tree-sitter-templ",
     url = "vrischmann/tree-sitter-templ",
-    version = "0.0.33-1"
+    version = "0.0.34-1"
   }, {
     name = "tree-sitter-terraform",
     url = "MichaHoffmann/tree-sitter-hcl",
@@ -1974,7 +2014,7 @@ return
   }, {
     name = "tree-sitter-thrift",
     url = "tree-sitter-grammars/tree-sitter-thrift",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-tiger",
     url = "ambroisie/tree-sitter-tiger",
@@ -1982,7 +2022,7 @@ return
   }, {
     name = "tree-sitter-tlaplus",
     url = "tlaplus-community/tree-sitter-tlaplus",
-    version = "0.0.34-1"
+    version = "0.0.36-1"
   }, {
     name = "tree-sitter-tmux",
     url = "Freed-Wu/tree-sitter-tmux",
@@ -2054,7 +2094,7 @@ return
   }, {
     name = "tree-sitter-vala",
     url = "vala-lang/tree-sitter-vala",
-    version = "0.0.29-1"
+    version = "0.0.30-1"
   }, {
     name = "tree-sitter-vento",
     url = "ventojs/tree-sitter-vento",
@@ -2066,7 +2106,7 @@ return
   }, {
     name = "tree-sitter-vhdl",
     url = "jpt13653903/tree-sitter-vhdl",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-vhs",
     url = "charmbracelet/tree-sitter-vhs",
@@ -2078,7 +2118,7 @@ return
   }, {
     name = "tree-sitter-vimdoc",
     url = "neovim/tree-sitter-vimdoc",
-    version = "0.0.30-1"
+    version = "0.0.31-1"
   }, {
     name = "tree-sitter-vrl",
     url = "belltoy/tree-sitter-vrl",
@@ -2110,11 +2150,11 @@ return
   }, {
     name = "tree-sitter-xml",
     url = "tree-sitter-grammars/tree-sitter-xml",
-    version = "0.0.30-1"
+    version = "0.0.32-1"
   }, {
     name = "tree-sitter-xresources",
     url = "ValdezFOmar/tree-sitter-xresources",
-    version = "0.0.3-1"
+    version = "0.0.4-1"
   }, {
     name = "tree-sitter-yaml",
     url = "tree-sitter-grammars/tree-sitter-yaml",
@@ -2146,7 +2186,7 @@ return
   }, {
     name = "treedoc.nvim",
     url = "neo451/treedoc.nvim",
-    version = "1.0.0-1"
+    version = "1.0.1-1"
   }, {
     name = "trouble.nvim",
     url = "folke/trouble.nvim",
