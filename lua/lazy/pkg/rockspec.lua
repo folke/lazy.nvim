@@ -224,9 +224,10 @@ end
 ---@return table?
 function M.parse(file)
   local ret = {}
-  return pcall(function()
-    loadfile(file, "t", ret)()
+  local ok = pcall(function()
+    loadfile(file, nil, ret)()
   end) and ret or nil
+  return ok and ret or nil
 end
 
 ---@param plugin LazyPlugin
