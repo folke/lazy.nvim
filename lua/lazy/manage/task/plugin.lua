@@ -87,7 +87,7 @@ M.build = {
 
 M.docs = {
   skip = function(plugin)
-    return not plugin._.dirty
+    return not plugin._.is_local and not plugin._.dirty
   end,
   run = function(self)
     local docs = self.plugin.dir .. "/doc"
