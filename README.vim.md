@@ -793,7 +793,7 @@ with a lazy extension in `lazy`.
 
 | Highlight Group | Default Group | Description |
 | --- | --- | --- |
-| **LazyBold** | ***{ bold = true }*** |  |
+| **LazyBold** | `{ bold = true }` |  |
 | **LazyButton** | ***CursorLine*** |  |
 | **LazyButtonActive** | ***Visual*** |  |
 | **LazyComment** | ***Comment*** |  |
@@ -807,7 +807,7 @@ with a lazy extension in `lazy`.
 | **LazyH1** | ***IncSearch*** | home button |
 | **LazyH2** | ***Bold*** | titles |
 | **LazyInfo** | ***DiagnosticInfo*** | task errors |
-| **LazyItalic** | ***{ italic = true }*** |  |
+| **LazyItalic** | `{ italic = true }` |  |
 | **LazyLocal** | ***Constant*** |  |
 | **LazyNoCond** | ***DiagnosticWarn*** | unloaded icon for a plugin where `cond()` was false |
 | **LazyNormal** | ***NormalFloat*** |  |
