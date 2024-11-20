@@ -29,7 +29,7 @@ local function main()
   print("Installing plugins")
   require("lazy").setup({
     spec = {
-      { "folke/lazy.nvim", branch = "pkg" },
+      { "folke/lazy.nvim" },
       "folke/tokyonight.nvim",
     },
     root = root .. "/plugins",
