@@ -38,24 +38,42 @@ sidebar_position: 5
     -- then set the below to false. This should work, but is NOT supported and will
     -- increase downloads a lot.
     filter = true,
+    -- rate of network related git operations (clone, fetch, checkout)
+    throttle = {
+      enabled = false, -- not enabled by default
+      -- max 2 ops every 5 seconds
+      rate = 2,
+      duration = 5 * 1000, -- in ms
+    },
+    -- Time in seconds to wait before running fetch again for a plugin.
+    -- Repeated update/check operations will not run again until this
+    -- cooldown period has passed.
+    cooldown = 0,
   },
   pkg = {
     enabled = true,
     cache = vim.fn.stdpath("state") .. "/lazy/pkg-cache.lua",
-    versions = true, -- Honor versions in pkg sources
     -- the first package source that is found for a plugin will be used.
     sources = {
       "lazy",
-      "rockspec",
+      "rockspec", -- will only be used when rocks.enabled is true
       "packspec",
     },
   },
   rocks = {
+    enabled = true,
     root = vim.fn.stdpath("data") .. "/lazy-rocks",
     server = "https://nvim-neorocks.github.io/rocks-binaries/",
+    -- use hererocks to install luarocks?
+    -- set to `nil` to use hererocks when luarocks is not found
+    -- set to `true` to always use hererocks
+    -- set to `false` to always use luarocks
+    hererocks = nil,
   },
   dev = {
-    ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
+    -- Directory where you store your local plugin projects. If a function is used,
+    -- the plugin directory (e.g. `~/projects/plugin-name`) must be returned.
+    ---@type string | fun(plugin: LazyPlugin): string
     path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
@@ -107,7 +125,7 @@ sidebar_position: 5
     -- leave nil, to automatically select a browser depending on your OS.
     -- If you want to use a specific browser, you can define it here
     browser = nil, ---@type string?
-    throttle = 20, -- how frequently should the ui process render events
+    throttle = 1000 / 30, -- how frequently should the ui process render events
     custom_keys = {
       -- You can define custom key maps here. If present, the description will
       -- be shown in the help menu.
@@ -122,6 +140,16 @@ sidebar_position: 5
         desc = "Open lazygit log",
       },
 
+      ["<localleader>i"] = {
+        function(plugin)
+          Util.notify(vim.inspect(plugin), {
+            title = "Inspect " .. plugin.name,
+            lang = "lua",
+          })
+        end,
+        desc = "Inspect Plugin",
+      },
+
       ["<localleader>t"] = {
         function(plugin)
           require("lazy.util").float_term(nil, {
@@ -131,6 +159,17 @@ sidebar_position: 5
         desc = "Open terminal in plugin dir",
       },
     },
+  },
+  -- Output options for headless mode
+  headless = {
+    -- show the output from process commands like git
+    process = true,
+    -- show log messages
+    log = true,
+    -- show task start/end
+    task = true,
+    -- use ansi colors
+    colors = true,
   },
   diff = {
     -- diff command <d> can be one of:
@@ -183,7 +222,7 @@ sidebar_position: 5
     enabled = true,
     root = vim.fn.stdpath("state") .. "/lazy/readme",
     files = { "README.md", "lua/**/README.md" },
-    -- only generate markdown helptags for plugins that dont have docs
+    -- only generate markdown helptags for plugins that don't have docs
     skip_if_doc_exists = true,
   },
   state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
