@@ -131,7 +131,7 @@ function M.colors(opts)
     { "---", "---", "---" },
   }
   Util.foreach(require(opts.modname).colors, function(group, link)
-    link = type(link) == "table" and vim.inspect(link) or link
+    link = type(link) == "table" and vim.inspect(link):gsub("%s+", " ") or link
     lines[#lines + 1] = { "**" .. opts.name .. group .. "**", "***" .. link .. "***", comments[group] or "" }
   end)
   return { content = M.table(lines) }
