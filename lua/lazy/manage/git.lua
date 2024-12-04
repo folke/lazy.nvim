@@ -83,21 +83,19 @@ end
 function M.get_branch(plugin)
   if plugin.branch then
     return plugin.branch
-  else
-    -- we need to return the default branch
-    -- Try origin first
-    local main = M.ref(plugin.dir, "remotes/origin/HEAD")
-    if main then
-      local branch = main:match("ref: refs/remotes/origin/(.*)")
-      if branch then
-        return branch
-      end
-    end
-
-    -- fallback to local HEAD
-    main = assert(M.head(plugin.dir))
-    return main and main:match("ref: refs/heads/(.*)")
   end
+  -- we need to return the default branch
+  -- Try origin first
+  local main = M.ref(plugin.dir, "remotes/origin/HEAD")
+  if main then
+    local branch = main:match("ref: refs/remotes/origin/(.*)")
+    if branch then
+      return branch
+    end
+  end
+  -- fallback to local HEAD
+  main = assert(M.head(plugin.dir))
+  return main and main:match("ref: refs/heads/(.*)")
 end
 
 -- Return the last commit for the given branch
@@ -108,9 +106,8 @@ function M.get_commit(repo, branch, origin)
   if origin then
     -- origin ref might not exist if it is the same as local
     return M.ref(repo, "remotes/origin", branch) or M.ref(repo, "heads", branch)
-  else
-    return M.ref(repo, "heads", branch)
   end
+  return M.ref(repo, "heads", branch)
 end
 
 ---@param plugin LazyPlugin
@@ -159,8 +156,8 @@ function M.ref(repo, ...)
   -- if this is a tag ref, then dereference it instead
   if ref:find("tags/", 1, true) == 1 then
     local tags = M.get_tag_refs(repo, ref)
-    for _, tag_ref in pairs(tags) do
-      return tag_ref
+    if next(tags) ~= nil then
+      return tags[1]
     end
   end
 
@@ -225,12 +222,10 @@ function M.get_config(repo)
     if section then
       ---@type string
       current_section = section:gsub('%s+"', "."):gsub('"+%s*$', "")
-    else
       -- Ignore comments and blank lines
-      if not line:match("^%s*[#;]") and line:match("%S") then
-        local key, value = line:match("^%s*(%S+)%s*=%s*(.+)%s*$")
-        ret[current_section .. "." .. key] = value
-      end
+    elseif not line:match("^%s*[#;]") and line:match("%S") then
+      local key, value = line:match("^%s*(%S+)%s*=%s*(.+)%s*$")
+      ret[current_section .. "." .. key] = value
     end
   end
   return ret
