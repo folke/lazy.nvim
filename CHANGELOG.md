@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.15.0](https://github.com/folke/lazy.nvim/compare/v11.14.2...v11.15.0) (2024-12-05)
+
+
+### Features
+
+* **plugin:** show error for local plugins that don't exist. Fixes [#1773](https://github.com/folke/lazy.nvim/issues/1773) ([9570a5a](https://github.com/folke/lazy.nvim/commit/9570a5ae7b17dcde4718c7458fd986c10f015a99))
+
 ## [11.14.2](https://github.com/folke/lazy.nvim/compare/v11.14.1...v11.14.2) (2024-11-10)
 
 
