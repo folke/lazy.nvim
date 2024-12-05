@@ -97,4 +97,15 @@ M.docs = {
   end,
 }
 
+M.exists = {
+  skip = function(plugin)
+    return not plugin._.is_local
+  end,
+  run = function(self)
+    if not Util.file_exists(self.plugin.dir) then
+      self:error("Local plugin does not exist at `" .. self.plugin.dir .. "`")
+    end
+  end,
+}
+
 return M

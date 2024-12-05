@@ -80,6 +80,7 @@ function M.install(opts)
   opts = M.opts(opts, { mode = "install" })
   return M.run({
     pipeline = {
+      "plugin.exists",
       "git.clone",
       { "git.checkout", lockfile = opts.lockfile },
       "plugin.docs",
@@ -108,6 +109,7 @@ function M.update(opts)
   opts = M.opts(opts, { mode = "update" })
   return M.run({
     pipeline = {
+      "plugin.exists",
       "git.origin",
       "git.branch",
       "git.fetch",
@@ -147,6 +149,7 @@ function M.check(opts)
   opts = opts or {}
   return M.run({
     pipeline = {
+      "plugin.exists",
       { "git.origin", check = true },
       "git.fetch",
       "git.status",

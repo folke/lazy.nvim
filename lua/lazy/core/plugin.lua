@@ -243,6 +243,7 @@ function M.update_state()
     else
       plugin._.is_local = true
       plugin._.installed = true -- local plugins are managed by the user
+      plugin._.installed = vim.fn.isdirectory(plugin.dir) == 1
     end
   end
 
