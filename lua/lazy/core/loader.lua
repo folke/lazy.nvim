@@ -341,7 +341,9 @@ function M._load(plugin, reason, opts)
   Util.track({ plugin = plugin.name, start = reason.start })
   Handler.disable(plugin)
 
-  M.add_to_rtp(plugin)
+  if not plugin.virtual then
+    M.add_to_rtp(plugin)
+  end
 
   if plugin._.pkg and plugin._.pkg.source == "rockspec" then
     M.add_to_luapath(plugin)
@@ -353,7 +355,9 @@ function M._load(plugin, reason, opts)
     end, "Failed to load deps for " .. plugin.name)
   end
 
-  M.packadd(plugin.dir)
+  if not plugin.virtual then
+    M.packadd(plugin.dir)
+  end
   if plugin.config or plugin.opts then
     M.config(plugin)
   end
