@@ -99,7 +99,7 @@ M.docs = {
 
 M.exists = {
   skip = function(plugin)
-    return not plugin._.is_local
+    return not plugin._.is_local or plugin.virtual
   end,
   run = function(self)
     if not Util.file_exists(self.plugin.dir) then
