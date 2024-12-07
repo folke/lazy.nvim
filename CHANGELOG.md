@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.16.0](https://github.com/folke/lazy.nvim/compare/v11.15.0...v11.16.0) (2024-12-07)
+
+
+### Features
+
+* **plugin:** added support for virtual plugins. Closes [#1836](https://github.com/folke/lazy.nvim/issues/1836) ([ee64abc](https://github.com/folke/lazy.nvim/commit/ee64abc76be2b237b95d241a924b0323005b868a))
+
+
+### Bug Fixes
+
+* **plugin:** don't check if dir exists for virtual plugins ([656cf43](https://github.com/folke/lazy.nvim/commit/656cf4309396b7b8b62984e923bf8d8a0013f7d7))
+* **render:** show correct key for home. Fixes [#1796](https://github.com/folke/lazy.nvim/issues/1796) ([b08dba8](https://github.com/folke/lazy.nvim/commit/b08dba8107b5bdaaa007f18cf6c0cc0e0fd576aa))
+
 ## [11.15.0](https://github.com/folke/lazy.nvim/compare/v11.14.2...v11.15.0) (2024-12-05)
 
 
