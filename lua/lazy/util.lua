@@ -29,18 +29,26 @@ function M.open(uri, opts)
   local cmd
   if not opts.system and Config.options.ui.browser then
     cmd = { Config.options.ui.browser, uri }
-  elseif vim.fn.has("win32") == 1 then
-    cmd = { "explorer", uri }
-  elseif vim.fn.has("macunix") == 1 then
+  elseif vim.fn.has("mac") == 1 then
     cmd = { "open", uri }
-  else
-    if vim.fn.executable("xdg-open") == 1 then
-      cmd = { "xdg-open", uri }
-    elseif vim.fn.executable("wslview") == 1 then
-      cmd = { "wslview", uri }
+  elseif vim.fn.has("win32") == 1 then
+    if vim.fn.executable("rundll32") == 1 then
+      cmd = { "rundll32", "url.dll,FileProtocolHandler", uri }
     else
-      cmd = { "open", uri }
+      vim.notify("rundll32 not found", vim.log.levels.ERROR)
+      return
     end
+  elseif vim.fn.executable("xdg-open") == 1 then
+    cmd = { "xdg-open", uri }
+  elseif vim.fn.executable("wslview") == 1 then
+    cmd = { "wslview", uri }
+  elseif vim.fn.executable("explorer.exe") == 1 then
+    cmd = { "explorer.exe", uri }
+  elseif vim.fn.executable("lemonade") == 1 then
+    cmd = { "lemonade", "open", uri }
+  else
+    vim.notify("no handler found (tried: wslview, explorer.exe, xdg-open, lemonade)", vim.log.levels.ERROR)
+    return
   end
 
   local ret = vim.fn.jobstart(cmd, { detach = true })
