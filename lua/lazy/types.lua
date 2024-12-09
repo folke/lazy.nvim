@@ -75,6 +75,8 @@
 ---@field module? false
 
 ---@class LazyPluginSpec: LazyPluginBase,LazyPluginSpecHandlers,LazyPluginHooks,LazyPluginRef
+---@field name? string display name and name used for plugin config files
+---@field dir? string
 ---@field dependencies? string|string[]|LazyPluginSpec[]
 ---@field specs? string|string[]|LazyPluginSpec[]
 
