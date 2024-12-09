@@ -49,10 +49,10 @@
 
 ---@class LazyPluginBase
 ---@field [1] string?
----@field name string display name and name used for plugin config files
+---@field name? string display name and name used for plugin config files
 ---@field main? string Entry module that has setup & deactivate
----@field url string?
----@field dir string
+---@field url? string
+---@field dir? string
 ---@field enabled? boolean|(fun():boolean)
 ---@field cond? boolean|(fun():boolean)
 ---@field optional? boolean If set, then this plugin will not be added unless it is added somewhere else
