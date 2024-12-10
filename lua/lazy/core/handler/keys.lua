@@ -24,7 +24,18 @@ local Util = require("lazy.core.util")
 ---@class LazyKeysHandler:LazyHandler
 local M = {}
 
-local skip = { mode = true, id = true, ft = true, rhs = true, lhs = true }
+local valid = {
+  remap = true,
+  noremap = true,
+  buffer = true,
+  silent = true,
+  nowait = true,
+  expr = true,
+  unique = true,
+  script = true,
+  desc = true,
+  replace_keycodes = true,
+}
 
 ---@param value string|LazyKeysSpec
 ---@param mode? string
@@ -94,7 +105,7 @@ function M.opts(keys)
   local opts = {} ---@type LazyKeysBase
   ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(keys) do
-    if type(k) ~= "number" and not skip[k] then
+    if type(k) ~= "number" and valid[k] then
       ---@diagnostic disable-next-line: no-unknown
       opts[k] = v
     end
