@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.16.1](https://github.com/folke/lazy.nvim/compare/v11.16.0...v11.16.1) (2024-12-09)
+
+
+### Bug Fixes
+
+* **types:** ensure all fields for `LazyPluginSpec` are optional ([#1843](https://github.com/folke/lazy.nvim/issues/1843)) ([703be1d](https://github.com/folke/lazy.nvim/commit/703be1dda35e142e76e94e7503cf67d6b98a1d35)), closes [#1842](https://github.com/folke/lazy.nvim/issues/1842)
+
 ## [11.16.0](https://github.com/folke/lazy.nvim/compare/v11.15.0...v11.16.0) (2024-12-07)
 
 
