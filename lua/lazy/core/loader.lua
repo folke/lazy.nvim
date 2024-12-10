@@ -111,9 +111,7 @@ function M.startup()
   for _, plugin in pairs(Config.plugins) do
     if plugin.init then
       Util.track({ plugin = plugin.name, init = "init" })
-      Util.try(function()
-        plugin.init(plugin)
-      end, "Failed to run `init` for **" .. plugin.name .. "**")
+      M.init(plugin)
       Util.track()
     end
   end
@@ -155,6 +153,16 @@ function M.startup()
   M.init_done = true
 
   Util.track()
+end
+
+---@param plugin LazyPlugin
+function M.init(plugin)
+  Util.try(function()
+    local inits = Plugin.super_functions(plugin, "init")
+    for _, init in ipairs(inits) do
+      init(plugin)
+    end
+  end, "Failed to run `init` for **" .. plugin.name .. "**")
 end
 
 function M.get_start_plugins()
@@ -264,9 +272,7 @@ function M.reload(plugin)
 
   -- run init
   if plugin.init then
-    Util.try(function()
-      plugin.init(plugin)
-    end, "Failed to run `init` for **" .. plugin.name .. "**")
+    M.init(plugin)
   end
 
   -- if this is a start plugin, load it now
