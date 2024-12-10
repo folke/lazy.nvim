@@ -56,8 +56,6 @@ When `[2]` is `nil`, then the real mapping has to be created by the `config()` f
     keys = {
       { "<leader>ft", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
     },
-    config = function()
-      require("neo-tree").setup()
-    end,
+    opts = {},
 }
 ```
