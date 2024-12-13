@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.16.2](https://github.com/folke/lazy.nvim/compare/v11.16.1...v11.16.2) (2024-12-13)
+
+
+### Bug Fixes
+
+* **meta:** when a plugin is both optional and disabled, then just delete it from the list ([805b85c](https://github.com/folke/lazy.nvim/commit/805b85c2ea3bd6f9506ef22cbd6e3a39172b5b08))
+
 ## [11.16.1](https://github.com/folke/lazy.nvim/compare/v11.16.0...v11.16.1) (2024-12-09)
 
 
