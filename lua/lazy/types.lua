@@ -58,9 +58,14 @@
 ---@field optional? boolean If set, then this plugin will not be added unless it is added somewhere else
 ---@field lazy? boolean
 ---@field priority? number Only useful for lazy=false plugins to force loading certain plugins first. Default priority is 50
----@field dev? boolean If set, then link to the respective folder under your ~/projects
+---@field dev? LazyPluginDev
 ---@field rocks? string[]
 ---@field virtual? boolean virtual plugins won't be installed or added to the rtp.
+
+---@class LazyPluginDev
+---@field path string | fun(plugin: LazyPlugin): string Directory where you store your local plugin projects.
+---@field patterns string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
+---@field fallback boolean Fallback to git when local plugin doesn't exist
 
 ---@class LazyPlugin: LazyPluginBase,LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field dependencies? string[]
