@@ -158,6 +158,11 @@ M.clone = {
       vim.list_extend(args, { "-b", self.plugin.branch })
     end
 
+    if self.plugin.insecure then
+      args[#args + 1] = "-c"
+      args[#args + 1] = "http.sslVerify=false"
+    end
+
     table.insert(args, self.plugin.dir)
 
     if vim.fn.isdirectory(self.plugin.dir) == 1 then
