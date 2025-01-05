@@ -96,6 +96,7 @@ M.defaults = {
     icons = {
       cmd = " ",
       config = "",
+      debug = "●",
       event = " ",
       favorite = " ",
       ft = " ",
