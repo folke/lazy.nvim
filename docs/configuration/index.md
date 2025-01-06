@@ -100,7 +100,7 @@ sidebar_position: 5
     icons = {
       cmd = " ",
       config = "",
-      debug = "●",
+      debug = "● ",
       event = " ",
       favorite = " ",
       ft = " ",

@@ -622,7 +622,7 @@ with a lazy extension in `lazy`.
     icons = {
       cmd = " ",
       config = "",
-      debug = "●",
+      debug = "● ",
       event = " ",
       favorite = " ",
       ft = " ",
