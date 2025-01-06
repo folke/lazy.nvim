@@ -261,6 +261,8 @@ SPEC SOURCE                           *lazy.nvim-🔌-plugin-spec-spec-source*
 
   dev        boolean?   When true, a local plugin directory will be used instead. See
                         config.dev
+
+  insecure   boolean?   When true, SSL certificate verification will be disabled.
   -----------------------------------------------------------------------------------
 A valid spec should define one of `[1]`, `dir` or `url`.
 
