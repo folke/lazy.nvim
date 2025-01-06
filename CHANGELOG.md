@@ -1,5 +1,17 @@
 # Changelog
 
+## [11.17.0](https://github.com/folke/lazy.nvim/compare/v11.16.2...v11.17.0) (2025-01-06)
+
+
+### Features
+
+* **config,render:** allow customizing the debug icon ([#1863](https://github.com/folke/lazy.nvim/issues/1863)) ([a9c660d](https://github.com/folke/lazy.nvim/commit/a9c660d6ef1b396869d3d951760aa7a3dbfe575f))
+
+
+### Bug Fixes
+
+* **config:** add missing space on the default debug icon ([#1879](https://github.com/folke/lazy.nvim/issues/1879)) ([4df5c4d](https://github.com/folke/lazy.nvim/commit/4df5c4d65a3bbf801edd9ec55fb1ae55cfa72dd0))
+
 ## [11.16.2](https://github.com/folke/lazy.nvim/compare/v11.16.1...v11.16.2) (2024-12-13)
 
 
