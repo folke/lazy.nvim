@@ -270,7 +270,7 @@ function M.get_unloaded_rtp(modname, opts)
   local Config = require("lazy.core.config")
   if Config.spec then
     for _, plugin in pairs(Config.spec.plugins) do
-      if not (plugin._.loaded or plugin.module == false) then
+      if not (plugin._.loaded or plugin.module == false or plugin.virtual) then
         if norm == M.normname(plugin.name) then
           table.insert(rtp, 1, plugin.dir)
         else

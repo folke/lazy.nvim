@@ -350,7 +350,9 @@ function M._load(plugin, reason, opts)
   Util.track({ plugin = plugin.name, start = reason.start })
   Handler.disable(plugin)
 
-  M.add_to_rtp(plugin)
+  if not plugin.virtual then
+    M.add_to_rtp(plugin)
+  end
 
   if plugin._.pkg and plugin._.pkg.source == "rockspec" then
     M.add_to_luapath(plugin)
@@ -362,7 +364,9 @@ function M._load(plugin, reason, opts)
     end, "Failed to load deps for " .. plugin.name)
   end
 
-  M.packadd(plugin.dir)
+  if not plugin.virtual then
+    M.packadd(plugin.dir)
+  end
   if plugin.config or plugin.opts then
     M.config(plugin)
   end
@@ -502,8 +506,11 @@ function M.add_to_luapath(plugin)
   local root = Config.options.rocks.root .. "/" .. plugin.name
   local path = root .. "/share/lua/5.1"
   local cpath = root .. "/lib/lua/5.1"
+  local cpath2 = root .. "/lib64/lua/5.1"
+
   package.path = package.path .. ";" .. path .. "/?.lua;" .. path .. "/?/init.lua;"
   package.cpath = package.cpath .. ";" .. cpath .. "/?." .. (jit.os:find("Windows") and "dll" or "so") .. ";"
+  package.cpath = package.cpath .. ";" .. cpath2 .. "/?." .. (jit.os:find("Windows") and "dll" or "so") .. ";"
 end
 
 function M.source(path)

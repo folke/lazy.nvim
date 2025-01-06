@@ -172,7 +172,6 @@ function M.build(task)
       root,
       "--server",
       Config.options.rocks.server,
-      "--dev",
       "--lua-version",
       "5.1",
       "install", -- use install so that we can make use of pre-built rocks
@@ -225,9 +224,10 @@ end
 ---@return table?
 function M.parse(file)
   local ret = {}
-  return pcall(function()
-    loadfile(file, "t", ret)()
+  local ok = pcall(function()
+    loadfile(file, nil, ret)()
   end) and ret or nil
+  return ok and ret or nil
 end
 
 ---@param plugin LazyPlugin

@@ -146,7 +146,7 @@ end
 ---@return string, string[]
 function M.parse(args)
   local parts = vim.split(vim.trim(args), "%s+")
-  if parts[1]:find("Lazy") then
+  if vim.startswith("Lazy", parts[1]) then
     table.remove(parts, 1)
   end
   if args:sub(-1) == " " then

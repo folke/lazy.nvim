@@ -40,6 +40,15 @@ function throttle.wait()
   end
 end
 
+---@param plugin LazyPlugin
+local function cooldown(plugin)
+  if not plugin._.last_check then
+    return false
+  end
+  local delta = (vim.uv.now() - plugin._.last_check) / 1000
+  return delta < Config.options.git.cooldown
+end
+
 ---@type table<string, LazyTaskDef>
 local M = {}
 
@@ -266,7 +275,7 @@ M.status = {
 -- fetches all needed origin branches
 M.fetch = {
   skip = function(plugin)
-    return not plugin._.installed or plugin._.is_local
+    return not plugin._.installed or plugin._.is_local or cooldown(plugin)
   end,
 
   ---@async
@@ -287,6 +296,11 @@ M.fetch = {
     self:spawn("git", {
       args = args,
       cwd = self.plugin.dir,
+      on_exit = function(ok)
+        if ok then
+          self.plugin._.last_check = vim.uv.now()
+        end
+      end,
     })
   end,
 }
@@ -321,7 +335,7 @@ M.checkout = {
       end
     end
 
-    -- dont run checkout if target is already reached.
+    -- don't run checkout if target is already reached.
     -- unless we just cloned, since then we won't have any data yet
     if Git.eq(info, target) and info.branch == target.branch then
       self.plugin._.updated = {

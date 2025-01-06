@@ -146,33 +146,43 @@ function Spec:import(spec)
 
   local imported = 0
 
-  ---@type (string|(fun():LazyPluginSpec))[]
+  ---@type {modname: string, load: fun():(LazyPluginSpec?, string?)}[]
   local modspecs = {}
 
   if type(import) == "string" then
     Util.lsmod(import, function(modname, modpath)
-      modspecs[#modspecs + 1] = modname
-      package.preload[modname] = function()
-        return loadfile(modpath)()
-      end
+      modspecs[#modspecs + 1] = {
+        modname = modname,
+        load = function()
+          local mod, err = loadfile(modpath)
+          if mod then
+            return mod()
+          else
+            return nil, err
+          end
+        end,
+      }
     end)
-    table.sort(modspecs)
+    table.sort(modspecs, function(a, b)
+      return a.modname < b.modname
+    end)
   else
-    modspecs = { spec.import }
+    modspecs = { { modname = import_name, load = spec.import } }
   end
 
   for _, modspec in ipairs(modspecs) do
     imported = imported + 1
-    local modname = type(modspec) == "string" and modspec or import_name
+    local modname = modspec.modname
     Util.track({ import = modname })
     self.importing = modname
     -- unload the module so we get a clean slate
     ---@diagnostic disable-next-line: no-unknown
     package.loaded[modname] = nil
     Util.try(function()
-      local mod = type(modspec) == "function" and modspec() or require(modspec)
-      if type(mod) ~= "table" then
-        self.importing = nil
+      local mod, err = modspec.load()
+      if err then
+        self:error("Failed to load `" .. modname .. "`:\n" .. err)
+      elseif type(mod) ~= "table" then
         return self:error(
           "Invalid spec module: `"
             .. modname
@@ -180,21 +190,20 @@ function Spec:import(spec)
             .. type(mod)
             .. "` was returned instead"
         )
+      else
+        self:normalize(mod)
       end
-      self:normalize(mod)
-      self.importing = nil
-      Util.track()
     end, {
       msg = "Failed to load `" .. modname .. "`",
       on_error = function(msg)
         self:error(msg)
-        self.importing = nil
-        Util.track()
       end,
     })
+    self.importing = nil
+    Util.track()
   end
   if imported == 0 then
-    self:error("No specs found for module " .. spec.import)
+    self:error("No specs found for module " .. vim.inspect(spec.import))
   end
 end
 
@@ -228,12 +237,15 @@ function M.update_state()
         or plugin.cmd
       plugin.lazy = lazy and true or false
     end
-    if plugin.dir:find(Config.options.root, 1, true) == 1 then
+    if plugin.virtual then
+      plugin._.is_local = true
+      plugin._.installed = true -- local plugins are managed by the user
+    elseif plugin.dir:find(Config.options.root, 1, true) == 1 then
       plugin._.installed = installed[plugin.name] ~= nil
       installed[plugin.name] = nil
     else
       plugin._.is_local = true
-      plugin._.installed = true -- local plugins are managed by the user
+      plugin._.installed = vim.fn.isdirectory(plugin.dir) == 1
     end
   end
 

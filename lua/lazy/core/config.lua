@@ -41,6 +41,10 @@ M.defaults = {
       rate = 2,
       duration = 5 * 1000, -- in ms
     },
+    -- Time in seconds to wait before running fetch again for a plugin.
+    -- Repeated update/check operations will not run again until this
+    -- cooldown period has passed.
+    cooldown = 0,
   },
   pkg = {
     enabled = true,
@@ -63,7 +67,9 @@ M.defaults = {
     hererocks = nil,
   },
   dev = {
-    ---@type string | fun(plugin: LazyPlugin): string directory where you store your local plugin projects
+    -- Directory where you store your local plugin projects. If a function is used,
+    -- the plugin directory (e.g. `~/projects/plugin-name`) must be returned.
+    ---@type string | fun(plugin: LazyPlugin): string
     path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
@@ -90,6 +96,7 @@ M.defaults = {
     icons = {
       cmd = " ",
       config = "",
+      debug = "●",
       event = " ",
       favorite = " ",
       ft = " ",
@@ -212,7 +219,7 @@ M.defaults = {
     enabled = true,
     root = vim.fn.stdpath("state") .. "/lazy/readme",
     files = { "README.md", "lua/**/README.md" },
-    -- only generate markdown helptags for plugins that dont have docs
+    -- only generate markdown helptags for plugins that don't have docs
     skip_if_doc_exists = true,
   },
   state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
@@ -235,7 +242,7 @@ function M.hererocks()
   return M.options.rocks.hererocks
 end
 
-M.version = "11.13.5" -- x-release-please-version
+M.version = "11.16.2" -- x-release-please-version
 
 M.ns = vim.api.nvim_create_namespace("lazy")
 

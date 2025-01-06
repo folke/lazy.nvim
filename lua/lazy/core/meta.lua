@@ -213,6 +213,8 @@ function M:_rebuild(name)
   plugin.dir = super.dir
   if plugin.dir then
     plugin.dir = Util.norm(plugin.dir)
+  elseif super.virtual then
+    plugin.dir = Util.norm("/dev/null/" .. plugin.name)
   else
     if plugin.dev == nil and plugin.url then
       for _, pattern in ipairs(Config.options.dev.patterns) do
@@ -303,7 +305,11 @@ function M:fix_disabled()
   for _, plugin in pairs(self.plugins) do
     if plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()) then
       changes = changes + 1
-      self:disable(plugin)
+      if plugin.optional then
+        self:del(plugin.name)
+      else
+        self:disable(plugin)
+      end
     end
   end
   self:rebuild()

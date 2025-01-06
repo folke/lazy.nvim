@@ -87,12 +87,23 @@ M.build = {
 
 M.docs = {
   skip = function(plugin)
-    return not plugin._.dirty
+    return not plugin._.is_local and not plugin._.dirty
   end,
   run = function(self)
-    local docs = self.plugin.dir .. "/doc/"
+    local docs = self.plugin.dir .. "/doc"
     if Util.file_exists(docs) then
       self:log(vim.api.nvim_cmd({ cmd = "helptags", args = { docs } }, { output = true }))
+    end
+  end,
+}
+
+M.exists = {
+  skip = function(plugin)
+    return not plugin._.is_local or plugin.virtual
+  end,
+  run = function(self)
+    if not Util.file_exists(self.plugin.dir) then
+      self:error("Local plugin does not exist at `" .. self.plugin.dir .. "`")
     end
   end,
 }

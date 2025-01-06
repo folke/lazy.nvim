@@ -20,6 +20,7 @@
 ---@field tasks? LazyTask[]
 ---@field updated? {from:string, to:string}
 ---@field updates? {from:GitInfo, to:GitInfo}
+---@field last_check? number
 ---@field working? boolean
 ---@field pkg? LazyPkg
 
@@ -59,6 +60,7 @@
 ---@field priority? number Only useful for lazy=false plugins to force loading certain plugins first. Default priority is 50
 ---@field dev? boolean If set, then link to the respective folder under your ~/projects
 ---@field rocks? string[]
+---@field virtual? boolean virtual plugins won't be installed or added to the rtp.
 
 ---@class LazyPlugin: LazyPluginBase,LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field dependencies? string[]
@@ -73,6 +75,8 @@
 ---@field module? false
 
 ---@class LazyPluginSpec: LazyPluginBase,LazyPluginSpecHandlers,LazyPluginHooks,LazyPluginRef
+---@field name? string display name and name used for plugin config files
+---@field dir? string
 ---@field dependencies? string|string[]|LazyPluginSpec[]
 ---@field specs? string|string[]|LazyPluginSpec[]
 

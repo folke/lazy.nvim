@@ -1,5 +1,71 @@
 # Changelog
 
+## [11.16.2](https://github.com/folke/lazy.nvim/compare/v11.16.1...v11.16.2) (2024-12-13)
+
+
+### Bug Fixes
+
+* **meta:** when a plugin is both optional and disabled, then just delete it from the list ([805b85c](https://github.com/folke/lazy.nvim/commit/805b85c2ea3bd6f9506ef22cbd6e3a39172b5b08))
+
+## [11.16.1](https://github.com/folke/lazy.nvim/compare/v11.16.0...v11.16.1) (2024-12-09)
+
+
+### Bug Fixes
+
+* **types:** ensure all fields for `LazyPluginSpec` are optional ([#1843](https://github.com/folke/lazy.nvim/issues/1843)) ([703be1d](https://github.com/folke/lazy.nvim/commit/703be1dda35e142e76e94e7503cf67d6b98a1d35)), closes [#1842](https://github.com/folke/lazy.nvim/issues/1842)
+
+## [11.16.0](https://github.com/folke/lazy.nvim/compare/v11.15.0...v11.16.0) (2024-12-07)
+
+
+### Features
+
+* **plugin:** added support for virtual plugins. Closes [#1836](https://github.com/folke/lazy.nvim/issues/1836) ([ee64abc](https://github.com/folke/lazy.nvim/commit/ee64abc76be2b237b95d241a924b0323005b868a))
+
+
+### Bug Fixes
+
+* **plugin:** don't check if dir exists for virtual plugins ([656cf43](https://github.com/folke/lazy.nvim/commit/656cf4309396b7b8b62984e923bf8d8a0013f7d7))
+* **render:** show correct key for home. Fixes [#1796](https://github.com/folke/lazy.nvim/issues/1796) ([b08dba8](https://github.com/folke/lazy.nvim/commit/b08dba8107b5bdaaa007f18cf6c0cc0e0fd576aa))
+
+## [11.15.0](https://github.com/folke/lazy.nvim/compare/v11.14.2...v11.15.0) (2024-12-05)
+
+
+### Features
+
+* **plugin:** show error for local plugins that don't exist. Fixes [#1773](https://github.com/folke/lazy.nvim/issues/1773) ([9570a5a](https://github.com/folke/lazy.nvim/commit/9570a5ae7b17dcde4718c7458fd986c10f015a99))
+
+## [11.14.2](https://github.com/folke/lazy.nvim/compare/v11.14.1...v11.14.2) (2024-11-10)
+
+
+### Bug Fixes
+
+* **bootstrap:** single forward slash. Fixes [#1747](https://github.com/folke/lazy.nvim/issues/1747) ([aca30f6](https://github.com/folke/lazy.nvim/commit/aca30f63619a7492ecdea8833a065cf83c80f764))
+* **completion:** check if command string is a prefix of Lazy ([#1760](https://github.com/folke/lazy.nvim/issues/1760)) ([e9fd76e](https://github.com/folke/lazy.nvim/commit/e9fd76e239cc18da289f9a3f80f35fa16b003175)), closes [#1758](https://github.com/folke/lazy.nvim/issues/1758)
+* **docs:** always update helptags for local plugins ([60cf258](https://github.com/folke/lazy.nvim/commit/60cf258a9ae7fffe04bb31141141a91845158dcc))
+* **luarocks:** try to install from root manifest ([#1687](https://github.com/folke/lazy.nvim/issues/1687)) ([591ef40](https://github.com/folke/lazy.nvim/commit/591ef40f2da3a26fbcc0466988cd6fe45ca68cae))
+* **rocks:** add lib64 plugin directory to package.cpath ([#1717](https://github.com/folke/lazy.nvim/issues/1717)) ([80da254](https://github.com/folke/lazy.nvim/commit/80da254e645f579c28394ee0f08f75a9c9481744))
+* **rockspec:** allow binary lua files. Fixes [#1800](https://github.com/folke/lazy.nvim/issues/1800) ([408449a](https://github.com/folke/lazy.nvim/commit/408449a59adb8c2a31c32fff606676b32ce4552a))
+
+## [11.14.1](https://github.com/folke/lazy.nvim/compare/v11.14.0...v11.14.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* **plugins:** "Vim:E150: Not a directory" on plugin update ([#1679](https://github.com/folke/lazy.nvim/issues/1679)) ([7108809](https://github.com/folke/lazy.nvim/commit/7108809ab18dc1b1e6f402b29e2e1d35a5d311d5))
+
+## [11.14.0](https://github.com/folke/lazy.nvim/compare/v11.13.5...v11.14.0) (2024-07-24)
+
+
+### Features
+
+* added `opts.git.cooldown` to allow updating plugins on slow connections. Fixes [#1656](https://github.com/folke/lazy.nvim/issues/1656) ([d5686ef](https://github.com/folke/lazy.nvim/commit/d5686efbd00942b3e38de7c08b8df69d961b02f0))
+* **plugin:** improve error handling and show better error message ([c02268a](https://github.com/folke/lazy.nvim/commit/c02268ac6e6aab92249d020d75efc588bd9d24fa))
+
+
+### Bug Fixes
+
+* **plugin:** make .lazy.lua work again ([b4a5a12](https://github.com/folke/lazy.nvim/commit/b4a5a1209e4c64fa67aedf721a383541a64056d1))
+
 ## [11.13.5](https://github.com/folke/lazy.nvim/compare/v11.13.4...v11.13.5) (2024-07-22)
 
 
