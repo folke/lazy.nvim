@@ -706,7 +706,7 @@ will be added to the plugin’s spec.
         icons = {
           cmd = " ",
           config = "",
-          debug = "●",
+          debug = "● ",
           event = " ",
           favorite = " ",
           ft = " ",
