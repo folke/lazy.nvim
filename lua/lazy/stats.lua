@@ -34,12 +34,29 @@ end
 function M.cputime()
   if M.C == nil then
     pcall(function()
+      local pad = ""
+      -- If we're a 32-bit platform, we need to pad by 4 bytes.
+      if ffi.abi("32bit") then
+        pad = "int _tv_pad;"
+      end
+
+      local pad_before_nsec = ""
+      local pad_after_nsec = ""
+      -- Where we place the padding depends on the endianness.
+      if ffi.abi("le") then
+        pad_after_nsec = pad
+      else
+        pad_before_nsec = pad
+      end
+
       ffi.cdef([[
-        typedef long time_t;
+        typedef int64_t time_t;
         typedef int clockid_t;
         typedef struct timespec {
           time_t   tv_sec;        /* seconds */
+          ]] .. pad_before_nsec .. [[
           long     tv_nsec;       /* nanoseconds */
+          ]] .. pad_after_nsec .. [[
         } nanotime;
         int clock_gettime(clockid_t clk_id, struct timespec *tp);
       ]])
