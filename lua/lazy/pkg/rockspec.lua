@@ -260,9 +260,11 @@ function M.find_rockspec(plugin)
   Util.ls(plugin.dir, function(path, name, t)
     if t == "directory" and name == "rockspecs" then
       Util.ls(path, function(path, name, t)
-        rockspec_file = check_file(path, name)
-        if rockspec_file ~= nil then
-          return false
+        if t == "file" then
+          rockspec_file = check_file(path, name)
+          if rockspec_file ~= nil then
+            return false
+          end
         end
       end)
       if rockspec_file ~= nil then
