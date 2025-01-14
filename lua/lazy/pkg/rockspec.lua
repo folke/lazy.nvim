@@ -249,9 +249,10 @@ function M.find_rockspec(plugin)
   local rockspec_file ---@type string?
 
   local check_file = function(path, name)
+    -- match package-(scm|git|dev)-[REV].rockspec
     for _, suffix in ipairs({ "scm", "git", "dev" }) do
-      suffix = suffix .. "-1.rockspec"
-      if name:sub(-#suffix) == suffix then
+      pattern = suffix .. "%-%d+%.rockspec$"
+      if name:find(pattern) then
         return path
       end
     end
