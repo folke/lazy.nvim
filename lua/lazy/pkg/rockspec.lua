@@ -258,7 +258,7 @@ function M.find_rockspec(plugin)
   end
 
   Util.ls(plugin.dir, function(path, name, t)
-    if t == "directory" and name == "rockspecs" then
+    if t == "directory" and (name == "rockspec" or name == "rockspecs") then
       Util.ls(path, function(path, name, t)
         if t == "file" then
           rockspec_file = check_file(path, name)
