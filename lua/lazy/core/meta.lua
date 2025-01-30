@@ -14,9 +14,6 @@ local Util = require("lazy.core.util")
 ---@field pkgs table<string, number>
 local M = {}
 
-if false then
-  dd("foo")
-end
 ---@param spec LazySpecLoader
 ---@return LazyMeta
 function M.new(spec)
