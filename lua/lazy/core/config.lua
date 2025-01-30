@@ -69,7 +69,7 @@ M.defaults = {
   dev = {
     -- Directory where you store your local plugin projects. If a function is used,
     -- the plugin directory (e.g. `~/projects/plugin-name`) must be returned.
-    ---@type string | fun(plugin: LazyPlugin): string
+    ---@type string | fun(): string
     path = "~/projects",
     ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
     patterns = {}, -- For example {"folke"}
@@ -286,6 +286,8 @@ function M.setup(opts)
   M.options.root = Util.norm(M.options.root)
   if type(M.options.dev.path) == "string" then
     M.options.dev.path = Util.norm(M.options.dev.path)
+  else
+    M.options.dev.path = Util.norm(M.options.dev.path())
   end
   M.options.lockfile = Util.norm(M.options.lockfile)
   M.options.readme.root = Util.norm(M.options.readme.root)
