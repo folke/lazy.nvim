@@ -306,7 +306,7 @@ function M:fix_disabled()
   local changes = 0
   local function check(top)
     for _, plugin in pairs(self.plugins) do
-      if plugin._.top == top then
+      if (plugin._.top or false) == top then
         if plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()) then
           changes = changes + 1
           if plugin.optional then

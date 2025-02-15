@@ -25,6 +25,7 @@ local function clean(plugins)
     if plugin._.dep == false then
       plugin._.dep = nil
     end
+    plugin._.top = nil
     return plugin
   end, plugins)
 end
