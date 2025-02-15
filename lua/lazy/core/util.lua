@@ -374,6 +374,7 @@ function M.notify(msg, opts)
   local lang = opts.lang or "markdown"
   local n = opts.once and vim.notify_once or vim.notify
   n(msg, opts.level or vim.log.levels.INFO, {
+    ft = lang,
     on_open = function(win)
       local ok = pcall(function()
         vim.treesitter.language.add("markdown")
