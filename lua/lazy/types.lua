@@ -10,6 +10,7 @@
 ---@field dirty? boolean
 ---@field build? boolean
 ---@field frags? number[]
+---@field top? boolean
 ---@field handlers? LazyPluginHandlers
 ---@field installed? boolean
 ---@field is_local? boolean

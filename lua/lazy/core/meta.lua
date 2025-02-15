@@ -179,6 +179,7 @@ function M:_rebuild(name)
   local super = nil
   plugin.url = nil
   plugin._.dep = true
+  plugin._.top = true
   plugin.optional = true
 
   assert(#plugin._.frags > 0, "no fragments found for plugin " .. name)
@@ -195,6 +196,7 @@ function M:_rebuild(name)
       plugin._.dep = plugin._.dep and fragment.dep
       plugin.optional = plugin.optional and (rawget(fragment.spec, "optional") == true)
       plugin.url = fragment.url or plugin.url
+      plugin._.top = plugin._.top and fragment.pid == nil
 
       -- dependencies
       for _, dep in ipairs(fragment.deps or {}) do
@@ -302,16 +304,26 @@ end
 --- Removes plugins that are disabled.
 function M:fix_disabled()
   local changes = 0
-  for _, plugin in pairs(self.plugins) do
-    if plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()) then
-      changes = changes + 1
-      if plugin.optional then
-        self:del(plugin.name)
-      else
-        self:disable(plugin)
+  local function check(top)
+    for _, plugin in pairs(self.plugins) do
+      if plugin._.top == top then
+        if plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()) then
+          changes = changes + 1
+          if plugin.optional then
+            self:del(plugin.name)
+          else
+            self:disable(plugin)
+          end
+        end
       end
     end
   end
+  -- disable top-level plugins first, since they may have non-top-level frags
+  -- that disable other plugins
+  check(true)
+  self:rebuild()
+  -- then disable non-top-level plugins
+  check(false)
   self:rebuild()
   return changes
 end
