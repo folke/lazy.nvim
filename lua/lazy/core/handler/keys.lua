@@ -11,7 +11,7 @@ local Util = require("lazy.core.util")
 
 ---@class LazyKeysSpec: LazyKeysBase
 ---@field [1] string lhs
----@field [2]? string|fun()|false rhs
+---@field [2]? string|fun():string?|false rhs
 ---@field mode? string|string[]
 
 ---@class LazyKeys: LazyKeysBase
