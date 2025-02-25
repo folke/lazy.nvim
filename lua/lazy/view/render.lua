@@ -651,7 +651,7 @@ function M:profile()
   local stats = require("lazy.stats").stats()
   local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
   self:append("Startuptime: ", "LazyH2"):append(ms .. "ms", "Number"):nl():nl()
-  if stats.real_cputime then
+  if Util.real_cputime then
     self:append("Based on the actual CPU time of the Neovim process till "):append("UIEnter", "LazySpecial")
     self:append("."):nl()
     self:append("This is more accurate than ")
@@ -668,14 +668,14 @@ function M:profile()
 
   local times = {}
   for event, time in pairs(require("lazy.stats").stats().times) do
-    times[#times + 1] = { event, self:ms(time * 1e6), "Bold", time = time }
+    times[#times + 1] = { event, self:ms(time), "Bold", time = time }
   end
   table.sort(times, function(a, b)
     return a.time < b.time
   end)
   for p, prop in ipairs(times) do
     if p > 1 then
-      prop[2] = prop[2] .. " (+" .. self:ms((prop.time - times[p - 1].time) * 1e6) .. ")"
+      prop[2] = prop[2] .. " (+" .. self:ms(prop.time - times[p - 1].time) .. ")"
     end
   end
   self:props(times, { indent = 2 })
