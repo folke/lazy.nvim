@@ -6,6 +6,7 @@
 local M = {}
 
 function M.setup()
+  local uv = vim.uv or vim.loop
   if vim.env.LAZY_STDPATH then
     local root = vim.fn.fnamemodify(vim.env.LAZY_STDPATH, ":p"):gsub("[\\/]$", "")
     for _, name in ipairs({ "config", "data", "state", "cache" }) do
@@ -13,12 +14,12 @@ function M.setup()
     end
   end
 
-  if vim.env.LAZY_PATH and not vim.uv.fs_stat(vim.env.LAZY_PATH) then
+  if vim.env.LAZY_PATH and not uv.fs_stat(vim.env.LAZY_PATH) then
     vim.env.LAZY_PATH = nil
   end
 
   local lazypath = vim.env.LAZY_PATH or vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.env.LAZY_PATH and not (vim.uv or vim.loop).fs_stat(lazypath) then
+  if not vim.env.LAZY_PATH and not uv.fs_stat(lazypath) then
     vim.api.nvim_echo({
       {
         "Cloning lazy.nvim\n\n",
