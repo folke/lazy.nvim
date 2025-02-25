@@ -314,6 +314,7 @@ function M:fix_disabled()
           else
             self:disable(plugin)
           end
+          self:rebuild()
         end
       end
     end
@@ -321,10 +322,8 @@ function M:fix_disabled()
   -- disable top-level plugins first, since they may have non-top-level frags
   -- that disable other plugins
   check(true)
-  self:rebuild()
   -- then disable non-top-level plugins
   check(false)
-  self:rebuild()
   return changes
 end
 
