@@ -1,5 +1,20 @@
 # Changelog
 
+## [11.17.0](https://github.com/folke/lazy.nvim/compare/v11.16.2...v11.17.0) (2025-02-24)
+
+
+### Features
+
+* **config,render:** allow customizing the debug icon ([#1863](https://github.com/folke/lazy.nvim/issues/1863)) ([a9c660d](https://github.com/folke/lazy.nvim/commit/a9c660d6ef1b396869d3d951760aa7a3dbfe575f))
+* **util:** pass lang to `vim.notify` so that snacks notifier can render the ft. Closes [#1919](https://github.com/folke/lazy.nvim/issues/1919) ([c6a57a3](https://github.com/folke/lazy.nvim/commit/c6a57a3534d3494bcc5ff9b0586e141bdb0280eb))
+
+
+### Bug Fixes
+
+* **config:** add missing space on the default debug icon ([#1879](https://github.com/folke/lazy.nvim/issues/1879)) ([4df5c4d](https://github.com/folke/lazy.nvim/commit/4df5c4d65a3bbf801edd9ec55fb1ae55cfa72dd0))
+* **meta:** disable top-level specs before the rest. Closes [#1889](https://github.com/folke/lazy.nvim/issues/1889) ([f81a3fb](https://github.com/folke/lazy.nvim/commit/f81a3fb7feaf460ec7c8c983682b4a693b18fdd4))
+* **ui:** do not show virt_lines for messages ([#1904](https://github.com/folke/lazy.nvim/issues/1904)) ([f15a939](https://github.com/folke/lazy.nvim/commit/f15a93907ddad3d9139aea465ae18336d87f5ce6))
+
 ## [11.16.2](https://github.com/folke/lazy.nvim/compare/v11.16.1...v11.16.2) (2024-12-13)
 
 
