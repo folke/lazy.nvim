@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.17.1](https://github.com/folke/lazy.nvim/compare/v11.17.0...v11.17.1) (2025-02-25)
+
+
+### Bug Fixes
+
+* **bootstrap:** support for older Neovim versions ([1c9ba37](https://github.com/folke/lazy.nvim/commit/1c9ba3704564a2e34a22191bb89678680ffeb245))
+* **meta:** rebuild dirty right after disable. See [#1889](https://github.com/folke/lazy.nvim/issues/1889) ([d51cf69](https://github.com/folke/lazy.nvim/commit/d51cf6978321d659e68a8bc38ee806bd2517a196))
+
 ## [11.17.0](https://github.com/folke/lazy.nvim/compare/v11.16.2...v11.17.0) (2025-02-24)
 
 
