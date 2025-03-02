@@ -89,6 +89,8 @@ M.defaults = {
     border = "none",
     -- The backdrop opacity. 0 is fully opaque, 100 is fully transparent.
     backdrop = 60,
+    -- The main window opacity. 0 is fully opaque, 100 is fully transparent.
+    winblend = 0,
     title = nil, ---@type string only works when border is not "none"
     title_pos = "center", ---@type "center" | "left" | "right"
     -- Show pills on top of the Lazy window
