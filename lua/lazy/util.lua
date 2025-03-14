@@ -25,17 +25,46 @@ function M.open(uri, opts)
   if not opts.system and M.file_exists(uri) then
     return M.float({ style = "", file = uri })
   end
-  local cmd, err = vim.ui.open(uri)
-  if cmd then
-    cmd:wait()
-  end
-  if err then
-    local msg = {
-      "Failed to open uri",
-      err,
-      vim.inspect(uri),
-    }
-    vim.notify(table.concat(msg, "\n"), vim.log.levels.ERROR)
+  if vim.fn.has('nvim-0.10.0') then
+    local ret = vim.fn.jobstart(cmd, { detach = true })
+    if ret <= 0 then
+      local msg = {
+        "Failed to open uri",
+        ret,
+        vim.inspect(cmd),
+      }
+    local cmd, err = vim.ui.open(uri)
+    if cmd then
+      cmd:wait()
+    end
+    if err then
+      local msg = {
+        "Failed to open uri",
+        err,
+        vim.inspect(uri),
+      }
+      vim.notify(table.concat(msg, "\n"), vim.log.levels.ERROR)
+    end
+  else
+    local Config = require("lazy.core.config")
+    local cmd
+    if not opts.system and Config.options.ui.browser then
+      cmd = { Config.options.ui.browser, uri }
+    elseif vim.fn.has("win32") == 1 then
+      cmd = { "explorer", uri }
+    elseif vim.fn.has("macunix") == 1 then
+      cmd = { "open", uri }
+    else
+      if vim.fn.executable("xdg-open") == 1 then
+        cmd = { "xdg-open", uri }
+      elseif vim.fn.executable("wslview") == 1 then
+        cmd = { "wslview", uri }
+      elseif vim.fn.executable("explorer.exe") == 1 then
+        cmd = { "explorer.exe", uri }
+      else
+        cmd = { "open", uri }
+      end
+    end
   end
 end
 
