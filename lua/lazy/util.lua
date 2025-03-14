@@ -26,13 +26,6 @@ function M.open(uri, opts)
     return M.float({ style = "", file = uri })
   end
   if vim.fn.has('nvim-0.10.0') == 1 then
-    local ret = vim.fn.jobstart(cmd, { detach = true })
-    if ret <= 0 then
-      local msg = {
-        "Failed to open uri",
-        ret,
-        vim.inspect(cmd),
-      }
     local cmd, err = vim.ui.open(uri)
     if cmd then
       cmd:wait()
@@ -65,6 +58,15 @@ function M.open(uri, opts)
         cmd = { "open", uri }
       end
     end
+      local ret = vim.fn.jobstart(cmd, { detach = true })
+      if ret <= 0 then
+        local msg = {
+          "Failed to open uri",
+          ret,
+          vim.inspect(cmd),
+        }
+        vim.notify(table.concat(msg, "\n"), vim.log.levels.ERROR)
+      end
   end
 end
 
