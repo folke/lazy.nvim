@@ -25,7 +25,7 @@ function M.open(uri, opts)
   if not opts.system and M.file_exists(uri) then
     return M.float({ style = "", file = uri })
   end
-  if vim.fn.has('nvim-0.10.0') then
+  if vim.fn.has('nvim-0.10.0') == 1 then
     local ret = vim.fn.jobstart(cmd, { detach = true })
     if ret <= 0 then
       local msg = {
