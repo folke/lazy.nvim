@@ -86,7 +86,7 @@ M.defaults = {
     size = { width = 0.8, height = 0.8 },
     wrap = true, -- wrap the lines in the ui
     -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
-    border = "none",
+    border = nil,
     -- The backdrop opacity. 0 is fully opaque, 100 is fully transparent.
     backdrop = 60,
     title = nil, ---@type string only works when border is not "none"
