@@ -149,6 +149,7 @@ function M:mount()
       row = 0,
       col = 0,
       style = "minimal",
+      border = "none",
       focusable = false,
       zindex = self.opts.zindex - 1,
     })
