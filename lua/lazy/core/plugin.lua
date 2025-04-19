@@ -390,12 +390,16 @@ function M.find(path, opts)
     return
   end
   opts = opts or {}
-  local lua = path:find("/lua/", 1, true)
-  if lua then
-    local name = path:sub(1, lua - 1)
-    local slash = name:reverse():find("/", 1, true)
-    if slash then
-      name = name:sub(#name - slash + 2)
+  -- Find start and end of "/name_of_plugin/"
+  -- Example: extract lualine.nvim from the following path:
+  -- "/home/user/.local/share/nvim/lazy/lualine.nvim/lua/lualine.lua"
+  -- "aul.enilaul/aul/mivn.enilaul/yzal/mivn/erahs/lacol./resu/emoh/"(reversed)
+  local reversed = path:reverse()
+  local rev_start, rev_end = reversed:find("/aul/", 1, true) -- find *last* "/lua/"
+  if rev_start then
+    local rev_next_slash = reversed:find("/", rev_end + 1, true)
+    if rev_next_slash then
+      local name = path:sub(#path - rev_next_slash + 2, #path - rev_end)
       if name then
         if opts.fast then
           return Config.spec.meta.plugins[name]
