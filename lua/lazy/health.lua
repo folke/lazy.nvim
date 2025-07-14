@@ -43,7 +43,7 @@ function M.have(cmd, opts)
       else
         local version = vim.trim(out[1] or "")
         version = version:gsub("^%s*" .. vim.pesc(c) .. "%s*", "")
-        if opts.version_pattern and not version:find(opts.version_pattern, 1, true) then
+        if opts.version_pattern and not version:find(opts.version_pattern) then
           opts.warn(("`%s` version `%s` needed, but found `%s`"):format(c, opts.version_pattern, version))
         else
           found = ("{%s} `%s`"):format(c, version)
@@ -59,7 +59,7 @@ function M.have(cmd, opts)
     (opts.optional and opts.warn or opts.error)(
       ("{%s} %snot installed"):format(
         table.concat(cmd, "} or {"),
-        opts.version_pattern and "version `" .. opts.version_pattern .. "` " or ""
+        opts.version_pattern and "version matching `" .. opts.version_pattern .. "` " or ""
       )
     )
   end

@@ -82,7 +82,7 @@ function M.check(opts)
         M.hererocks.bin("lua"),
         vim.tbl_extend("force", opts, {
           version = "-v",
-          version_pattern = "5.1",
+          version_pattern = "5%.[1-9]",
         })
       )
     end
@@ -92,7 +92,7 @@ function M.check(opts)
       { "lua5.1", "lua", "lua-5.1" },
       vim.tbl_extend("force", opts, {
         version = "-v",
-        version_pattern = "5.1",
+        version_pattern = "5%.[1-9]",
       })
     )
   end
