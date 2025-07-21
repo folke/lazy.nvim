@@ -143,6 +143,10 @@ function M.startup()
 
   -- 4. load after plugins
   Util.track({ start = "after" })
+  -- Set init_done here so plugins loaded afterwards know that
+  -- they are not able to add to init anymore
+  M.init_done = true
+  Util.track()
   for _, path in
     ipairs(vim.opt.rtp:get() --[[@as string[] ]])
   do
@@ -150,10 +154,6 @@ function M.startup()
       M.source_runtime(path, "plugin")
     end
   end
-  Util.track()
-
-  M.init_done = true
-
   Util.track()
 end
 
