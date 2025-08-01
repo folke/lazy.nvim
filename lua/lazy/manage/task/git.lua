@@ -2,6 +2,7 @@ local Async = require("lazy.async")
 local Config = require("lazy.core.config")
 local Git = require("lazy.manage.git")
 local Lock = require("lazy.manage.lock")
+local Semver = require("lazy.manage.semver")
 local Util = require("lazy.util")
 
 local throttle = {}
@@ -98,6 +99,13 @@ M.log = {
             local last_commit = Git.get_commit(self.plugin.dir, target.branch, true)
             if not Git.eq(info, { commit = last_commit }) then
               self.plugin._.outdated = true
+            end
+          end
+          if Config.options.checker.check_tags and self.plugin and target.tag then
+            local latest = Semver.last(Git.get_versions(self.plugin.dir, "*"))
+            if latest and target.tag ~= latest.tag then
+              self.plugin._.outdated = true
+              -- vim.print(target.tag .. " -> " .. latest.tag)
             end
           end
         else
