@@ -140,10 +140,6 @@ M.clone = {
       args[#args + 1] = "--filter=blob:none"
     end
 
-    if self.plugin.submodules ~= false then
-      args[#args + 1] = "--recurse-submodules"
-    end
-
     args[#args + 1] = "--origin=origin"
 
     -- If git config --global core.autocrlf is true on a Unix/Linux system, then the git clone
@@ -283,15 +279,10 @@ M.fetch = {
     throttle.wait()
     local args = {
       "fetch",
-      "--recurse-submodules",
       "--tags", -- also fetch remote tags
       "--force", -- overwrite existing tags if needed
       "--progress",
     }
-
-    if self.plugin.submodules == false then
-      table.remove(args, 2)
-    end
 
     self:spawn("git", {
       args = args,
@@ -348,12 +339,7 @@ M.checkout = {
     local args = {
       "checkout",
       "--progress",
-      "--recurse-submodules",
     }
-
-    if self.plugin.submodules == false then
-      table.remove(args, 3)
-    end
 
     if lock then
       table.insert(args, lock.commit)
