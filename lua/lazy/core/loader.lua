@@ -403,6 +403,9 @@ function M.get_main(plugin)
   if plugin.name ~= "mini.nvim" and plugin.name:match("^mini%..*$") then
     return plugin.name
   end
+  if plugin.name ~= "tiny.nvim" and plugin.name:match("^tiny%..*$") then
+    return plugin.name
+  end
   local normname = Util.normname(plugin.name)
   ---@type string[]
   local mods = {}
