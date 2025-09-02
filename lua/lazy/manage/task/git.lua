@@ -55,7 +55,7 @@ local M = {}
 M.log = {
   ---@param opts {updated?:boolean, check?: boolean}
   skip = function(plugin, opts)
-    if opts.check and plugin.pin then
+    if opts.check and plugin.pin and not Config.options.checker.check_pinned then
       return true
     end
     if opts.updated and not (plugin._.updated and plugin._.updated.from ~= plugin._.updated.to) then
