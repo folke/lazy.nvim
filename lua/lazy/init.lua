@@ -52,9 +52,6 @@ function M.setup(spec, opts)
   if vim.fn.has("nvim-0.8.0") ~= 1 then
     return vim.notify("lazy.nvim requires Neovim >= 0.8.0", vim.log.levels.ERROR, { title = "lazy.nvim" })
   end
-  if not (pcall(require, "ffi") and jit and jit.version) then
-    return vim.notify("lazy.nvim requires Neovim built with LuaJIT", vim.log.levels.ERROR, { title = "lazy.nvim" })
-  end
   local start = vim.uv.hrtime()
 
   -- use the Neovim cache if available

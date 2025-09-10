@@ -5,7 +5,7 @@ local M = {}
 
 ---@type LazyProfile[]
 M._profiles = { { name = "lazy" } }
-M.is_win = jit.os:find("Windows")
+M.is_win = vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1
 
 ---@param data (string|{[string]:string})?
 ---@param time number?

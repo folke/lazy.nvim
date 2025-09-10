@@ -1,5 +1,3 @@
-local ffi = require("ffi")
-
 local M = {}
 
 ---@class LazyStats
@@ -34,6 +32,7 @@ end
 function M.cputime()
   if M.C == nil then
     pcall(function()
+      local ffi = require("ffi")
       ffi.cdef([[
         typedef long time_t;
         typedef int clockid_t;
@@ -48,6 +47,7 @@ function M.cputime()
   end
 
   local function real()
+    local ffi = require("ffi")
     local pnano = assert(ffi.new("nanotime[?]", 1))
     local CLOCK_PROCESS_CPUTIME_ID = jit.os == "OSX" and 12 or 2
     ffi.C.clock_gettime(CLOCK_PROCESS_CPUTIME_ID, pnano)
