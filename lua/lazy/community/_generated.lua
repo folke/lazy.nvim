@@ -477,11 +477,11 @@ return
     version = "0.0.2-1"
   }, {
     name = "luarocks-build-treesitter-parser",
-    url = "nvim-neorocks/luarocks-build-treesitter-parser",
+    url = "lumen-oss/luarocks-build-treesitter-parser",
     version = "6.0.0-1"
   }, {
     name = "luarocks-build-treesitter-parser-cpp",
-    url = "nvim-neorocks/luarocks-build-treesitter-parser-cpp",
+    url = "lumen-oss/luarocks-build-treesitter-parser-cpp",
     version = "2.0.4-1"
   }, {
     name = "mag-nvim-lsp",
@@ -913,31 +913,31 @@ return
     version = "0.0.1-1"
   }, {
     name = "rocks-config.nvim",
-    url = "nvim-neorocks/rocks-config.nvim",
+    url = "lumen-oss/rocks-config.nvim",
     version = "3.1.0-1"
   }, {
     name = "rocks-dev.nvim",
-    url = "nvim-neorocks/rocks-dev.nvim",
+    url = "lumen-oss/rocks-dev.nvim",
     version = "1.7.0-1"
   }, {
     name = "rocks-git.nvim",
-    url = "nvim-neorocks/rocks-git.nvim",
+    url = "lumen-oss/rocks-git.nvim",
     version = "2.5.2-1"
   }, {
     name = "rocks-lazy.nvim",
-    url = "nvim-neorocks/rocks-lazy.nvim",
+    url = "lumen-oss/rocks-lazy.nvim",
     version = "1.2.0-1"
   }, {
     name = "rocks-treesitter.nvim",
-    url = "nvim-neorocks/rocks-treesitter.nvim",
+    url = "lumen-oss/rocks-treesitter.nvim",
     version = "1.3.0-1"
   }, {
     name = "rocks.nvim",
-    url = "nvim-neorocks/rocks.nvim",
+    url = "lumen-oss/rocks.nvim",
     version = "2.43.1-1"
   }, {
     name = "rtp.nvim",
-    url = "nvim-neorocks/rtp.nvim",
+    url = "lumen-oss/rtp.nvim",
     version = "1.2.0-1"
   }, {
     name = "runt.nvim",
@@ -1257,7 +1257,7 @@ return
     version = "0.0.29-1"
   }, {
     name = "tree-sitter-ecma",
-    url = "nvim-neorocks/luarocks-stub",
+    url = "lumen-oss/luarocks-stub",
     version = "0.0.30-1"
   }, {
     name = "tree-sitter-editorconfig",
@@ -1517,7 +1517,7 @@ return
     version = "0.0.36-1"
   }, {
     name = "tree-sitter-html_tags",
-    url = "nvim-neorocks/luarocks-stub",
+    url = "lumen-oss/luarocks-stub",
     version = "0.0.29-1"
   }, {
     name = "tree-sitter-htmldjango",
@@ -1605,7 +1605,7 @@ return
     version = "0.0.29-1"
   }, {
     name = "tree-sitter-jsx",
-    url = "nvim-neorocks/luarocks-stub",
+    url = "lumen-oss/luarocks-stub",
     version = "0.0.29-1"
   }, {
     name = "tree-sitter-julia",
