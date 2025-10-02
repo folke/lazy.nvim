@@ -152,7 +152,7 @@ function M.minitest.setup(opts)
         opts = {
           collect = {
             find_files = function()
-              return vim.fn.globpath("tests", "**/*_spec.lua", true, true)
+              return #_G.arg > 0 and _G.arg or vim.fn.globpath("tests", "**/*_spec.lua", true, true)
             end,
           },
           -- script_path = "tests/minit.lua",
