@@ -1363,31 +1363,14 @@ TESTING WITH BUSTED ~
 
 This will add `"lunarmodules/busted"`, configure `hererocks` and run `busted`.
 
-Below is an example of how I use **minit** to run tests with busted
-<https://olivinelabs.com/busted/> in **LazyVim**.
+Running tests with busted will leverge the [tests/busted.lua](https://github.com/folke/lazy.nvim/blob/add-busted-lua/tests/busted.lua) file, to setup the test environment using [lazy.minit](https://github.com/folke/lazy.nvim/blob/main/lua/lazy/minit.lua).
 
->lua
-    #!/usr/bin/env -S nvim -l
-    
-    vim.env.LAZY_STDPATH = ".tests"
-    load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
-    
-    -- Setup lazy.nvim
-    require("lazy.minit").busted({
-      spec = {
-        "LazyVim/starter",
-        "williamboman/mason-lspconfig.nvim",
-        "williamboman/mason.nvim",
-        "nvim-treesitter/nvim-treesitter",
-      },
-    })
-<
+To run the tests with busted, simply run the following command from the root
+of the repository:
 
-To use this, you can run:
-
->sh
-    nvim -l ./tests/busted.lua tests
-<
+```sh
+busted tests
+```
 
 If you want to inspect the test environment, run:
 
