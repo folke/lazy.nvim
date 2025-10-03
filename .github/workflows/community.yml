@@ -22,7 +22,7 @@ jobs:
         run: |
           nvim -l lua/lazy/build.lua
       - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "chore(build): auto-generate rockspec mappings"
           commit_user_name: "github-actions[bot]"
