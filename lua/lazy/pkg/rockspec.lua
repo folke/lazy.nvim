@@ -25,6 +25,27 @@ M.rewrites = {
 
 M.python = { "python3", "python" }
 
+---@class LuaRocks
+M.luarocks = {}
+
+-- check which executable to call for luarocks, considering windows exceptions
+-- @return string
+function M.luarocks.execname()
+  local luarocks = "luarocks"
+  if Util.is_win then
+    local luarocks_win = "luarocks.exe"
+    if vim.fn.executable(luarocks_win) == 1 then
+      luarocks = luarocks_win
+    else
+      luarocks_win = "luarocks.bat"
+      if vim.fn.executable(luarocks_win) == 1 then
+        luarocks = luarocks_win
+      end
+    end
+  end
+  return luarocks
+end
+
 ---@class HereRocks
 M.hererocks = {}
 
@@ -87,7 +108,8 @@ function M.check(opts)
       )
     end
   else
-    ok = Health.have("luarocks", opts)
+    local luarocks = M.luarocks.execname()
+    ok = Health.have(luarocks, opts)
     Health.have(
       { "lua5.1", "lua", "lua-5.1" },
       vim.tbl_extend("force", opts, {
@@ -133,7 +155,7 @@ function M.build(task)
   end
 
   local env = {}
-  local luarocks = "luarocks"
+  local luarocks = M.luarocks.execname()
   if Config.hererocks() then
     -- hererocks is still building, so skip for now
     -- a new build will happen in the next round
@@ -151,9 +173,6 @@ function M.build(task)
     env = {
       PATH = table.concat(path, sep),
     }
-    if Util.is_win then
-      luarocks = luarocks .. ".bat"
-    end
   end
 
   local pkg = task.plugin._.pkg
