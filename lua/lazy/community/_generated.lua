@@ -2408,3 +2408,4 @@ return
     url = "zk-org/zk-nvim",
     version = "0.2.0-1"
   } }
+{}

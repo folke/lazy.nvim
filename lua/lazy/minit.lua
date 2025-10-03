@@ -62,7 +62,9 @@ function M.setup(opts)
   if vim.g.colors_name == nil then
     vim.cmd("colorscheme habamax")
   end
-  require("lazy").update():wait()
+  if not vim.env.LAZY_OFFLINE then
+    require("lazy").update():wait()
+  end
   if vim.bo.filetype == "lazy" then
     local errors = false
     for _, plugin in pairs(require("lazy.core.config").spec.plugins) do
@@ -150,7 +152,7 @@ function M.minitest.setup(opts)
         opts = {
           collect = {
             find_files = function()
-              return vim.fn.globpath("tests", "**/*_spec.lua", true, true)
+              return #_G.arg > 0 and _G.arg or vim.fn.globpath("tests", "**/*_spec.lua", true, true)
             end,
           },
           -- script_path = "tests/minit.lua",

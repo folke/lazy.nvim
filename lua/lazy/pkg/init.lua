@@ -63,6 +63,9 @@ function M.update()
             pkg.spec = { _raw = spec.code }
           end
           table.insert(ret.pkgs, pkg)
+          if not plugin._.pkg and plugin._.loaded and pkg.source == "rockspec" then
+            require("lazy.core.loader").add_to_luapath(plugin)
+          end
           break
         end
       end
