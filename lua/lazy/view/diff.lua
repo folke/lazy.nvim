@@ -23,18 +23,18 @@ M.handlers = {
 
   ---@type LazyDiffFun
   ["diffview.nvim"] = function(plugin, diff)
-    local args
+    local args = "--git-dir=.git" .. " " .. ("-C=%s"):format(plugin.dir) .. " "
     if diff.commit then
-      args = ("-C=%s"):format(plugin.dir) .. " " .. diff.commit .. "^!"
+      args = args .. diff.commit .. "^!"
     else
-      args = ("-C=%s"):format(plugin.dir) .. " " .. diff.from .. ".." .. diff.to
+      args = args .. diff.from .. ".." .. diff.to
     end
     vim.cmd("DiffviewOpen " .. args)
   end,
 
   ---@type LazyDiffFun
   git = function(plugin, diff)
-    local cmd = { "git" }
+    local cmd = { "git", "--git-dir=.git" }
     if diff.commit then
       cmd[#cmd + 1] = "show"
       cmd[#cmd + 1] = diff.commit
@@ -48,7 +48,7 @@ M.handlers = {
 
   ---@type LazyDiffFun
   terminal_git = function(plugin, diff)
-    local cmd = { "git" }
+    local cmd = { "git", "--git-dir=.git" }
     if diff.commit then
       cmd[#cmd + 1] = "show"
       cmd[#cmd + 1] = diff.commit
