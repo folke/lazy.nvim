@@ -33,11 +33,14 @@ function M.setup(opts)
   local args = {}
   local is_busted = false
   local is_minitest = false
+  local offline = vim.env.LAZY_OFFLINE == "1" or vim.env.LAZY_OFFLINE == "true"
   for _, a in ipairs(_G.arg) do
     if a == "--busted" then
       is_busted = true
     elseif a == "--minitest" then
       is_minitest = true
+    elseif a == "--offline" then
+      offline = true
     else
       table.insert(args, a)
     end
@@ -62,7 +65,7 @@ function M.setup(opts)
   if vim.g.colors_name == nil then
     vim.cmd("colorscheme habamax")
   end
-  if not vim.env.LAZY_OFFLINE then
+  if not offline then
     require("lazy").update():wait()
   end
   if vim.bo.filetype == "lazy" then
