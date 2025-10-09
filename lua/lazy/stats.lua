@@ -35,11 +35,10 @@ function M.cputime()
   if M.C == nil then
     pcall(function()
       ffi.cdef([[
-        typedef long time_t;
         typedef int clockid_t;
         typedef struct timespec {
-          time_t   tv_sec;        /* seconds */
-          long     tv_nsec;       /* nanoseconds */
+          int64_t tv_sec;   /* Use fixed 64-bit type for portability */
+          long    tv_nsec;  /* nanoseconds */
         } nanotime;
         int clock_gettime(clockid_t clk_id, struct timespec *tp);
       ]])
@@ -48,7 +47,8 @@ function M.cputime()
   end
 
   local function real()
-    local pnano = assert(ffi.new("nanotime[?]", 1))
+    -- Zero-initialize to handle 32-bit systems where only lower 32 bits are written
+    local pnano = ffi.new("nanotime[1]")
     local CLOCK_PROCESS_CPUTIME_ID = jit.os == "OSX" and 12 or 2
     ffi.C.clock_gettime(CLOCK_PROCESS_CPUTIME_ID, pnano)
     return tonumber(pnano[0].tv_sec) * 1e3 + tonumber(pnano[0].tv_nsec) / 1e6
