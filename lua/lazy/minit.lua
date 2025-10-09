@@ -33,11 +33,14 @@ function M.setup(opts)
   local args = {}
   local is_busted = false
   local is_minitest = false
+  local offline = vim.env.LAZY_OFFLINE == "1" or vim.env.LAZY_OFFLINE == "true"
   for _, a in ipairs(_G.arg) do
     if a == "--busted" then
       is_busted = true
     elseif a == "--minitest" then
       is_minitest = true
+    elseif a == "--offline" then
+      offline = true
     else
       table.insert(args, a)
     end
@@ -62,7 +65,9 @@ function M.setup(opts)
   if vim.g.colors_name == nil then
     vim.cmd("colorscheme habamax")
   end
-  require("lazy").update():wait()
+  if not offline then
+    require("lazy").update():wait()
+  end
   if vim.bo.filetype == "lazy" then
     local errors = false
     for _, plugin in pairs(require("lazy.core.config").spec.plugins) do
@@ -150,7 +155,7 @@ function M.minitest.setup(opts)
         opts = {
           collect = {
             find_files = function()
-              return vim.fn.globpath("tests", "**/*_spec.lua", true, true)
+              return #_G.arg > 0 and _G.arg or vim.fn.globpath("tests", "**/*_spec.lua", true, true)
             end,
           },
           -- script_path = "tests/minit.lua",

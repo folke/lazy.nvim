@@ -61,7 +61,11 @@ end
 ---@return string
 function M.extract(file, pattern)
   local init = Util.read_file(file)
-  return assert(init:match(pattern))
+  local ret = assert(init:match(pattern)) --[[@as string]]
+  local lines = vim.tbl_filter(function(line)
+    return not line:find("^%s*%-%-%s*stylua%s*:%s*ignore%s*$")
+  end, vim.split(ret, "\n"))
+  return table.concat(lines, "\n")
 end
 
 ---@return ReadmeBlock
