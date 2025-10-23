@@ -25,7 +25,7 @@ M.clean = {
   run = function(self, opts)
     opts = opts or {}
     local dir = self.plugin.dir:gsub("/+$", "")
-    assert(dir:find(Config.options.root, 1, true) == 1, self.plugin.dir .. " should be under packpath!")
+    assert(dir:find(Config.options.root .. "/", 1, true) == 1, self.plugin.dir .. " should be under packpath!")
 
     local rock_root = Config.options.rocks.root .. "/" .. self.plugin.name
     if vim.uv.fs_stat(rock_root) then

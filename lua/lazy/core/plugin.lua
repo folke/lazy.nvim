@@ -240,7 +240,7 @@ function M.update_state()
     if plugin.virtual then
       plugin._.is_local = true
       plugin._.installed = true -- local plugins are managed by the user
-    elseif plugin.dir:find(Config.options.root, 1, true) == 1 then
+    elseif plugin.dir:find(Config.options.root .. "/", 1, true) == 1 then
       plugin._.installed = installed[plugin.name] ~= nil
       installed[plugin.name] = nil
     else
