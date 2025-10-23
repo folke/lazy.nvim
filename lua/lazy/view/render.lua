@@ -526,7 +526,7 @@ function M:log(task)
     for _, line in ipairs(lines) do
       local ref, msg, time = line:match("^(%w+) (.*) (%(.*%))$")
       if msg then
-        if msg:find("^%S+!:") then
+        if msg:find("^%S+!:") or msg:find("^Revert \"%S+!:") then
           self:diagnostic({ message = "Breaking Changes", severity = vim.diagnostic.severity.WARN })
         end
         self:append(ref:sub(1, 7) .. " ", "LazyCommit", { indent = 6 })
