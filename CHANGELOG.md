@@ -1,5 +1,14 @@
 # Changelog
 
+## [11.17.2](https://github.com/folke/lazy.nvim/compare/v11.17.1...v11.17.2) (2025-10-23)
+
+
+### Bug Fixes
+
+* **luarocks:** add plugin to lua path if it was already loaded before we know its a luarock ([147f5a3](https://github.com/folke/lazy.nvim/commit/147f5a3f55b5491bbc77a55ce846ef5eb575fa42))
+* **plugin:** check that path is actually in root dir. Closes [#2075](https://github.com/folke/lazy.nvim/issues/2075) ([16e5271](https://github.com/folke/lazy.nvim/commit/16e52715b70b4d0fc6af3563ccc0ed9df82ae23e))
+* **stats:** better support for different `time_t` sizes. See [#2049](https://github.com/folke/lazy.nvim/issues/2049) ([1ea3c40](https://github.com/folke/lazy.nvim/commit/1ea3c4085785f460fb0e46d2fe1ee895f5f9e7c1))
+
 ## [11.17.1](https://github.com/folke/lazy.nvim/compare/v11.17.0...v11.17.1) (2025-02-25)
 
 
