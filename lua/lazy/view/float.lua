@@ -53,7 +53,7 @@ function M:init(opts)
   self.opts = vim.tbl_deep_extend("force", {
     size = Config.options.ui.size,
     style = "minimal",
-    border = Config.options.ui.border or "none",
+    border = Config.options.ui.border or vim.o.winborder or "none",
     backdrop = Config.options.ui.backdrop or 60,
     zindex = 50,
   }, opts or {})
@@ -66,7 +66,7 @@ function M:init(opts)
   self.win_opts = {
     relative = "editor",
     style = self.opts.style ~= "" and self.opts.style or nil,
-    border = self.opts.border,
+    border = self.opts.border or vim.o.winborder,
     zindex = self.opts.zindex,
     noautocmd = self.opts.noautocmd,
     title = self.opts.title,
@@ -92,7 +92,7 @@ function M:layout()
   self.win_opts.row = math.floor((vim.o.lines - self.win_opts.height) / 2)
   self.win_opts.col = math.floor((vim.o.columns - self.win_opts.width) / 2)
 
-  if self.opts.border ~= "none" then
+  if self.opts.border ~= "none" or vim.o.winborder then
     self.win_opts.row = self.win_opts.row - 1
     self.win_opts.col = self.win_opts.col - 1
   end
@@ -149,6 +149,7 @@ function M:mount()
       row = 0,
       col = 0,
       style = "minimal",
+      border = "none",
       focusable = false,
       zindex = self.opts.zindex - 1,
     })
