@@ -4,6 +4,7 @@ local Community = require("lazy.community")
 local Config = require("lazy.core.config")
 local Health = require("lazy.health")
 local Util = require("lazy.util")
+local Process = require("lazy.manage.process")
 
 ---@class RockSpec
 ---@field rockspec_format string
@@ -64,6 +65,21 @@ function M.hererocks.building()
 end
 
 ---@param opts? LazyHealth
+---@param luarocks_cmd string
+---@return boolean
+function M.check_lua51_headers(opts, luarocks_cmd)
+  local cmd = { luarocks_cmd, "--lua-version=5.1", "config", "variables.LUA_INCDIR" }
+  local _, exit_code = Process.exec(cmd)
+  
+  if exit_code ~= 0 then
+    opts.error("Lua 5.1 headers not found. Install the Lua 5.1 development package for your system.")
+    return false
+  end
+  
+  return true
+end
+
+---@param opts? LazyHealth
 function M.check(opts)
   opts = vim.tbl_extend("force", {
     error = Util.error,
@@ -78,23 +94,23 @@ function M.check(opts)
     else
       ok = Health.have(M.python, opts)
       ok = Health.have(M.hererocks.bin("luarocks")) and ok
-      Health.have(
-        M.hererocks.bin("lua"),
-        vim.tbl_extend("force", opts, {
-          version = "-v",
-          version_pattern = "5.1",
-        })
-      )
+      if ok then
+        local luarocks_cmd = M.hererocks.bin("luarocks")
+        if Util.is_win then
+          luarocks_cmd = luarocks_cmd .. ".bat"
+        end
+        ok = M.check_lua51_headers(opts, luarocks_cmd)
+      end
     end
   else
     ok = Health.have("luarocks", opts)
-    Health.have(
-      { "lua5.1", "lua", "lua-5.1" },
-      vim.tbl_extend("force", opts, {
-        version = "-v",
-        version_pattern = "5.1",
-      })
-    )
+    if ok then
+      local luarocks_cmd = "luarocks"
+      if Util.is_win then
+        luarocks_cmd = luarocks_cmd .. ".bat"
+      end
+      ok = M.check_lua51_headers(opts, luarocks_cmd)
+    end
   end
   return ok
 end
