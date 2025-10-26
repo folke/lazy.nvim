@@ -15,15 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: docs
-      - name: Install Neovim
-        shell: bash
-        run: |
-          mkdir -p /tmp/nvim
-          wget -q https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage -O /tmp/nvim/nvim.appimage
-          cd /tmp/nvim
-          chmod a+x ./nvim.appimage
-          ./nvim.appimage --appimage-extract
-          echo "/tmp/nvim/squashfs-root/usr/bin/" >> $GITHUB_PATH
+      - uses: folke/github/neovim@main
       - name: Generate docs
         run: ./build.sh
       - name: panvimdoc
