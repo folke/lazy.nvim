@@ -6,6 +6,7 @@ local Util = require("lazy.util")
 local M = {}
 
 M.patterns = { "nvim", "treesitter", "tree-sitter", "cmp", "neo" }
+local manifest_file = "build/manifest.lua"
 
 function M.fetch(url, file, prefix)
   if not vim.uv.fs_stat(file) then
@@ -19,11 +20,46 @@ function M.fetch(url, file, prefix)
   end
 end
 
+function M.split()
+  local lines = vim.fn.readfile(manifest_file)
+  local id = 0
+  local files = {} ---@type string[]
+  while #lines > 0 do
+    id = id + 1
+    local part_file = "build/manifest-part-" .. id .. ".lua"
+    local idx = math.min(#lines, 30000)
+    while idx < #lines and not lines[idx]:match("^   },$") do
+      idx = idx + 1
+    end
+    local part_lines = vim.list_slice(lines, 1, idx)
+    if idx ~= #lines then
+      part_lines[#part_lines] = "   }}"
+    end
+    vim.fn.writefile(part_lines, part_file)
+    files[#files + 1] = part_file
+    print("Wrote " .. part_file .. "\n")
+
+    lines = vim.list_slice(lines, idx + 1)
+    if #lines == 0 then
+      break
+    end
+    lines[1] = "repository = { " .. lines[1]
+  end
+  return files
+end
+
 ---@return RockManifest?
 function M.fetch_manifest()
-  local manifest_file = "build/manifest.lua"
   M.fetch("https://luarocks.org/manifest-5.1", manifest_file)
-  return Rocks.parse(manifest_file)
+  local ret = { repository = {} }
+  for _, file in ipairs(M.split()) do
+    local part = Rocks.parse(file)
+    print(vim.tbl_count(part.repository or {}) .. " rocks in " .. file .. "\n")
+    for k, v in pairs(part.repository or {}) do
+      ret.repository[k] = v
+    end
+  end
+  return ret
 end
 
 function M.fetch_rockspec(name, version, prefix)
@@ -37,6 +73,7 @@ function M.build()
   local manifest = M.fetch_manifest() or {}
   ---@type {name:string, version:string, url:string}[]
   local nvim_rocks = {}
+  print(vim.tbl_count(manifest.repository or {}) .. " rocks in manifest\n")
   for rock, vv in pairs(manifest.repository or {}) do
     local matches = false
     for _, pattern in ipairs(M.patterns) do
