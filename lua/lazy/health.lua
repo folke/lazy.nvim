@@ -94,6 +94,7 @@ function M.check()
     for _, path in ipairs(vim.opt.rtp:get()) do
       if path:find(name, 1, true) then
         error("Found paths on the rtp from another plugin manager `" .. name .. "`")
+        error("Violating file: `".. path .."`")
         break
       end
     end
