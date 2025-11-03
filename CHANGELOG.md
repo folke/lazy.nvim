@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.17.3](https://github.com/folke/lazy.nvim/compare/v11.17.2...v11.17.3) (2025-10-28)
+
+
+### Bug Fixes
+
+* **luarocks:** update to lumen-oss for binaries. Closes [#2060](https://github.com/folke/lazy.nvim/issues/2060). Closes [#2059](https://github.com/folke/lazy.nvim/issues/2059) ([e31789c](https://github.com/folke/lazy.nvim/commit/e31789c675e2f591a20fc894b6713398eaa5dddd))
+
 ## [11.17.2](https://github.com/folke/lazy.nvim/compare/v11.17.1...v11.17.2) (2025-10-23)
 
 
