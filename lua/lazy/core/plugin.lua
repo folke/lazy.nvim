@@ -156,7 +156,11 @@ function Spec:import(spec)
         load = function()
           local mod, err = loadfile(modpath)
           if mod then
-            return mod()
+            local ret, foo = mod()
+            if foo then
+              return nil, "Spec module returned more than one value. Expected a single value."
+            end
+            return ret
           else
             return nil, err
           end
