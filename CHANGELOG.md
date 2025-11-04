@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.17.4](https://github.com/folke/lazy.nvim/compare/v11.17.3...v11.17.4) (2025-11-04)
+
+
+### Bug Fixes
+
+* **plugin:** proper error message when a plugin spec returns more than one value. ([dfdc85e](https://github.com/folke/lazy.nvim/commit/dfdc85e18930a3f1643e83c8ed0c514ca85e49fa))
+
 ## [11.17.3](https://github.com/folke/lazy.nvim/compare/v11.17.2...v11.17.3) (2025-10-28)
 
 
