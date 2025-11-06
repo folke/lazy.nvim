@@ -238,7 +238,7 @@ function M.deactivate(plugin)
   -- clear vim.g.loaded_ for plugins
   Util.ls(plugin.dir .. "/plugin", function(_, name, type)
     if type == "file" then
-      vim.g["loaded_" .. name:gsub("%..*", "")] = nil
+      vim.g["loaded_" .. name:gsub("%..*", ""):gsub("-", "_")] = nil
     end
   end)
   -- set as not loaded
