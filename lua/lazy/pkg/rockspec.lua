@@ -285,7 +285,10 @@ function M.get(plugin)
 
   ---@param dep string
   local rocks = vim.tbl_filter(function(dep)
-    local name = dep:gsub("%s.*", "")
+    local name = dep:match("^%s*([^~><=%s]+)")
+    if not name then
+      return false
+    end
     local url = Community.get_url(name)
     local spec = Community.get_spec(name)
 
