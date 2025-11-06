@@ -242,7 +242,7 @@ function M.hererocks()
   return M.options.rocks.hererocks
 end
 
-M.version = "11.17.4" -- x-release-please-version
+M.version = "11.17.5" -- x-release-please-version
 
 M.ns = vim.api.nvim_create_namespace("lazy")
 
