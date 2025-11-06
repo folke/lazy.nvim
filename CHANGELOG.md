@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.17.5](https://github.com/folke/lazy.nvim/compare/v11.17.4...v11.17.5) (2025-11-06)
+
+
+### Bug Fixes
+
+* **luarocks:** proper parsing of dependency name. Closes [#2086](https://github.com/folke/lazy.nvim/issues/2086) ([5c09e6f](https://github.com/folke/lazy.nvim/commit/5c09e6fe71f4bb930eeffe24d45762fa3ffada4e))
+
 ## [11.17.4](https://github.com/folke/lazy.nvim/compare/v11.17.3...v11.17.4) (2025-11-04)
 
 
