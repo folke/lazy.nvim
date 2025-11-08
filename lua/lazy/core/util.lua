@@ -228,6 +228,17 @@ function M.walk(path, fn)
   end)
 end
 
+---@param path string
+function M.find_git_root(path)
+  local current = path
+  while current and current ~= "/" do
+    if vim.fn.isdirectory(current .. "/.git") == 1 then
+      return current
+    end
+    current = vim.fn.fnamemodify(current, ":h")
+  end
+end
+
 ---@param root string
 ---@param fn fun(modname:string, modpath:string)
 ---@param modname? string
