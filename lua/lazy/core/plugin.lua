@@ -241,7 +241,7 @@ function M.update_state()
         or plugin.cmd
       plugin.lazy = lazy and true or false
     end
-    if plugin.virtual then
+    if plugin.virtual or (plugin.dev and plugin.dir ~= "") then
       plugin._.is_local = true
       plugin._.installed = true -- local plugins are managed by the user
     elseif plugin.dir:find(Config.options.root .. "/", 1, true) == 1 then
