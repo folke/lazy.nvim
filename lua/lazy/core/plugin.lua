@@ -89,16 +89,52 @@ function Spec:report(level)
   return count
 end
 
+---@param ... nil|boolean|fun():boolean
+---@return nil|boolean|fun():boolean
+function Spec.merge_cond(...)
+  ---@type nil|boolean|fun():boolean
+  local current = select(1, ...)
+  for i = 2, select("#", ...) do
+    ---@type nil|boolean|fun():boolean
+    local next = select(i, ...)
+    if type(current) == "function" or type(next) == "function" then
+      local previous = current
+      current = function()
+        local result = true
+        if type(previous) == "function" then
+          result = previous()
+        elseif type(previous) == "boolean" then
+          result = previous
+        end
+        local next_result = true
+        if type(next) == "function" then
+          next_result = next()
+        elseif type(next) == "boolean" then
+          next_result = next
+        end
+        return result and next_result
+      end
+    elseif current == nil then
+      current = next
+    else
+      current = current and next
+    end
+  end
+  return current
+end
+
 ---@param spec LazySpec|LazySpecImport
-function Spec:normalize(spec)
+---@param cond? boolean|fun():boolean
+function Spec:normalize(spec, cond)
   if type(spec) == "string" then
-    self.meta:add({ spec })
+    self.meta:add({ spec, cond = cond })
   elseif #spec > 1 or Util.is_list(spec) then
     ---@cast spec LazySpec[]
     for _, s in ipairs(spec) do
-      self:normalize(s)
+      self:normalize(s, cond)
     end
   elseif spec[1] or spec.dir or spec.url then
+    spec.cond = Spec.merge_cond(spec.cond, cond)
     ---@cast spec LazyPluginSpec
     self.meta:add(spec)
     ---@diagnostic disable-next-line: cast-type-mismatch
@@ -107,6 +143,7 @@ function Spec:normalize(spec)
       self:import(spec)
     end
   elseif spec.import then
+    spec.cond = Spec.merge_cond(spec.cond, cond)
     ---@cast spec LazySpecImport
     self:import(spec)
   else
@@ -131,9 +168,6 @@ function Spec:import(spec)
   ---@cast import_name string
 
   if vim.tbl_contains(self.modules, import_name) then
-    return
-  end
-  if spec.cond == false or (type(spec.cond) == "function" and not spec.cond()) then
     return
   end
   if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
@@ -195,7 +229,11 @@ function Spec:import(spec)
             .. "` was returned instead"
         )
       else
-        self:normalize(mod)
+        if spec.cond == false or type(spec.cond) == "function" then
+          self:normalize(mod, spec.cond)
+        else
+          self:normalize(mod)
+        end
       end
     end, {
       msg = "Failed to load `" .. modname .. "`",
