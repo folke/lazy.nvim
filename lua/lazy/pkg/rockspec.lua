@@ -247,17 +247,39 @@ end
 ---@param plugin LazyPlugin
 function M.find_rockspec(plugin)
   local rockspec_file ---@type string?
+
+  local check_file = function(path, name)
+    -- match package-(scm|git|dev)-[REV].rockspec
+    for _, suffix in ipairs({ "scm", "git", "dev" }) do
+      pattern = suffix .. "%-%d+%.rockspec$"
+      if name:find(pattern) then
+        return path
+      end
+    end
+  end
+
   Util.ls(plugin.dir, function(path, name, t)
-    if t == "file" then
-      for _, suffix in ipairs({ "scm", "git", "dev" }) do
-        suffix = suffix .. "-1.rockspec"
-        if name:sub(-#suffix) == suffix then
-          rockspec_file = path
-          return false
+    if t == "directory" and (name == "rockspec" or name == "rockspecs") then
+      Util.ls(path, function(path, name, t)
+        if t == "file" then
+          rockspec_file = check_file(path, name)
+          if rockspec_file ~= nil then
+            return false
+          end
         end
+      end)
+      if rockspec_file ~= nil then
+        return false
+      end
+    end
+    if t == "file" then
+      rockspec_file = check_file(path, name)
+      if rockspec_file ~= nil then
+        return false
       end
     end
   end)
+
   return rockspec_file
 end
 
@@ -314,11 +336,13 @@ function M.get(plugin)
     -- has a complex build process
     or not M.is_simple_build(rockspec)
 
+  rockspec_file = rockspec_file:sub(#plugin.dir+2)
+
   if not use then
     -- community specs only
     return #specs > 0
         and {
-          file = vim.fn.fnamemodify(rockspec_file, ":t"),
+          file =  rockspec_file,
           spec = {
             plugin.name,
             specs = specs,
@@ -334,7 +358,7 @@ function M.get(plugin)
   end
 
   return {
-    file = vim.fn.fnamemodify(rockspec_file, ":t"),
+    file = rockspec_file,
     spec = {
       plugin.name,
       build = "rockspec",
