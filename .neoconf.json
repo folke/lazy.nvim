@@ -8,8 +8,14 @@
   },
   "lspconfig": {
     "lua_ls": {
-      "Lua.runtime.version": "LuaJIT",
-      "Lua.workspace.checkThirdParty": false
+      "Lua": {
+        "runtime": {
+          "version": "LuaJIT"
+        },
+        "workspace": {
+          "checkThirdParty": false
+        }
+      }
     }
   }
 }
