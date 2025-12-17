@@ -151,6 +151,7 @@ function M:mount()
       style = "minimal",
       focusable = false,
       zindex = self.opts.zindex - 1,
+      border = "none",
     })
     vim.api.nvim_set_hl(0, "LazyBackdrop", { bg = "#000000", default = true })
     Util.wo(self.backdrop_win, "winhighlight", "Normal:LazyBackdrop")
