@@ -319,6 +319,18 @@ function M.find_local_spec()
   end
 end
 
+function M.find_actual_origin_spec()
+  local info = debug.getinfo(2, "S")
+  local current_file = info.source:sub(2) -- remove the leading '@'
+  local current_dir = vim.fn.fnamemodify(current_file, ":h")
+  local git_root = Util.find_git_root(current_dir)
+  local Git = require("lazy.manage.git")
+
+  return {
+    url = Git.get_origin(git_root),
+  }
+end
+
 function M.load()
   M.loading = true
   -- load specs
@@ -330,7 +342,7 @@ function M.load()
     vim.deepcopy(Config.options.spec),
   }
   specs[#specs + 1] = M.find_local_spec()
-  specs[#specs + 1] = { "folke/lazy.nvim" }
+  specs[#specs + 1] = M.find_actual_origin_spec()
 
   Config.spec:parse(specs)
 
