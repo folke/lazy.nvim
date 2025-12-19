@@ -53,7 +53,7 @@ function M:init(opts)
   self.opts = vim.tbl_deep_extend("force", {
     size = Config.options.ui.size,
     style = "minimal",
-    border = Config.options.ui.border or "none",
+    border = Config.options.ui.border,
     backdrop = Config.options.ui.backdrop or 60,
     zindex = 50,
   }, opts or {})
