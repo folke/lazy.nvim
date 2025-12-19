@@ -46,7 +46,7 @@ return {
           return
         end
         for _, line in ipairs(vim.split(task:output(), "\n")) do
-          if line:find("^%w+ %S+!:") then
+          if line:find("^%w+ %S+!:") or line:find("^%w+ Revert \"%S+!:")then
             return true
           end
         end
