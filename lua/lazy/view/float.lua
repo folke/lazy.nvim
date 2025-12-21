@@ -16,6 +16,7 @@ local ViewConfig = require("lazy.view.config")
 ---@field ft? string
 ---@field noautocmd? boolean
 ---@field backdrop? float
+---@field winblend? number
 
 ---@class LazyFloat
 ---@field buf number
@@ -55,6 +56,7 @@ function M:init(opts)
     style = "minimal",
     border = Config.options.ui.border or "none",
     backdrop = Config.options.ui.backdrop or 60,
+    winblend = Config.options.ui.winblend or 0,
     zindex = 50,
   }, opts or {})
 
@@ -184,6 +186,7 @@ function M:mount()
     Util.wo(self.win, "wrap", true)
     Util.wo(self.win, "winhighlight", "Normal:LazyNormal")
     Util.wo(self.win, "colorcolumn", "")
+    Util.wo(self.win, "winblend", self.opts.winblend)
   end
   opts()
 
