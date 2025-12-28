@@ -336,6 +336,8 @@ function M:fix_pkgs()
       -- check if plugin is still in the same directory
       if plugin.dir ~= dir then
         self.fragments:del(fid)
+        -- mark pkg cache as dirty so it gets rebuilt with the new directory
+        Pkg.dirty = true
       end
     end
   end
