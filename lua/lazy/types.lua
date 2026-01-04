@@ -72,7 +72,7 @@
 ---@field event? string[]|string|LazyEventSpec[]|fun(self:LazyPlugin, event:string[]):string[]
 ---@field cmd? string[]|string|fun(self:LazyPlugin, cmd:string[]):string[]
 ---@field ft? string[]|string|fun(self:LazyPlugin, ft:string[]):string[]
----@field keys? string|string[]|LazyKeysSpec[]|fun(self:LazyPlugin, keys:string[]):((string|LazyKeys)[])
+---@field keys? string|string[]|LazyKeysSpec[]|fun(self:LazyPlugin, keys:(string|LazyKeysSpec)[]):((string|LazyKeysSpec)[])
 ---@field module? false
 
 ---@class LazyPluginSpec: LazyPluginBase,LazyPluginSpecHandlers,LazyPluginHooks,LazyPluginRef
