@@ -112,6 +112,11 @@ function M:_add(keys)
   local lhs = keys.lhs
   local opts = M.opts(keys)
 
+  local rhs = keys.rhs -- Work-around lua-language-server type inference.
+  -- Pass string rhs to desc to make it visible before loading the plugin, or we will only see file path to closure
+  -- below.
+  opts.desc = opts.desc or type(rhs) == "string" and rhs or nil
+
   ---@param buf? number
   local function add(buf)
     if M.is_nop(keys) then
