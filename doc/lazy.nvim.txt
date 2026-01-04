@@ -347,7 +347,7 @@ SPEC LAZY LOADING               *lazy.nvim-🔌-plugin-spec-spec-lazy-loading*
              fun(self:LazyPlugin, ft:string[]):string[]                       
 
   keys       string? or string[] or LazyKeysSpec[] or                         Lazy-load on key mapping
-             fun(self:LazyPlugin, keys:string[]):(string \| LazyKeysSpec)[]   
+             fun(self:LazyPlugin, keys:(string \| LazyKeysSpec)[]):(string \| LazyKeysSpec)[]   
   --------------------------------------------------------------------------------------------------------------------
 Refer to the Lazy Loading <./lazy_loading.md> section for more information.
 
