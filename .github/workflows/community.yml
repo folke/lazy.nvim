@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'folke' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: folke/github/neovim@main
       - name: Rockspec Build
         id: rockspec-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: build
           key: rockspec-build
@@ -22,7 +22,7 @@ jobs:
         run: |
           nvim -l lua/lazy/build.lua
       - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(build): auto-generate rockspec mappings"
           commit_user_name: "github-actions[bot]"

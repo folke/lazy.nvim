@@ -1,5 +1,35 @@
 # Changelog
 
+## [11.17.5](https://github.com/folke/lazy.nvim/compare/v11.17.4...v11.17.5) (2025-11-06)
+
+
+### Bug Fixes
+
+* **luarocks:** proper parsing of dependency name. Closes [#2086](https://github.com/folke/lazy.nvim/issues/2086) ([5c09e6f](https://github.com/folke/lazy.nvim/commit/5c09e6fe71f4bb930eeffe24d45762fa3ffada4e))
+
+## [11.17.4](https://github.com/folke/lazy.nvim/compare/v11.17.3...v11.17.4) (2025-11-04)
+
+
+### Bug Fixes
+
+* **plugin:** proper error message when a plugin spec returns more than one value. ([dfdc85e](https://github.com/folke/lazy.nvim/commit/dfdc85e18930a3f1643e83c8ed0c514ca85e49fa))
+
+## [11.17.3](https://github.com/folke/lazy.nvim/compare/v11.17.2...v11.17.3) (2025-10-28)
+
+
+### Bug Fixes
+
+* **luarocks:** update to lumen-oss for binaries. Closes [#2060](https://github.com/folke/lazy.nvim/issues/2060). Closes [#2059](https://github.com/folke/lazy.nvim/issues/2059) ([e31789c](https://github.com/folke/lazy.nvim/commit/e31789c675e2f591a20fc894b6713398eaa5dddd))
+
+## [11.17.2](https://github.com/folke/lazy.nvim/compare/v11.17.1...v11.17.2) (2025-10-23)
+
+
+### Bug Fixes
+
+* **luarocks:** add plugin to lua path if it was already loaded before we know its a luarock ([147f5a3](https://github.com/folke/lazy.nvim/commit/147f5a3f55b5491bbc77a55ce846ef5eb575fa42))
+* **plugin:** check that path is actually in root dir. Closes [#2075](https://github.com/folke/lazy.nvim/issues/2075) ([16e5271](https://github.com/folke/lazy.nvim/commit/16e52715b70b4d0fc6af3563ccc0ed9df82ae23e))
+* **stats:** better support for different `time_t` sizes. See [#2049](https://github.com/folke/lazy.nvim/issues/2049) ([1ea3c40](https://github.com/folke/lazy.nvim/commit/1ea3c4085785f460fb0e46d2fe1ee895f5f9e7c1))
+
 ## [11.17.1](https://github.com/folke/lazy.nvim/compare/v11.17.0...v11.17.1) (2025-02-25)
 
 
