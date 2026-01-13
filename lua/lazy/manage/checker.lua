@@ -89,7 +89,10 @@ function M.report(notify)
     end
   end
   if #lines > 0 and notify and Config.options.checker.notify and not Config.headless() then
-    table.insert(lines, 1, "# Plugin Updates")
+    table.insert(lines, 1, "# Plugin Updates Available")
+    table.insert(lines, "")
+    table.insert(lines, "Run `:Lazy update` to install")
+
     Util.info(lines)
   end
 end
