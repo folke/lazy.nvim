@@ -125,8 +125,19 @@ end
 
 function Process:env()
   ---@type table<string, string>
+  local SSH_OPTIONS = " -oBatchMode=yes"
+  local GIT_SSH_COMMAND = nil
+  local git_core_ssh = vim.fn.system("git config --get core.sshCommand"):gsub("\n", "")
+
+  if vim.fn.environ().GIT_SSH_COMMAND then
+    GIT_SSH_COMMAND = vim.fn.environ().GIT_SSH_COMMAND
+  elseif git_core_ssh ~= "" then
+    GIT_SSH_COMMAND = git_core_ssh
+  else
+    GIT_SSH_COMMAND = "ssh" --default
+  end
   local env = vim.tbl_extend("force", {
-    GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
+    GIT_SSH_COMMAND = GIT_SSH_COMMAND .. SSH_OPTIONS,
   }, uv.os_environ(), self.opts.env or {})
   env.GIT_DIR = nil
   env.GIT_WORK_TREE = nil
