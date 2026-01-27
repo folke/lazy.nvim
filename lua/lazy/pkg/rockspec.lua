@@ -198,6 +198,8 @@ function M.build(task)
     args = {
       "--tree",
       root,
+      "--server",
+      Config.options.rocks.server,
       "--dev",
       "--lua-version",
       "5.1",
@@ -209,6 +211,34 @@ function M.build(task)
     cwd = task.plugin.dir,
     env = env,
   })
+
+  if ok then
+    return
+  end
+
+  task:warn("Failed installing " .. rockspec.package .. " with `luarocks` (dev manifest).")
+  task:warn("\n" .. string.rep("-", 80) .. "\n")
+  task:warn("Trying to build from source with root manifest.")
+
+  -- install failed, so try building from source
+  task:set_level() -- reset level
+  ok = task:spawn(luarocks, {
+    args = {
+      "--tree",
+      root,
+      "--server",
+      Config.options.rocks.server,
+      "--lua-version",
+      "5.1",
+      "make",
+      "--force-fast",
+      "--deps-mode",
+      "one",
+    },
+    cwd = task.plugin.dir,
+    env = env,
+  })
+
   if not ok then
     require("lazy.manage.task.fs").clean.run(task, { rocks_only = true })
   end
