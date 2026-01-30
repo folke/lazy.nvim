@@ -44,7 +44,7 @@
 ---@field branch? string
 ---@field tag? string
 ---@field commit? string
----@field version? string|boolean
+---@field version? string|false
 ---@field pin? boolean
 ---@field submodules? boolean Defaults to true
 
