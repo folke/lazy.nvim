@@ -1,4 +1,4 @@
-vim.opt.rtp:append(".")
+vim.o.rtp = vim.o.rtp .. ",."
 local Rocks = require("lazy.pkg.rockspec")
 local Semver = require("lazy.manage.semver")
 local Util = require("lazy.util")

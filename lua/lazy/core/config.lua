@@ -302,20 +302,18 @@ function M.setup(opts)
   lib = vim.uv.fs_stat(lib .. "64") and (lib .. "64") or lib
   lib = lib .. "/nvim"
   if M.options.performance.rtp.reset then
-    ---@type vim.Option
-    vim.opt.rtp = {
-      vim.fn.stdpath("config"),
-      vim.fn.stdpath("data") .. "/site",
-      M.me,
-      vim.env.VIMRUNTIME,
-      lib,
-      vim.fn.stdpath("config") .. "/after",
-    }
+    -- stylua: ignore
+    vim.o.rtp = vim.fn.stdpath("config") .. ","
+      .. vim.fn.stdpath("data") .. "/site" .. ","
+      .. M.me .. ","
+      .. vim.env.VIMRUNTIME .. ","
+      .. lib .. ","
+      .. vim.fn.stdpath("config") .. "/after"
   end
   for _, path in ipairs(M.options.performance.rtp.paths) do
-    vim.opt.rtp:append(path)
+    vim.o.rtp = vim.o.rtp .. "," .. path
   end
-  vim.opt.rtp:append(M.options.readme.root)
+  vim.o.rtp = vim.o.rtp .. "," .. M.options.readme.root
 
   -- disable plugin loading since we do all of that ourselves
   vim.go.loadplugins = false

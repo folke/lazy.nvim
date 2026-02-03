@@ -104,7 +104,7 @@ function M.startup()
   M.source(vim.env.VIMRUNTIME .. "/filetype.lua")
 
   -- backup original rtp
-  local rtp = vim.opt.rtp:get() --[[@as string[] ]]
+  local rtp = vim.iter(vim.o.rtp:gmatch("([^,]+),")):totable() --[[@as string[] ]]
 
   -- 1. run plugin init
   Util.track({ start = "init" })
@@ -144,7 +144,7 @@ function M.startup()
   -- 4. load after plugins
   Util.track({ start = "after" })
   for _, path in
-    ipairs(vim.opt.rtp:get() --[[@as string[] ]])
+    ipairs(vim.iter(vim.o.rtp:gmatch("([^,]+),")):totable() --[[@as string[] ]])
   do
     if path:find("after/?$") then
       M.source_runtime(path, "plugin")
@@ -488,8 +488,9 @@ function M.add_to_rtp(plugin)
     table.insert(rtp, idx_after or (#rtp + 1), after)
   end
 
-  ---@type vim.Option
-  vim.opt.rtp = rtp
+  vim.o.rtp = vim.iter(rtp):fold("", function(s, p)
+    return s .. (#s > 0 and "," or "") .. p
+  end)
 end
 
 ---@param plugin LazyPlugin

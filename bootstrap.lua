@@ -44,7 +44,7 @@ function M.setup()
       os.exit(1)
     end
   end
-  vim.opt.rtp:prepend(lazypath)
+  vim.o.rtp = lazypath .. "," .. vim.o.rtp
 end
 M.setup()
 

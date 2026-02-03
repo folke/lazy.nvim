@@ -132,7 +132,7 @@ function M.bootstrap()
       lazypath,
     })
   end
-  vim.opt.rtp:prepend(lazypath)
+  vim.o.rtp = lazypath .. "," .. vim.o.rtp
 end
 
 ---@return LazyPlugin[]

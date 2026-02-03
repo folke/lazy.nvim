@@ -2,7 +2,7 @@
 
 vim.env.LAZY_STDPATH = ".tests"
 
-vim.opt.rtp:prepend(".")
+vim.o.rtp = ".," .. vim.o.rtp
 
 -- Setup lazy.nvim
 require("lazy.minit").setup({

@@ -3,10 +3,9 @@ local Helpers = require("tests.helpers")
 local Util = require("lazy.util")
 
 describe("util", function()
-  local rtp = vim.opt.rtp:get()
+  local rtp = vim.o.rtp
   before_each(function()
-    ---@type vim.Option
-    vim.opt.rtp = rtp
+    vim.o.rtp = rtp
     for k, v in pairs(package.loaded) do
       if k:find("^foobar") then
         package.loaded[k] = nil
@@ -17,7 +16,7 @@ describe("util", function()
   end)
 
   it("lsmod lists all mods in dir", function()
-    vim.opt.rtp:append(Helpers.path(""))
+    vim.o.rtp = vim.o.rtp .. "," .. Helpers.path("")
     local tests = {
       {
         root = "lua/foo",
@@ -79,7 +78,7 @@ describe("util", function()
 
   it("find the correct root with dels", function()
     Cache.reset()
-    vim.opt.rtp:append(Helpers.path("old"))
+    vim.o.rtp = vim.o.rtp .. "," .. Helpers.path("old")
     Helpers.fs_create({ "old/lua/foobar/init.lua" })
     local root = Util.find_root("foobar")
     assert(root, "foobar root not found")
@@ -88,8 +87,8 @@ describe("util", function()
     Helpers.fs_rm("old")
     assert(not vim.uv.fs_stat(Helpers.path("old/lua/foobar")), "old/lua/foobar should not exist")
 
-    -- vim.opt.rtp = rtp
-    vim.opt.rtp:append(Helpers.path("new"))
+    -- vim.o.rtp = rtp
+    vim.o.rtp = vim.o.rtp .. "," .. Helpers.path("new")
     Helpers.fs_create({ "new/lua/foobar/init.lua" })
     root = Util.find_root("foobar")
     assert(root, "foobar root not found")

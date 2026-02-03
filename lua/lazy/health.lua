@@ -71,7 +71,8 @@ function M.check()
 
   M.have("git")
 
-  local sites = vim.opt.packpath:get()
+  -- TODO: some paths might have ',': what pattern to match them?
+  local sites = vim.iter(vim.o.packpath:gmatch("([^,]+),")):totable() --[[@as string[] ]]
   local default_site = vim.fn.stdpath("data") .. "/site"
   if not vim.tbl_contains(sites, default_site) then
     sites[#sites + 1] = default_site
@@ -90,8 +91,11 @@ function M.check()
     ok("no existing packages found by other package managers")
   end
 
+  -- TODO: same problem as 'sites' above.
+  local rtp_tbl = vim.iter(vim.o.rtp:gmatch("([^,]+),")):totable() --[[@as string[] ]]
+
   for _, name in ipairs({ "packer", "plugged", "paq", "pckr", "mini.deps" }) do
-    for _, path in ipairs(vim.opt.rtp:get()) do
+    for _, path in ipairs(rtp_tbl) do
       if path:find(name, 1, true) then
         error("Found paths on the rtp from another plugin manager `" .. name .. "`")
         break
