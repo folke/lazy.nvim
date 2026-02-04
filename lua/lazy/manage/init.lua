@@ -99,7 +99,9 @@ function M.install(opts)
       return not (plugin._.installed and not plugin._.build)
     end,
   }, opts):wait(function()
-    require("lazy.manage.lock").update()
+    if not opts.lockfile then
+      require("lazy.manage.lock").update()
+    end
     require("lazy.help").update()
   end)
 end
@@ -132,7 +134,9 @@ function M.update(opts)
       return plugin.url and plugin._.installed
     end,
   }, opts):wait(function()
-    require("lazy.manage.lock").update()
+    if not opts.lockfile then
+      require("lazy.manage.lock").update()
+    end
     require("lazy.help").update()
   end)
 end
