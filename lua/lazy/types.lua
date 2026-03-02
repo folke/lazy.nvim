@@ -47,6 +47,7 @@
 ---@field version? string|boolean
 ---@field pin? boolean
 ---@field submodules? boolean Defaults to true
+---@field older_than? number
 
 ---@class LazyPluginBase
 ---@field [1] string?

@@ -113,9 +113,20 @@ function M.get_commit(repo, branch, origin)
   end
 end
 
+-- Return the last commit for the given branch which is older than `older_than` days
+---@param repo string
+---@param branch string
+---@param older_than number
+---@return string?
+function M.get_commit_older_than(repo, branch, older_than)
+  local lines = Process.exec({ "git", "rev-list", branch, "-1", string.format([[--before="%d days ago"]], older_than) }, { cwd = repo })
+  return lines[1]
+end
+
 ---@param plugin LazyPlugin
+---@param to_update bool
 ---@return GitInfo?
-function M.get_target(plugin)
+function M.get_target(plugin, to_update)
   if plugin._.is_local then
     local info = M.info(plugin.dir)
     local branch = assert(info and info.branch or M.get_branch(plugin))
@@ -150,7 +161,15 @@ function M.get_target(plugin)
       }
     end
   end
-  return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
+
+  local older_than = Config.options.defaults.older_than or plugin.older_than
+  local commit
+  if older_than and to_update then
+    commit = M.get_commit_older_than(plugin.dir, branch, older_than)
+  else
+    commit = M.get_commit(plugin.dir, branch, true)
+  end
+  return { branch = branch, commit = commit }
 end
 
 function M.ref(repo, ...)
