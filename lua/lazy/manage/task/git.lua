@@ -317,7 +317,7 @@ M.checkout = {
   run = function(self, opts)
     throttle.wait()
     local info = assert(Git.info(self.plugin.dir))
-    local target = assert(Git.get_target(self.plugin))
+    local target = assert(Git.get_target(self.plugin, true))
 
     -- if the plugin is pinned and we did not just clone it,
     -- then don't update

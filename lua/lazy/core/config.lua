@@ -17,6 +17,10 @@ M.defaults = {
     -- default `cond` you can use to globally disable a lot of plugins
     -- when running inside vscode for example
     cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
+    -- Only pull commits which are older that this in number of days
+    -- (default 0 always pulls latest while still respecting version etc)
+    -- can overridden per plugin as well.
+    older_than = 0,
   },
   -- leave nil when passing the spec as the first argument to setup()
   spec = nil, ---@type LazySpec
