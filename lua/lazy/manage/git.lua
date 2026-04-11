@@ -140,6 +140,9 @@ function M.get_target(plugin)
 
   local version = (plugin.version == nil and plugin.branch == nil) and Config.options.defaults.version or plugin.version
   if version then
+    if type(version) == "function" then
+      return version(plugin.dir, branch)
+    end
     local last = Semver.last(M.get_versions(plugin.dir, version))
     if last then
       return {

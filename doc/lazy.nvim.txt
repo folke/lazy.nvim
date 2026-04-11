@@ -354,24 +354,24 @@ Refer to the Lazy Loading <./lazy_loading.md> section for more information.
 
 SPEC VERSIONING                   *lazy.nvim-🔌-plugin-spec-spec-versioning*
 
-  ------------------------------------------------------------------------------
-  Property     Type                 Description
-  ------------ -------------------- --------------------------------------------
-  branch       string?              Branch of the repository
+  ------------------------------------------------------------------------------------------------------------------
+  Property     Type                                          Description
+  ------------ --------------------------------------------- -------------------------------------------------------
+  branch       string?                                       Branch of the repository
 
-  tag          string?              Tag of the repository
+  tag          string?                                       Tag of the repository
 
-  commit       string?              Commit of the repository
+  commit       string?                                       Commit of the repository
 
-  version      string? or false to  Version to use from the repository. Full
-               override the default Semver ranges are supported
+  version      string? or false to override the default or   Version to use from the repository. Full Semver ranges
+               fun(repo:string, branch:string):GitInfo       are supported. Use a function to implement a version
+                                                             policy.
 
-  pin          boolean?             When true, this plugin will not be included
-                                    in updates
+  pin          boolean?                                      When true, this plugin will not be included in updates
 
-  submodules   boolean?             When false, git submodules will not be
-                                    fetched. Defaults to true
-  ------------------------------------------------------------------------------
+  submodules   boolean?                                      When false, git submodules will not be fetched.
+                                                             Defaults to true
+  ------------------------------------------------------------------------------------------------------------------
 Refer to the Versioning <./versioning.md> section for more information.
 
 
@@ -622,6 +622,7 @@ will be added to the plugin’s spec.
         lazy = false, -- should plugins be lazy-loaded?
         -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
         -- have outdated releases, which may break your Neovim install.
+        ---@type string|boolean|fun(repo:string, branch:string):GitInfo|nil
         version = nil, -- always use the latest git commit
         -- version = "*", -- try installing the latest stable version for plugins that support semver
         -- default `cond` you can use to globally disable a lot of plugins

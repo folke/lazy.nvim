@@ -12,6 +12,7 @@ M.defaults = {
     lazy = false, -- should plugins be lazy-loaded?
     -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
     -- have outdated releases, which may break your Neovim install.
+    ---@type string|boolean|fun(repo:string, branch:string):GitInfo|nil
     version = nil, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
     -- default `cond` you can use to globally disable a lot of plugins
