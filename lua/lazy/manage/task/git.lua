@@ -214,8 +214,8 @@ M.origin = {
     if not plugin._.installed or plugin._.is_local then
       return true
     end
-    local origin = Git.get_origin(plugin.dir)
-    return origin == plugin.url
+    local origin = Git.get_origin(plugin.dir):gsub("%.git$", "")
+    return origin == plugin.url:gsub("%.git$", "")
   end,
   ---@async
   ---@param opts {check?:boolean}
