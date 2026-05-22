@@ -10,7 +10,21 @@ local function has_task(plugin, filter)
   end
 end
 
----@alias LazySection {title:string, filter:fun(plugin:LazyPlugin):boolean?}
+---@alias LazySection {title:string|fun():string, filter:fun(plugin:LazyPlugin):boolean?}
+
+---@return string
+local function pending_age_title()
+  local Config = require("lazy.core.config")
+  local v = Config.options and Config.options.defaults and Config.options.defaults.minimum_release_age
+  -- Treat nil and false identically: both mean "no global constraint", so the
+  -- Pending section is showing only because of per-plugin overrides and the
+  -- header has no single value to display.
+  if v == nil or v == false then
+    return "Pending (minimum_release_age)"
+  end
+  local rendered = type(v) == "string" and ('"' .. v .. '"') or tostring(v)
+  return "Pending (minimum_release_age = " .. rendered .. ")"
+end
 
 ---@type LazySection[]
 return {
@@ -72,6 +86,13 @@ return {
       return plugin._.updates ~= nil
     end,
     title = "Updates",
+  },
+  {
+    ---@param plugin LazyPlugin
+    filter = function(plugin)
+      return plugin._.pending_age ~= nil
+    end,
+    title = pending_age_title,
   },
   {
     filter = function(plugin)

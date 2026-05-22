@@ -53,6 +53,7 @@
 - 🔒 Lockfile `lazy-lock.json` to keep track of installed plugins
 - 🔎 Automatically check for updates
 - 📋 Commit, branch, tag, version, and full [Semver](https://devhints.io/semver) support
+- 🛡️ Optional `minimum_release_age` to delay freshly published commits/tags (supply-chain safety, inspired by pnpm/mise/Renovate/Dependabot)
 - 📈 Statusline component to see the number of pending updates
 - 🎨 Automatically lazy-loads colorschemes
 

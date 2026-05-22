@@ -39,10 +39,15 @@ function M.fast_check(opts)
     -- only if local is behind upstream (if the git log task gives no output)
     if plugin._.installed and not (plugin.pin or plugin._.is_local) then
       plugin._.updates = nil
+      plugin._.pending_age = nil
       local info = Git.info(plugin.dir)
       local ok, target = pcall(Git.get_target, plugin)
-      if ok and info and target and not Git.eq(info, target) then
+      local raw_ok, raw_target = pcall(Git.get_target, plugin, true)
+      if ok and info and target and not Git.eq(info, target) and not Git.is_downgrade(plugin, info, target) then
         plugin._.updates = { from = info, to = target }
+      end
+      if raw_ok and info then
+        plugin._.pending_age = Git.detect_pending_age(plugin, info, target, raw_target)
       end
     end
   end

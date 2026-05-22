@@ -2,6 +2,40 @@ local Cache = require("lazy.core.cache")
 local Helpers = require("tests.helpers")
 local Util = require("lazy.util")
 
+describe("util.parse_age", function()
+  local cases = {
+    { input = nil, expected = nil },
+    { input = false, expected = nil },
+    { input = 0, expected = nil },
+    { input = 60, expected = 60 },
+    { input = 3600, expected = 3600 },
+    { input = "0d", expected = nil },
+    { input = "30s", expected = 30 },
+    { input = "30m", expected = 30 * 60 },
+    { input = "24h", expected = 24 * 60 * 60 },
+    { input = "7d", expected = 7 * 24 * 60 * 60 },
+    { input = "2w", expected = 14 * 24 * 60 * 60 },
+    { input = "1y", expected = 365 * 24 * 60 * 60 },
+  }
+  for _, case in ipairs(cases) do
+    it("parses " .. vim.inspect(case.input), function()
+      assert.equal(case.expected, Util.parse_age(case.input))
+    end)
+  end
+
+  it("rejects invalid strings", function()
+    -- silence the warn notification during the test
+    local orig = vim.notify
+    vim.notify = function() end
+    assert.equal(nil, Util.parse_age("foo"))
+    assert.equal(nil, Util.parse_age("7days"))
+    assert.equal(nil, Util.parse_age("d"))
+    assert.equal(nil, Util.parse_age(-5))
+    assert.equal(nil, Util.parse_age(1.5))
+    vim.notify = orig
+  end)
+end)
+
 describe("util", function()
   local rtp = vim.opt.rtp:get()
   before_each(function()

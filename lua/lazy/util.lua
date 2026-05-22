@@ -274,6 +274,65 @@ function M.dump(value)
   return table.concat(result, "")
 end
 
+M._age_units = {
+  s = 1,
+  m = 60,
+  h = 60 * 60,
+  d = 24 * 60 * 60,
+  w = 7 * 24 * 60 * 60,
+  y = 365 * 24 * 60 * 60,
+}
+
+--- Parses a minimum-release-age value into seconds.
+--- Accepts a non-negative integer (seconds) or a string of the form "<int><unit>",
+--- where unit is exactly one of s/m/h/d/w/y. Only one unit is allowed per value:
+--- "7d12h" or "1d 2h" are NOT supported; combine into a single value like "180h".
+--- Returns nil for false/nil/invalid input.
+---@param value string|number|false|nil
+---@return integer?
+function M.parse_age(value)
+  if value == nil or value == false then
+    return nil
+  end
+  if type(value) == "number" then
+    if value < 0 or value ~= math.floor(value) then
+      M.warn("Invalid minimum_release_age: " .. tostring(value))
+      return nil
+    end
+    return value > 0 and value or nil
+  end
+  if type(value) == "string" then
+    local n, unit = value:match("^(%d+)%s*([smhdwy])$")
+    if n and unit then
+      local seconds = tonumber(n) * M._age_units[unit]
+      return seconds > 0 and seconds or nil
+    end
+  end
+  M.warn("Invalid minimum_release_age: " .. vim.inspect(value))
+  return nil
+end
+
+--- Formats a positive duration in seconds as a coarse human label.
+--- Returns "Nd"/"Nh"/"Nm"/"Ns" picking the largest fitting unit. Values at
+--- or below zero return "now".
+---@param seconds integer
+---@return string
+function M.format_duration(seconds)
+  if seconds <= 0 then
+    return "now"
+  end
+  if seconds >= M._age_units.d then
+    return math.floor(seconds / M._age_units.d) .. "d"
+  end
+  if seconds >= M._age_units.h then
+    return math.floor(seconds / M._age_units.h) .. "h"
+  end
+  if seconds >= M._age_units.m then
+    return math.floor(seconds / M._age_units.m) .. "m"
+  end
+  return seconds .. "s"
+end
+
 ---@generic V
 ---@param t table<string, V>
 ---@param fn fun(key:string, value:V)

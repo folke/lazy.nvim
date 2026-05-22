@@ -21,6 +21,7 @@
 ---@field tasks? LazyTask[]
 ---@field updated? {from:string, to:string}
 ---@field updates? {from:GitInfo, to:GitInfo}
+---@field pending_age? {from:GitInfo, to:GitInfo, eligible_at?:integer} Update available but blocked by minimum_release_age; eligible_at is the unix timestamp when `to` becomes acceptable.
 ---@field last_check? number
 ---@field working? boolean
 ---@field pkg? LazyPkg
@@ -47,6 +48,8 @@
 ---@field version? string|boolean
 ---@field pin? boolean
 ---@field submodules? boolean Defaults to true
+---@field minimum_release_age? string|number|false Override the global minimum_release_age. Use false to disable for this plugin.
+---@field minimum_release_age_downgrade? boolean Override the global minimum_release_age_downgrade. Set true to permit downgrading this plugin to a mature commit.
 
 ---@class LazyPluginBase
 ---@field [1] string?

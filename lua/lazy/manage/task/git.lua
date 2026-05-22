@@ -84,17 +84,27 @@ M.log = {
       table.insert(args, self.plugin._.updated.from .. ".." .. (self.plugin._.updated.to or "HEAD"))
     elseif opts.check then
       info = assert(Git.info(self.plugin.dir))
-      target = assert(Git.get_target(self.plugin))
+      target = Git.get_target(self.plugin)
+      local raw_target = Git.get_target(self.plugin, true)
+      self.plugin._.pending_age = Git.detect_pending_age(self.plugin, info, target, raw_target)
+      if not target then
+        -- minimum_release_age is blocking every candidate; fall back to info
+        -- so the log range becomes a no-op.
+        target = info
+      elseif Git.is_downgrade(self.plugin, info, target) then
+        -- info is already past what minimum_release_age would pick; don't
+        -- treat that as an update.
+        target = info
+      end
       if not target.commit then
         for k, v in pairs(target) do
           error(k .. " '" .. v .. "' not found")
         end
         error("no target commit found")
       end
-      assert(target.commit, self.plugin.name .. " " .. target.branch)
       if not self.plugin._.is_local then
         if Git.eq(info, target) then
-          if Config.options.checker.check_pinned then
+          if Config.options.checker.check_pinned and target.branch then
             local last_commit = Git.get_commit(self.plugin.dir, target.branch, true)
             if not Git.eq(info, { commit = last_commit }) then
               self.plugin._.outdated = true
@@ -317,7 +327,27 @@ M.checkout = {
   run = function(self, opts)
     throttle.wait()
     local info = assert(Git.info(self.plugin.dir))
-    local target = assert(Git.get_target(self.plugin))
+    local target = Git.get_target(self.plugin)
+
+    if not target then
+      if self.plugin._.cloned and Git.get_target(self.plugin, true) then
+        -- Fresh install where minimum_release_age blocks every candidate.
+        -- Refusing to silently land on whatever the clone happens to point
+        -- at (e.g. HEAD), since that defeats the constraint the user set.
+        error(
+          "minimum_release_age has no eligible commit/tag yet for "
+            .. self.plugin.name
+            .. "; relax the constraint or retry once a candidate matures"
+        )
+      end
+      -- For an already-installed plugin, keep the current commit so the
+      -- checkout is a no-op until the next mature candidate is reached.
+      target = info
+    elseif Git.is_downgrade(self.plugin, info, target) then
+      -- info is already past what minimum_release_age would pick; don't
+      -- downgrade it unless explicitly opted in.
+      target = info
+    end
 
     -- if the plugin is pinned and we did not just clone it,
     -- then don't update

@@ -319,6 +319,53 @@ function M.find_local_spec()
   end
 end
 
+--- Reads the origin URL of the lazy.nvim clone that the running process is
+--- loaded from. Returns nil when the directory is not a git checkout or the
+--- file cannot be read (e.g. an immutable /nix/store path).
+---@return string?
+local function read_self_origin()
+  local f = io.open(Config.me .. "/.git/config", "r")
+  if not f then
+    return nil
+  end
+  local config = f:read("*a")
+  f:close()
+  local in_origin = false
+  for line in config:gmatch("[^\n]+") do
+    local section = line:match("^%s*%[(.+)%]%s*$")
+    if section then
+      in_origin = section:match('^remote%s+"origin"$') ~= nil
+    elseif in_origin then
+      local key, value = line:match("^%s*(%S+)%s*=%s*(.-)%s*$")
+      if key == "url" then
+        return value
+      end
+    end
+  end
+  return nil
+end
+
+--- Builds the spec entry that lazy.nvim auto-injects for itself, so that
+--- :Lazy can manage updates to the very clone it is running from. Forks
+--- (and any non-folke clones) work out of the box without touching this
+--- file.
+---@return LazyPluginSpec
+local function self_spec()
+  local origin = read_self_origin()
+  if origin and origin ~= "" then
+    -- Prefer the familiar "owner/repo" GitHub shorthand when possible.
+    local short = origin:match("github%.com[:/](.+)$")
+    if short then
+      short = short:gsub("%.git$", "")
+      if short:match("^[^/]+/[^/]+$") then
+        return { short }
+      end
+    end
+    return { url = origin, name = "lazy.nvim" }
+  end
+  return { "folke/lazy.nvim" }
+end
+
 function M.load()
   M.loading = true
   -- load specs
@@ -330,7 +377,7 @@ function M.load()
     vim.deepcopy(Config.options.spec),
   }
   specs[#specs + 1] = M.find_local_spec()
-  specs[#specs + 1] = { "folke/lazy.nvim" }
+  specs[#specs + 1] = self_spec()
 
   Config.spec:parse(specs)
 

@@ -17,6 +17,30 @@ M.defaults = {
     -- default `cond` you can use to globally disable a lot of plugins
     -- when running inside vscode for example
     cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
+    -- Minimum age a commit or semver tag must have before it is considered
+    -- for updates. Mitigates supply-chain attacks by waiting until a ref has
+    -- been published for the specified period before adopting it. Accepts an
+    -- integer (seconds) or a single-unit string like "30m", "24h", "7d",
+    -- "2w", "1y". Combined forms ("7d12h", "1d 2h") are not supported --
+    -- use a single unit. Set to nil (default) to disable globally.
+    --
+    -- Per-plugin overrides are accepted on each spec entry:
+    --   minimum_release_age = "..."  -- set a custom value for this plugin
+    --   minimum_release_age = false  -- force-disable for this plugin even
+    --                                -- when a global default is set
+    -- (Setting `false` globally is equivalent to nil.)
+    --
+    -- Explicit `commit=`/`tag=` pins and `pin = true` plugins are not
+    -- affected.
+    minimum_release_age = nil, ---@type string|number|nil
+    -- When true, allow :Lazy update to roll back to an older commit that
+    -- satisfies minimum_release_age, even if the currently installed commit
+    -- is newer. When false (default), an already-installed plugin keeps its
+    -- current commit when it is past what minimum_release_age would otherwise
+    -- pick; the newer commit is still surfaced via the
+    -- "Pending (minimum_release_age = ...)" UI section. Has no effect on
+    -- fresh installs, which always honor minimum_release_age.
+    minimum_release_age_downgrade = false, ---@type boolean
   },
   -- leave nil when passing the spec as the first argument to setup()
   spec = nil, ---@type LazySpec

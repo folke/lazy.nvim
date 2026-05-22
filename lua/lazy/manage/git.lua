@@ -114,8 +114,170 @@ function M.get_commit(repo, branch, origin)
 end
 
 ---@param plugin LazyPlugin
+---@return integer? seconds, or nil when disabled for this plugin
+function M.get_minimum_release_age(plugin)
+  local value = plugin.minimum_release_age
+  if value == nil then
+    value = Config.options.defaults.minimum_release_age
+  end
+  return Util.parse_age(value)
+end
+
+---@param plugin LazyPlugin
+---@return boolean true when downgrades to an older mature commit are allowed
+function M.allow_downgrade(plugin)
+  local v = plugin.minimum_release_age_downgrade
+  if v == nil then
+    v = Config.options.defaults.minimum_release_age_downgrade
+  end
+  return v == true
+end
+
+--- Returns the timestamp that the age filter uses for a GitInfo target.
+--- For tag targets this is the tag's creatordate (matches get_target's
+--- semver-path filter); otherwise it falls back to the commit's committer
+--- date. Returns nil when neither can be resolved.
+---@param repo string
+---@param target GitInfo
+---@return integer?
+function M.target_time(repo, target)
+  if target.tag then
+    local tag_times = M.get_tag_times(repo)
+    local t = tag_times[target.tag]
+    if t then
+      return t
+    end
+  end
+  if target.commit then
+    return M.commit_time(repo, target.commit)
+  end
+  return nil
+end
+
+---@param repo string
+---@param ancestor string commit SHA that should be the ancestor
+---@param descendant string commit SHA that should be the descendant
+---@return boolean true if `ancestor` is an ancestor of `descendant`
+function M.is_ancestor(repo, ancestor, descendant)
+  local ok, code = pcall(function()
+    local _, c = Process.exec({ "git", "merge-base", "--is-ancestor", ancestor, descendant }, { cwd = repo })
+    return c
+  end)
+  return ok and code == 0
+end
+
+--- Returns true when applying `target` would roll `info` back to one of its
+--- ancestors (i.e. info is already newer than what minimum_release_age would
+--- pick) and the active policy disallows that downgrade. Fresh installs
+--- (`plugin._.cloned == true`) are exempt and always return false so the
+--- initial checkout honors the age constraint.
+---@param plugin LazyPlugin
+---@param info GitInfo
+---@param target GitInfo
+---@return boolean
+function M.is_downgrade(plugin, info, target)
+  if M.allow_downgrade(plugin) then
+    return false
+  end
+  if plugin._.cloned then
+    return false
+  end
+  if not (info.commit and target.commit) then
+    return false
+  end
+  if M.eq(info, target) then
+    return false
+  end
+  return M.is_ancestor(plugin.dir, target.commit, info.commit)
+end
+
+--- Builds the `pending_age` state when `raw_target` (the age-ignoring target)
+--- differs from what is effectively being applied. Returns nil when nothing
+--- is being held back.
+---@param plugin LazyPlugin
+---@param info GitInfo
+---@param target GitInfo?
+---@param raw_target GitInfo?
+---@return {from:GitInfo, to:GitInfo, eligible_at:integer?}?
+function M.detect_pending_age(plugin, info, target, raw_target)
+  if not (raw_target and info) then
+    return nil
+  end
+  local effective = target or info
+  if M.eq(effective, raw_target) then
+    return nil
+  end
+  local age = M.get_minimum_release_age(plugin)
+  local source_time = M.target_time(plugin.dir, raw_target)
+  return {
+    from = effective,
+    to = raw_target,
+    eligible_at = source_time and age and (source_time + age) or nil,
+  }
+end
+
+---@param repo string
+---@return table<string, integer>
+function M.get_tag_times(repo)
+  ---@type table<string, integer>
+  local ret = {}
+  local ok, lines = pcall(function()
+    return Process.exec(
+      { "git", "for-each-ref", "--format=%(refname:strip=2) %(creatordate:unix)", "refs/tags" },
+      { cwd = repo }
+    )
+  end)
+  if not ok then
+    return ret
+  end
+  for _, line in ipairs(lines) do
+    local tag, ts = line:match("^(.+) (%d+)$")
+    if tag then
+      ret[tag] = tonumber(ts)
+    end
+  end
+  return ret
+end
+
+---@param repo string
+---@param ref string
+---@return integer?
+function M.commit_time(repo, ref)
+  local ok, lines = pcall(function()
+    return Process.exec({ "git", "show", "-s", "--format=%ct", ref }, { cwd = repo })
+  end)
+  if not ok then
+    return nil
+  end
+  return tonumber(lines[1])
+end
+
+---@param repo string
+---@param branch string
+---@param cutoff integer Unix timestamp; commit must be at or before this time
+---@return string?
+function M.last_commit_before(repo, branch, cutoff)
+  local ok, lines = pcall(function()
+    return Process.exec({
+      "git",
+      "log",
+      "-1",
+      "--format=%H",
+      "--before=@" .. cutoff,
+      "refs/remotes/origin/" .. branch,
+    }, { cwd = repo })
+  end)
+  if not ok then
+    return nil
+  end
+  local commit = lines[1]
+  return commit and commit ~= "" and commit or nil
+end
+
+---@param plugin LazyPlugin
+---@param ignore_age? boolean If true, bypass minimum_release_age filtering.
 ---@return GitInfo?
-function M.get_target(plugin)
+function M.get_target(plugin, ignore_age)
   if plugin._.is_local then
     local info = M.info(plugin.dir)
     local branch = assert(info and info.branch or M.get_branch(plugin))
@@ -138,9 +300,25 @@ function M.get_target(plugin)
     }
   end
 
+  local age = not ignore_age and M.get_minimum_release_age(plugin) or nil
+  local cutoff = age and (os.time() - age) or nil
+
   local version = (plugin.version == nil and plugin.branch == nil) and Config.options.defaults.version or plugin.version
   if version then
-    local last = Semver.last(M.get_versions(plugin.dir, version))
+    local versions = M.get_versions(plugin.dir, version)
+    if cutoff and #versions > 0 then
+      local tag_times = M.get_tag_times(plugin.dir)
+      local filtered = vim.tbl_filter(function(v)
+        local t = tag_times[v.tag]
+        return t ~= nil and t <= cutoff
+      end, versions)
+      -- An age constraint that rejects every candidate tag means "wait".
+      if #filtered == 0 then
+        return nil
+      end
+      versions = filtered
+    end
+    local last = Semver.last(versions)
     if last then
       return {
         branch = branch,
@@ -150,6 +328,15 @@ function M.get_target(plugin)
       }
     end
   end
+
+  if cutoff then
+    local commit = M.last_commit_before(plugin.dir, branch, cutoff)
+    if commit then
+      return { branch = branch, commit = commit }
+    end
+    return nil
+  end
+
   return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
 end
 

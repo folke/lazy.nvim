@@ -279,7 +279,8 @@ function M:section(section)
     return a.name:lower() < b.name:lower()
   end)
   if count > 0 then
-    self:append(section.title, "LazyH2"):append(" (" .. count .. ")", "LazyComment"):nl()
+    local title = type(section.title) == "function" and section.title() or section.title
+    self:append(title, "LazyH2"):append(" (" .. count .. ")", "LazyComment"):nl()
     for _, plugin in ipairs(section_plugins) do
       self:plugin(plugin)
     end
@@ -437,6 +438,21 @@ function M:diagnostics(plugin)
         message = "updates available",
       })
     end
+  elseif plugin._.pending_age then
+    local pa = plugin._.pending_age
+    local label
+    if pa.to.version then
+      label = "version " .. tostring(pa.to.version)
+    elseif pa.to.commit then
+      label = "commit " .. pa.to.commit:sub(1, 7)
+    else
+      label = "update"
+    end
+    if pa.eligible_at then
+      local remaining = pa.eligible_at - os.time()
+      label = label .. " (available in " .. require("lazy.util").format_duration(remaining) .. ")"
+    end
+    self:diagnostic({ message = label })
   end
 end
 
