@@ -7,6 +7,90 @@ local M = {}
 
 ---@alias GitInfo {branch?:string, commit?:string, tag?:string, version?:Semver}
 
+---@class GitTarget
+local Target = {}
+Target.__index = Target
+
+---@param dir string
+---@param info GitInfo
+---@param commit string?
+---@return GitTarget
+local function target(dir, info, commit)
+  return setmetatable({
+    commit = commit or info.commit,
+    branch = info.branch,
+    dir = dir,
+    tag = info.tag,
+    version = info.version,
+  }, Target)
+end
+
+---@return number
+function Target:date()
+  local lines = Process.exec({
+    "git",
+    "show",
+    "-s",
+    "--format=%ct",
+    "--date=short",
+    self.commit,
+  }, { cwd = self.dir })
+  return tonumber(lines[1] or "0") or 0
+end
+
+---@return number
+function Target:age()
+  return math.floor((os.time() - self:date()) / 86400)
+end
+
+---@return string
+function Target:short()
+  return self.commit:sub(1, 7)
+end
+
+---@return string
+function Target:message()
+  local lines = Process.exec({
+    "git",
+    "show",
+    "-s",
+    "--format=%s",
+    self.commit,
+  }, { cwd = self.dir })
+  return lines[1] or ""
+end
+
+---@return string
+function Target:author()
+  local lines = Process.exec({
+    "git",
+    "show",
+    "-s",
+    "--format=%an <%ae>",
+    self.commit,
+  }, { cwd = self.dir })
+  return lines[1] or ""
+end
+
+---@return GitTarget?
+function Target:parent()
+  local lines = Process.exec({
+    "git",
+    "log",
+    "--pretty=format:%H",
+    "-n",
+    "2",
+    self.commit,
+  }, { cwd = self.dir })
+  local parent = lines[2]
+  if parent and parent ~= "" then
+    return target(self.dir, self, parent)
+  end
+  return nil
+end
+
+M.target = target
+
 ---@param repo string
 ---@param details? boolean Fetching details is slow! Don't loop over a plugin to fetch all details!
 ---@return GitInfo?
@@ -124,33 +208,55 @@ function M.get_target(plugin)
 
   local branch = assert(M.get_branch(plugin))
 
-  if plugin.commit then
+  if type(plugin.commit) == "string" then
     return {
       branch = branch,
       commit = plugin.commit,
     }
   end
+
+  ---@type GitInfo
+  local target_info
+
+  local version = (plugin.version == nil and plugin.branch == nil) and Config.options.defaults.version or plugin.version
   if plugin.tag then
-    return {
+    target_info = {
       branch = branch,
       tag = plugin.tag,
       commit = M.ref(plugin.dir, "tags/" .. plugin.tag),
     }
-  end
-
-  local version = (plugin.version == nil and plugin.branch == nil) and Config.options.defaults.version or plugin.version
-  if version then
+  elseif version then
     local last = Semver.last(M.get_versions(plugin.dir, version))
     if last then
-      return {
+      target_info = {
         branch = branch,
         version = last,
         tag = last.tag,
         commit = M.ref(plugin.dir, "tags/" .. last.tag),
       }
     end
+  else
+    target_info = { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
   end
-  return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
+
+  local commit_hook = plugin.commit
+  if type(plugin.commit) ~= "function" and type(Config.options.defaults.commit) == "function" then
+    commit_hook = Config.options.defaults.commit
+  end
+
+  if type(commit_hook) ~= "function" then
+    return target_info
+  end
+
+  local starting_target = M.target(plugin.dir, target_info)
+  local final_target = commit_hook(starting_target, plugin)
+
+  if type(final_target) == "string" then
+    target_info.commit = final_target
+    return target_info
+  else
+    return final_target
+  end
 end
 
 function M.ref(repo, ...)

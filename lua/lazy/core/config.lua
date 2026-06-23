@@ -17,6 +17,10 @@ M.defaults = {
     -- default `cond` you can use to globally disable a lot of plugins
     -- when running inside vscode for example
     cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
+    -- Set this to a function if you want to override the target commit. Receives a GitTarget
+    -- describing the commit that would otherwise be selected (tag, version, or latest on branch).
+    -- It should return a commit hash string or a GitTarget.
+    commit = nil, ---@type CommitHook?
   },
   -- leave nil when passing the spec as the first argument to setup()
   spec = nil, ---@type LazySpec

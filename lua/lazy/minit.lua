@@ -82,6 +82,18 @@ function M.setup(opts)
     M.busted.run()
   elseif is_minitest then
     M.minitest.run()
+    -- `mini.test` schedules its test queue via `vim.schedule` and returns
+    -- immediately. Under `nvim -l`, the main chunk would then end, causing
+    -- Neovim to begin its exit sequence (`getout(0)`), which permanently sets
+    -- `vim.v.exiting = 0` while the tests are still draining from the scheduler.
+    -- That makes `Util.exiting()` report `true`, which stops lazy's async
+    -- executor and hangs any synchronous `Process.exec()`/`:wait()` in a test.
+    -- Block here until `mini.test` is done so the script stays alive and
+    -- `mini.test` performs its own intentional exit (via `quit_on_finish`).
+    local MiniTest = require("mini.test")
+    vim.wait(10 * 60 * 1000, function()
+      return not MiniTest.is_executing()
+    end, 50)
   end
 end
 

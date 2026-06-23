@@ -361,7 +361,8 @@ SPEC VERSIONING                   *lazy.nvim-🔌-plugin-spec-spec-versioning*
 
   tag          string?              Tag of the repository
 
-  commit       string?              Commit of the repository
+  commit       string? or           Commit of the repository or a function
+               CommitHook           selecting the commit
 
   version      string? or false to  Version to use from the repository. Full
                override the default Semver ranges are supported
@@ -550,9 +551,78 @@ VERSIONING                             *lazy.nvim-🔌-plugin-spec-versioning*
 If you want to install a specific revision of a plugin, you can use `commit`,
 `tag`, `branch`, `version`.
 
+The `commit` and `defaults.commit` options can be a string or a `CommitHook`,
+which is a function that receives a `GitTarget` object describing the commit
+that would otherwise be selected (tag, version, or latest on the branch), as
+well as the `LazyPlugin` the hook is being invoked for. The function returns
+one of:
+
+- a `string` to select a commit by its hash string
+- a `GitTarget` (e.g. the target it received) to use that target's commit
+
+The `GitTarget` object has the following methods:
+
+- `date()`: Unix timestamp of the commit
+- `age()`: age in days (number)
+- `short()`: 7-character hash
+- `message()`: commit subject
+- `author()`: author as `"Name <email>"`
+- `parent()`: returns a `GitTarget` for the parent commit, or nil at the root
+
+This is useful for implementing custom commit-selection logic. For example,
+to skip any commit that is less than 7 days old:
+
+>lua
+    require("lazy").setup({
+      defaults = {
+        commit = function(target)
+          while target and target:age() < 7 do
+            target = target:parent()
+          end
+          return target
+        end,
+      },
+    })
+<
+
+A more complex example skipping any commit that was followed up by another
+within 3 days:
+
+>lua
+    require("lazy").setup({
+      defaults = {
+        commit = function(target)
+          local last_age = 0
+          ---@type GitTarget?
+          local curr = target
+          while curr and curr:age() - last_age <= 3 do
+            last_age = curr:age()
+            curr = curr:parent()
+          end
+          return curr
+        end
+      },
+    })
+<
+
+And one more that skips commits authored by Github Copilot:
+
+>lua
+    require("lazy").setup({
+      defaults = {
+        commit = function(target)
+          ---@type GitTarget?
+          local curr = target
+          while curr and curr:author():match("copilot") do
+            curr = curr:parent()
+          end
+          return curr
+        end
+      },
+    })
+<
+
 The `version` property supports Semver <https://semver.org/> ranges.
-
-
 
 EXAMPLES ~
 
@@ -627,6 +697,11 @@ will be added to the plugin’s spec.
         -- default `cond` you can use to globally disable a lot of plugins
         -- when running inside vscode for example
         cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
+        -- Set this to a function if you want to override the target commit. Receives a GitTarget
+        -- describing the commit that would otherwise be selected (tag, version, or latest on branch),
+        -- and the LazyPlugin the hook is being invoked for. It should return a commit hash string
+        -- or a GitTarget.
+        commit = nil, ---@type CommitHook?
       },
       -- leave nil when passing the spec as the first argument to setup()
       spec = nil, ---@type LazySpec

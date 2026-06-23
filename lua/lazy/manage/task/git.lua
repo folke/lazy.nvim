@@ -359,8 +359,6 @@ M.checkout = {
       table.insert(args, lock.commit)
     elseif target.tag then
       table.insert(args, "tags/" .. target.tag)
-    elseif self.plugin.commit then
-      table.insert(args, self.plugin.commit)
     else
       table.insert(args, target.commit)
     end

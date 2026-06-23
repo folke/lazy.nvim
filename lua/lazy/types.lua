@@ -40,10 +40,25 @@
 ---@field keys? table<string,LazyKeys>
 ---@field cmd? table<string,string>
 
+---@class GitTarget
+---@field commit string
+---@field branch string
+---@field dir string
+---@field tag? string
+---@field version? Semver
+---@field date fun(self: GitTarget): number
+---@field age fun(self: GitTarget): number
+---@field short fun(self: GitTarget): string
+---@field message fun(self: GitTarget): string
+---@field author fun(self: GitTarget): string
+---@field parent fun(self: GitTarget): GitTarget?
+
+---@alias CommitHook fun(target: GitTarget, plugin: LazyPlugin): (string | GitTarget)
+
 ---@class LazyPluginRef
 ---@field branch? string
 ---@field tag? string
----@field commit? string
+---@field commit? string | CommitHook
 ---@field version? string|boolean
 ---@field pin? boolean
 ---@field submodules? boolean Defaults to true
