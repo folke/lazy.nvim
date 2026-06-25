@@ -53,7 +53,7 @@ function M:init(opts)
   self.opts = vim.tbl_deep_extend("force", {
     size = Config.options.ui.size,
     style = "minimal",
-    border = Config.options.ui.border or "none",
+    border = Config.options.ui.border or vim.o.winborder,
     backdrop = Config.options.ui.backdrop or 60,
     zindex = 50,
   }, opts or {})
@@ -143,6 +143,7 @@ function M:mount()
   if has_bg and self.opts.backdrop and self.opts.backdrop < 100 and vim.o.termguicolors then
     self.backdrop_buf = vim.api.nvim_create_buf(false, true)
     self.backdrop_win = vim.api.nvim_open_win(self.backdrop_buf, false, {
+      border = "none",
       relative = "editor",
       width = vim.o.columns,
       height = vim.o.lines,
