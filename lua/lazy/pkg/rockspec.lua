@@ -87,9 +87,12 @@ function M.check(opts)
       )
     end
   else
-    ok = Health.have("luarocks", opts)
+    ok = Health.have(
+      { "luarocks51", "luarocks" },
+      opts
+    )
     Health.have(
-      { "lua5.1", "lua", "lua-5.1" },
+      { "lua51", "lua5.1", "lua", "lua-5.1" },
       vim.tbl_extend("force", opts, {
         version = "-v",
         version_pattern = "5.1",
