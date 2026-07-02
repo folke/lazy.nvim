@@ -102,6 +102,9 @@ function Process:_run()
 end
 
 function Process:on_exit()
+  if self.timeout and not self.timeout:is_closing() then
+    self.timeout:close()
+  end
   self.data = self.data:gsub("[^\r\n]+\r", "")
   if self.timedout then
     self.data = self.data .. "\n" .. "Process was killed because it reached the timeout"
@@ -154,7 +157,7 @@ function Process:kill(signals)
     if self.handle and not self.handle:is_closing() and #signals > 0 then
       self.handle:kill(table.remove(signals, 1))
     else
-      timer:stop()
+      timer:close()
     end
   end)
 end
