@@ -192,8 +192,18 @@ STRUCTURED SETUP             *lazy.nvim-🛠️-installation-structured-setup*
     })
 <
 
-You can then create your plugin specs in `~/.config/nvim/lua/plugins/`. Each
-file should return a table with the plugins you want to install.
+Finally, create an empty plugin spec in ~/.config/nvim/lua/plugins.lua:
+
+>lua
+    return {
+    }
+<
+
+If you a user, lazy.nvim is now installed and ready to be used.
+
+If you are developing plugins, you can then create your plugin specs in
+`~/.config/nvim/lua/plugins/`. Each file should return a table with the
+plugins you want to install.
 
 For more info see Structuring Your Plugins </usage/structuring>
 
