@@ -5,7 +5,7 @@ local Config = require("lazy.core.config")
 local uv = vim.uv
 
 ---@class ProcessOpts
----@field args string[]
+---@field args? string[]
 ---@field cwd? string
 ---@field on_line? fun(line:string)
 ---@field on_exit? fun(ok:boolean, output:string)
