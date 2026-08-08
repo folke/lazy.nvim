@@ -199,17 +199,13 @@ end
 
 ---@return {branch: string, hash:string}?
 function M.git_info(dir)
-  local line = M.head(dir .. "/.git/HEAD")
-  if line then
-    ---@type string, string
-    local ref, branch = line:match("ref: (refs/heads/(.*))")
-
-    if ref then
-      return {
-        branch = branch,
-        hash = M.head(dir .. "/.git/" .. ref),
-      }
-    end
+  local Git = require("lazy.manage.git")
+  local info = Git.info(dir)
+  if info and info.branch and info.commit then
+    return {
+      branch = info.branch,
+      hash = info.commit,
+    }
   end
 end
 

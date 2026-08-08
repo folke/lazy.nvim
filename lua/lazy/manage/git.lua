@@ -5,6 +5,16 @@ local Util = require("lazy.util")
 
 local M = {}
 
+---@param repo string
+---@param ... string
+---@return string?
+local function git(repo, ...)
+  local lines, code = Process.exec({ "git", ... }, { cwd = repo })
+  if code == 0 and lines[1] and lines[1] ~= "" then
+    return lines[1]
+  end
+end
+
 ---@alias GitInfo {branch?:string, commit?:string, tag?:string, version?:Semver}
 
 ---@param repo string
@@ -14,7 +24,7 @@ function M.info(repo, details)
   local line = M.head(repo)
   if line then
     ---@type string, string
-    local ref, branch = line:match("ref: refs/(heads/(.*))")
+    local ref, branch = line:match("refs/(heads/(.*))")
     local ret = ref and {
       branch = branch,
       commit = M.ref(repo, ref),
@@ -41,7 +51,7 @@ function M.eq(a, b)
 end
 
 function M.head(repo)
-  return Util.head(repo .. "/.git/HEAD")
+  return git(repo, "symbolic-ref", "HEAD") or git(repo, "rev-parse", "HEAD")
 end
 
 ---@class TaggedSemver: Semver
@@ -64,18 +74,10 @@ function M.get_versions(repo, spec)
 end
 
 function M.get_tags(repo)
-  ---@type string[]
-  local ret = {}
-  Util.ls(repo .. "/.git/refs/tags", function(_, name)
-    ret[#ret + 1] = name
-  end)
-  for name in pairs(M.packed_refs(repo)) do
-    local tag = name:match("^tags/(.*)")
-    if tag then
-      ret[#ret + 1] = tag
-    end
-  end
-  return ret
+  local lines, code = Process.exec({ "git", "for-each-ref", "--format=%(refname:short)", "refs/tags/" }, { cwd = repo })
+  return code == 0 and vim.tbl_filter(function(s)
+    return s ~= ""
+  end, lines) or {}
 end
 
 ---@param plugin LazyPlugin
@@ -86,9 +88,9 @@ function M.get_branch(plugin)
   else
     -- we need to return the default branch
     -- Try origin first
-    local main = M.ref(plugin.dir, "remotes/origin/HEAD")
+    local main = git(plugin.dir, "symbolic-ref", "refs/remotes/origin/HEAD")
     if main then
-      local branch = main:match("ref: refs/remotes/origin/(.*)")
+      local branch = main:match("refs/remotes/origin/(.*)")
       if branch then
         return branch
       end
@@ -96,7 +98,7 @@ function M.get_branch(plugin)
 
     -- fallback to local HEAD
     main = assert(M.head(plugin.dir))
-    return main and main:match("ref: refs/heads/(.*)")
+    return main and main:match("refs/heads/(.*)")
   end
 end
 
@@ -164,23 +166,7 @@ function M.ref(repo, ...)
     end
   end
 
-  -- otherwise just get the ref
-  return Util.head(repo .. "/.git/refs/" .. ref) or M.packed_refs(repo)[ref]
-end
-
-function M.packed_refs(repo)
-  local ok, refs = pcall(Util.read_file, repo .. "/.git/packed-refs")
-  ---@type table<string,string>
-  local ret = {}
-  if ok then
-    for _, line in ipairs(vim.split(refs, "\n")) do
-      local ref, name = line:match("^(.*) refs/(.*)$")
-      if ref then
-        ret[name] = ref
-      end
-    end
-  end
-  return ret
+  return git(repo, "rev-parse", ref)
 end
 
 -- this is slow, so don't use on a loop over all plugins!

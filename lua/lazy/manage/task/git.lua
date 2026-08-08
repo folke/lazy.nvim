@@ -185,20 +185,20 @@ M.clone = {
 -- fetch will retrieve the data
 M.branch = {
   skip = function(plugin)
-    if not plugin._.installed or plugin._.is_local then
-      return true
-    end
-    local branch = assert(Git.get_branch(plugin))
-    return Git.get_commit(plugin.dir, branch, true)
+    return not plugin._.installed or plugin._.is_local or not plugin.branch
   end,
   ---@async
   run = function(self)
+    if Git.get_commit(self.plugin.dir, self.plugin.branch, true) then
+      return
+    end
+
     local args = {
       "remote",
       "set-branches",
       "--add",
       "origin",
-      assert(Git.get_branch(self.plugin)),
+      self.plugin.branch,
     }
 
     self:spawn("git", {
