@@ -78,8 +78,6 @@ function Process:_run()
       self.timeout:stop()
     end
     self.handle:close()
-    stdout:close()
-    stderr:close()
     self:resume()
   end)
 
@@ -87,9 +85,17 @@ function Process:_run()
     M.running[self.handle] = self
     stdout:read_start(function(err, data)
       self:on_data(err, data)
+      if not data then
+        stdout:close()
+        self:resume()
+      end
     end)
     stderr:read_start(function(err, data)
       self:on_data(err, data, true)
+      if not data then
+        stderr:close()
+        self:resume()
+      end
     end)
     self:suspend()
     while not (self.handle:is_closing() and stdout:is_closing() and stderr:is_closing()) do
