@@ -83,6 +83,18 @@ describe("git manage", function()
         assert.are.equal("v1.1.0", target.tag)
         assert.are.equal(info.commit, target.commit)
 
+        -- Target (Default branch)
+        local default_target = Git.get_target({ dir = repo_dir, name = "test", _ = {} })
+        assert.is_not_nil(default_target)
+        assert.are.equal("main", default_target.branch)
+        assert.are.equal(info.commit, default_target.commit)
+
+        -- Target (Explicit branch)
+        local branch_target = Git.get_target({ dir = repo_dir, branch = "main", name = "test", _ = {} })
+        assert.is_not_nil(branch_target)
+        assert.are.equal("main", branch_target.branch)
+        assert.are.equal(info.commit, branch_target.commit)
+
         -- Refs
         local commit = Git.ref(repo_dir, "heads", "main")
         assert.is_not_nil(commit)

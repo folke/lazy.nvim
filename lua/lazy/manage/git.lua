@@ -180,8 +180,25 @@ function M.get_target(plugin)
     end
   end
 
-  local branch = assert(M.get_branch(plugin))
-  return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
+  if plugin.branch then
+    return { branch = plugin.branch, commit = M.get_commit(plugin.dir, plugin.branch, true) }
+  end
+
+  -- Retrieve origin/HEAD default branch and its commit in 1 command
+  local lines, code = Process.exec(
+    { "git", "for-each-ref", "--format=%(symref:short) %(objectname)", "refs/remotes/origin/HEAD" },
+    { cwd = plugin.dir }
+  )
+  if code == 0 and lines[1] then
+    local symref, commit = lines[1]:match("^(%S+)%s+(%x+)$")
+    local branch = symref and symref:match("origin/(.*)")
+    if branch and commit then
+      return { branch = branch, commit = commit }
+    end
+  end
+
+  local info = assert(M.info(plugin.dir))
+  return { branch = info.branch, commit = info.commit }
 end
 
 --- Dereference a reference or tag to its commit hash.
