@@ -224,7 +224,7 @@ M.origin = {
       local origin = Git.get_origin(self.plugin.dir)
       self:error({
         "Origin has changed:",
-        "  * old: " .. origin,
+        "  * old: " .. (origin or "nil"),
         "  * new: " .. self.plugin.url,
         "Please run update to fix",
       })
