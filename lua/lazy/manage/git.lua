@@ -143,7 +143,7 @@ function M.get_target(plugin)
     return {
       branch = branch,
       tag = plugin.tag,
-      commit = M.ref(plugin.dir, "tags/" .. plugin.tag),
+      commit = M.ref(plugin.dir, "tags", plugin.tag),
     }
   end
 
@@ -155,46 +155,21 @@ function M.get_target(plugin)
         branch = branch,
         version = last,
         tag = last.tag,
-        commit = M.ref(plugin.dir, "tags/" .. last.tag),
+        commit = M.ref(plugin.dir, "tags", last.tag),
       }
     end
   end
   return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
 end
 
-function M.ref(repo, ...)
-  local ref = table.concat({ ... }, "/")
-
-  -- if this is a tag ref, then dereference it instead
-  if ref:find("tags/", 1, true) == 1 then
-    local tags = M.get_tag_refs(repo, ref)
-    for _, tag_ref in pairs(tags) do
-      return tag_ref
-    end
-  end
-
-  return git(repo, "rev-parse", ref)
-end
-
--- this is slow, so don't use on a loop over all plugins!
----@param tagref string?
-function M.get_tag_refs(repo, tagref)
-  tagref = tagref or "--tags"
-  ---@type table<string,string>
-  local tags = {}
-  local ok, lines = pcall(function()
-    return Process.exec({ "git", "show-ref", "-d", tagref }, { cwd = repo })
-  end)
-  if not ok then
-    return {}
-  end
-  for _, line in ipairs(lines) do
-    local ref, tag = line:match("^(%w+) refs/tags/([^%^]+)%^?{?}?$")
-    if ref then
-      tags[tag] = ref
-    end
-  end
-  return tags
+--- Dereference a reference or tag to its commit hash.
+--- The `^{commit}` suffix automatically peels annotated tags directly to their underlying commit object.
+---@param repo string
+---@param kind string "heads" | "tags" | "remotes/origin"
+---@param name string
+---@return string?
+function M.ref(repo, kind, name)
+  return git(repo, "rev-parse", kind .. "/" .. name .. "^{commit}")
 end
 
 ---@param repo string

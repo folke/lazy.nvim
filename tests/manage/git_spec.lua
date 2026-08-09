@@ -33,7 +33,7 @@ describe("git manage", function()
     run_git(repo_dir, "tag", "v1.0.0")
     Util.write_file(repo_dir .. "/file.txt", "hello world")
     run_git(repo_dir, "commit", "-am", "second commit")
-    run_git(repo_dir, "tag", "v1.1.0")
+    run_git(repo_dir, "tag", "-a", "v1.1.0", "-m", "annotated release")
     return true
   end
 
@@ -67,9 +67,13 @@ describe("git manage", function()
         assert.is_not_nil(commit)
         assert.are.equal(info.commit, commit)
 
-        -- Tag ref
+        -- Tag ref (Lightweight)
         local tag_commit = Git.ref(repo_dir, "tags", "v1.0.0")
         assert.is_not_nil(tag_commit)
+
+        -- Tag ref (Annotated - should peel to commit)
+        local annotated_commit = Git.ref(repo_dir, "tags", "v1.1.0")
+        assert.are.equal(info.commit, annotated_commit)
 
         -- Util.git_info
         local uinfo = Util.git_info(repo_dir)
