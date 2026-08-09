@@ -48,12 +48,8 @@ describe("git manage", function()
           return
         end
 
-        -- Attached HEAD
-        local head = Git.head(repo_dir)
-        assert.are.equal("refs/heads/main", head)
-
-        -- Info
-        local info = Git.info(repo_dir, true)
+        -- Info (Attached)
+        local info = Git.info(repo_dir)
         assert.is_not_nil(info)
         assert.are.equal("main", info.branch)
         assert.are.equal("v1.1.0", info.tag)
@@ -81,12 +77,9 @@ describe("git manage", function()
         assert.are.equal("main", uinfo.branch)
         assert.are.equal(info.commit, uinfo.hash)
 
-        -- Detached HEAD
+        -- Info (Detached HEAD)
         run_git(repo_dir, "checkout", "v1.0.0")
-        local detached_head = Git.head(repo_dir)
-        assert.are.equal(tag_commit, detached_head)
-
-        local detached_info = Git.info(repo_dir, true)
+        local detached_info = Git.info(repo_dir)
         assert.is_not_nil(detached_info)
         assert.is_nil(detached_info.branch)
         assert.are.equal(tag_commit, detached_info.commit)

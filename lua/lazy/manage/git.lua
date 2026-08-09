@@ -18,28 +18,39 @@ end
 ---@alias GitInfo {branch?:string, commit?:string, tag?:string, version?:Semver}
 
 ---@param repo string
----@param details? boolean Fetching details is slow! Don't loop over a plugin to fetch all details!
 ---@return GitInfo?
-function M.info(repo, details)
-  local line = M.head(repo)
-  if line then
-    ---@type string, string
-    local ref, branch = line:match("refs/(heads/(.*))")
-    local ret = ref and {
-      branch = branch,
-      commit = M.ref(repo, ref),
-    } or { commit = line }
+function M.info(repo)
+  -- Use `git rev-list -1 --format=%D HEAD` to fetch commit SHA and ref decorations in 1 command.
+  -- Line 1: `commit <hex-hash>`
+  -- Line 2: comma-space-separated decorations, e.g.:
+  --   Attached: `HEAD -> main, tag: v1.1.0, origin/main`
+  --   Detached: `HEAD, tag: v1.0.0`
+  local lines, code = Process.exec({ "git", "rev-list", "-1", "--format=%D", "HEAD" }, { cwd = repo })
+  if code ~= 0 or not lines[1] then
+    return
+  end
 
-    if details then
-      for tag, tag_ref in pairs(M.get_tag_refs(repo)) do
-        if tag_ref == ret.commit then
-          ret.tag = tag
-          ret.version = ret.version or Semver.version(tag)
-        end
+  local ret = { commit = lines[1]:match("^commit (%x+)$") }
+  if not ret.commit then
+    return
+  end
+
+  -- Git ref names cannot contain spaces, so splitting by ", " is safe and unambiguous
+  for item in ((lines[2] or "") .. ", "):gmatch("(.-), ") do
+    ret.branch = ret.branch or item:match("^HEAD %-> (.*)")
+    local tag = item:match("^tag: (.*)")
+    if tag then
+      local v = Semver.version(tag)
+      if v and (not ret.version or v > ret.version) then
+        ret.tag = tag
+        ret.version = v
+      elseif not ret.tag then
+        ret.tag = tag
       end
     end
-    return ret
   end
+
+  return ret
 end
 
 ---@param a GitInfo
@@ -48,10 +59,6 @@ function M.eq(a, b)
   local ra = a.commit and a.commit:sub(1, 7)
   local rb = b.commit and b.commit:sub(1, 7)
   return ra == rb
-end
-
-function M.head(repo)
-  return git(repo, "symbolic-ref", "HEAD") or git(repo, "rev-parse", "HEAD")
 end
 
 ---@class TaggedSemver: Semver
@@ -85,21 +92,21 @@ end
 function M.get_branch(plugin)
   if plugin.branch then
     return plugin.branch
-  else
-    -- we need to return the default branch
-    -- Try origin first
-    local main = git(plugin.dir, "symbolic-ref", "refs/remotes/origin/HEAD")
-    if main then
-      local branch = main:match("refs/remotes/origin/(.*)")
-      if branch then
-        return branch
-      end
-    end
-
-    -- fallback to local HEAD
-    main = assert(M.head(plugin.dir))
-    return main and main:match("refs/heads/(.*)")
   end
+
+  -- we need to return the default branch
+  -- Try origin first
+  local main = git(plugin.dir, "symbolic-ref", "refs/remotes/origin/HEAD")
+  if main then
+    local branch = main:match("refs/remotes/origin/(.*)")
+    if branch then
+      return branch
+    end
+  end
+
+  -- fallback to local HEAD
+  local info = assert(M.info(plugin.dir))
+  return info.branch
 end
 
 -- Return the last commit for the given branch

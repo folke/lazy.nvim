@@ -415,7 +415,7 @@ function M:diagnostics(plugin)
         message = "already up to date",
       })
     else
-      local version = Git.info(plugin.dir, true).version
+      local version = Git.info(plugin.dir).version
       if version then
         self:diagnostic({
           message = "updated to " .. tostring(version),
@@ -563,7 +563,7 @@ function M:details(plugin)
   if plugin.url then
     table.insert(props, { "url", (plugin.url:gsub("%.git$", "")), "LazyUrl" })
   end
-  local git = Git.info(plugin.dir, true)
+  local git = Git.info(plugin.dir)
   if git then
     git.branch = git.branch or Git.get_branch(plugin)
     if git.version then
