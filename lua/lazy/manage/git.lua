@@ -1,7 +1,6 @@
 local Config = require("lazy.core.config")
 local Process = require("lazy.manage.process")
 local Semver = require("lazy.manage.semver")
-local Util = require("lazy.util")
 
 local M = {}
 
@@ -173,36 +172,40 @@ function M.ref(repo, kind, name)
   return git(repo, "rev-parse", kind .. "/" .. name .. "^{commit}")
 end
 
+--- Fast synchronous origin URL reader.
+--- This must read `.git/config` directly in Lua without spawning a `git` subprocess
+--- because it is called in `skip()` pre-filters during pipeline scheduling. Spawning
+--- an async process in `skip()` yields the runner's main coroutine mid-loop, causing
+--- race conditions and false positives.
+--- Handles standard Git repositories, submodules, and worktrees.
 ---@param repo string
+---@return string?
 function M.get_origin(repo)
-  return M.get_config(repo)["remote.origin.url"]
-end
-
----@param repo string
-function M.get_config(repo)
-  local ok, config = pcall(Util.read_file, repo .. "/.git/config")
-  if not ok then
-    return {}
+  local git_dir = repo .. "/.git"
+  local stat = vim.uv.fs_stat(git_dir)
+  if not stat then
+    return
   end
-  ---@type table<string, string>
-  local ret = {}
-  ---@type string
-  local current_section = nil
-  for line in config:gmatch("[^\n]+") do
-    -- Check if the line is a section header
-    local section = line:match("^%s*%[(.+)%]%s*$")
-    if section then
-      ---@type string
-      current_section = section:gsub('%s+"', "."):gsub('"+%s*$', "")
-    else
-      -- Ignore comments and blank lines
-      if not line:match("^%s*[#;]") and line:match("%S") then
-        local key, value = line:match("^%s*(%S+)%s*=%s*(.+)%s*$")
-        ret[current_section .. "." .. key] = value
-      end
+  local config_file = git_dir .. "/config"
+  if stat.type == "file" then
+    local f = io.open(git_dir, "r")
+    local content = f and f:read("*a")
+    if f then
+      f:close()
+    end
+    local path = content and content:match("gitdir:%s*(.-)%s*$")
+    if path then
+      config_file = vim.fs.normalize(repo .. "/" .. path .. "/config")
     end
   end
-  return ret
+  local f = io.open(config_file, "r")
+  if f then
+    local config = f:read("*a")
+    f:close()
+    if config then
+      return config:match('%[remote%s+"origin"%][^%[]*url%s*=%s*(%S+)')
+    end
+  end
 end
 
 return M

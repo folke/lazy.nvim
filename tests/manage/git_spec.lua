@@ -34,6 +34,7 @@ describe("git manage", function()
     Util.write_file(repo_dir .. "/file.txt", "hello world")
     run_git(repo_dir, "commit", "-am", "second commit")
     run_git(repo_dir, "tag", "-a", "v1.1.0", "-m", "annotated release")
+    run_git(repo_dir, "remote", "add", "origin", "https://github.com/folke/lazy.nvim.git")
     return true
   end
 
@@ -47,6 +48,9 @@ describe("git manage", function()
         if not setup_repo(format) then
           return
         end
+
+        -- Origin
+        assert.are.equal("https://github.com/folke/lazy.nvim.git", Git.get_origin(repo_dir))
 
         -- Info (Attached)
         local info = Git.info(repo_dir)
