@@ -185,12 +185,9 @@ function M.get_target(plugin)
   end
 
   -- Retrieve origin/HEAD default branch and its commit in 1 command
-  local lines, code = Process.exec(
-    { "git", "for-each-ref", "--format=%(symref:short) %(objectname)", "refs/remotes/origin/HEAD" },
-    { cwd = plugin.dir }
-  )
-  if code == 0 and lines[1] then
-    local symref, commit = lines[1]:match("^(%S+)%s+(%x+)$")
+  local line = git(plugin.dir, "for-each-ref", "--format=%(symref:short) %(objectname)", "refs/remotes/origin/HEAD")
+  if line then
+    local symref, commit = line:match("^(%S+)%s+(%x+)$")
     local branch = symref and symref:match("origin/(.*)")
     if branch and commit then
       return { branch = branch, commit = commit }
