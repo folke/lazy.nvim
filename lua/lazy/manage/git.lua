@@ -60,8 +60,37 @@ function M.eq(a, b)
   return ra == rb
 end
 
+---@class GitTag
+---@field name string
+---@field commit string
+
+--- Fetch all tags and their peeled commit hashes in a single command.
+---@param repo string
+---@return GitTag[]
+function M.get_tags(repo)
+  local lines, code = Process.exec({
+    "git",
+    "for-each-ref",
+    "--format=%(refname:short) %(if)%(*objectname)%(then)%(*objectname)%(else)%(objectname)%(end)",
+    "refs/tags/",
+  }, { cwd = repo })
+  if code ~= 0 then
+    return {}
+  end
+
+  ---@type GitTag[]
+  local tags = {}
+  for _, line in ipairs(lines) do
+    local name, commit = line:match("^(%S+)%s+(%x+)$")
+    if name then
+      table.insert(tags, { name = name, commit = commit })
+    end
+  end
+  return tags
+end
+
 ---@class TaggedSemver: Semver
----@field tag string
+---@field tag GitTag
 
 ---@param spec? string
 function M.get_versions(repo, spec)
@@ -69,7 +98,7 @@ function M.get_versions(repo, spec)
   ---@type TaggedSemver[]
   local versions = {}
   for _, tag in ipairs(M.get_tags(repo)) do
-    local v = Semver.version(tag)
+    local v = Semver.version(tag.name)
     ---@cast v TaggedSemver
     if v and range:matches(v) then
       v.tag = tag
@@ -77,13 +106,6 @@ function M.get_versions(repo, spec)
     end
   end
   return versions
-end
-
-function M.get_tags(repo)
-  local lines, code = Process.exec({ "git", "for-each-ref", "--format=%(refname:short)", "refs/tags/" }, { cwd = repo })
-  return code == 0 and vim.tbl_filter(function(s)
-    return s ~= ""
-  end, lines) or {}
 end
 
 ---@param plugin LazyPlugin
@@ -152,8 +174,8 @@ function M.get_target(plugin)
       return {
         branch = plugin.branch,
         version = last,
-        tag = last.tag,
-        commit = M.ref(plugin.dir, "tags", last.tag),
+        tag = last.tag.name,
+        commit = last.tag.commit,
       }
     end
   end

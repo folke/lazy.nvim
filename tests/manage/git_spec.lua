@@ -1,6 +1,7 @@
 local Git = require("lazy.manage.git")
 local Helpers = require("tests.helpers")
 local Process = require("lazy.manage.process")
+local Semver = require("lazy.manage.semver")
 local Util = require("lazy.util")
 
 local unpack = unpack or table.unpack
@@ -63,8 +64,24 @@ describe("git manage", function()
 
         -- Tags
         local tags = Git.get_tags(repo_dir)
-        table.sort(tags)
-        assert.are.same({ "v1.0.0", "v1.1.0" }, tags)
+        assert.are.equal(2, #tags)
+        assert.are.equal("v1.0.0", tags[1].name)
+        assert.are.equal("v1.1.0", tags[2].name)
+        assert.are.equal(info.commit, tags[2].commit)
+
+        -- Versions
+        local versions = Git.get_versions(repo_dir)
+        assert.are.equal(2, #versions)
+        local last = Semver.last(versions)
+        assert.is_not_nil(last)
+        assert.are.equal("v1.1.0", last.tag.name)
+        assert.are.equal(info.commit, last.tag.commit)
+
+        -- Target (Version)
+        local target = Git.get_target({ dir = repo_dir, version = ">=1.0.0", name = "test", _ = {} })
+        assert.is_not_nil(target)
+        assert.are.equal("v1.1.0", target.tag)
+        assert.are.equal(info.commit, target.commit)
 
         -- Refs
         local commit = Git.ref(repo_dir, "heads", "main")
