@@ -5,7 +5,7 @@ local Config = require("lazy.core.config")
 local uv = vim.uv
 
 ---@class ProcessOpts
----@field args string[]
+---@field args? string[]
 ---@field cwd? string
 ---@field on_line? fun(line:string)
 ---@field on_exit? fun(ok:boolean, output:string)
@@ -64,32 +64,61 @@ end
 ---@async
 function Process:_run()
   self:guard()
-  local stdout = assert(uv.new_pipe())
-  local stderr = assert(uv.new_pipe())
-  self.handle = uv.spawn(self.cmd, {
-    stdio = { nil, stdout, stderr },
-    args = self.opts.args,
-    cwd = self.opts.cwd,
-    env = self:env(),
-  }, function(code, signal)
-    self.code = code
-    self.signal = signal
-    if self.timeout then
-      self.timeout:stop()
+  local stdout, stderr, handle, err, err_name
+  local delay = 10
+  while not self.timedout do
+    stdout = uv.new_pipe()
+    stderr = uv.new_pipe()
+    if stdout and stderr then
+      handle, err, err_name = uv.spawn(self.cmd, {
+        stdio = { nil, stdout, stderr },
+        args = self.opts.args,
+        cwd = self.opts.cwd,
+        env = self:env(),
+      }, function(code, signal)
+        self.code = code
+        self.signal = signal
+        if self.timeout then
+          self.timeout:stop()
+        end
+        self.handle:close()
+        self:resume()
+      end)
+      if handle then
+        self.handle = handle
+        break
+      end
     end
-    self.handle:close()
-    stdout:close()
-    stderr:close()
-    self:resume()
-  end)
+    if stdout and not stdout:is_closing() then
+      stdout:close()
+    end
+    if stderr and not stderr:is_closing() then
+      stderr:close()
+    end
+    if err_name == "EMFILE" or err_name == "ENFILE" or err_name == "EAGAIN" or not stdout or not stderr then
+      local jitter = math.random(0, math.floor(delay * 0.5))
+      Async.sleep(delay + jitter)
+      delay = math.min(delay * 2, 500)
+    else
+      break
+    end
+  end
 
   if self.handle then
     M.running[self.handle] = self
     stdout:read_start(function(err, data)
       self:on_data(err, data)
+      if not data then
+        stdout:close()
+        self:resume()
+      end
     end)
     stderr:read_start(function(err, data)
       self:on_data(err, data, true)
+      if not data then
+        stderr:close()
+        self:resume()
+      end
     end)
     self:suspend()
     while not (self.handle:is_closing() and stdout:is_closing() and stderr:is_closing()) do

@@ -91,15 +91,15 @@ M.log = {
         end
         error("no target commit found")
       end
-      assert(target.commit, self.plugin.name .. " " .. target.branch)
       if not self.plugin._.is_local then
         if Git.eq(info, target) then
           if Config.options.checker.check_pinned then
-            local last_commit = Git.get_commit(self.plugin.dir, target.branch, true)
-            if not Git.eq(info, { commit = last_commit }) then
+            local last_commit = Git.get_commit(self.plugin.dir, self.plugin.branch or "HEAD", true)
+            if last_commit and not Git.eq(info, { commit = last_commit }) then
               self.plugin._.outdated = true
             end
           end
+          return
         else
           self.plugin._.updates = { from = info, to = target }
         end
@@ -185,20 +185,20 @@ M.clone = {
 -- fetch will retrieve the data
 M.branch = {
   skip = function(plugin)
-    if not plugin._.installed or plugin._.is_local then
-      return true
-    end
-    local branch = assert(Git.get_branch(plugin))
-    return Git.get_commit(plugin.dir, branch, true)
+    return not plugin._.installed or plugin._.is_local or not plugin.branch
   end,
   ---@async
   run = function(self)
+    if Git.get_commit(self.plugin.dir, self.plugin.branch, true) then
+      return
+    end
+
     local args = {
       "remote",
       "set-branches",
       "--add",
       "origin",
-      assert(Git.get_branch(self.plugin)),
+      self.plugin.branch,
     }
 
     self:spawn("git", {
@@ -224,7 +224,7 @@ M.origin = {
       local origin = Git.get_origin(self.plugin.dir)
       self:error({
         "Origin has changed:",
-        "  * old: " .. origin,
+        "  * old: " .. (origin or "nil"),
         "  * new: " .. self.plugin.url,
         "Please run update to fix",
       })
