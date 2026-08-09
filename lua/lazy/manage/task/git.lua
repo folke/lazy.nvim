@@ -99,6 +99,7 @@ M.log = {
               self.plugin._.outdated = true
             end
           end
+          return
         else
           self.plugin._.updates = { from = info, to = target }
         end
