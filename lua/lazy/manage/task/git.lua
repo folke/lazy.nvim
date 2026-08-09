@@ -94,8 +94,8 @@ M.log = {
       if not self.plugin._.is_local then
         if Git.eq(info, target) then
           if Config.options.checker.check_pinned then
-            local last_commit = Git.get_commit(self.plugin.dir, target.branch, true)
-            if not Git.eq(info, { commit = last_commit }) then
+            local last_commit = Git.get_commit(self.plugin.dir, self.plugin.branch or "HEAD", true)
+            if last_commit and not Git.eq(info, { commit = last_commit }) then
               self.plugin._.outdated = true
             end
           end
