@@ -91,7 +91,6 @@ M.log = {
         end
         error("no target commit found")
       end
-      assert(target.commit, self.plugin.name .. " " .. target.branch)
       if not self.plugin._.is_local then
         if Git.eq(info, target) then
           if Config.options.checker.check_pinned then

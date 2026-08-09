@@ -131,17 +131,16 @@ function M.get_target(plugin)
     return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
   end
 
-  local branch = assert(M.get_branch(plugin))
-
   if plugin.commit then
     return {
-      branch = branch,
+      branch = plugin.branch,
       commit = plugin.commit,
     }
   end
+
   if plugin.tag then
     return {
-      branch = branch,
+      branch = plugin.branch,
       tag = plugin.tag,
       commit = M.ref(plugin.dir, "tags", plugin.tag),
     }
@@ -152,13 +151,15 @@ function M.get_target(plugin)
     local last = Semver.last(M.get_versions(plugin.dir, version))
     if last then
       return {
-        branch = branch,
+        branch = plugin.branch,
         version = last,
         tag = last.tag,
         commit = M.ref(plugin.dir, "tags", last.tag),
       }
     end
   end
+
+  local branch = assert(M.get_branch(plugin))
   return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
 end
 
