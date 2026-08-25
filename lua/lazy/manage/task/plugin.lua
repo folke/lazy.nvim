@@ -87,7 +87,14 @@ M.build = {
 
 M.docs = {
   skip = function(plugin)
-    return not plugin._.is_local and not plugin._.dirty
+    if not plugin._.is_local and not plugin._.dirty then
+      return true
+    end
+    -- skip read-only docs (plugins installed via Nix, a system package
+    -- manager, ...): their tags are generated at install time and
+    -- `:helptags` would fail with E152
+    local docs = plugin.dir .. "/doc"
+    return Util.file_exists(docs) and not vim.uv.fs_access(docs, "W")
   end,
   run = function(self)
     local docs = self.plugin.dir .. "/doc"
