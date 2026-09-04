@@ -524,3 +524,40 @@ describe("plugin spec", function()
     end
   end)
 end)
+
+describe("pkg cache reload", function()
+  local Pkg = require("lazy.pkg")
+  local orig = { loadfile = _G.loadfile, update = Pkg.update, plugins = Config.plugins, spec = Config.spec }
+  local pkg_opts = { enabled = Config.options.pkg.enabled, cache = Config.options.pkg.cache }
+
+  after_each(function()
+    _G.loadfile, Pkg.update = orig.loadfile, orig.update
+    Config.plugins, Config.spec = orig.plugins, orig.spec
+    Config.options.pkg.enabled, Config.options.pkg.cache = pkg_opts.enabled, pkg_opts.cache
+    rawset(Pkg, "cache", nil)
+    Pkg.dirty = false
+  end)
+
+  it("regenerates the cache at most once per load", function()
+    local cache = vim.fn.tempname() .. "/pkg-cache.lua"
+    Config.options.pkg.enabled, Config.options.pkg.cache = true, cache
+    rawset(Pkg, "cache", nil)
+    Pkg.dirty = false
+    _G.loadfile = function(path, ...)
+      if path == cache then
+        error("EACCES: simulated")
+      end
+      return orig.loadfile(path, ...)
+    end
+    local updates = 0
+    Pkg.update = function(...)
+      updates = updates + 1
+      if updates > 1 then
+        error("Pkg.update called more than once")
+      end
+      return orig.update(...)
+    end
+    Plugin.load()
+    assert.equals(1, updates)
+  end)
+end)

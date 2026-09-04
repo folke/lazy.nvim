@@ -319,7 +319,8 @@ function M.find_local_spec()
   end
 end
 
-function M.load()
+---@param retry? boolean true when re-entering after `Pkg.update()`
+function M.load(retry)
   M.loading = true
   -- load specs
   Util.track("spec")
@@ -377,9 +378,9 @@ function M.load()
   M.update_state()
   Util.track()
 
-  if Config.options.pkg.enabled and Pkg.dirty then
+  if Config.options.pkg.enabled and Pkg.dirty and not retry then
     Pkg.update()
-    return M.load()
+    return M.load(true)
   end
 
   M.loading = false
