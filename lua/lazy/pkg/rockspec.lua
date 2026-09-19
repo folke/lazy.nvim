@@ -77,7 +77,8 @@ function M.check(opts)
       ok = true
     else
       ok = Health.have(M.python, opts)
-      ok = Health.have(M.hererocks.bin("luarocks")) and ok
+      -- hererocks installs `luarocks.bat` on Windows, which can only be spawned with its extension
+      ok = Health.have(M.hererocks.bin(Util.is_win and "luarocks.bat" or "luarocks")) and ok
       Health.have(
         M.hererocks.bin("lua"),
         vim.tbl_extend("force", opts, {
