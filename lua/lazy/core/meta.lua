@@ -304,17 +304,49 @@ end
 --- Removes plugins that are disabled.
 function M:fix_disabled()
   local changes = 0
+
+  local function has_disabled_ancestor(plugin)
+    for _, fid in ipairs(plugin._.frags) do
+      local fragment = self.fragments:get(fid)
+
+      -- Traverse upwards and construct the ancestor fragment tree for the current
+      -- frag being checked
+      while fragment.pid do
+        fragment = self.fragments:get(fragment.pid)
+
+        -- Stop processing as soon as we've reached the top fragment of the ancestor fragment tree
+        -- and the fragment belongs to the same plugin (otherwise the plugin's own top-level fragment
+        -- could be treated as a disabled ancestor)
+        -- neoscroll.nvim        pid=nil
+        -- └── nui.nvim
+        --     └── plenary.nvim
+        if fragment.pid == nil and fragment.name == plugin.name then
+          break
+        end
+
+        local parent = self.plugins[fragment.name]
+        if parent and (parent.enabled == false or (type(parent.enabled) == "function" and not parent.enabled())) then
+          return true
+        end
+      end
+    end
+
+    return false
+  end
+
   local function check(top)
     for _, plugin in pairs(self.plugins) do
       if (plugin._.top or false) == top then
         if plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()) then
-          changes = changes + 1
-          if plugin.optional then
-            self:del(plugin.name)
-          else
-            self:disable(plugin)
+          if not has_disabled_ancestor(plugin) then
+            changes = changes + 1
+            if plugin.optional then
+              self:del(plugin.name)
+            else
+              self:disable(plugin)
+            end
+            self:rebuild()
           end
-          self:rebuild()
         end
       end
     end
@@ -351,8 +383,9 @@ function M:resolve()
 
   self:fix_cond()
 
+  -- See https://github.com/folke/lazy.nvim/pull/2186#issuecomment-5784227389
   -- selene: allow(empty_loop)
-  while self:fix_disabled() + self:fix_optional() > 0 do
+  while self:fix_optional() + self:fix_disabled() > 0 do
   end
   Util.track()
 end
