@@ -30,6 +30,7 @@ function M.setup()
     local ok, out = pcall(vim.fn.system, {
       "git",
       "clone",
+      "--origin=origin",
       "--filter=blob:none",
       lazyrepo,
       lazypath,

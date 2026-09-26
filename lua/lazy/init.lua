@@ -126,6 +126,7 @@ function M.bootstrap()
     vim.fn.system({
       "git",
       "clone",
+      "--origin=origin",
       "--filter=blob:none",
       "https://github.com/folke/lazy.nvim.git",
       "--branch=stable", -- latest stable release
