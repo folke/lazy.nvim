@@ -298,16 +298,25 @@ function M.setup(opts)
 
   M.me = debug.getinfo(1, "S").source:sub(2)
   M.me = Util.norm(vim.fn.fnamemodify(M.me, ":p:h:h:h:h"))
-  local lib = vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib"
-  lib = vim.uv.fs_stat(lib .. "64") and (lib .. "64") or lib
-  lib = lib .. "/nvim"
+
+  local lib
+  local rtp = vim.api.nvim_list_runtime_paths()
+  local vimruntime = vim.env.VIMRUNTIME
+
+  for i, path in ipairs(rtp) do
+    if path == vimruntime then
+      lib = rtp[i + 1]
+      break
+    end
+  end
+
   if M.options.performance.rtp.reset then
     ---@type vim.Option
     vim.opt.rtp = {
       vim.fn.stdpath("config"),
       vim.fn.stdpath("data") .. "/site",
       M.me,
-      vim.env.VIMRUNTIME,
+      vimruntime,
       lib,
       vim.fn.stdpath("config") .. "/after",
     }
