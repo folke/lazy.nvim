@@ -497,6 +497,34 @@ describe("plugin opts", function()
 end)
 
 describe("plugin spec", function()
+  it("fragments with disabled ancestor do not contribute to final spec", function()
+    local spec = Plugin.Spec.new({
+      { "foo/bar" },
+      {
+        "foo/disabled",
+        enabled = false,
+        specs = {
+          {
+            "foo/child",
+            specs = {
+              {
+                "foo/disabled",
+                opts = {},
+              },
+            },
+          },
+          {
+            "foo/bar",
+            enabled = false,
+          },
+        },
+      },
+    })
+
+    assert(spec.plugins.bar)
+    assert(spec.plugins.bar.enabled ~= false)
+  end)
+
   it("only includes fragments from enabled plugins", function()
     local tests = {
       {
